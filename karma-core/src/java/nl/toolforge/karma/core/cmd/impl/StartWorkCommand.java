@@ -32,6 +32,7 @@ import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.AuthenticationException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -110,6 +111,9 @@ public class StartWorkCommand extends DefaultCommand {
         throw new CommandException(ManifestException.MODULE_NOT_LOCAL, new Object[] {module.getName()});
       }
 
+      SimpleMessage message = new SimpleMessage(getFrontendMessages().getString("message.START_WORK_STARTED"), new Object[]{getCommandLine().getOptionValue("m")});
+      response.addEvent(new MessageEvent(this, message));
+
       try {
 
         // Step 1 : make the module WORKING
@@ -173,6 +177,8 @@ public class StartWorkCommand extends DefaultCommand {
             new MessageEvent(this, new SimpleMessage("You can start working on module " + module.getName() + "; state changed to WORKING.")));
 
       } catch (VersionControlException e) {
+        throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+      } catch (AuthenticationException e) {
         throw new CommandException(e.getErrorCode(), e.getMessageArguments());
       }
     }

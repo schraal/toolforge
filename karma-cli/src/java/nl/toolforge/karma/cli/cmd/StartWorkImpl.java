@@ -34,10 +34,6 @@ public class StartWorkImpl extends StartWorkCommand {
   }
 
   public void execute() throws CommandException {
-
-    SimpleMessage message = new SimpleMessage(getFrontendMessages().getString("message.START_WORK_STARTED"), new Object[]{getCommandLine().getOptionValue("m")});
-    response.addEvent(new MessageEvent(message));
-
     super.execute();
   }
 

@@ -32,6 +32,7 @@ import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ReleaseManifest;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
 import nl.toolforge.karma.core.vc.cvsimpl.Utils;
 
@@ -169,6 +170,8 @@ public class UpdateModuleCommand extends DefaultCommand {
         response.addEvent(new MessageEvent(this, message));
       }
     } catch (VersionControlException e) {
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+    } catch (AuthenticationException e) {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
   }

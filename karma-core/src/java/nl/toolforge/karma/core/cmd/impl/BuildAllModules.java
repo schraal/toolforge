@@ -45,6 +45,8 @@ import java.util.Set;
  *
  * @author D.A. Smedes
  * @version $Id$
+ *
+ * @deprecated Not in use, but the current code remains. Not to be used.
  */
 public class BuildAllModules extends DefaultCommand {
 

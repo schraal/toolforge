@@ -35,6 +35,7 @@ import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.cvsimpl.AdminHandler;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSModuleStatus;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
@@ -162,6 +163,8 @@ public class PromoteCommand extends DefaultCommand {
     } catch (ManifestException e) {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     } catch (VersionControlException e) {
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+    } catch (AuthenticationException e) {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
   }

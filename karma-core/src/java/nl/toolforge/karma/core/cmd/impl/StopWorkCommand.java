@@ -33,6 +33,7 @@ import nl.toolforge.karma.core.manifest.ReleaseManifest;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.cvsimpl.AdminHandler;
 import nl.toolforge.karma.core.vc.cvsimpl.Utils;
 
@@ -103,12 +104,10 @@ public class StopWorkCommand extends DefaultCommand {
       Manifest m = getContext().getCurrentManifest();
       try {
 
-        Version version = Utils.getLastVersion(module);
-
         // Update to the latest available version (in a DevelopmentLine).
         //
         Runner runner = RunnerFactory.getRunner(module.getLocation());
-        runner.checkout(module, version);
+        runner.checkout(module, module.getVersion());
 
         if (m instanceof ReleaseManifest) {
           m.setState(module, Module.STATIC);
@@ -118,6 +117,8 @@ public class StopWorkCommand extends DefaultCommand {
           m.setState(module, Module.DYNAMIC);
         }
       } catch (VersionControlException e) {
+        throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+      } catch (AuthenticationException e) {
         throw new CommandException(e.getErrorCode(), e.getMessageArguments());
       }
       response.addEvent(
