@@ -605,8 +605,17 @@ public final class Manifest {
     return jar;
   }
 
+  /**
+   *
+   *
+   * @param module
+   * @return Interdependencies for <code>module</code> or an empty <code>Collection</code>.
+   */
   public Collection getModuleInterdependencies(Module module) {
-    return (Collection) getInterdependencies().get(module.getName());
+
+    Collection deps = (Collection) getInterdependencies().get(module.getName());
+
+    return (deps == null ? new HashSet() : deps);
   }
 
   /**

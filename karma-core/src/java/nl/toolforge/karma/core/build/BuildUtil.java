@@ -93,36 +93,28 @@ public final class BuildUtil {
 
     // Get all modules that depend on this module.
     //
-    Collection modules = currentManifest.getModuleInterdependencies(module);
+    Collection interDeps = currentManifest.getModuleInterdependencies(module);
 
-    for (Iterator i = modules.iterator(); i.hasNext();) {
+    for (Iterator i = interDeps.iterator(); i.hasNext();) {
 
       Module dep = (Module) i.next();
 
-      if (currentManifest.getInterdependencies().containsKey(module.getName())) {
+      if (currentManifest.getInterdependencies().containsKey(dep.getName())) {
+        cleanDependencies(dep);
+      }
+      // No interdependencies found for the dependency, so we remove its build-directory.
+      //
+      try {
+        File buildDir = new File(new File(currentManifest.getDirectory(), "build"), dep.getName());
 
-        stackoverflow .......
+        FileUtils.deleteDirectory(buildDir);
 
-        // Recurse until je een ons weegt.
-        //
-//        cleanDependencies(module, (Collection) currentManifest.getInterdependencies().get(module));
-        cleanDependencies(module);
-      } else {
-        // No more interdependencies encountered. Removing 'build'-directory.
-        //
-        try {
-          File buildDir = new File(new File(currentManifest.getDirectory(), "build"), dep.getName());
-
-          FileUtils.deleteDirectory(buildDir);
-
-        } catch (ManifestException e) {
-          e.printStackTrace();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
+      } catch (ManifestException e) {
+        e.printStackTrace();
+      } catch (IOException e) {
+        e.printStackTrace();
       }
     }
-
   }
 
 
