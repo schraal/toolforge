@@ -16,32 +16,37 @@ import nl.toolforge.karma.core.vc.Runner;
  */
 public class UpdateModuleCommand extends DefaultCommand {
 
-	private Module module = null;
+  private Module module = null;
 
-	/**
-	 * Creates a <code>UpdateModuleCommand</code> for module <code>module</code> that should be updated.
-	 *
-	 * @param module A module from the manifest.
-	 */
-	public UpdateModuleCommand(Module module) throws CommandException {
-       this.module = module;
-	}
+  /**
+   * Creates a <code>UpdateModuleCommand</code> for module <code>module</code> that should be updated.
+   *
+   * @param module A module from the manifest.
+   */
+  public UpdateModuleCommand(Module module) throws CommandException {
 
-	/**
-	 * Creates an UpdateModuleCommand.
-	 *
-	 * @param descriptor See {@link DefaultCommand}.
-	 */
+    // TODO validation on this command ?
+
+    this.module = module;
+  }
+
+  /**
+   * Creates an UpdateModuleCommand.
+   *
+   * @param descriptor See {@link DefaultCommand}.
+   */
 //	public UpdateModuleCommand(CommandDescriptor descriptor) throws KarmaException {
 //		super(descriptor);
 //	}
 
-	public CommandResponse execute() throws KarmaException {
+  public CommandResponse execute() throws KarmaException {
 
-		Runner runner = getContext().getRunner(module);
+    Runner runner = getContext().getRunner(module);
 
-
-
-		return null;
-	}
+    if (getContext().getCurrent().isLocal(module)) {
+      return runner.update(module);
+    } else {
+      return runner.checkout(module);
+    }
+  }
 }

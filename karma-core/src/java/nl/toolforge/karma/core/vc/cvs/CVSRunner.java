@@ -33,6 +33,13 @@ import java.io.IOException;
  */
 public final class CVSRunner implements Runner {
 
+  static {
+
+    // As per the recommendation ...
+    //
+    System.setProperty("javacvs.multiple_commands_warning", "false");
+  }
+
   private static Log logger = LogFactory.getLog(CVSRunner.class);
 
   private GlobalOptions globalOptions = new GlobalOptions();

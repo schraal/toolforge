@@ -13,12 +13,10 @@ package nl.toolforge.karma.core.cmd;
 public interface CommandMessage {
 
   /**
-	 * Returns the message with id <code>index</code> in a human readable form. This string should be formatted without
+	 * Returns the message in a human readable form. This string should be formatted without
 	 * newline characters, to enable any interface application to process them easily.
-	 *
-	 * @param index The index of the message.
 	 *
 	 * @return
 	 */
-	public String getMessageText(int index);
+	public String getMessageText();
 }

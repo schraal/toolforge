@@ -76,8 +76,6 @@ public interface Module {
 	 */
 	public void setState(State state);
 
-	//public File getPath();
-
 	/**
 	 * <p>Inner class representing the 'state' of a module. Three states exist at the moment : <code>WORKING</code>,
 	 * <code>STATIC</code> and <code>DYNAMIC</code>.

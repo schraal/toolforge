@@ -3,6 +3,9 @@ package nl.toolforge.core.regexp;
 /**
  *
  *
+ * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public class PatternSyntaxException
     extends IllegalArgumentException

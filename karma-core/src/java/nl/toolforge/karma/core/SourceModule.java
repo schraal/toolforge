@@ -124,10 +124,5 @@ public class SourceModule extends BaseModule {
 		return new File(localPath);
 	}
 
-	/**
-	 * @see {@link nl.toolforge.karma.core.Module#getController}
-	 */
-//	public final ModuleController getController() {
-//		return null;
-//	}
+
 }

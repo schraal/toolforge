@@ -21,10 +21,10 @@ public abstract class DefaultCommandMessage implements CommandMessage {
   /**
    * Must be implemented by the specific implementation.
    *
-   * @param index
    * @return
    */
-  public abstract String getMessageText(int index);
-
+  public String getMessageText() {
+    return message;
+  }
 
 }

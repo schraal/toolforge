@@ -4,6 +4,8 @@ import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.bundle.BundleCache;
 import nl.toolforge.karma.core.cmd.CommandContext;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.CommandMessage;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,6 +27,8 @@ import java.util.ResourceBundle;
  * @version $Id$
  */
 public class CLI {
+
+	private static final ResourceBundle FRONTEND_MESSAGES = BundleCache.FRONTEND_MESSAGES;
 
 	private static Log logger = LogFactory.getLog(CLI.class);
 
@@ -84,7 +88,7 @@ public class CLI {
 				//
 				if (line.trim().toLowerCase().startsWith("help") || line.trim().startsWith("?")) {
 
-					writer.writeln("The following commands are valid:");
+					writer.writeln(FRONTEND_MESSAGES.getString("message.VALID_COMMANDS"));
 
 					String[] commandStrings = cli.formatCommands(ctx.getCommands().values());
 					for (int i = 0; i < commandStrings.length; i++) {
@@ -110,14 +114,24 @@ public class CLI {
 						}
 
 						try {
-							ctx.execute(commandName, options);
+							CommandResponse response = ctx.execute(commandName, options);
+
+              // For now, just print the response.
+              //
+              CommandMessage[] messages = response.getMessages();
+
+              // Print the first message for now.
+              // TODO do something better with the message array
+              //
+              writer.writeln(messages[0].getMessageText());
+
 						} catch (KarmaException a) {
-							writer.writeln("Non-fatal error : ".concat(a.getErrorMessage()));
+							writer.writeln(a.getErrorMessage());
 						}
 
 					} else {
-						ResourceBundle bundle = BundleCache.FRONTEND_MESSAGES;
-						writer.writeln(commandName.trim().concat(" " + bundle.getString("message.INVALID_COMMAND")));
+
+						writer.writeln(commandName.trim().concat(" " + FRONTEND_MESSAGES.getString("message.INVALID_COMMAND")));
 					}
 
 				}
@@ -141,10 +155,12 @@ public class CLI {
 			CommandDescriptor descriptor = (CommandDescriptor) i.next();
 
 			int count1 = 25 - (descriptor.getName().length() + descriptor.getAlias().length() + 2);
+//      logger.debug(">> count : " + count1);
 
 			commandStrings[j++] =
 				descriptor.getName() + "(" + descriptor.getAlias() + ")" +
 				StringUtils.repeat(" ", count1) + descriptor.getDescription();
+//			logger.debug(">> String: " + commandStrings[j-1]);
 		}
 
 		return commandStrings;

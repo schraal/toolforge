@@ -13,13 +13,10 @@ import java.util.Collection;
  */
 public final class CVSCommandMessage extends DefaultCommandMessage {
 
-  public Collection events = null;
+  //public Collection events = null;
 
   public CVSCommandMessage(String message) {
     super(message);
   }
 
-  public String getMessageText(int index) {
-    return null;
-  }
 }

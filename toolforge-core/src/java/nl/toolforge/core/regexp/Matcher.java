@@ -11,24 +11,27 @@ package nl.toolforge.core.regexp;
  *   boolean b = m.matches();
  * </pre>
  *
+ * @author W.M. Oosterom
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public final class Matcher
 {
-    private Pattern pattern = null;
-    private String input = null;
+	private Pattern pattern = null;
+	private String input = null;
 
-    Matcher(Pattern pattern, String input) {
+	Matcher(Pattern pattern, String input) {
 		this.pattern = pattern;
 		this.input = input;
-    }
+	}
 
 	/**
 	 * Checks if an input string matches a pattern.
 	 *
 	 * @return <code>true</code> if the input string matched the pattern, or <code>false</code> if it didn't.
 	 */
-    public boolean matches() {
+	public boolean matches() {
 		return pattern.getRE().match(input);
-    }
+	}
 }

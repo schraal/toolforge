@@ -7,6 +7,8 @@ import java.io.FilenameFilter;
  * File filter for xml files in a directory.
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public class XMLFilenameFilter implements FilenameFilter {
 

@@ -7,14 +7,17 @@ import org.apache.regexp.RESyntaxException;
  * Wrapper class for a regular expression service. This class wraps either the Jakarta <code>org.apache.regexp</code>
  * implementation or the Sun <code>java.util.regex</code> implementation.
  *
+ * @author W.M. Oosterom
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public final class Pattern
 {
-    //private String regexp = null;
-    private RE re = null;
+	//private String regexp = null;
+	private RE re = null;
 
-    private Pattern(String regexp) {
+	private Pattern(String regexp) {
 		//this.regexp = regexp;
 
 		try {
@@ -22,7 +25,7 @@ public final class Pattern
 		} catch (RESyntaxException e) {
 			throw new PatternSyntaxException(e.getMessage(), regexp, -1);
 		}
-    }
+	}
 
 	/**
 	 * <p>Compiles a regular expression. See {@link org.apache.regexp.RE} or <code>java.util.regex</code> (JDK1.4 or above)
@@ -34,16 +37,16 @@ public final class Pattern
 	 * @param regexp The regular expression string.
 	 * @return A compiled pattern, to which pattern strings can be matched.
 	 */
-    public static Pattern compile(String regexp) {
+	public static Pattern compile(String regexp) {
 		return new Pattern(regexp);
-    }
+	}
 
 	/**
 	 * Jakarta implementation specific stuff.
 	 */
-    RE getRE() {
+	RE getRE() {
 		return re;
-    }
+	}
 
 	/**
 	 * Gets a matcher against which input strings can be (pattern) matched.
@@ -52,8 +55,8 @@ public final class Pattern
 	 *
 	 * @return A <code>Matcher</code> engine.
 	 */
-    public Matcher matcher(String input) {
+	public Matcher matcher(String input) {
 		return new Matcher(this, input);
-    }
+	}
 }
 
