@@ -86,7 +86,7 @@ public class BuildModule extends AbstractBuildCommand {
 
       //
       //
-
+/*
       Set s1 = helper.getJarDependencies(getCurrentModule(), false);
       s1.addAll(helper.getModuleDependencies(getCurrentModule(), false));
 
@@ -123,8 +123,8 @@ public class BuildModule extends AbstractBuildCommand {
       } catch (ClassNotFoundException e) {
         e.printStackTrace();
       }
-
-//      project.executeTarget("run");
+*/
+      project.executeTarget("run");
 
     } catch (DependencyException e) {
       logger.error(e);
