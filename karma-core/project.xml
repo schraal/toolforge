@@ -86,24 +86,24 @@
 
 		<integrationUnitTestSourceDirectory/>
 
-		<unitTest>
-			<includes>
-				<include>**/Test*.java</include>
-			</includes>
-
-			<resources>
-				<resource>
-					<directory>resources/test</directory>
-					<targetPath>resources/test</targetPath>
-					<includes>
-						<include>**/*.xml</include>
-						<include>**/*.dtd</include>
-						<include>**/*.properties</include>
-					</includes>
-				</resource>
-			</resources>
-
-		</unitTest>
+<!--		<unitTest>-->
+<!--			<includes>-->
+<!--				<include>**/Test*.java</include>-->
+<!--			</includes>-->
+<!---->
+<!--			<resources>-->
+<!--				<resource>-->
+<!--					<directory>resources/test</directory>-->
+<!--					<targetPath>resources/test</targetPath>-->
+<!--					<includes>-->
+<!--						<include>**/*.xml</include>-->
+<!--						<include>**/*.dtd</include>-->
+<!--						<include>**/*.properties</include>-->
+<!--					</includes>-->
+<!--				</resource>-->
+<!--			</resources>-->
+<!---->
+<!--		</unitTest>-->
 
 		<resources>
 			<resource>

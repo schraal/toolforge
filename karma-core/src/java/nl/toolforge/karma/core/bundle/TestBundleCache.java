@@ -46,7 +46,7 @@ public class TestBundleCache extends BaseTest {
 	public void testRegister1() {
 
 		BundleCache cache2 = BundleCache.getInstance();
-		ResourceBundle bundle = ResourceBundle.getBundle("error-messages", Locale.ENGLISH);
+		ResourceBundle bundle = ResourceBundle.getBundle("arjen", Locale.ENGLISH);
 
 		assertNotNull(bundle);
 

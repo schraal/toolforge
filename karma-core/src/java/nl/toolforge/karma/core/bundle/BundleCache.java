@@ -3,19 +3,21 @@ package nl.toolforge.karma.core.bundle;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.prefs.Preferences;
 
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * <p>Helper class initializing <code>ResourceBundle</code> and caching instances to enable localized messages.
  * Interface applications can extend this class to add and retrieve cached bundle.
  *
- * @author D.A. Smedes  
+ * @author D.A. Smedes
  * @version $Id$
  */
 public class BundleCache {
+
+	private static Log logger = LogFactory.getLog(BundleCache.class);
 
 	private static Map bundles = null;
 
@@ -24,6 +26,8 @@ public class BundleCache {
 	 *
 	 * <p>This <code>final</code> thingie expects <code>error-messages_&lt;locale&gt;.properties</code> to be present
 	 * in the classpath. The locale is read from the <code>locale</code> property in <code>karma.properties</code>.
+	 *
+	 * <p>This bundle can also be obtained using <code>getBundle("ERROR_MESSAGES")</code>.
 	 */
 	public static final ResourceBundle ERROR_MESSAGES =
 		ResourceBundle.getBundle("error-messages", Preferences.getInstance().getLocale());
@@ -33,6 +37,8 @@ public class BundleCache {
 	 *
 	 * <p>This <code>final</code> thingie expects <code>frontend-messages_&lt;locale&gt;.properties</code> to be present
 	 * in the classpath. The locale is read from the <code>locale</code> property in <code>karma.properties</code>.
+	 *
+	 * <p>This bundle can also be obtained using <code>getBundle("FRONTEND_MESSAGES")</code>
 	 */
 	public static final ResourceBundle FRONTEND_MESSAGES =
 		ResourceBundle.getBundle("frontend-messages", Preferences.getInstance().getLocale());
@@ -51,6 +57,9 @@ public class BundleCache {
 
 	private BundleCache() {
 		bundles = new Hashtable();
+
+		register("ERROR_MESSAGES", ERROR_MESSAGES);
+		register("FRONTEND_MESSAGES", FRONTEND_MESSAGES);
 	}
 
 
@@ -85,6 +94,9 @@ public class BundleCache {
 	 * @return The resource bundle as identified by <code>bundleKey</code> in the cache.
 	 */
 	public final ResourceBundle getBundle(String bundleKey) {
+
+//		System.out.println("Locale : " + Preferences.getInstance().getLocale());
+//		System.out.println("Default locale : " + Locale.getDefault());
 
 		if (bundles.keySet().contains(bundleKey)) {
 			  return (ResourceBundle) bundles.get(bundleKey);
