@@ -69,13 +69,10 @@ public final class Preferences {
 
 	//
 	//
+	private static final boolean RUNTIME_MODE = System.getProperty("runtime.mode", "UNKNOWN").equals("COMMAND_LINE");
 
-
-	private static final boolean COMMAND_LINE_MODE = System.getProperty("runtime.mode", "UNKNOWN").equals("COMMAND_LINE_MODE");
-//
-//	/** Determines testmodes and disables file access */
-//	public static final boolean TESTMODE =
-//		(System.getProperty("TESTMODE") == null ? false : System.getProperty("TESTMODE").equals("true"));
+	/** Determines testmodes and disables file access */
+	private static final boolean TESTMODE = (System.getProperty("TESTMODE") == null ? false : System.getProperty("TESTMODE").equals("true"));
 
 	/** The property that contains the configuration directory for Karma. */
 	//public static final String CONFIGURATION_DIRECTORY_PROPERTY = "karma.configuration.directory";
@@ -325,30 +322,29 @@ public final class Preferences {
 
 	public void flush() {
 
-		// todo what about TESTMODE; needed it in the beginning, but I doubt we still need it.
-//		if (!TESTMODE) {
-		if (COMMAND_LINE_MODE) {
-			FileOutputStream out = null;
-			try {
-				out = new FileOutputStream(new File(getConfigurationDirectoryAsString(), "preferences"));
-				values.store(out, "Karma Preferences");
+		if (!TESTMODE) {
+			if (RUNTIME_MODE) {
+				FileOutputStream out = null;
+				try {
+					out = new FileOutputStream(new File(getConfigurationDirectoryAsString(), "preferences"));
+					values.store(out, "Karma Preferences");
 
-				logger.info("Karma preferences written to " + getConfigurationDirectoryAsString());
+					logger.info("Karma preferences written to " + getConfigurationDirectoryAsString());
 
-			} catch (IOException e) {
-				logger.error("Could not write preferences to " + getConfigurationDirectoryAsString());
-			}
-			finally {
-				if (out != null) {
-					try {
-						out.close();
-					}
-					catch (IOException e) {
-						// ignore
+				} catch (IOException e) {
+					logger.error("Could not write preferences to " + getConfigurationDirectoryAsString());
+				}
+				finally {
+					if (out != null) {
+						try {
+							out.close();
+						}
+						catch (IOException e) {
+							// ignore
+						}
 					}
 				}
 			}
-//			}
 		}
 	}
 
@@ -360,28 +356,26 @@ public final class Preferences {
 	 */
 	private void load(String configDir) {
 
-//		if (COMMAND_LINE_MODE) {
-		FileInputStream in = null;
-		try {
-			in = new FileInputStream(new File(configDir, "preferences"));
-			values.load(in);
-		}
-		catch (IOException e) {
-			logger.info("No preferences could be found. Ignoring ...");
-		}
-		finally {
-			if (in != null) {
-				try {
-					in.close();
-				}
-				catch (IOException e) {
-					logger.info("No preferences could be found. Ignoring ...");
+		if (!TESTMODE) {
+			FileInputStream in = null;
+			try {
+				in = new FileInputStream(new File(configDir, "preferences"));
+				values.load(in);
+			}
+			catch (IOException e) {
+				logger.info("No preferences could be found. Ignoring ...");
+			}
+			finally {
+				if (in != null) {
+					try {
+						in.close();
+					}
+					catch (IOException e) {
+						logger.info("No preferences could be found. Ignoring ...");
+					}
 				}
 			}
 		}
-//		} else {
-//			logger.info("NOT in COMMAND_LINE_MODE");
-//		}
 	}
 
 	/**

@@ -26,7 +26,7 @@ public interface Runner {
 	 * @param fileName The filename of the file that should be added to the version control system repository.
 	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>.
 	 */
-	public CommandResponse add(Module module, String fileName);
+	public CommandResponse add(Module module, String fileName) throws VersionControlException;
 
 	/**
 	 * Checks out a module from a version control system.

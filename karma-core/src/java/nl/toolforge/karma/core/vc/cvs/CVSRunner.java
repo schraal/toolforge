@@ -52,7 +52,7 @@ public final class CVSRunner implements Runner {
 
 	private GlobalOptions globalOptions = new GlobalOptions();
 	private Client client = null;
-	private CVSResponseAdapter adapter = new CVSResponseAdapter();
+//	private CVSResponseAdapter adapter = new CVSResponseAdapter();
 
 	/**
 	 * Constructs a runner to fire commands on a CVS repository. A typical client for a <code>CVSRunner</code> instance is
@@ -78,10 +78,6 @@ public final class CVSRunner implements Runner {
 		client = new Client( cvsLocation.getConnection(), new StandardAdminHandler());
 		client.setLocalPath(contextDirectory.getPath());
 
-		// A CVSResponseAdapter is registered as a listener for the response from CVS. This one adapts to Karma
-		// specific stuff.
-		//
-		client.getEventManager().addCVSListener(adapter);
 
 		logger.debug("CVSRunner using CVSROOT : " + cvsLocation.toString());
 		globalOptions.setCVSRoot(cvsLocation.getCVSRootAsString());
@@ -128,7 +124,7 @@ public final class CVSRunner implements Runner {
 		//
 		client.setLocalPath(moduleInfo.getParent());
 
-		executeOnCVS(importCommand, null);
+		CVSResponseAdapter adapter = executeOnCVS(importCommand, null);
 
 		// Remove the temporary structure.
 		//
@@ -152,7 +148,7 @@ public final class CVSRunner implements Runner {
 		checkoutCommand.setModule(module.getName());
 		checkoutCommand.setPruneDirectories(true);
 
-		executeOnCVS(checkoutCommand, null);
+		CVSResponseAdapter adapter = executeOnCVS(checkoutCommand, null);
 
 		if (adapter.hasStatus(CVSResponseAdapter.MODULE_NOT_FOUND)) {
 			throw new CVSException(CVSException.NO_SUCH_MODULE_IN_REPOSITORY, new Object[]{module.getName(), module.getLocation().getId()});
@@ -173,7 +169,7 @@ public final class CVSRunner implements Runner {
 		updateCommand.setRecursive(true);
 		updateCommand.setPruneDirectories(true);
 
-		executeOnCVS(updateCommand, module.getName());
+		CVSResponseAdapter adapter = executeOnCVS(updateCommand, module.getName());
 
 		return adapter;
 	}
@@ -197,7 +193,7 @@ public final class CVSRunner implements Runner {
 	 *
 	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
 	 */
-	public CommandResponse add(Module module, String fileName) {
+	public CommandResponse add(Module module, String fileName) throws CVSException {
 
 		// Step 1 : Add the file to the CVS repository
 		//
@@ -223,7 +219,11 @@ public final class CVSRunner implements Runner {
 		CommitCommand commitCommand = new CommitCommand();
 		commitCommand.setFiles(new File[]{fileToAdd});
 
-		executeOnCVS(commitCommand, null);
+		CVSResponseAdapter adapter = executeOnCVS(commitCommand, null);
+
+		if (adapter.hasStatus(CVSResponseAdapter.FILE_EXISTS)) {
+			throw new CVSException(CVSException.FILE_EXISTS_IN_REPOSITORY, new Object[]{module.getName(), module.getLocation().getId()});
+		}
 
 		return adapter;
 	}
@@ -273,21 +273,33 @@ public final class CVSRunner implements Runner {
 	 * @param command The Netbeans Command implementation.
 	 * @param contextDirectory The directory relative to Client.getLocalPath(), required by some commands.
 	 */
-	private void executeOnCVS(org.netbeans.lib.cvsclient.command.Command command, String contextDirectory) {
+	private CVSResponseAdapter executeOnCVS(org.netbeans.lib.cvsclient.command.Command command, String contextDirectory) {
 
-		try {
+    try {
 
 			if (contextDirectory != null) {
 				client.setLocalPath(client.getLocalPath() + File.separator + contextDirectory);
 			}
 			logger.debug("CVS command " + command.getCVSCommand() + " in " + client.getLocalPath());
+
+			CVSResponseAdapter adapter = new CVSResponseAdapter();
+
+			// A CVSResponseAdapter is registered as a listener for the response from CVS. This one adapts to Karma
+			// specific stuff.
+			//
+			client.getEventManager().addCVSListener(adapter);
+
 			client.executeCommand(command, globalOptions);
+
+			return adapter;
 
 		} catch (CommandException e) {
 			e.printStackTrace(); // todo throw exception
 		} catch (AuthenticationException e) {
 			e.printStackTrace(); // todo throw exception
 		}
+
+		return null; // Either the adapter has been returned, or we got an exception.
 	}
 
 	/**
@@ -296,6 +308,7 @@ public final class CVSRunner implements Runner {
 	 * return.
 	 */
 	private boolean existsInRepository(Module module) {
+
 
 		if (module == null) {
 			throw new NullPointerException("Module should not be null.");

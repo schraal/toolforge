@@ -30,10 +30,9 @@
         <root type="simple" url="jar:///home/asmedes/.maven/repository/commons-logging/jars/commons-logging-1.0.3.jar!/" />
         <root type="simple" url="jar:///home/asmedes/.maven/repository/log4j/jars/log4j-1.2.8.jar!/" />
         <root type="simple" url="jar:///home/asmedes/.maven/repository/netbeans/jars/netbeans-cvs-beta3.6.jar!/" />
-        <root type="simple" url="file://$PROJECT_DIR$/karma-core/resources" />
-        <root type="simple" url="file://$PROJECT_DIR$/karma-core/resources/test" />
         <root type="simple" url="file://$PROJECT_DIR$/karma-cli/resources" />
         <root type="simple" url="jar:///home/asmedes/.maven/repository/commons-cli/jars/commons-cli-1.0.jar!/" />
+        <root type="simple" url="file://$PROJECT_DIR$/karma-core/resources" />
       </root>
     </classPath>
     <excludePath>

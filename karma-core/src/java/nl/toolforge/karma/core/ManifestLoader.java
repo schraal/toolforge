@@ -266,6 +266,10 @@ public final class ManifestLoader {
 		}
 	}
 
+	// Strips a path and uses it for future reference.
+	//
+	private String path = "";
+
 	/**
 	 * Local helper method to get the manifest file from the correct resource path.
 	 */
@@ -274,13 +278,21 @@ public final class ManifestLoader {
 		try {
 			String fileName = (id.endsWith(".xml") ? id : id.concat(".xml"));
 
+			if (fileName.endsWith(File.separator)) {
+				fileName = fileName.substring(0, fileName.length() - 1);
+			}
+			if (fileName.lastIndexOf(File.separator) > 0) {
+				path = fileName.substring(0, fileName.lastIndexOf(File.separator));
+			}
+			fileName = fileName.substring(fileName.lastIndexOf(File.separator) + 1);
+
 			if (classLoader == null) {
 				logger.debug("Loading manifest " + fileName + " from file-system ...");
 				return new FileInputStream(prefs.getManifestStore().getPath() + File.separator + fileName);
 			} else {
-				logger.debug("Loading manifest " + fileName + " from file-system ...");
+				logger.debug("Loading manifest " + fileName + " from classpath ...");
 
-				InputStream inputStream = classLoader.getResourceAsStream(fileName);
+				InputStream inputStream = classLoader.getResourceAsStream(path + File.separator + fileName);
 
 				if (inputStream == null) {
 					throw new ManifestException(ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[]{id});

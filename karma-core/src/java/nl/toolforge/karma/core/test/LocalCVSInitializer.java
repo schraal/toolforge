@@ -50,7 +50,7 @@ public class LocalCVSInitializer extends BaseTest {
 
     try {
       Properties props = new Properties();
-      props.load(getClass().getClassLoader().getResourceAsStream("test-cvs.properties"));
+      props.load(getClass().getClassLoader().getResourceAsStream("test/test-cvs.properties"));
       localPath = props.getProperty("cvs.local.path");
 
       logger.debug("cvs.local.path = " + localPath);

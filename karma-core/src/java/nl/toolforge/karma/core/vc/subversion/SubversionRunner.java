@@ -28,7 +28,7 @@ public final class SubversionRunner implements Runner {
     return null;
   }
 
-	public CommandResponse add(Module module, String fileName) {
+	public CommandResponse add(Module module, String fileName) throws SVNException {
 		return null;
 	}
 

@@ -16,7 +16,6 @@ public class TestPreferences extends BaseTest {
 	public void testGetDevelopmentHome() {
 
     Preferences prefs = Preferences.getInstance();
-
 		try {
 			assertEquals(prefs.getDevelopmentHome(), new File(prefs.get("development.home")));
 		} catch (KarmaException e) {

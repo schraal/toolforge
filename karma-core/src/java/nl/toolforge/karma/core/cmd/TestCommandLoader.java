@@ -19,7 +19,7 @@ public class TestCommandLoader extends BaseTest {
     CommandLoader cl = CommandLoader.getInstance();
 
     try {
-      Set l = cl.load("commands-example.xml");
+      Set l = cl.load("test/commands-example.xml");
 
       assertEquals("There should be two commands loaded from the descriptor file", 2, l.size());
 
@@ -59,7 +59,7 @@ public class TestCommandLoader extends BaseTest {
     CommandLoader cl = CommandLoader.getInstance();
 
     try {
-      Set l = cl.load("commands-example.xml");
+      Set l = cl.load("test/commands-example.xml");
 
       CommandDescriptor descriptor = null;
       if (l.iterator().hasNext()) {

@@ -27,16 +27,15 @@ public class BaseTest extends TestCase {
 
     // Overrides karma.properties for Junit testing.
     //
-    System.setProperty(Preferences.BOOTSTRAP_CONFIGURATION_FILE_PROPERTY, "karma.properties");
+    System.setProperty(Preferences.BOOTSTRAP_CONFIGURATION_FILE_PROPERTY, "test/test-karma.properties");
 
     // Initialize the LocationFactory
     //
-
     try {
       LocationFactory locationFactory = LocationFactory.getInstance();
       locationFactory.load(
-        getClass().getClassLoader().getResourceAsStream("locations.xml"),
-        getClass().getClassLoader().getResourceAsStream("location-authentication.xml")
+        getClass().getClassLoader().getResourceAsStream("test/locations.xml"),
+        getClass().getClassLoader().getResourceAsStream("test/location-authentication.xml")
       );
 
     } catch (KarmaException e) {

@@ -108,16 +108,16 @@
 				<include>**/Test*.java</include>
 			</includes>
 
-			<resources>
-				<resource>
-					<directory>resources/test</directory>
-					<includes>
-						<include>**/*.xml</include>
-						<include>**/*.dtd</include>
-						<include>**/*.properties</include>
-					</includes>
-				</resource>
-			</resources>
+<!--			<resources>-->
+<!--				<resource>-->
+<!--					<directory>resources/test</directory>-->
+<!--					<includes>-->
+<!--						<include>**/*.xml</include>-->
+<!--						<include>**/*.dtd</include>-->
+<!--						<include>**/*.properties</include>-->
+<!--					</includes>-->
+<!--				</resource>-->
+<!--			</resources>-->
 
 		</unitTest>
 

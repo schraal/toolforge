@@ -18,17 +18,20 @@ import org.netbeans.lib.cvsclient.event.*;
  */
 public final class CVSResponseAdapter extends CommandResponse implements CVSListener {
 
-	/** File has succesfully been added to the CVS repository */
+	/** File has succesfully been added to the CVS repository. */
 	public static final Integer FILE_ADDED_OK = new Integer(0);
 
-	/** File has succesfully been removed from the CVS repository */
+	/** File has succesfully been removed from the CVS repository. */
 	public static final Integer FILE_REMOVED_OK = new Integer(1);
 
-	/** Module has succesfully been updated from CVS */
+	/** Module has succesfully been updated from CVS. */
 	public static final Integer MODULE_UPDATED_OK = new Integer(2);
 
-	/** The module does not exist in the CVS repository */
+	/** The module does not exist in the CVS repository. */
 	public static final Integer MODULE_NOT_FOUND = new Integer(3);
+
+	/** File already exists in the CVS repository. */
+	public static final Integer FILE_EXISTS = new Integer(4);
 
 	private FileInfoContainer logInformation = null;
 
@@ -170,8 +173,19 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
 			}
 		}
 
-		logger.debug("MessageEvent from CVS : " + event.getMessage());
+		if (message.startsWith("cvs add:") && message.indexOf("already exists") > 0) {
 
+			// TODO Localize message; guess this is handled by calling class ...
+			String messageText = "File already exists in repository.";
+
+			addMessage(new CVSCommandMessage(messageText));
+
+			if (!hasStatus(FILE_EXISTS)) {
+				try { addStatusUpdate(FILE_EXISTS); } catch (CommandException e) { } // Ignore
+			}
+		}
+
+		logger.debug("MessageEvent from CVS : " + event.getMessage());
 	}
 
 }

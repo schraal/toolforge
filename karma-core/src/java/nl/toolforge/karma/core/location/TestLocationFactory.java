@@ -18,8 +18,8 @@ public class TestLocationFactory extends TestCase {
 
 		try {
  			factory.load(
-        getClass().getClassLoader().getResourceAsStream("locations.xml"),
-        getClass().getClassLoader().getResourceAsStream("location-authentication.xml")
+        getClass().getClassLoader().getResourceAsStream("test/locations.xml"),
+        getClass().getClassLoader().getResourceAsStream("test/location-authentication.xml")
       );
 
 			assertNotNull(factory.get("local-test"));
