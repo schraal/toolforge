@@ -64,8 +64,7 @@
 				<li>
 					A configuration directory <code>$HOME/.karma</code> should be created.
 					The <code>LocalEnvironment</code> class will create this one upon instantiation,
-					with the default configuration, if you don't supply one. <b>check whether this is true,
-					that this information is shown to the user and that this mechanism is up-to-date</b>
+					with the default configuration, if you don't supply one.
 				 </li>
 				<li>
 					Create a <code>karma.properties</code> file in that directory and configure
@@ -79,77 +78,77 @@
 						</tr>
 						<tr>
 							<td><code>development.store</code></td>
-							<td></td>
+							<td>This is the location on disk where Karma checks out the source code of your projects</td>
 							<td><code>$HOME/karma/projects</code> (default value)</td>
 						</tr>
 						<tr>
 							<td><code>manifest.store</code></td>
-							<td></td>
+							<td>This is the location on disk where Karma checks out the manifests.</td>
 							<td><code>$HOME/karma/manifests</code> (default value)</td>
 						</tr>
 						<tr>
 							<td><code>location.store</code></td>
-							<td></td>
+							<td>This is the location on disk where Karma checks out the locations.</td>
 							<td><code>$HOME/karma/locations</code> (default value)</td>
 						</tr>
 						<tr>
 							<td><code>manifest-store.cvs.host</code></td>
-							<td></td>
+							<td>The name of the CVS server that contains the manifests.</td>
 							<td>Check with your administrator.</td>
 						</tr>
 						<tr>
 							<td><code>manifest-store.cvs.port</code></td>
-							<td></td>
+							<td>The port of the CVS server that contains the manifests.</td>
 							<td>Check with your administrator.</td>
 						</tr>
 						<tr>
 							<td><code>manifest-store.cvs.repository</code></td>
-							<td></td>
+							<td>The name of the repository that contains the manifests.</td>
 							<td>Check with your administrator.</td>
 						</tr>
 						<tr>
 							<td><code>manifest-store.cvs.protocol</code></td>
-							<td></td>
+							<td>The protocol to use when contacting the CVS server that contains the manifests.</td>
 							<td>Check with your administrator.</td>
 						</tr>
 						<tr>
 							<td><code>manifest-store.cvs.username</code></td>
-							<td></td>
+							<td>The username to use when contacting the CVS server that contains the manifests.</td>
 							<td>Check with your administrator.</td>
 						</tr>
 						<tr>
 							<td><code>manifest-store.cvs.password</code></td>
-							<td></td>
+							<td>The password to use when contacting the CVS server that contains the manifests.</td>
 							<td>Check with your administrator.</td>
 						</tr>
 						<tr>
 							<td><code>location-store.cvs.host</code></td>
-							<td></td>
+							<td>The name of the CVS server that contains the locations.</td>
 							<td>Check with your administrator.</td>
 						</tr>
 						<tr>
 							<td><code>location-store.cvs.port</code></td>
-							<td></td>
+							<td>The port of the CVS server that contains the locations.</td>
 							<td>Check with your administrator.</td>
 						</tr>
 						<tr>
 							<td><code>location-store.cvs.repository</code></td>
-							<td></td>
+							<td>The name of the repository that contains the locations.</td>
 							<td>Check with your administrator.</td>
 						</tr>
 						<tr>
 							<td><code>location-store.cvs.protocol</code></td>
-							<td></td>
+							<td>The protocol to use when contacting the CVS server that contains the locations.</td>
 							<td>Check with your administrator.</td>
 						</tr>
 						<tr>
 							<td><code>location-store.cvs.username</code></td>
-							<td></td>
+							<td>The username to use when contacting the CVS server that contains the locations.</td>
 							<td>Check with your administrator.</td>
 						</tr>
 						<tr>
 							<td><code>location-store.cvs.password</code></td>
-							<td></td>
+							<td>The password to use when contacting the CVS server that contains the locations.</td>
 							<td>Check with your administrator.</td>
 						</tr>
 					</table>
