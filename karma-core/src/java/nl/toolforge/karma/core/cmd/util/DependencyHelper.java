@@ -74,15 +74,29 @@ public final class DependencyHelper {
   }
 
   /**
-   * Gets a <code>Set</code> of <code>String</code>s, each one identifying the path to a module dependency (a
-   * dependency of <code>module</code> to another <code>Module</code>. The paths returned as <code>String</code>s in
-   * the set returned are relative to relative to {@link BuildEnvironment#getBuildRootDirectory()}
+   * Gets a <code>Set</code> of <code>String</code>s, each one identifying the absolute path to a module dependency.
+   * See {@link DependencyHelper#getModuleDependencies(Module, boolean)}
    *
    * @param module The module for which a dependency-path should be determined.
    * @return See method description.
    * @throws DependencyException When a dependency for a module is not available.
    */
   public Set getModuleDependencies(Module module) throws ModuleTypeException, DependencyException {
+    return getModuleDependencies(module, false);
+  }
+
+  /**
+   * Gets a <code>Set</code> of <code>String</code>s, each one identifying the path to a module dependency (a
+   * dependency of <code>module</code> to another <code>Module</code>. The paths returned as <code>String</code>s in
+   * the set returned are relative to {@link BuildEnvironment#getBuildRootDirectory()} or are absolute paths,
+   * depending on the <code>relative</code> parameter.
+   *
+   * @param module The module for which a dependency-path should be determined.
+   * @param relative  Whether or not the paths are relative
+   * @return See method description.
+   * @throws DependencyException When a dependency for a module is not available.
+   */
+  public Set getModuleDependencies(Module module, boolean relative) throws ModuleTypeException, DependencyException {
 
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
@@ -99,20 +113,32 @@ public final class DependencyHelper {
 
         File dependencyJar = null;
         try {
-          File moduleBuildRoot = new File(env.getBuildRootDirectory(), dep.getModule());
-          dependencyJar = new File(moduleBuildRoot, resolveArchiveName(manifest.getModule(dep.getModule())));
+          dependencyJar = new File(dep.getModule(), resolveArchiveName(manifest.getModule(dep.getModule())));
         } catch (ManifestException e) {
           throw new DependencyException(e.getErrorCode(), e.getMessageArguments());
         }
 
-        if (!dependencyJar.exists()) {
+        File dependencyJarLocation = new File(env.getBuildRootDirectory(), dependencyJar.getPath());
+        if (!dependencyJarLocation.exists()) {
           throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getModule()});
         }
+        if (relative) {
+          s.add(dependencyJar.getPath());
+        } else {
+          s.add(dependencyJarLocation.getPath());
+        }
 
-        s.add(dependencyJar.getPath());
       }
     }
     return s;
+  }
+
+
+  /**
+   * See {@link #getJarDependencies(Module, boolean)}. This method returns a set with the absolute pathnames.
+   */
+  public Set getJarDependencies(Module module) throws DependencyException {
+    return getJarDependencies(module, false);
   }
 
 
@@ -169,14 +195,6 @@ public final class DependencyHelper {
     }
     return s;
   }
-
-  /**
-   * See {@link #getJarDependencies(Module, boolean)}. This method returns a set with the absolute pathnames.
-   */
-  public Set getJarDependencies(Module module) throws DependencyException {
-    return getJarDependencies(module, false);
-  }
-
 
   /**
    * <p>Determines the correct artifact name for <code>module</code>. The artifact-name is determined as follows:

@@ -270,8 +270,8 @@ e.printStackTrace();
       // Copy dependencies
       //
 
-      Set moduleDeps = helper.getModuleDependencies(getCurrentModule());
-      Set jarDeps = helper.getJarDependencies(getCurrentModule());
+      Set moduleDeps = helper.getModuleDependencies(getCurrentModule(), true);
+      Set jarDeps = helper.getJarDependencies(getCurrentModule(), true);
 
       if (moduleDeps.size() > 0 || jarDeps.size() > 0) {
 
@@ -284,7 +284,7 @@ e.printStackTrace();
         //
         if (moduleDeps.size() > 0) {
           fileSet = new FileSet();
-          fileSet.setDir(getBuildEnvironment().getModuleBuildDirectory());
+          fileSet.setDir(getBuildEnvironment().getBuildRootDirectory());
           fileSet.setIncludes(CollectionUtil.concat(moduleDeps, ','));
           copy.addFileset(fileSet);
         }
@@ -408,7 +408,6 @@ e.printStackTrace();
       FileSet fileSet = new FileSet();
       fileSet.setDir(getCurrentModule().getBaseDir());
       fileSet.setIncludes("META-INF/**");
-      fileSet.setExcludes("META-INF/application.xml");
 
       // Filtering
       //
@@ -452,6 +451,7 @@ e.printStackTrace();
       ear.setProject(getProjectInstance());
       ear.setDestFile(packageName);
       ear.setBasedir(getBuildEnvironment().getModulePackageDirectory());
+      ear.setExcludes("META-INF/application.xml");
       ear.setAppxml(new File(getBuildEnvironment().getModulePackageDirectory(), "META-INF/application.xml".replace('/', File.separatorChar)));
 
       ear.execute();

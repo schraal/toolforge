@@ -137,6 +137,7 @@ public class TestModule extends AbstractBuildCommand {
     try {
       project.executeTarget("run");
     } catch (BuildException e) {
+e.printStackTrace();
       throw new CommandException(CommandException.TEST_FAILED, new Object[] {getCurrentModule().getName()});
     }
 
