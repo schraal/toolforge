@@ -3,7 +3,7 @@
 <project>
 
 	<pomVersion>3</pomVersion>
-	<name>Karma Command Line Interface Module</name>
+	<name>Karma CLI  Module</name>
 	<id>karma-cli</id>
 	<currentVersion>2.0-dev</currentVersion>
 	<organization>
@@ -38,34 +38,10 @@
 			<version>1.0</version>
 		</dependency>
 
-<!--		<dependency>-->
-<!--			<groupId>commons-lang</groupId>-->
-<!--			<artifactId>commons-lang</artifactId>-->
-<!--			<version>1.0.1</version>-->
-<!--		</dependency>-->
-<!---->
-<!--		<dependency>-->
-<!--			<groupId>commons-collections</groupId>-->
-<!--			<artifactId>commons-collections</artifactId>-->
-<!--			<version>2.1</version>-->
-<!--		</dependency>-->
-<!---->
-<!--		<dependency>-->
-<!--			<groupId>commons-digester</groupId>-->
-<!--			<artifactId>commons-digester</artifactId>-->
-<!--			<version>1.5</version>-->
-<!--		</dependency>-->
-<!---->
-<!--		<dependency>-->
-<!--			<groupId>commons-beanutils</groupId>-->
-<!--			<artifactId>commons-beanutils</artifactId>-->
-<!--			<version>1.6.1</version>-->
-<!--		</dependency>-->
-
 		<dependency>
-			<groupId>xerces</groupId>
-			<artifactId>xercesImpl</artifactId>
-			<version>2.3.0</version>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>1.0.1</version>
 		</dependency>
 
 		<dependency>
