@@ -82,9 +82,7 @@
 	<build>
 
 		<sourceDirectory>src/java/</sourceDirectory>
-		<unitTestSourceDirectory>src/java</unitTestSourceDirectory>
-
-		<integrationUnitTestSourceDirectory/>
+<!--		<unitTestSourceDirectory>src/java</unitTestSourceDirectory>-->
 
 <!--		<unitTest>-->
 <!--			<includes>-->
