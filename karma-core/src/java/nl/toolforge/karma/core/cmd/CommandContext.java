@@ -25,6 +25,7 @@ import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
+import nl.toolforge.karma.core.cmd.event.ManifestChangedEvent;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.manifest.Manifest;
@@ -62,12 +63,13 @@ public final class CommandContext implements ChangeListener {
   private static final Log logger = LogFactory.getLog(CommandContext.class);
 
   private Manifest currentManifest;
-  private CommandResponseHandler responseHandler;
   private Map modificationMap = new HashMap();
 
   private static ListenerManager manager;
 
+  private CommandResponseHandler handler = null;
   private WorkingContext workingContext = null;
+  private CommandResponse commandResponse = null;
 
   /**
    * Constructs a <code>CommandContext</code>, in which commands are run.
@@ -92,7 +94,13 @@ public final class CommandContext implements ChangeListener {
     if (handler == null) {
       throw new IllegalArgumentException("CommandResponseHandler may not be null, you lazy bitch.");
     }
-    responseHandler = handler;
+
+    // todo dit response mechanisme moet wel op de kop in R2.0
+    //
+    commandResponse = new ActionCommandResponse();
+    commandResponse.addCommandResponseListener(handler);
+
+    this.handler = handler;
 
     // Update the manifest-store.
     //
@@ -252,8 +260,7 @@ public final class CommandContext implements ChangeListener {
         String message = "\nManifest " + getCurrentManifest().getName() + " has changed on disk. Reloaded automatically.\n";
         logger.info(message);
 
-        responseHandler.commandResponseChanged(new CommandResponseEvent(new SuccessMessage(message)));
-        responseHandler.commandResponseFinished(null);
+        commandResponse.addMessage(new SuccessMessage(message));
 
         return;
       }
@@ -264,6 +271,8 @@ public final class CommandContext implements ChangeListener {
       //
       managed = false;
       manager.suspendListener(this);
+
+      commandResponse.addMessage(new ManifestChangedEvent(null));
 
       logger.error(new ErrorMessage(m.getErrorCode()).getMessageText());
 
@@ -366,12 +375,12 @@ public final class CommandContext implements ChangeListener {
     // Store a reference to this context in the command
     //
     command.setContext(this);
-    command.registerCommandResponseListener(responseHandler);
+    command.registerCommandResponseListener(handler);
     // Register the response handler with this context, so commands have a reference to it.
     //
     //todo what happens when an exception occurs in the execute wrt deregister?
     command.execute();
-    command.deregisterCommandResponseListener(responseHandler);
+    command.deregisterCommandResponseListener(handler);
     command.cleanUp();
   }
   /**

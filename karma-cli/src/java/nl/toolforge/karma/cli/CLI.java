@@ -40,6 +40,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Calendar;
 
 /**
  * <p>The <code>CLI</code> is the command-line interface for Karma. The class presents a simple-to-use command-line
@@ -61,7 +62,7 @@ public final class CLI {
 
   private String lastLine = "";
   private boolean immediate = true;
-  private ConsoleWriter writer = new ConsoleWriter(true);
+  private Manifest manifest = null;
   private WorkingContext workingContext = null;
 
   public CLI() {}
@@ -90,18 +91,18 @@ public final class CLI {
 
         if (immediate) {
 
-          ConsoleWriter writer = new ConsoleWriter(true);
+//          ConsoleWriter writer = new ConsoleWriter(true);
           String text = FRONTEND_MESSAGES.getString("message.THANK_YOU");
           int length = text.length();
 
-          writer.writeln(FRONTEND_MESSAGES.getString("message.EXIT"));
+          writeln(FRONTEND_MESSAGES.getString("message.EXIT"));
 
           StringBuffer g = new StringBuffer();
           g.append("\n\n").append(StringUtils.repeat("*", length));
           g.append("\n").append(text).append("\n");
           g.append(StringUtils.repeat("*", length)).append("\n");
 
-          writer.writeln(g.toString());
+          writeln(g.toString());
         }
       }
     });
@@ -118,56 +119,58 @@ public final class CLI {
     //
     CommandContext commandContext = null;
 
-    writer.writeln(
+    writeln(
         "********************\n" +
         "Welcome to Karma !!!\n" +
         "********************\n");
 
     if (workingContextName == null) {
-      writer.writeln("Loading working context `default` ...");
+      writeln("Loading working context `default` ...");
     } else {
-      writer.writeln("Loading working context `" + workingContextName + "` ...");
+      writeln("Loading working context `" + workingContextName + "` ...");
     }
 
     workingContext = new WorkingContext(workingContextName);
 
-    writer.writeln("Checking manifest store configuration ...");
+    writeln("Checking manifest store configuration ...");
     checkConfiguration("MANIFEST-STORE");
-    writer.writeln("Complete ...");
+    writeln("Complete ...");
 
-    writer.writeln("Checking location store configuration ...");
+    writeln("Checking location store configuration ...");
     checkConfiguration("LOCATION-STORE");
-    writer.writeln("Complete ...");
+    writeln("Complete ...");
 
-    writer.writeln("Starting up ...\n");
+    writeln("Configuration can be updated in `" + workingContext.getWorkingContextConfigDir() + "`");
+
+    writeln("\nStarting up ...\n");
 
     //
     //
 
     commandContext = new CommandContext(workingContext);
     try {
-      commandContext.init(new CLICommandResponseHandler(writer));
+      commandContext.init(new CLICommandResponseHandler(this));
     } catch (LocationException e) {
-      writer.writeln(e.getErrorMessage());
+      writeln(e.getErrorMessage());
       logger.error(e.getMessage(), e);
     } catch (ManifestException e) {
-      writer.writeln(e.getErrorMessage());
+      writeln(e.getErrorMessage());
       logger.warn(e.getMessage(), e);
     }
 
 
     Manifest currentManifest = commandContext.getCurrentManifest();
     if (currentManifest != null) {
-      ConsoleConfiguration.setManifest(currentManifest);
+      manifest = currentManifest;
 
-      writer.writeln(new MessageFormat(FRONTEND_MESSAGES.getString("message.MANIFEST_RESTORED")).format(new Object[]{currentManifest.getName()}));
+      writeln(new MessageFormat(FRONTEND_MESSAGES.getString("message.MANIFEST_RESTORED")).format(new Object[]{currentManifest.getName()}));
     }
 
     String karmaHome = System.getProperty("karma.home");
     if (karmaHome == null) {
-      writer.writeln("Property 'karma.home' not set; logging will be written to " + System.getProperty("user.home") + File.separator + "logs.");
+      writeln("Property 'karma.home' not set; logging will be written to " + System.getProperty("user.home") + File.separator + "logs.");
     } else {
-      writer.writeln("Logging will be written to " + System.getProperty("karma.home") + File.separator + "logs.");
+      writeln("Logging will be written to " + System.getProperty("karma.home") + File.separator + "logs.");
     }
 
     try {
@@ -178,7 +181,7 @@ public final class CLI {
 
       while (true) {
 
-        writer.prompt();
+        prompt();
 
         String line = null;
         if (reader != null || reader.readLine() != null) {
@@ -191,7 +194,7 @@ public final class CLI {
 
         if ("[A".equals(line)) {
           line = lastLine;
-          writer.writeln(line);
+          writeln(line);
         } else {
           lastLine = line;
         }
@@ -199,7 +202,7 @@ public final class CLI {
         try {
           commandContext.execute(line);
         } catch (CommandException e) {
-          writer.writeln("");
+          writeln("");
           //ugly way to format the messages. There is going to be a more elegant
           //solution for this.
           String message;
@@ -209,7 +212,7 @@ public final class CLI {
           } else {
             message = e.getErrorMessage();
           }
-          writer.writeln(message);
+          writeln(message);
           logger.error(e.getMessage(), e);
         }
       }
@@ -270,6 +273,32 @@ public final class CLI {
       throw new KarmaRuntimeException(e.getMessage());
     }
 
+  }
+
+  /**
+   * Gets the default prompt, constructed as follows : <code>HH:MM:SS [ Karma ]</code>
+   */
+  public String getPrompt() {
+
+    Calendar now = Calendar.getInstance();
+
+    String end = (manifest == null ? "Karma" : manifest.getName());
+    return
+        StringUtils.leftPad("" + now.get(Calendar.HOUR_OF_DAY) , 2, "0") + ":" +
+        StringUtils.leftPad("" + now.get(Calendar.MINUTE) , 2, "0") + ":" +
+        StringUtils.leftPad("" + now.get(Calendar.SECOND) , 2, "0") + " [ " + end + " ] > ";
+  }
+
+  public  void writeln(String text) {
+    System.out.println(text);
+  }
+
+  public void prompt() {
+    System.out.print(getPrompt());
+  }
+
+  public void setManifest(Manifest manifest) {
+    this.manifest = manifest;
   }
 
 }

@@ -25,6 +25,7 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.event.ManifestChangedEvent;
 import nl.toolforge.karma.core.cmd.impl.SelectManifest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,7 +53,7 @@ public class SelectManifestImpl extends SelectManifest {
     //
     super.execute(); // Ignore the response from the superclass
 
-		ConsoleConfiguration.setManifest(getContext().getCurrentManifest());
+    getCommandResponse().addMessage(new ManifestChangedEvent(getSelectedManifest()));
 
 		CommandMessage message =
         new SuccessMessage(

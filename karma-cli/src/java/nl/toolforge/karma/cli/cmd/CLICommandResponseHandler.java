@@ -20,7 +20,12 @@ package nl.toolforge.karma.cli.cmd;
 
 import nl.toolforge.karma.core.cmd.CommandResponseHandler;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
+import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.cli.ConsoleWriter;
+import nl.toolforge.karma.cli.CLI;
+
+import java.io.OutputStream;
+import java.io.PrintStream;
 
 /**
  * This class is responsible for handling CommandResponses in an interactive way.
@@ -30,22 +35,23 @@ import nl.toolforge.karma.cli.ConsoleWriter;
  */
 public class CLICommandResponseHandler implements CommandResponseHandler {
 
-  private ConsoleWriter writer = null;
+  private CLI cli = null;
 
-  public CLICommandResponseHandler(ConsoleWriter writer) {
-    this.writer = writer;
+  public CLICommandResponseHandler(CLI cli) {
+    this.cli = cli;
   }
 
-  public void commandHeartBeat() {
-    writer.showProgress();
-  }
+  public void commandHeartBeat() {}
 
   public void commandResponseChanged(CommandResponseEvent event) {
-    writer.writeln(event.getEventMessage().getMessageText());
+    cli.writeln(event.getEventMessage().getMessageText());
   }
 
   public void commandResponseFinished(CommandResponseEvent event) {
-    writer.prompt();
+    cli.writeln("");
   }
 
+  public void manifestChanged(Manifest manifest) {
+    cli.setManifest(manifest);
+  }
 }

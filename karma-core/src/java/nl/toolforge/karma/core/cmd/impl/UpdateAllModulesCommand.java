@@ -33,6 +33,7 @@ import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.cmd.threads.ParallelCommandWrapper;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 
 /**
@@ -53,6 +54,10 @@ public class UpdateAllModulesCommand extends CompositeCommand {
   }
 
   public void commandResponseFinished(CommandResponseEvent event) {
+    // hmmm
+  }
+
+  public void manifestChanged(Manifest manifest) {
     // hmmm
   }
 

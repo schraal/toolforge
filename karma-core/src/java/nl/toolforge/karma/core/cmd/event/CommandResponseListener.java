@@ -18,6 +18,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.event;
 
+import nl.toolforge.karma.core.manifest.Manifest;
+
 /**
  * When CommandResponses change, classes that implement this interface (and register themselves)
  * recieve a CommandResponseEvent.
@@ -42,4 +44,5 @@ public interface CommandResponseListener {
    */
   public void commandResponseFinished(CommandResponseEvent event);
 
+  public void manifestChanged(Manifest manifest);
 }

@@ -205,4 +205,8 @@ public class CreateRelease extends CompositeCommand {
   public void commandResponseChanged(CommandResponseEvent event) {
     //
   }
+
+  public void manifestChanged(Manifest manifest) {
+
+  }
 }
