@@ -52,21 +52,16 @@ public final class CommandFactory {
     Set descriptors = CommandLoader.getInstance().load();
     commandsByName = new TreeMap();
     commandsByAlias = new TreeMap();
+    commandNames = new HashSet();
 
     // Store all commands by name in a hash
+    // Create a set of all command names.
     //
     for (Iterator i = descriptors.iterator(); i.hasNext();) {
       CommandDescriptor descriptor = (CommandDescriptor) i.next();
 
       commandsByName.put(descriptor.getName(), descriptor);
       commandsByAlias.put(descriptor.getAlias(), descriptor);
-    }
-
-    // Create a set of all command names.
-    //
-    commandNames = new HashSet();
-    for (Iterator i = descriptors.iterator(); i.hasNext();) {
-      CommandDescriptor descriptor = (CommandDescriptor) i.next();
       commandNames.add(descriptor.getName());
       commandNames.add(descriptor.getAlias());
     }
