@@ -260,9 +260,8 @@ public class PackageModule extends AbstractBuildCommand {
       copy.setIncludeEmptyDirs(false);
 
       fileSet = new FileSet();
-      fileSet.setDir(getCurrentModule().getBaseDir());
+      fileSet.setDir(new File(getCurrentModule().getBaseDir(), "contents"));
       fileSet.setIncludes("**/*");
-      fileSet.setExcludes("history.xml,module-descriptor.xml,.*");
 
       copy.addFileset(fileSet);
       target.addTask(copy);
