@@ -11,13 +11,13 @@ import nl.toolforge.core.util.file.MyFileUtils;
 
 public class TestLocalEnvironment extends TestCase {
 
-  private File f1;
-  private File f2;
-  private File f3;
-  private Properties p;
-  private LocalEnvironment localEnvironment;
+  private static File f1;
+  private static File f2;
+  private static File f3;
+  private static Properties p;
+  private static LocalEnvironment localEnvironment;
 
-  public void setUp() {
+  static {
     try {
       f1 = MyFileUtils.createTempDirectory();
       f2 = MyFileUtils.createTempDirectory();
@@ -33,29 +33,66 @@ public class TestLocalEnvironment extends TestCase {
     }
   }
 
-  public void tearDown() {
-    try {
-      FileUtils.deleteDirectory(f1);
-      FileUtils.deleteDirectory(f2);
-      FileUtils.deleteDirectory(f3);
-    } catch (IOException e) {
-      e.printStackTrace();  //To change body of catch statement use Options | File Templates.
-    }
-  }
 
-	public void testAll() {
+  public void testConstructor() {
     try {
       localEnvironment = LocalEnvironment.getInstance(p);
       assertNotNull(localEnvironment);
-      assertEquals(f1, localEnvironment.getDevelopmentHome());
-      assertEquals(f2, localEnvironment.getManifestStore());
-      assertEquals(f3, localEnvironment.getLocationStore());
     } catch (KarmaRuntimeException kre) {
       fail(kre.getMessage());
-    } catch (KarmaException e) {
-      fail(e.getMessage());
     }
-	}
+  }
+
+  public void testGetDevelopmentHome() {
+    try {
+      assertEquals(f1, localEnvironment.getDevelopmentHome());
+
+      f1.delete();
+      try {
+        localEnvironment.getDevelopmentHome();
+        fail("The development home should not have been there");
+      } catch (KarmaException ke) {
+        assertTrue(true);
+      }
+    } catch (KarmaException e) {
+      fail();
+    }
+
+  }
+
+  public void testGetManifestStore() {
+    try {
+      assertEquals(f2, localEnvironment.getManifestStore());
+
+      f2.delete();
+      try {
+        localEnvironment.getManifestStore();
+        fail("The manifest store should not have been there");
+      } catch (KarmaException ke) {
+        assertTrue(true);
+      }
+    } catch (KarmaException e) {
+      fail();
+    }
+
+  }
+
+  public void testGetLocationStore() {
+    try {
+      assertEquals(f3, localEnvironment.getLocationStore());
+
+      f3.delete();
+      try {
+        localEnvironment.getLocationStore();
+        fail("The location store should not have been there");
+      } catch (KarmaException ke) {
+        assertTrue(true);
+      }
+    } catch (KarmaException e) {
+      fail();
+    }
+
+  }
 
 
 }
