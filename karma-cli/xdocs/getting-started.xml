@@ -33,7 +33,8 @@
              Maven repository (well, that is assuming you have that as your default repository.
 				<li/>On <code>karma-launcher</code> execute the <code>jar</code> goal. This will
              compile and package <code>karma-launcher-1.2.jar</code> into the <code>target</code>
-             directory of the <code>karma-launcher</code> module.
+             directory of the <code>karma-launcher</code> module. Copy this jar-file to
+             <code>karma-cli/lib</code>.
 				<li/>Refer to the documentation site for the <code>karma-core</code> and follow the
              steps for the JUnit test setup. There is a manual procedure to follow before
              the <code>karma-core</code> module can be succesfully deployed as a jar in the
@@ -49,6 +50,12 @@
 		</section>
 
 		<section name="Configuration">
+
+      <p>
+        $HOME/.karma should be created and a <code>karma-launcher.properties</code> with the property
+        <code>karma.repository.local</code> created. This property should point to the maven repository
+        directory on your system.
+      </p>
 
 			<p>
         Karma (whichever user interface you use) depends on a few configuration items that must
@@ -78,15 +85,19 @@
 						<td><code>location.store</code></td>
 						<td><code>/home/asmedes/karma/locations</code> (default value)</td>
 					</tr>
+          <tr>
+            <td><code>manifest-store.cvs.host</code></td>
+            <td>Check with your administrator.</td>
+          </tr>
+          <tr>
+            <td><code>manifest-store.cvs.port</code></td>
+            <td>Check with your administrator.</td>
+          </tr>
+          <tr>
+            <td><code>manifest-store.cvs.repository</code></td>
+            <td>Check with your administrator.</td>
+          </tr>
 				</table>
-<!--				<li/>Copy <code>karma-core/resources/templates/locations.xml.template</code> as-->
-<!--				     <code>locations.xml</code> (only the extension is important) to the directory-->
-<!--             you configured for <code>location.store</code> in <code>karma.properties</code>.-->
-<!--				<li/>Copy <code>karma-core/resources/templates/repository-authenticators.xml.template</code>-->
-<!--             as <code>repository-authenticators.xml</code> to <code>$HOME/.karma</code>.-->
-<!--				<li/>Copy <code>karma-launcher-1.2.jar</code> into the <code>lib</code> directory-->
-<!--             of your <code>karma-cli</code> module directory (create that directory if it-->
-<!--             doesn't exist.-->
 			</ul>
 
 		</section>
@@ -95,7 +106,8 @@
 
 			<p>
         All set ? Start the command line interface. Use <code>bin/karma</code> on a Unix system to see the
-        thing happening (Windows users wait a bit or do it yourself for now).
+        thing happening (Windows users wait a bit or do it yourself for now). Maybe you'll have to include
+        <code>ant-1.6.1.jar</code> and <code>ant-launcher-1.6.1.jar</code> into your maven repository.
 			</p>
 
 		</section>

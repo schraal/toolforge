@@ -51,7 +51,7 @@ public class BuildModule extends DefaultCommand {
       module = currentManifest.getModule(moduleName);
 
     } catch (ManifestException m) {
-      throw new CommandException(m.getErrorCode());
+      throw new CommandException(m.getErrorCode(), m.getMessageArguments());
     }
 
     // Create the build directory.

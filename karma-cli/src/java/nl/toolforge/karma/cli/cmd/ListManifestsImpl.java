@@ -32,11 +32,11 @@ public class ListManifestsImpl extends ListManifests {
     CommandResponse response = getCommandResponse();
 
     Collection manifests = null;
-    try {
-      manifests = getContext().getAllManifests();
-    } catch (ManifestException e) {
-      throw new CommandException(e.getErrorCode());
-    }
+//    try {
+    manifests = getContext().getAllManifests();
+//    } catch (ManifestException e) {
+//      throw new CommandException(e.getErrorCode());
+//    }
 
     if (manifests.size() == 0) {
       response.addMessage(new SuccessMessage("No manifests found."));

@@ -12,6 +12,7 @@ import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.ErrorMessage;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
@@ -71,7 +72,7 @@ public class UpdateModuleCommand extends DefaultCommand {
     try {
       module = getContext().getCurrent().getModule(moduleName);
     } catch (ManifestException e) {
-      throw new CommandException(e.getErrorCode());
+      throw new CommandException(e.getErrorCode(),e.getMessageArguments());
     }
 
     Version version = null;
@@ -92,7 +93,7 @@ public class UpdateModuleCommand extends DefaultCommand {
     }
 
     try {
-      if (version.equals(CVSVersionExtractor.getInstance().getLocalVersion(getContext().getCurrent(), module))) {
+      if (version != null && version.equals(CVSVersionExtractor.getInstance().getLocalVersion(getContext().getCurrent(), module))) {
         // todo message to be internationalized.
         //
 
@@ -107,18 +108,20 @@ public class UpdateModuleCommand extends DefaultCommand {
         runner.setCommandResponse(response);
 
         if (!runner.existsInRepository(module)) {
-          throw new CommandException(VersionControlException.MODULE_NOT_IN_REPOSITORY);
+          throw new CommandException(VersionControlException.MODULE_NOT_IN_REPOSITORY, new Object[]{module.getName(), module.getLocation().getId()});
         }
 
-        if (getContext().getCurrent().isLocal(module)) {
-          runner.update(module, version);
-        } else {
-          runner.checkout(module, version);
-        }
+        runner.checkout(module, version);
 
         // todo message to be internationalized.
         //
-        response.addMessage(new SuccessMessage("Module " + module.getName() + " updated with version " + version.toString()));
+        CommandMessage message = null;
+        if (version == null) {
+          message = new SuccessMessage("Module " + module.getName() + " updated.");
+        } else {
+          message = new SuccessMessage("Module " + module.getName() + " updated with version " + version.toString());
+        }
+        response.addMessage(message);
       }
     } catch (VersionControlException e) {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());

@@ -8,7 +8,9 @@ import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.model.MainLine;
 import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
 import nl.toolforge.karma.core.Version;
 import org.apache.commons.logging.Log;
@@ -52,30 +54,32 @@ public class ViewManifest extends DefaultCommand {
 
       SourceModule module = (SourceModule) i.next();
 
-      String[] moduleData = new String[6];
+      String[] moduleData = new String[7];
       moduleData[0] = module.getName();
 
       try {
-        moduleData[1] = "(N/A)"; // Version as specified in manifest (for STATIC modules)
-        moduleData[2] = "(N/A)"; // Newest version as available on the server
-        if (module.hasVersion()) {
-          moduleData[1] = module.getVersionAsString();
-          moduleData[2] = "(" + (CVSVersionExtractor.getInstance().getLastVersion(module)).getVersionNumber() + ")";
+
+        if (module.getState().equals(Module.WORKING)) {
+          moduleData[1] = "   ";
         } else {
           Version localVersion = (CVSVersionExtractor.getInstance().getLocalVersion(manifest, module));
           moduleData[1] = (localVersion == null ? "   " : localVersion.getVersionNumber());
-          moduleData[2] = "(" + (CVSVersionExtractor.getInstance().getLastVersion(module)).getVersionNumber() + ")";
         }
+        moduleData[2] = "(" + (CVSVersionExtractor.getInstance().getLastVersion(module)).getVersionNumber() + ")";
 
       } catch (VersionControlException v) {
         // Version for the module is non-existing in the repository.
         //
         throw new CommandException(v.getErrorCode(), v.getMessageArguments());
       }
-      moduleData[3] = (module.getDevelopmentLine() == null ? "N/A" : module.getDevelopmentLine().getName());
-//      moduleData[4] = manifest.getLocalState(module).toString();
-      moduleData[4] = module.getStateAsString();
-      moduleData[5] = module.getLocation().getId();
+      if (module.getState().equals(Module.STATIC)) {
+        moduleData[3] = "(" + module.getVersionAsString() + ")";
+      } else {
+        moduleData[3] = "";
+      }
+      moduleData[4] = (module.getDevelopmentLine() == null ? MainLine.NAME_PREFIX : module.getDevelopmentLine().getName());
+      moduleData[5] = module.getStateAsString();
+      moduleData[6] = module.getLocation().getId();
 
       renderedList.add(moduleData);
     }

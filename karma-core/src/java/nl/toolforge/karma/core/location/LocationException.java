@@ -42,7 +42,7 @@ public final class LocationException extends Exception {
 
   public static final ErrorCode INVALID_MANIFEST_STORE_LOCATION = new ErrorCode(EXCEPTION_PREFIX + "00011");
 
-  public static final ErrorCode INVALID_LOCATION_STORE_LOCATION = new ErrorCode(EXCEPTION_PREFIX + "00011");
+  public static final ErrorCode INVALID_LOCATION_STORE_LOCATION = new ErrorCode(EXCEPTION_PREFIX + "00012");
 
   public LocationException(ErrorCode errorCode) {
     this(errorCode, null);

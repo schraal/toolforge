@@ -10,6 +10,11 @@ import nl.toolforge.karma.core.cmd.ErrorMessage;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.vc.RunnerFactory;
+import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
+import nl.toolforge.karma.core.Version;
 
 /**
  *
@@ -47,7 +52,7 @@ public class StopWorkCommand extends DefaultCommand {
     try {
       module = getContext().getCurrent().getModule(moduleName);
     } catch (ManifestException e) {
-      throw new CommandException(e.getErrorCode());
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
 
     if (!(module instanceof SourceModule)) {
@@ -57,32 +62,40 @@ public class StopWorkCommand extends DefaultCommand {
       throw new CommandException(CommandException.START_WORK_NOT_ALLOWED_ON_STATIC_MODULE, new Object[] {module.getName()});
     }
 
-    try {
 
-      if (!Module.WORKING.equals(((SourceModule)module).getState())) {
+    if (!Module.WORKING.equals(((SourceModule)module).getState())) {
 
-        // todo message to be internationalized.
-        //
-        // todo message handling to karma-cli ???
-        //
-        response.addMessage(new SuccessMessage("You are not working on module " + module.getName() + "."));
+      // todo message to be internationalized.
+      //
+      // todo message handling to karma-cli ???
+      //
+      response.addMessage(new SuccessMessage("You are not working on module " + module.getName() + "."));
 
-      } else {
+    } else {
 
-        // todo development-line should be taken into account
-        //
+      try {
+
+        Version version = CVSVersionExtractor.getInstance().getLastVersion(module);
+
         // todo what if user has made changes to files, even if not allowed by the common process ?
+
+        // Update to the latest available version (in a DevelopmentLine).
+        //
+        Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getCurrent().getDirectory());
+        runner.checkout(module, version);
 
         getContext().getCurrent().setState(module, Module.DYNAMIC);
 
-        // todo message to be internationalized.
-        //
-        // todo message handling to karma-cli ???
-        //
-        response.addMessage(new SuccessMessage("You have stopped working on module " + module.getName() + "; state changed to DYNAMIC."));
+      } catch (ManifestException e) {
+        throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+      } catch (VersionControlException e) {
+        throw new CommandException(e.getErrorCode(), e.getMessageArguments());
       }
-    } catch (ManifestException e) {
-      throw new CommandException(e.getErrorCode());
+      // todo message to be internationalized.
+      //
+      // todo message handling to karma-cli ???
+      //
+      response.addMessage(new SuccessMessage("You have stopped working on module " + module.getName() + "; state changed to DYNAMIC."));
     }
   }
 

@@ -35,9 +35,9 @@ public class SelectManifest extends DefaultCommand {
     try {
 		  getContext().changeCurrent(getCommandLine().getOptionValue("m"));
     } catch (ManifestException me) {
-      throw new CommandException(me.getErrorCode());
+      throw new CommandException(me.getErrorCode(), me.getMessageArguments());
     } catch (LocationException e) {
-      throw new CommandException(e.getErrorCode());
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
 		new QueryCommandResponse();
 	}

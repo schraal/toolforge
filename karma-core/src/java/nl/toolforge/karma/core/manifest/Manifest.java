@@ -1,10 +1,9 @@
 package nl.toolforge.karma.core.manifest;
 
-import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.LocalEnvironment;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.ErrorCode;
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.location.LocationException;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.xmlrules.DigesterLoader;
 import org.apache.commons.logging.Log;
@@ -12,12 +11,11 @@ import org.apache.commons.logging.LogFactory;
 import org.xml.sax.SAXException;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.FileInputStream;
-import java.io.FileFilter;
-import java.io.FilenameFilter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +23,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.HashSet;
 
 /**
  * <p>
@@ -45,6 +44,7 @@ public final class Manifest {
 
   private static ClassLoader loader = null; // Should be static, to support manifest includes
   private static LocalEnvironment env = null; // The current active environment for the user.
+  private static Collection duplicates = null; // To detect duplicate included manifests.
 
   private Collection childManifests = new ArrayList();
 
@@ -146,6 +146,8 @@ public final class Manifest {
    */
   public void load(LocalEnvironment env) throws LocationException, ManifestException {
 
+    (duplicates = new ArrayList()).add(this.getName()); // Add the root manifest.
+
     if (getClassLoader() == null && env == null) {
       throw new NullPointerException(
           "WARNING, you're probably running a unit test. Use 'load(ClassLoader)'.");
@@ -160,7 +162,7 @@ public final class Manifest {
       manifest = (Manifest) digester.parse(getManifestFileAsStream(getName()));
     } catch (IOException e) {
       if (e instanceof FileNotFoundException) {
-        throw new ManifestException(e, ManifestException.MANIFEST_FILE_NOT_FOUND);
+        throw new ManifestException(e, ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[]{manifest.getName()});
       }
     } catch (SAXException e) {
       if (e.getException() instanceof ManifestException) {
@@ -168,7 +170,7 @@ public final class Manifest {
         //
         throw new ManifestException(((ManifestException) e.getException()).getErrorCode());
       }
-      throw new ManifestException(e, ManifestException.MANIFEST_LOAD_ERROR);
+      throw new ManifestException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{manifest.getName()});
     }
 
     copyToThis(manifest);
@@ -181,12 +183,13 @@ public final class Manifest {
    */
   private void copyToThis(Manifest manifest) throws LocationException, ManifestException {
 
-    // Copy all loaded data into this instance
+   // Copy all loaded data into this instance
     //
     setDescription(manifest.getDescription());
     setVersion(manifest.getVersion());
     copyIncludes(manifest.getIncludes());
     copyModules(manifest.getModulesForManifest());
+
   }
 
   private void copyIncludes(Collection includedManifests) {
@@ -208,6 +211,11 @@ public final class Manifest {
    */
   public void includeManifest(Manifest child) throws ManifestException {
 
+    if (duplicates.contains(child.getName())) {
+      throw new ManifestException(ManifestException.MANIFEST_NAME_RECURSION, new Object[]{child.getName()});
+    }
+    duplicates.add(child.getName());
+
     URL rules = this.getClass().getClassLoader().getResource("manifest-rules.xml");
     Digester digester = DigesterLoader.createDigester(rules);
 
@@ -216,16 +224,16 @@ public final class Manifest {
       manifest = (Manifest) digester.parse(getManifestFileAsStream(child.getName()));
     } catch (IOException e) {
       if (e instanceof FileNotFoundException) {
-        throw new ManifestException(e, ManifestException.MANIFEST_FILE_NOT_FOUND);
+        throw new ManifestException(e, ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[]{manifest.getName()});
       }
-      throw new ManifestException(e, ManifestException.MANIFEST_LOAD_ERROR);
+      throw new ManifestException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{manifest.getName()});
     } catch (SAXException e) {
       if (e.getException() instanceof ManifestException) {
         // It was already a ManifestException
         //
         throw new ManifestException(((ManifestException) e.getException()).getErrorCode());
       }
-      throw new ManifestException(e, ManifestException.MANIFEST_LOAD_ERROR);
+      throw new ManifestException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{manifest.getName()});
     }
 
     link(manifest);
@@ -280,7 +288,7 @@ public final class Manifest {
     }
 
     if (getModulesForManifest().containsKey(module.getName())) {
-      throw new ManifestException(ManifestException.DUPLICATE_MODULE);
+      throw new ManifestException(ManifestException.DUPLICATE_MODULE, new Object[]{module.getName(), getName()});
     }
     getModulesForManifest().put(module.getName(), module);
   }

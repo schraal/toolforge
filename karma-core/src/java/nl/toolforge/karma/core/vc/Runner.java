@@ -47,6 +47,7 @@ public interface Runner {
 	 */
 	public void checkout(Module module, Version version) throws VersionControlException;
 
+
 	/**
 	 * Updates an already checked out module on a user's harddisk.
 	 *

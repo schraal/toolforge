@@ -33,24 +33,9 @@ public final class CommandContext {
 
   private static Log logger = LogFactory.getLog(CommandContext.class);
 
-//	private static ManifestLoader manifestLoader = null;
-
   private Manifest currentManifest = null;
   private LocalEnvironment env = null;
   public CommandResponseHandler responseHandler = null;
-
-//  private boolean initialized = false;
-
-  /**
-   * <p>Checks if this <code>CommandContext</code> has been initialized. A non-initialized context cannot be used and
-   * methods in this class will throw a <code>KarmaException</code> with error code
-   * <code>KarmaException.COMMAND_CONTEXT_NOT_INITIALIZED</code> if a non-initialized context is encountered.
-   *
-   * @return <code>true</code> if this command context has been initialized, false if it isn't
-   */
-//  public boolean isInitialized() {
-//    return initialized;
-//  }
 
   /**
    * Initializes the context to run commands.
@@ -59,8 +44,6 @@ public final class CommandContext {
    */
   public synchronized void init(LocalEnvironment env, CommandResponseHandler handler)
       throws KarmaException, LocationException {
-
-//    if (!initialized) {
 
     if (handler == null) {
       throw new IllegalArgumentException("CommandResponseHandler may not be null, you lazy bitch.");
@@ -120,8 +103,6 @@ public final class CommandContext {
     } catch (ManifestException e) {
       // Fine, continue.
     }
-//    }
-//    initialized = true;
   }
 
   /**
@@ -140,8 +121,13 @@ public final class CommandContext {
    * @throws nl.toolforge.karma.core.manifest.ManifestException When the manifest could not be changed. See {@link nl.toolforge.karma.core.manifest.ManifestException#MANIFEST_LOAD_ERROR}.
    */
   public void changeCurrent(String manifestName) throws LocationException, ManifestException {
-    currentManifest = new Manifest(manifestName);
-    currentManifest.load(getLocalEnvironment());
+
+    Manifest newManifest = new Manifest(manifestName);
+    newManifest.load(getLocalEnvironment());
+
+    // If we are here, loading the new manifest was succesfull.
+    //
+    currentManifest = newManifest;
   }
 
 
@@ -163,11 +149,7 @@ public final class CommandContext {
    * @throws CommandException A whole lot. Interface applications should <b>*** NOT ***</b> quit program execution as a
    *                        result of this exception. It should be handled nicely.
    */
-  public void execute(String commandLine) throws CommandException {
-
-//    if (!isInitialized()) {
-//      throw new CommandException(KarmaException.COMMAND_CONTEXT_NOT_INITIALIZED);
-//    }
+  public synchronized void execute(String commandLine) throws CommandException {
 
     Command command = CommandFactory.getInstance().getCommand(commandLine);
     execute(command);
@@ -177,13 +159,10 @@ public final class CommandContext {
    * @param command The command to execute.
    * @throws CommandException
    */
-  public void execute(Command command) throws CommandException {
+  public synchronized void execute(Command command) throws CommandException {
 
-//    if (!isInitialized()) {
-//      throw new CommandException(KarmaException.COMMAND_CONTEXT_NOT_INITIALIZED);
-//    }
     if (command == null) {
-      throw new CommandException(KarmaException.INVALID_COMMAND);
+      throw new CommandException(KarmaException.INVALID_COMMAND, new Object[]{command.getName()});
     }
 
     // Store a reference to this context in the command
@@ -241,14 +220,6 @@ public final class CommandContext {
   public final File getBuildTarget(Module module) throws KarmaException {
 
     File localPath = new File(new File(getBase(), "build"), module.getName());
-
-//    if (localPath.exists()) {
-//      try {
-//        FileUtils.deleteDirectory(new File(localPath.getParent()));
-//      } catch (IOException e) {
-////       todo implement this properly
-//      }
-//    }
 
     if (localPath.exists() || localPath.mkdirs()) {
       return localPath;

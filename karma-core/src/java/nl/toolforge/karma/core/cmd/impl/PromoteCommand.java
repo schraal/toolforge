@@ -15,6 +15,8 @@ import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.VersionExtractor;
 import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
 
+import java.util.regex.PatternSyntaxException;
+
 /**
  * Implementation of the 'codeline freeze' concept. Karma increases a modules' version (using whichever pattern is
  * defined for it), thus allowing for a freeze. Development can commence immediately on the module. In that sense, it
@@ -38,7 +40,7 @@ public class PromoteCommand extends DefaultCommand {
   public void execute() throws CommandException {
 
     // todo move to aspect; this type of checking can be done by one aspect.
-		//
+    //
     if (!getContext().isManifestLoaded()) {
       throw new CommandException(ManifestException.NO_ACTIVE_MANIFEST);
     }
@@ -53,16 +55,31 @@ public class PromoteCommand extends DefaultCommand {
         throw new CommandException(CommandException.PROMOTE_ONLY_ALLOWED_ON_WORKING_MODULE, new Object[]{moduleName});
       }
 
-      // TODO extractor impl should be obtained from karma.properties or Preferences to enable configurable stuff.
-      //
-      VersionExtractor extractor = CVSVersionExtractor.getInstance();
+      Version nextVersion = null;
+      if (getCommandLine().getOptionValue("v") != null) {
+        // The module should be promoted to a specific version.
+        //
+        try {
+          nextVersion = new Version(getCommandLine().getOptionValue("v"));
+        } catch (PatternSyntaxException p) {
+          throw new CommandException(CommandException.INVALID_ARGUMENT, new Object[]{"-v " + getCommandLine().getOptionValue("v")});
+        }
 
-      Version nextVersion = extractor.getNextVersion(module);
+        // todo nextVersion MUST be greater than the getNextVersion() that can be called.
+        //
 
-//      Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getCurrent().getDirectory());
+      } else {
+
+        // TODO extractor impl should be obtained from karma.properties or Preferences to enable configurable stuff.
+        //
+        VersionExtractor extractor = CVSVersionExtractor.getInstance();
+        nextVersion = extractor.getNextVersion(module);
+      }
+
       Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getCurrent().getDirectory());
 
-      // TODO chech whether files exist that have not yet been committed
+      // TODO check whether files exist that have not yet been committed.
+
       runner.tag(module, nextVersion);
 
       this.newVersion = nextVersion;

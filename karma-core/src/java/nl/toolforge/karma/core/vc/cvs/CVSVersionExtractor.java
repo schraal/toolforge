@@ -8,6 +8,7 @@ import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.VersionExtractor;
+import nl.toolforge.karma.core.vc.DevelopmentLine;
 import nl.toolforge.karma.core.vc.model.MainLine;
 import org.netbeans.lib.cvsclient.command.log.LogInformation;
 import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
@@ -123,8 +124,12 @@ public final class CVSVersionExtractor implements VersionExtractor {
         }
       }
       try {
-        String tag = moduleInfo.getTag();
-        return (tag == null ? null : new Version(tag.substring(tag.indexOf("_") + 1)));
+        if (moduleInfo == null || moduleInfo.getTag() == null || moduleInfo.getTag().matches(DevelopmentLine.DEVELOPMENT_LINE_PATTERN_STRING)) {
+          // We have the HEAD of a DevelopmentLine.
+          //
+          return null;
+        }
+        return new Version(moduleInfo.getTag().substring(moduleInfo.getTag().indexOf("_") + 1));
       } catch (Exception e) {
         throw new CVSException(CVSException.LOCAL_MODULE_ERROR);
       }

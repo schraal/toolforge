@@ -37,10 +37,10 @@ public abstract class VersionControlException extends Exception {
   /**
    * The requested module does not exist in the repository
    */
-	public static final ErrorCode MODULE_NOT_IN_REPOSITORY = new ErrorCode(EXCEPTION_PREFIX + "00013");
+  public static final ErrorCode MODULE_NOT_IN_REPOSITORY = new ErrorCode(EXCEPTION_PREFIX + "00013");
 
-	
-	public VersionControlException(ErrorCode errorCode) {
+
+  public VersionControlException(ErrorCode errorCode) {
     this(errorCode, null);
   }
 
@@ -60,12 +60,15 @@ public abstract class VersionControlException extends Exception {
     this.messageArguments = messageArguments;
   }
 
-    /**
+  /**
    * Helper method to get the localized error message based on the {@link nl.toolforge.karma.core.ErrorCode}.
    *
    * @return
    */
   public final String getErrorMessage() {
+    if (messageArguments != null && messageArguments.length > 0) {
+      errorCode.setMessageArguments(messageArguments);
+    }
     return getErrorCode().getErrorMessage();
   }
 

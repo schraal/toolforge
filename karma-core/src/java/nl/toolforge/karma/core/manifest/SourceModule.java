@@ -156,9 +156,6 @@ public class SourceModule extends BaseModule {
 
     digester.addObjectCreate("*/dependencies", "java.util.HashSet");
 
-//    Dependency d = null;
-//    d.set
-
     digester.addObjectCreate("*/dependency", "org.apache.maven.project.Dependency");
 
     digester.addCallMethod("*/dependency/groupId", "setGroupId", 1);
@@ -181,16 +178,17 @@ public class SourceModule extends BaseModule {
       deps = (Set) digester.parse(new File(getBaseDir(), "project.xml"));
     } catch (IOException e) {
       if (e instanceof FileNotFoundException) {
-        throw new ManifestException(e, ManifestException.DEPENDENCY_FILE_NOT_FOUND);
+        throw new ManifestException(e, ManifestException.DEPENDENCY_FILE_NOT_FOUND, new Object[]{getName()});
       }
-      throw new ManifestException(e, ManifestException.DEPENDENCY_FILE_NOT_FOUND);
+      throw new ManifestException(e, ManifestException.DEPENDENCY_FILE_NOT_FOUND, new Object[]{getName()});
     } catch (SAXException e) {
       if (e.getException() instanceof ManifestException) {
         // It was already a ManifestException
         //
-        throw new ManifestException(((ManifestException) e.getException()).getErrorCode());
+//        throw new ManifestException(((ManifestException) e.getException()).getErrorCode());
+        throw (ManifestException) e.getException();
       }
-      throw new ManifestException(e, ManifestException.DEPENDENCY_FILE_NOT_FOUND);
+      throw new ManifestException(e, ManifestException.DEPENDENCY_FILE_NOT_FOUND, new Object[]{getName()});
     }
 
     StringBuffer buffer = new StringBuffer();

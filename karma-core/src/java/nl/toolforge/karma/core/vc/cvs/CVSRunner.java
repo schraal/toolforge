@@ -242,8 +242,10 @@ public final class CVSRunner implements Runner {
     CheckoutCommand checkoutCommand = new CheckoutCommand();
     checkoutCommand.setModule(module.getName());
 
-    if (version != null) {
+    if (version != null || ((SourceModule) module).hasDevelopmentLine()) {
       checkoutCommand.setCheckoutByRevision(Utils.createSymbolicName(module, version).getSymbolicName());
+    } else {
+      checkoutCommand.setResetStickyOnes(true);
     }
 
     executeOnCVS(checkoutCommand, basePoint);
@@ -269,11 +271,8 @@ public final class CVSRunner implements Runner {
     updateCommand.setRecursive(true);
     updateCommand.setPruneDirectories(true);
 
-//    ((CVSResponseAdapter) this.listener).setModuleName(module.getName());
-
-    if (version != null) {
+    if (version != null || ((SourceModule) module).hasDevelopmentLine()) {
       updateCommand.setUpdateByRevision(Utils.createSymbolicName(module, version).getSymbolicName());
-//      ((CVSResponseAdapter) this.listener).setModuleName(module.getName());
     }
 
     // todo add data to the exception. this sort of business logic should be here, not in CVSResponseAdapter.

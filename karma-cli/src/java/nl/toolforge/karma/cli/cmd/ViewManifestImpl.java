@@ -44,22 +44,34 @@ public class ViewManifestImpl extends ViewManifest {
     String h4 = "STATE";
     String h5 = "LOCATION";
 
-    buffer.append(h1 + StringUtils.repeat(" ", 20 - h1.length()) + "| ");
+    buffer.append(h1 + StringUtils.repeat(" ", 30 - h1.length()) + "| ");
     buffer.append(h2 + StringUtils.repeat(" ", 20 - h2.length()) + "| ");
-    buffer.append(h3 + StringUtils.repeat(" ", 30 - h3.length()) + "| ");
+    buffer.append(h3 + StringUtils.repeat(" ", 20 - h3.length()) + "| ");
     buffer.append(h4 + StringUtils.repeat(" ", 20 - h4.length()) + "| ");
     buffer.append(h5 + StringUtils.repeat(" ", 20 - h5.length()) + "|\n");
+//    buffer.append(StringUtils.repeat(" ", 30));
+//    buffer.append("| local / remote\n");
     buffer.append(StringUtils.repeat("_", h5.length() + 110));
     buffer.append("\n");
 
     for (Iterator i = renderedData.iterator(); i.hasNext();) {
 
       String[] data = (String[]) i.next();
-      buffer.append(data[0] + StringUtils.repeat(" ", 20 - data[0].length()) + "| ");
-      buffer.append(data[1] + " " + data[2] + StringUtils.repeat(" ", 20 - data[1].length() - data[2].length() - 1) + "| ");
-      buffer.append(data[3] + StringUtils.repeat(" ", 30 - data[3].length()) + "| ");
+
+      // Column 1
+      //
+      buffer.append(data[0] + StringUtils.repeat(" ", 30 - data[0].length()) + "| ");
+
+      // Column 2
+      //
+      buffer.append(data[1] + " " + data[2] + " " + data[3]);
+      buffer.append(StringUtils.repeat(" ", 20 - data[1].length() - data[2].length() - data[3].length() - 2) + "| ");
+
+      // Cols 3-5
+      //
       buffer.append(data[4] + StringUtils.repeat(" ", 20 - data[4].length()) + "| ");
-      buffer.append(data[5] + StringUtils.repeat(" ", 20 - data[5].length()) + "|\n");
+      buffer.append(data[5] + StringUtils.repeat(" ", 20 - data[5].length()) + "| ");
+      buffer.append(data[6] + StringUtils.repeat(" ", 20 - data[6].length()) + "|\n");
     }
 
     // -- end of formatting

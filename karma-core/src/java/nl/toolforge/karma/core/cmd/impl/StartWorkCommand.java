@@ -7,10 +7,15 @@ import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.ErrorMessage;
+import nl.toolforge.karma.core.cmd.Command;
+import nl.toolforge.karma.core.cmd.CommandFactory;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.vc.RunnerFactory;
+import nl.toolforge.karma.core.vc.VersionControlException;
 
 /**
  *
@@ -48,7 +53,7 @@ public class StartWorkCommand extends DefaultCommand {
     try {
       module = getContext().getCurrent().getModule(moduleName);
     } catch (ManifestException e) {
-      throw new CommandException(e.getErrorCode());
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
 
     // Criteria :
@@ -84,6 +89,14 @@ public class StartWorkCommand extends DefaultCommand {
 
       try {
 
+        // A developer always works on the HEAD of a DevelopmentLine.
+        //
+        Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getCurrent().getDirectory());
+        runner.checkout(module);
+
+//        Command command = CommandFactory.getInstance().getCommand(CommandDescriptor.UPDATE_MODULE_COMMAND + " -m ".concat(module.getName()));
+//        getContext().execute(command);
+
         // todo development-line should be taken into account
         //
         // todo what if user has made changes to files, even if not allowed by the common process ?
@@ -94,9 +107,14 @@ public class StartWorkCommand extends DefaultCommand {
         //
         // todo message handling to karma-cli ???
         //
-        response.addMessage(new SuccessMessage("You can start working on module " + module.getName() + "; state changed to WORKING."));
+        response.addMessage(
+            new SuccessMessage("You can start working on module " + module.getName() + "; state changed to WORKING."));
+
       } catch (ManifestException e) {
-        throw new CommandException(e.getErrorCode());
+        throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+//      }
+      } catch (VersionControlException e) {
+        throw new CommandException(e.getErrorCode(), e.getMessageArguments());
       }
     }
   }
