@@ -42,8 +42,23 @@ import nl.toolforge.karma.core.manifest.ModuleTypeException;
 /**
  * Builds a module in a manifest. Building a module means that all java sources will be compiled into the
  * modules' build directory on disk.
+ * <p>
+ * BuildModule supports the following variables in the karma.properties:
+ * <ul>
+ *   <li>java.compiler</li>
+ *   <li>java.source</li>
+ *   <li>java.target</li>
+ *   <li>java.debug</li>
+ *   <li>java.debuglevel</li>
+ *   <li>javac.nowarn</li>
+ *   <li>javac.optimize</li>
+ *   <li>javac.deprecation</li>
+ *   <li>javac.verbose</li>
+ *   <li>javac.depend</li>
+ * </ul>
  *
  * @author D.A. Smedes
+ * @author W.H. Schraal
  * @version $Id$
  */
 public class BuildModule extends AbstractBuildCommand {
@@ -98,8 +113,6 @@ public class BuildModule extends AbstractBuildCommand {
 
               Command command = null;
               try {
-                //todo: this has to become a normal build command
-                //however, then build needs to use classes, not packages.
                 getCommandResponse().addEvent(new MessageEvent(this, new SimpleMessage("Module `{0}` is needed, but is not built yet. Doing that now.", new Object[]{module.getName()})));
                 String commandLineString = "bm -m " + module.getName();
                 logger.info("Going to: "+commandLineString);
@@ -128,6 +141,16 @@ public class BuildModule extends AbstractBuildCommand {
       }
       project.setProperty("module-build-dir", getBuildEnvironment().getModuleBuildDirectory().getPath());
       project.setProperty("module-source-dir", getBuildEnvironment().getModuleSourceDirectory().getPath());
+      project.setProperty("java.compiler", getWorkingContext().getProperties().getProperty("java.compiler", "modern"));
+      project.setProperty("java.source", getWorkingContext().getProperties().getProperty("java.source", "1.4"));
+      project.setProperty("java.target", getWorkingContext().getProperties().getProperty("java.target", "1.4"));
+      project.setProperty("java.debug", getWorkingContext().getProperties().getProperty("java.debug", "off"));
+      project.setProperty("java.debuglevel", getWorkingContext().getProperties().getProperty("java.debuglevel", "none"));
+      project.setProperty("javac.nowarn", getWorkingContext().getProperties().getProperty("javac.nowarn", "off"));
+      project.setProperty("javac.optimize", getWorkingContext().getProperties().getProperty("javac.optimize", "off"));
+      project.setProperty("javac.deprecation", getWorkingContext().getProperties().getProperty("javac.deprecation", "off"));
+      project.setProperty("javac.verbose", getWorkingContext().getProperties().getProperty("javac.verbose", "no"));
+      project.setProperty("javac.depend", getWorkingContext().getProperties().getProperty("javac.depend", "off"));
 
       project.executeTarget("run");
 

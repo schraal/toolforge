@@ -5,9 +5,10 @@
   <target name="run">
 
     <!-- debug -->
+    <echo level="info" message="module-source-dir: ${module-source-dir}"/>
     <echo level="info" message="module-build-dir: ${module-build-dir}"/>
     <echo level="info" message="classpath: ${classpath}"/>
-    <echo level="info" message="module-source-dir: ${module-source-dir}"/>
+    <echo level="info" message="compiler: ${java.compiler}"/>
 
     <mkdir dir="${module-build-dir}"/>
     <!-- Remove the old jar file(s). -->
@@ -18,15 +19,21 @@
       </fileset>
     </delete>
 
-<!---->
     <!-- Compile all sources -->
     <javac
       destdir="${module-build-dir}"
-      classpath="${classpath}"
-      source="1.4"
       includes="**/*.java"
-      compiler="modern"
-      debug="true">
+      classpath="${classpath}"
+      compiler="${java.compiler}"
+      source="${java.source}"
+      target="${java.target}"
+      debug="${java.debug}"
+      debuglevel="${java.debuglevel}"
+      nowarn="${javac.nowarn}"
+      optimize="${javac.optimize}"
+      deprecation="${javac.deprecation}"
+      verbose="${javac.verbose}"
+      depend="${javac.depend}">
 
       <src path="${module-source-dir}"/>
 

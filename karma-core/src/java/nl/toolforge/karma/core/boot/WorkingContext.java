@@ -18,20 +18,26 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.boot;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Properties;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+
 import nl.toolforge.karma.core.ErrorCode;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.LocationLoader;
 import nl.toolforge.karma.core.manifest.ManifestCollector;
 import nl.toolforge.karma.core.manifest.ManifestLoader;
-import org.apache.commons.io.FileUtils;
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * <p>A <code>WorkingContext</code> is used by Karma to determine the environment in which the user wants to use Karma. A
@@ -113,7 +119,6 @@ public final class WorkingContext {
 
   public static final String CONFIGURATION_BASE_DIRECTORY = System.getProperty("user.home") + File.separator + ".karma";
 
-//  private static File configurationBaseDir = null;
 
   /**
    * Property indicating the base directory for development projects. All manifests will be checked out under this
@@ -138,10 +143,6 @@ public final class WorkingContext {
    * The default Maven repository is used when this property is not set in <code>karma.properties</code>.
    */
 
-  // Stuff in the karma.properties
-
-  public static final String LOCAL_REPOSITORY = "jar.repository";
-
   /** The default working context. */
   public static final String DEFAULT = "default";
 
@@ -153,10 +154,9 @@ public final class WorkingContext {
   private ManifestLoader manifestLoader = null;
   private LocationLoader locationLoader = null;
 
-//  private ManifestStore manifestStore = null;
-//  private LocationStore locationStore = null;
-
   private WorkingContextConfiguration configuration = null;
+
+  private static final Log logger = LogFactory.getLog(WorkingContext.class);
 
   private static File configurationBaseDir = null;
 
@@ -227,25 +227,6 @@ public final class WorkingContext {
   }
 
   /**
-   * <p>Checks if this working context is ready for usage. The following checks are being performed:
-   *
-   * <ul>
-   *   <li><li/>
-   *   <li><li/>
-   * </ul>
-   *
-   * @return
-   */
-  public boolean isReady() {
-
-    boolean ready = false;
-
-
-    return ready;
-  }
-
-
-  /**
    * Returns the name of this working context.
    *
    * @return The name of this working context.
@@ -265,20 +246,30 @@ public final class WorkingContext {
   }
 
   /**
+   * Get the properties of this working context. The properties are
+   * stored in the karma.properties, which are located in the project base dir.
+   *
+   * @return A Properties object containing the properties of this working
+   * context or an empty Properties object when something went wrong.
+   */
+  public Properties getProperties() {
+    Properties properties = new Properties();
+    try {
+      properties.load(new FileInputStream(new File(getProjectBaseDirectory(), "karma.properties")));
+    } catch (FileNotFoundException fnfe) {
+      logger.info("karma.properties not found for working context '"+getName()+"'", fnfe);
+    } catch (IOException ioe) {
+      logger.error("karma.properties could not be loaded for working context '"+getName()+"'", ioe);
+    }
+    return properties;
+  }
+
+  /**
    * Removes a working contexts' configuration directory.
    */
   public synchronized void remove() throws IOException {
     FileUtils.deleteDirectory(getWorkingContextConfigurationBaseDir());
   }
-
-
-//  public Location getLocationStoreLocation() {
-//    return getConfiguration().getLocationStoreLocation();
-//  }
-//
-//  public Location getManifestStoreLocation() {
-//    return getConfiguration().getManifestStoreLocation();
-//  }
 
 
   /**
@@ -339,52 +330,6 @@ public final class WorkingContext {
     return m;
   }
 
-
-//  /**
-//   * Gets the module name from the value of the <code>MANIFEST_STORE_MODULE</code> property by grabbing the bit after
-//   * the last <code>"/"</code>.
-//   *
-//   * @return The module name for the manifest store or <code>null</code> if the property is not set.
-//   *
-//   * @deprecated To be refactored out.
-//   */
-//  public String getManifestStoreModule() {
-//
-//    String module = getConfiguration().getProperty(MANIFEST_STORE_MODULE);
-//
-//    if (module == null) {
-//      return null;
-//    }
-//
-//    while (module.endsWith("/")) {
-//      module.substring(0, module.length());
-//    }
-//    return module;
-//  }
-
-//  /**
-//   * Gets the module name from the value of the <code>LOCATION_STORE_MODULE</code> property by grabbing the bit after
-//   * the last <code>"/"</code>.
-//   *
-//   * @return The module name for the location store or <code>null</code> if the property is not set.
-//   *
-//   * @deprecated To be refactored out.
-//   */
-//  public String getLocationStoreModule() {
-//
-//    String module = getConfiguration().getProperty(LOCATION_STORE_MODULE);
-//
-//    if (module == null) {
-//      return null;
-//    }
-//
-//    while (module.endsWith("/")) {
-//      module.substring(0, module.length());
-//    }
-//    return module;
-//  }
-
-
   /**
    * Returns a <code>File</code> reference to the manifest store directory for the working context. When the directory
    * does not exist, it will be created. In this directory, the manifest store will be checked out.
@@ -419,7 +364,7 @@ public final class WorkingContext {
 
   /**
    * See {@link PROJECT_LOCAL_REPOSITORY_PROPERTY}. When the property is not set, the default repository is
-   * assumed to be in {@link Karma#getConfigurationBaseDir()}/<code>.repository</code>.
+   * assumed to be in {@link #getConfigurationBaseDir()}/<code>.repository</code>.
    *
    * @return See method description.
    *
@@ -492,27 +437,4 @@ public final class WorkingContext {
     return getName();
   }
 
-//  public LocationStore getLocationStore() {
-//
-//    if (locationStore == null) {
-//      locationStore = new LocationStore(this);
-//    }
-//    return locationStore;
-//  }
-//
-//  public void setLocationStore(LocationStore locationStore) {
-//    this.locationStore = locationStore;
-//  }
-//
-//  public ManifestStore getManifestStore() {
-//
-//    if (manifestStore == null) {
-//      manifestStore = new ManifestStore(this);
-//    }
-//    return manifestStore;
-//  }
-//
-//  public void setManifestStore(ManifestStore mStore) {
-//    this.manifestStore = mStore;
-//  }
 }
