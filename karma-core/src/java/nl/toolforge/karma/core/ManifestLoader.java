@@ -219,9 +219,9 @@ public final class ManifestLoader {
 						if (version == null) {
 							sourceModule = new SourceModule(moduleName, location);
 						} else {
-							sourceModule = new SourceModule(moduleName, location, version);
+							sourceModule = new SourceModule(moduleName, location, new Version(version));
 						}
-						//sourceModule.setBranch(node.getAttribute(SourceModule.BRANCH_ATTRIBUTE));
+						//sourceModule.setDevelopmentLine(node.getAttribute(SourceModule.BRANCH_ATTRIBUTE));
 
 						manifest.addModule(sourceModule);
 

@@ -4,6 +4,7 @@ import nl.toolforge.core.regexp.Pattern;
 import nl.toolforge.karma.core.expr.VersionExpression;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.prefs.Preferences;
+import nl.toolforge.karma.core.vc.DevelopmentLine;
 
 import java.io.File;
 
@@ -11,7 +12,7 @@ import java.io.File;
  * <p>A <code>SourceModule</code> represents a module for which the developer wants to have the sources available to
  * on the local harddisk.
  *
- * <p>TODO Validation checks on setVersion and setBranch
+ * <p>TODO Validation checks on setVersion and setDevelopmentLine
  *
  * @see nl.toolforge.karma.core.Module
  *
@@ -38,8 +39,8 @@ public class SourceModule extends BaseModule {
    */
   public static final String MODULE_INFO = "module.info";
 
-	private String version = null; // TODO replace by a Version object ?
-	private String branch = null; // TODO replace by a Branch object ?
+	private Version version = null; // TODO replace by a Version object ?
+	private DevelopmentLine developmentLine = null; // TODO replace by a Branch object ?
 
 	/**
 	 * Constructs a <code>SourceModule</code> instance.
@@ -49,7 +50,7 @@ public class SourceModule extends BaseModule {
 	 *
 	 * @throws KarmaException When input parameters don't match their respective patterns
 	 */
-	SourceModule(String moduleName, Location location) throws KarmaException {
+	protected SourceModule(String moduleName, Location location) throws KarmaException {
 		super(moduleName, location);
 	}
 
@@ -63,13 +64,13 @@ public class SourceModule extends BaseModule {
 	 *
 	 * @throws KarmaException When input parameters don't match their patterns.
 	 */
-	SourceModule (String moduleName, Location location, String version) throws KarmaException {
+	protected SourceModule (String moduleName, Location location, Version version) throws KarmaException {
 
 		super(moduleName, location);
 
 		Pattern pattern = Pattern.compile(new VersionExpression().getPatternString());
 
-		if (pattern.matcher(version).matches()) {
+		if (pattern.matcher(version.getVersionIdentifier()).matches()) {
 			this.version = version;
 		} else {
 			throw new KarmaException(KarmaException.DATAFORMAT_ERROR);
@@ -79,9 +80,9 @@ public class SourceModule extends BaseModule {
 	/**
 	 * Sets the version property of this module
 	 *
-	 * @param version The <code>version</code> attribute of this module when it is available.
+	 * @param version The <code>version</code> attribute of this module (wrapped in a Version instance) when it is available.
 	 */
-	public final void setVersion(String version) {
+	public final void setVersion(Version version) {
 
 		// TODO validate before assigment
 		//
@@ -91,23 +92,24 @@ public class SourceModule extends BaseModule {
 	/**
 	 * Sets the branch property of this module
 	 *
-	 * @param branch The <code>branch</code> attribute of this module when it is available.
+	 * @param developmentLine The <code>line</code> attribute of this module when it is available.
 	 */
-	public final void setBranch(String branch) {
-
-		// TODO validate before assigment
-		//
-		this.branch = branch;
+	public final void setDevelopmentLine(DevelopmentLine developmentLine) {
+		this.developmentLine = developmentLine;
 	}
 
-	/**
-	 * Returns the branch name as a string. The phrase "development line" is used throughout ui implementations."
-	 *
-	 * @return The branch name as a string.
-	 */
-	public final String getBranchAsString() {
-		 return (branch == null ? "N/A" : branch);
+	public final DevelopmentLine getDevelopmentLine() {
+		return developmentLine;
 	}
+
+//	/**
+//	 * Returns the branch name as a string. The phrase "development line" is used throughout ui implementations."
+//	 *
+//	 * @return The branch name as a string.
+//	 */
+//	public final String getBranchAsString() {
+//		 return (developmentLine == null ? "N/A" : developmentLine.getName());
+//	}
 
 	/**
 	 * If the module element in the manifest contains a <code>version</code> attribute, this method will return the
@@ -117,10 +119,7 @@ public class SourceModule extends BaseModule {
 	 *
 	 * @throws KarmaException When a <code>version</code> attribute is not available for the module.
 	 */
-	public final String getVersion() throws KarmaException {
-
-		// TODO Version should be made into a class, and the toString() method should replace getVersionAsString()
-
+	public final Version getVersion() throws KarmaException {
 		return version;
 	}
 
@@ -131,7 +130,7 @@ public class SourceModule extends BaseModule {
 	 * @return The module version, or N/A, when no version number exists.
 	 */
 	public final String getVersionAsString() {
-		return (version == null ? "N/A" : version);
+		return (version == null ? "N/A" : version.getVersionIdentifier());
 	}
 
 	/**
@@ -176,5 +175,24 @@ public class SourceModule extends BaseModule {
     }
     throw new KarmaException(KarmaException.NO_MODULE_INFO);
   }
+
+	/**
+	 * Checks if this module has a version number.
+	 *
+	 * @return <code>true</code> when this module has a version number, <code>false</code> if it hasn't.
+	 */
+	public boolean hasVersion() {
+		return version != null;
+	}
+
+	/**
+	 * Checks if this module is developed on a development line, other than the
+	 * {@link nl.toolforge.karma.core.vc.model.MainLine}.
+	 *
+	 * @return <code>true</code> when this module is developed on a development line, <code>false</code> if it isn't.
+	 */
+	public boolean hasDevelopmentLine() {
+		return developmentLine != null;
+	}
 
 }

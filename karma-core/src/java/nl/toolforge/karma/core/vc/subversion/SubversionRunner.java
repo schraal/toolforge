@@ -1,12 +1,14 @@
 package nl.toolforge.karma.core.vc.subversion;
 
 import nl.toolforge.karma.core.Module;
+import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.vc.ManagedFile;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.SymbolicName;
+import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.CVSException;
 
 import java.io.File;
@@ -36,15 +38,22 @@ public final class SubversionRunner implements Runner {
 		return null;
 	}
 
-	public CommandResponse checkout(Module module, File checkoutDirectory) {
+	public CommandResponse checkout(Module module) throws VersionControlException {
+		return checkout(module, null);
+	}
+	//  public CommandResponse checkout(Module module) throws SVNException {
+//    return checkout(module, null);
+//  }
+
+	public CommandResponse checkout(Module module, Version version) throws SVNException {
 		return null;
 	}
 
-  public CommandResponse checkout(Module module) throws SVNException {
-    return null;
-  }
+	public CommandResponse update(Module module) throws SVNException {
+		return update(module, null);
+	}
 
-	public CommandResponse update(Module module) {
+	public CommandResponse update(Module module, Version version) throws SVNException {
 		return null;
 	}
 

@@ -27,6 +27,15 @@ public class CVSException extends VersionControlException {
 	/** The file that is added to a repository already exists */
 	public static final ErrorCode FILE_EXISTS_IN_REPOSITORY = new ErrorCode("CVS-00017"); // todo : to superclass ?
 
+	/**
+	 * Version not found for the module. This error occurs when no symbolic name exists for the module that identifies
+	 * the version.
+	 */
+	public static final ErrorCode VERSION_NOT_FOUND = new ErrorCode("CVS-00018"); // todo : to superclass ?
+
+	/** Symbolic name rejected by CVS */
+	public static final ErrorCode INVALID_SYMBOLIC_NAME = new ErrorCode("CVS-00019");
+
 	public CVSException(ErrorCode errorCode) {
 		super(errorCode);
 	}

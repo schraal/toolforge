@@ -6,7 +6,6 @@
       <root type="composite">
         <root type="simple" url="file://$PROJECT_DIR$" />
         <root type="simple" url="file://$PROJECT_DIR$/../netbeans-cvs-beta3.6/src" />
-        <root type="simple" url="file://$PROJECT_DIR$/../jakarta-commons/cli/src/java" />
       </root>
     </projectPath>
     <sourcePath>
@@ -17,7 +16,6 @@
         <root type="simple" url="file://$PROJECT_DIR$/karma-core/src/java" />
         <root type="simple" url="file://$PROJECT_DIR$/karma-launcher/src/java" />
         <root type="simple" url="file://$PROJECT_DIR$/../netbeans-cvs-beta3.6/src" />
-        <root type="simple" url="file://$PROJECT_DIR$/../jakarta-commons/cli/src/java" />
       </root>
     </sourcePath>
     <classPath>

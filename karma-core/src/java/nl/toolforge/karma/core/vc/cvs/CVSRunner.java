@@ -1,10 +1,7 @@
 package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.core.util.file.FileUtils;
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.Module;
-import nl.toolforge.karma.core.SourceModule;
+import nl.toolforge.karma.core.*;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.location.Location;
@@ -14,7 +11,6 @@ import nl.toolforge.karma.core.vc.SymbolicName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.Client;
-import org.netbeans.lib.cvsclient.CVSRoot;
 import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
 import org.netbeans.lib.cvsclient.command.CommandException;
 import org.netbeans.lib.cvsclient.command.GlobalOptions;
@@ -26,7 +22,6 @@ import org.netbeans.lib.cvsclient.command.log.LogCommand;
 import org.netbeans.lib.cvsclient.command.log.LogInformation;
 import org.netbeans.lib.cvsclient.command.update.UpdateCommand;
 import org.netbeans.lib.cvsclient.connection.AuthenticationException;
-import org.netbeans.lib.cvsclient.connection.Connection;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,7 +49,6 @@ public final class CVSRunner implements Runner {
 
 	private GlobalOptions globalOptions = new GlobalOptions();
 	private Client client = null;
-//	private CVSResponseAdapter adapter = new CVSResponseAdapter();
 
 	/**
 	 * Constructs a runner to fire commands on a CVS repository. A typical client for a <code>CVSRunner</code> instance is
@@ -145,36 +139,64 @@ public final class CVSRunner implements Runner {
 	 *
 	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
 	 */
-	public CommandResponse checkout(Module module) throws CVSException {
+	public CommandResponse checkout(Module module, Version version) throws CVSException {
 
 		CheckoutCommand checkoutCommand = new CheckoutCommand();
 		checkoutCommand.setModule(module.getName());
 		checkoutCommand.setPruneDirectories(true);
+
+		if (version != null) {
+			checkoutCommand.setCheckoutByRevision(Utils.createSymbolicName(module, version).getSymbolicName());
+		}
 
 		CVSResponseAdapter adapter = executeOnCVS(checkoutCommand, null);
 
 		if (adapter.hasStatus(CVSResponseAdapter.MODULE_NOT_FOUND)) {
 			throw new CVSException(CVSException.NO_SUCH_MODULE_IN_REPOSITORY, new Object[]{module.getName(), module.getLocation().getId()});
 		}
+		if (adapter.hasStatus(CVSResponseAdapter.INVALID_SYMBOLIC_NAME)) {
+			throw new CVSException(CVSException.INVALID_SYMBOLIC_NAME);
+		}
 
 		return adapter;
 	}
 
+	public CommandResponse checkout(Module module) throws CVSException {
+		return checkout(module, null);
+	}
+
 	/**
-	 * For a module, the <code>cvs -q update -Pd</code>command is executed.
+	 * For a module, the <code>cvs -q update -Pd -r &lt;symbolic-name&gt;</code> command is executed.
 	 *
-	 * @param module
+	 * @param module The module that should be updated.
+	 * @param version The version of the module or <code>null</code> when no specific version applies.
+	 *
 	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
 	 */
-	public CommandResponse update(Module module) throws CVSException {
+	public CommandResponse update(Module module, Version version) throws CVSException {
 
 		UpdateCommand updateCommand = new UpdateCommand();
 		updateCommand.setRecursive(true);
 		updateCommand.setPruneDirectories(true);
 
+		if (version != null) {
+			updateCommand.setUpdateByRevision(Utils.createSymbolicName(module, version).getSymbolicName());
+		}
+
 		CVSResponseAdapter adapter = executeOnCVS(updateCommand, module.getName());
 
+		if (adapter.hasStatus(CVSResponseAdapter.SYMBOLIC_NAME_NOT_FOUND)) {
+			throw new CVSException(CVSException.VERSION_NOT_FOUND, new Object[]{version.getVersionIdentifier(), module.getName()});
+		}
+		if (adapter.hasStatus(CVSResponseAdapter.INVALID_SYMBOLIC_NAME)) {
+			throw new CVSException(CVSException.INVALID_SYMBOLIC_NAME);
+		}
+
 		return adapter;
+	}
+
+	public CommandResponse update(Module module) throws CVSException {
+		return update(module, null);
 	}
 
 	/**
@@ -278,7 +300,7 @@ public final class CVSRunner implements Runner {
 	 */
 	private CVSResponseAdapter executeOnCVS(org.netbeans.lib.cvsclient.command.Command command, String contextDirectory) throws CVSException{
 
-    try {
+		try {
 
 			if (contextDirectory != null) {
 				client.setLocalPath(client.getLocalPath() + File.separator + contextDirectory);

@@ -132,18 +132,18 @@
 			<option opt="m" longOpt="module-name" required="true" description="The module name that should be updated">
 				<arg name="module-name"/>
 			</option>
+			<option opt="v" longOpt="version" required="false" description="A specific version">
+				<arg name="version-number"/>
+			</option>
 		</options>
 
 		<classname>nl.toolforge.karma.cli.cmd.UpdateModuleImpl</classname>
 
-		<!--		<dependencies>-->
-		<!--			<dependency type="vc-support" name="cvs"/>-->
-		<!--			<dependency type="vc-support" name="subversion"/>-->
-		<!--			<dependency type="module-support" name="lib"/>-->
-		<!--			<dependency type="module-support" name="source"/>-->
-		<!--		</dependencies>-->
-
-		<help/>
+		<help>
+			The update command updates a module on a developer's local disk. Optionally, a version-number
+			can be provided, to update to a specific version. The version-number must comply to the pattern
+			rules for version numbers as defined by ...
+		</help>
 
 	</command>
 

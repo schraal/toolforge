@@ -17,4 +17,10 @@ public interface SymbolicName {
 	public boolean isSticky();
 
 	public boolean isBranch();
+
+	/**
+	 * Returns a <code>String</code> representation of this symbolic name.
+	 * @return
+	 */
+	public String getSymbolicName();
 }

@@ -18,20 +18,26 @@ import org.netbeans.lib.cvsclient.event.*;
  */
 public final class CVSResponseAdapter extends CommandResponse implements CVSListener {
 
+	/** CVS aborted unexpectedly */
+	public static final Integer INVALID_SYMBOLIC_NAME = new Integer(0);
+
 	/** File has succesfully been added to the CVS repository. */
-	public static final Integer FILE_ADDED_OK = new Integer(0);
+	public static final Integer FILE_ADDED_OK = new Integer(1);
 
 	/** File has succesfully been removed from the CVS repository. */
-	public static final Integer FILE_REMOVED_OK = new Integer(1);
+	public static final Integer FILE_REMOVED_OK = new Integer(2);
 
 	/** Module has succesfully been updated from CVS. */
-	public static final Integer MODULE_UPDATED_OK = new Integer(2);
+	public static final Integer MODULE_UPDATED_OK = new Integer(3);
 
 	/** The module does not exist in the CVS repository. */
-	public static final Integer MODULE_NOT_FOUND = new Integer(3);
+	public static final Integer MODULE_NOT_FOUND = new Integer(4);
 
 	/** File already exists in the CVS repository. */
-	public static final Integer FILE_EXISTS = new Integer(4);
+	public static final Integer FILE_EXISTS = new Integer(5);
+
+	/** The symbolic name does not exist. */
+	public static final Integer SYMBOLIC_NAME_NOT_FOUND = new Integer(6);
 
 	private FileInfoContainer logInformation = null;
 
@@ -182,6 +188,28 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
 
 			if (!hasStatus(FILE_EXISTS)) {
 				try { addStatusUpdate(FILE_EXISTS); } catch (CommandException e) { } // Ignore
+			}
+		}
+
+		if (message.startsWith("cvs") && message.indexOf("no such tag") > 0) {
+
+			// TODO Localize message; guess this is handled by calling class ...
+			String messageText = "Symbolic name not found.";
+
+			addMessage(new CVSCommandMessage(messageText));
+
+			if (!hasStatus(SYMBOLIC_NAME_NOT_FOUND)) {
+				try { addStatusUpdate(SYMBOLIC_NAME_NOT_FOUND); } catch (CommandException e) { } // Ignore
+			}
+		}
+
+		if (message.indexOf("contains characters other than digits") > 0) {
+			String messageText = event.getMessage();
+
+			addMessage(new CVSCommandMessage(messageText));
+
+			if (!hasStatus(INVALID_SYMBOLIC_NAME)) {
+				try { addStatusUpdate(INVALID_SYMBOLIC_NAME); } catch (CommandException e) { } // Ignore
 			}
 		}
 

@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.Module;
+import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 
 /**
@@ -38,6 +39,17 @@ public interface Runner {
 	public CommandResponse checkout(Module module) throws VersionControlException;
 
 	/**
+	 * Checks out a module from a version control system.
+	 *
+	 * @param module
+	 * @param version
+	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>.
+	 * @throws VersionControlException When the module does not exist in the repository or when the symbolic name is
+	 *         not attached to the module in the repository.
+	 */
+	public CommandResponse checkout(Module module, Version version) throws VersionControlException;
+
+	/**
 	 * Updates an already checked out module on a user's harddisk.
 	 *
 	 * @param module
@@ -45,6 +57,17 @@ public interface Runner {
 	 * @throws VersionControlException When an error occurred executing the command on the repository.
 	 */
 	public CommandResponse update(Module module) throws VersionControlException;
+
+	/**
+	 * Updates an already checked out module on a user's harddisk.
+	 *
+	 * @param module
+	 * @param version
+	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>.
+	 * @throws VersionControlException When the module does not exist in the repository or when the symbolic name is
+	 *         not attached to the module in the repository.
+	 */
+	public CommandResponse update(Module module, Version version) throws VersionControlException;
 
 	/**
 	 * Commits a change to <code>file</code> to the version control system.
