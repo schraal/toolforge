@@ -2,6 +2,7 @@ package nl.toolforge.karma.cli.cmd;
 
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.boot.WorkingContextConfiguration;
+import nl.toolforge.karma.core.boot.WorkingContextException;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
@@ -37,19 +38,18 @@ public class SetWorkingContext extends DefaultCommand {
     try {
       Preferences.userRoot().put(WorkingContext.WORKING_CONTEXT_PREFERENCE, workingContextName);
       Preferences.userRoot().flush();
-      
+
       response.addEvent(new MessageEvent(this, new SimpleMessage("Loading new working context `" + workingContextName + "` ...")));
 
       WorkingContext w = new WorkingContext(workingContextName);
 
-//      File configurationFile = Karma.getConfigurationFile(w);
       WorkingContextConfiguration configuration = new WorkingContextConfiguration(w);
-
+      try {
+        configuration.load();
+      } catch (WorkingContextException e) {
+        throw new CommandException(CommandException.INVALID_WORKING_CONTEXT_CONFIGURATION, new Object[]{w.getName()});
+      }
       w.configure(configuration);
-
-//      if (!w.init()) {
-//        throw new CommandException(CommandException.CANNOT_INITIALIZE_WORKING_CONTEXT, new Object[]{w});
-//      }
 
       getContext().setWorkingContext(w);
 
@@ -80,7 +80,6 @@ public class SetWorkingContext extends DefaultCommand {
     } catch (LocationException e) {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
-    response.addEvent(new MessageEvent(this, new SimpleMessage("Warning : manifests and locations are not updated; requires restart (unsupported in Karma R1.0).")));
   }
 
   public CommandResponse getCommandResponse() {

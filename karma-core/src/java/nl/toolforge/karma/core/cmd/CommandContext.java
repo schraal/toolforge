@@ -309,9 +309,11 @@ public final class CommandContext implements ChangeListener {
     try {
       command = CommandFactory.getInstance().getCommand(commandLine);
     } catch (CommandException c) {
+      logger.error(c.getMessage());
       commandResponse.addEvent(new ErrorEvent(c.getErrorCode(), c.getMessageArguments()));
       throw c;
     } catch (CommandLoadException e) {
+      logger.error(e.getMessage());
       throw new CommandException(e, e.getErrorCode(),  e.getMessageArguments());
     }
     execute(command);
@@ -343,6 +345,7 @@ public final class CommandContext implements ChangeListener {
     try {
       command.execute();
     } catch (CommandException c) {
+      logger.error(c.getMessage());
       commandResponse.addEvent(new ErrorEvent(command, c.getErrorCode(), c.getMessageArguments()));
       commandResponse.addEvent(new CommandFailedEvent(command, c));
       throw c;

@@ -124,6 +124,8 @@ public class CommandException extends Exception {
   public static final ErrorCode CANNOT_INITIALIZE_WORKING_CONTEXT = new ErrorCode(EXCEPTION_PREFIX + "00105");
   /** A module is encountered with state WORKING. This is not allowed when creating a release manifest. */
   public static final ErrorCode MODULE_CANNOT_BE_WORKING_FOR_RELEASE_MANIFEST = new ErrorCode(EXCEPTION_PREFIX + "00106");
+  /** Configuration for working context is invalid. */
+  public static final ErrorCode INVALID_WORKING_CONTEXT_CONFIGURATION = new ErrorCode(EXCEPTION_PREFIX + "00107");
 
   public CommandException(ErrorCode errorCode) {
     this(errorCode, null);
