@@ -16,7 +16,7 @@
 			</option>
 		</options>
 
-		<classname>nl.toolforge.karma.cli.cmd.SelectManifestModuleImpl</classname>
+		<classname>nl.toolforge.karma.cli.cmd.SelectManifestImpl</classname>
 
 <!--		<dependencies>-->
 <!--			<dependency type="vc-support" name="cvs"/>-->

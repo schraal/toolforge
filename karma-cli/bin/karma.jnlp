@@ -31,7 +31,7 @@
 	</resources>
 
 	<application-desc main-class="nl/wisdom/core/tools/karma/launcher/KarmaLauncher">
-		<argument>nl.wisdom.core.tools.karma.TerminalKarma</argument>
+		<argument>nl.toolforge.core.tools.karma.TerminalKarma</argument>
 	</application-desc>
 
 </jnlp>
