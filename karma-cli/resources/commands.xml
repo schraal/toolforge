@@ -47,7 +47,7 @@
   </command>
 
 
-  <command name="start-work" alias="sw">
+  <command name="start-work" alias="start">
     <description lang="en">todo Something.</description>
 
     <options>
@@ -61,7 +61,7 @@
   </command>
 
 
-  <command name="stop-work" alias="st">
+  <command name="stop-work" alias="stop">
     <description lang="en">todo Something.</description>
 
     <options>
