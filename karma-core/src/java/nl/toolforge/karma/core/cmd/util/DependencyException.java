@@ -39,11 +39,16 @@ public class DependencyException extends Exception {
   public static final ErrorCode DEPENDENCY_NOT_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00001");
 
   /** A dependency on a module has been defined, but the module is not in the manifest */ 
-  public static final ErrorCode MODULE_NOT_IN_MANIFEST = new ErrorCode(EXCEPTION_PREFIX + "00004");
+  public static final ErrorCode MODULE_NOT_IN_MANIFEST     = new ErrorCode(EXCEPTION_PREFIX + "00004");
 
   public static final ErrorCode DUPLICATE_ARTIFACT_VERSION = new ErrorCode(EXCEPTION_PREFIX + "00002");
+  
   public static final ErrorCode EAR_DEPENDENCY_NOT_DEFINED = new ErrorCode(EXCEPTION_PREFIX + "00003");
-  public static final ErrorCode EAR_DEPENDENCY_NOT_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00005");
+  public static final ErrorCode EAR_DEPENDENCY_NOT_FOUND   = new ErrorCode(EXCEPTION_PREFIX + "00005");
+  
+  /** A circualr dependency has been detected. */
+  public static final ErrorCode CIRCULAR_DEPENDENCY        = new ErrorCode(EXCEPTION_PREFIX + "00006");
+  
 
   public DependencyException(ErrorCode errorCode) {
     this(errorCode, null);
