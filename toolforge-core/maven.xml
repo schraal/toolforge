@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<project xmlns:ant="jelly:ant">
+
+  <postGoal name="jar:install">
+
+    <ant:copy
+      file="${maven.build.dir}/${maven.final.name}.jar"
+      todir="../karma-cli/lib/"
+      overwrite="true"
+    />
+  </postGoal>
+
+</project>

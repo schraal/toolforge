@@ -93,16 +93,17 @@ public final class CommandFactory {
    */
   public Command getCommand(String commandLineString) throws CommandException {
 
-
-//    StringTokenizer tokenizer = new StringTokenizer(commandLineString);
-
     // Extract the command name from the command line string
     //
-    String commandName = commandLineString.substring(0, commandLineString.indexOf(' '));
-//    if (tokenizer.hasMoreTokens()) {
-//      commandName = tokenizer.nextToken();
-//    }
 
+    String commandName = null;
+
+    if (commandLineString.indexOf(' ') > 0) {
+      commandName = commandLineString.substring(0, commandLineString.indexOf(' '));
+    } else {
+      commandName = commandLineString.trim();
+    }
+    
     // todo wordt dit niet gesupport door commons-cli ?
     //
 

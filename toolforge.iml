@@ -4,8 +4,8 @@
   <component name="NewModuleRootManager">
     <output url="file:///tmp/dev/build" />
     <output-test url="file:///tmp/dev/build" />
-    <content url="file://$MODULE_DIR$/../netbeans-src/javacvs/libsrc">
-      <sourceFolder url="file://$MODULE_DIR$/../netbeans-src/javacvs/libsrc" isTestSource="false" />
+    <content url="file://$MODULE_DIR$/../apache-ant-1.6.1/src/main">
+      <sourceFolder url="file://$MODULE_DIR$/../apache-ant-1.6.1/src/main" isTestSource="false" />
     </content>
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/karma-cli/src/java" isTestSource="false" />

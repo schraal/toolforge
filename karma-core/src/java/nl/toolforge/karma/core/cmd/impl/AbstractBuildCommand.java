@@ -247,9 +247,13 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
 
     DefaultLogger logger = new DefaultLogger();
+
     // todo hmm, this mechanism doesn't integrate with the commandresponse mechanism
     //
+    logger.setOutputPrintStream(System.out);
     logger.setErrorPrintStream(System.out);
+
+//    logger.setMessageOutputLevel(Project.MSG_VERBOSE); // Always handy ...
 
     // Configure underlying ant to run a command.
     //
@@ -266,13 +270,14 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
       helper.parse(project, tmp);
     } catch (IOException e) {
       throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {module.getName()});
-    } finally {
-      try {
-        FileUtils.deleteDirectory(tmp.getParentFile());
-      } catch (IOException e) {
-        throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {module.getName()});
-      }
     }
+//    finally {
+//      try {
+//        FileUtils.deleteDirectory(tmp.getParentFile());
+//      } catch (IOException e) {
+//        throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {module.getName()});
+//      }
+//    }
 
     return project;
   }

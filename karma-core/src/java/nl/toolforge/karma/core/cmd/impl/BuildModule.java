@@ -9,8 +9,10 @@ import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Builds a module in a manifest. Building a module means that all java sources will be compiled into the
@@ -61,8 +63,20 @@ public class BuildModule extends AbstractBuildCommand {
     try {
       project.executeTarget(BUILD_MODULE_TARGET);
     } catch (BuildException e) {
-//      e.printStackTrace();
+      e.printStackTrace();
       throw new CommandException(CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
+    }
+    finally {
+      try {
+        // Remove temporary directory.
+        //
+
+        // todo Should be moved to AbstractBuildCommand.
+        //
+        FileUtils.deleteDirectory(project.getBaseDir());
+      } catch (IOException e) {
+        throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
+      }
     }
 
     message = new SimpleCommandMessage("Module " + getCurrentModule().getName() + " built succesfully."); // todo localize message

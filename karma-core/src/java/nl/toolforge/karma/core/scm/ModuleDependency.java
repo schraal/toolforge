@@ -76,15 +76,16 @@ public final class ModuleDependency {
     //
     if (groupId != null) {
       dep =  groupId + File.separator + "jars" + File.separator + artifactId + "-" + version;
+      dep += ".jar";
     }
 
     // <dependency id="" jar=""/>
     //
     if (id != null) {
-      dep =  id + File.separator + jar;
+      dep = id + File.separator + "jars" + File.separator + jar;
     }
 
-    return dep.concat(".jar");
+    return dep;
   }
 
   public boolean isModuleDependency() {

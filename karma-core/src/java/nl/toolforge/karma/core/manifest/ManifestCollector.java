@@ -12,12 +12,18 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.prefs.Preferences;
+import java.util.prefs.BackingStoreException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author D.A. Smedes
  * @version $Id$
  */
 public class ManifestCollector {
+
+  private static Log logger = LogFactory.getLog(ManifestCollector.class);
 
   private static ManifestCollector instance = null;
   private static Collection manifests = new ArrayList();
@@ -80,10 +86,28 @@ public class ManifestCollector {
     if (manifestId != null) {
 
       ManifestFactory manifestFactory = ManifestFactory.getInstance(getLocalEnvironment());
-      Manifest manifest = manifestFactory.createManifest(manifestId);
+
+      Manifest manifest = null;
+      try {
+        manifest = manifestFactory.createManifest(manifestId);
 
 //      Manifest manifest = new Manifest(manifestId);
 //      manifest.load(getLocalEnvironment());
+
+      } catch (ManifestException m) {
+        if (m.getErrorCode().equals(ManifestException.MANIFEST_FILE_NOT_FOUND)) {
+          Preferences.userRoot().remove(LocalEnvironment.LAST_USED_MANIFEST_PREFERENCE);
+          try {
+            Preferences.userRoot().flush();
+          } catch (BackingStoreException e) {
+            logger.warn("Could not write user preferences due to java.util.prefs.BackingStoreException.");
+          }
+        }
+        // Rethrow, the removal from userPrefs has been performed
+        //
+        throw m;
+//        }
+      }
 
       return manifest;
     }

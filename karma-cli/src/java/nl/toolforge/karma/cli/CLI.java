@@ -63,7 +63,6 @@ public class CLI {
       } catch (LocationException e) {
         writer.writeln(e.getErrorMessage());
         logger.error(e.getMessage(), e);
-        throw new KarmaException(KarmaException.MISSING_CONFIGURATION);
       } catch (ManifestException e) {
         writer.writeln(e.getErrorMessage());
         logger.warn(e.getMessage(), e);

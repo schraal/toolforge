@@ -27,7 +27,20 @@
 
     <mkdir dir="${module-build-dir}/${module-compile-dir}"/>
 
-    <javac destdir="${module-build-dir}/${module-compile-dir}" srcdir="${module-source-dir}" classpath="${module-classpath}"/>
+    <javac
+      destdir="${module-build-dir}/${module-compile-dir}"
+      classpath="${module-classpath}"
+      source="1.4"
+      includes="**/*.java"
+      compiler="modern">
+
+      <src path="${module-source-dir}"/>
+
+    </javac>
+
+<!--    -->
+<!--      memoryinitialsize="64m" -->
+<!--      compiler="jikes"/>-->
 
   </target>
 

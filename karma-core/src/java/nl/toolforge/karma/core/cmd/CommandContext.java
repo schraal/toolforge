@@ -89,7 +89,7 @@ public final class CommandContext {
         // Nothing serious ...
         //
 
-        handler.commandResponseChanged(new CommandResponseEvent(new ErrorMessage(KarmaException.MANIFEST_STORE_UPDATE_FAILED)));
+        handler.commandResponseChanged(new CommandResponseEvent(new ErrorMessage(KarmaException.LOCATION_STORE_UPDATE_FAILED)));
       }
     } else {
       throw new KarmaRuntimeException("Pietje puk exception");
