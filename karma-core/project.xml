@@ -20,7 +20,7 @@
 		<developer>
 			<name>Arjen Smedes</name>
 			<id>asmedes</id>
-			<email>asmedes@users.sourceforge.net</email>
+			<email>asmedes@toolforge.nl</email>
 			<organization>toolforge</organization>
 			<roles>
 				<role>Developer</role>
@@ -29,7 +29,7 @@
 		<developer>
 			<name>Hilbert Schraal</name>
 			<id>hippe</id>
-			<email>hippe@users.sourceforge.net</email>
+			<email>schraal@toolforge.nl</email>
 			<organization>toolforge</organization>
 			<roles>
 				<role>Developer</role>
@@ -38,7 +38,7 @@
 		<developer>
 			<name>Martin Oosterom</name>
 			<id>oosterom</id>
-			<email>oosterom@users.sourceforge.net</email>
+			<email>oosterom@toolforge.nl</email>
 			<organization>toolforge</organization>
 			<roles>
 				<role>Developer</role>
