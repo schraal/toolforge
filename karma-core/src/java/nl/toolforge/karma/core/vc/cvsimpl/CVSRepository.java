@@ -26,10 +26,7 @@ import nl.toolforge.karma.core.vc.VersionControlSystem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 
 /**
  * <p>Class representing a location to a CVS repository. This class is not the 'real' connection, as that is handled
@@ -98,7 +95,8 @@ public class CVSRepository extends VersionControlSystem {
    *                 strings are converted to lowercase.
    */
   public void setProtocol(String protocol) {
-    String p = LOCAL + "|" + EXT + "|" + PSERVER;
+//    String p = LOCAL + "|" + EXT + "|" + PSERVER;
+    String p = LOCAL + "|" + PSERVER;
     if (protocol == null || !protocol.toLowerCase().matches(p)) {
       throw new IllegalArgumentException("Protocol is invalid; should be " + p);
     }
