@@ -33,20 +33,20 @@ import org.apache.commons.logging.LogFactory;
 public final class CVSConnection {
 
 	private static Log logger = LogFactory.getLog(CVSConnection.class);
-	private CVSLocationImpl location = null;
+	private CVSRepository location = null;
 
 	/**
-	 * Constructor for a CVSConnection. This class is initialized using a <code>CVSLocationImpl</code>, which knows all
+	 * Constructor for a CVSConnection. This class is initialized using a <code>CVSRepository</code>, which knows all
 	 * intricacies of connection to a CVS repository.
 	 *
-	 * @param location The location descriptor (<code>CVSLocationImpl</code> instance).
+	 * @param location The location descriptor (<code>CVSRepository</code> instance).
 	 */
 	public CVSConnection(Location location) {
 
 		try {
-			this.location = (CVSLocationImpl) location;
+			this.location = (CVSRepository) location;
 		} catch (ClassCastException c) {
-			throw new KarmaRuntimeException("Wrong implementation of Location interface. Must be a CVSLocationImpl instance.", c);
+			throw new KarmaRuntimeException("Wrong implementation of Location interface. Must be a CVSRepository instance.", c);
 		}
 	}
 }

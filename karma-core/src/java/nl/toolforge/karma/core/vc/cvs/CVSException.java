@@ -32,7 +32,7 @@ public class CVSException extends VersionControlException {
    public static String EXCEPTION_PREFIX = "CVS-";
 
 	/**
-	 * When no valid <code>CVSROOT</code> could be compiled from <code>CVSLocationImpl</code> instance variables.
+	 * When no valid <code>CVSROOT</code> could be compiled from <code>CVSRepository</code> instance variables.
 	 */
 	public static final ErrorCode INVALID_CVSROOT = new ErrorCode(EXCEPTION_PREFIX + "00010");
 

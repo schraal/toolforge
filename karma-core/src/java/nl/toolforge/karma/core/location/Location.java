@@ -35,14 +35,14 @@ public interface Location {
    * Is the (remote) location available on the specified port ? Usefull to implement for remote locations.
    * @return <code>false</code> if the location is not available, <code>true</code> if it is.
    */
-  public boolean ping();
+  public boolean isAvailable();
 
 	/**
 	 * The locations' type descriptor.
 	 *
 	 * @return A <code>Location.Type</code> instance.
 	 */
-	public Type getType();
+	public LocationType getType();
 
 	/**
 	 * A locations' identifier. Should be unique over all <code>location</code>-elements. This id is
@@ -52,42 +52,4 @@ public interface Location {
 	 * @return An identifier string for a location.
 	 */
 	public String getId();
-
-	/**
-	 * Enumeration for the location type.
-	 *
-	 * @author D.A. Smedes
-	 */
-	public final class Type {
-
-		/**
-		 * A CVS repository location
-		 */
-		public static final Type CVS_REPOSITORY = new Type("CVS-REPOSITORY");
-
-		/**
-		 * A Subversion repository location
-		 */
-		public static final Type SUBVERSION_REPOSITORY = new Type("SUBVERSION-REPOSITORY");
-
-		/**
-		 * A Subversion repository location
-		 */
-		public static final Type MAVEN_REPOSITORY = new Type("MAVEN-REPOSITORY");
-
-		String type = null;
-
-		private Type(String type) {
-			this.type = type;
-		}
-
-		/**
-		 * Shows which type we're talking about.
-		 *
-		 * @return A lowercase string for the specific type of location.
-		 */
-		public String toString() {
-			return this.type.toLowerCase();
-		}
-	}
 }

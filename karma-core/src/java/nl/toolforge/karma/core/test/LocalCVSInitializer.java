@@ -25,7 +25,7 @@ import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.cvs.CVSException;
-import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
+import nl.toolforge.karma.core.vc.cvs.CVSRepository;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -48,7 +48,7 @@ import java.util.Random;
  * be tested, make sure you ignore these testcases in your test-configuration.
  *
  * <p>Note the dependency of this class with {@link nl.toolforge.karma.core.location.Location} and
- * {@link nl.toolforge.karma.core.vc.cvs.CVSLocationImpl}.
+ * {@link nl.toolforge.karma.core.vc.cvs.CVSRepository}.
  *
  * <p>When performing operations on managed files, a randomize function is used to be able to repeatedly perform
  * tests. Filenames and modulenames in the repository could be named like <code>bla_036548290.56437</code>.
@@ -65,7 +65,7 @@ public class LocalCVSInitializer extends BaseTest {
    */
   protected static final String DEFAULT_MODULE_1 = "CORE-test-module-1";
 
-  private static CVSLocationImpl location = null;
+  private static CVSRepository location = null;
   private File localCVSRepository = null;
 
   /**
@@ -109,8 +109,8 @@ public class LocalCVSInitializer extends BaseTest {
 
       logger.debug("cvs.local.path = " + localPath);
 
-      location = new CVSLocationImpl("local");
-      location.setProtocol(CVSLocationImpl.LOCAL);
+      location = new CVSRepository("local");
+      location.setProtocol(CVSRepository.LOCAL);
       location.setRepository(localCVSRepository.getPath());
 
     } catch (Exception e) {
@@ -134,9 +134,9 @@ public class LocalCVSInitializer extends BaseTest {
   }
 
   /**
-   * Gets the <code>CVSLocationImpl</code> that can be used for junit testing.
+   * Gets the <code>CVSRepository</code> that can be used for junit testing.
    */
-  protected CVSLocationImpl getTestLocation() {
+  protected CVSRepository getTestLocation() {
     return location;
   }
 
@@ -162,6 +162,7 @@ public class LocalCVSInitializer extends BaseTest {
 
       Module module = new SourceModule(DEFAULT_MODULE_1, location);
       module.setBaseDir(new File(getWorkingContext().getDevelopmentHome(), module.getName()));
+      module.setCheckoutDir(getWorkingContext().getDevelopmentHome());
 
       runner.checkout(module);
 
@@ -180,6 +181,7 @@ public class LocalCVSInitializer extends BaseTest {
 
       Module module = new SourceModule(DEFAULT_MODULE_1, location, new Version("0-0"));
       module.setBaseDir(new File(getWorkingContext().getDevelopmentHome(), module.getName()));
+      module.setCheckoutDir(getWorkingContext().getDevelopmentHome());
 
       runner.checkout(module);
 

@@ -20,7 +20,7 @@ package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
+import nl.toolforge.karma.core.vc.cvs.CVSRepository;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
 import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
 import org.apache.commons.logging.Log;
@@ -48,7 +48,7 @@ public final class RunnerFactory {
    */
   public static Runner getRunner(Location location) throws VersionControlException {
 
-    if (location instanceof CVSLocationImpl) {
+    if (location instanceof CVSRepository) {
       logger.debug("Getting new CVSRunner instance.");
 
       CVSRunner runner = new CVSRunner(location);

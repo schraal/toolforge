@@ -20,9 +20,10 @@ package nl.toolforge.karma.core.location;
 
 import nl.toolforge.core.util.file.XMLFilenameFilter;
 import nl.toolforge.karma.core.boot.WorkingContext;
-import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
+import nl.toolforge.karma.core.vc.cvs.CVSRepository;
 import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
 import org.apache.commons.digester.Digester;
+import org.apache.tools.ant.DirectoryScanner;
 import org.xml.sax.SAXException;
 
 import java.io.File;
@@ -50,18 +51,6 @@ public final class LocationLoader {
   private Map locations = null;
   private WorkingContext workingContext = null;
 
-//  private static LocationLoader instance = null;
-
-//  private LocationLoader() {}
-//
-//  public static LocationLoader getInstance() {
-//
-//    if (instance == null) {
-//      instance = new LocationLoader();
-//    }
-//    return instance;
-//  }
-
   /**
    * Constructs a LocationLoader for the current <code>workingContext</code>.
    * @param workingContext
@@ -84,46 +73,16 @@ public final class LocationLoader {
 
     locations = new Hashtable();
 
-    Map authenticators = new Hashtable();
-
-    File authenticatorsFile = new File(WorkingContext.getConfigurationBaseDir(), "authenticators.xml");
-
-    if (authenticatorsFile == null) {
-      throw new LocationException(LocationException.MISSING_AUTHENTICATOR_CONFIGURATION);
-    }
-
-    // Create a list of authenticators, anything you can find.
-    //
-    Digester digester = new Digester();
-    digester.addObjectCreate("authenticators", "java.util.ArrayList");
-    digester.addObjectCreate("authenticators/authenticator", "nl.toolforge.karma.core.location.AuthenticatorDescriptor");
-    digester.addSetProperties("authenticators/authenticator");
-    digester.addSetNext("authenticators/authenticator", "add");
-
-    List subList = null;
-    try {
-      subList = (List) digester.parse(authenticatorsFile.getPath());
-    } catch (IOException e) {
-      throw new LocationException(e, LocationException.MISSING_AUTHENTICATOR_CONFIGURATION);
-    } catch (SAXException e) {
-      throw new LocationException(e, LocationException.AUTHENTICATOR_LOAD_ERROR);
-    }
-
-    for (Iterator j = subList.iterator(); j.hasNext();) {
-      AuthenticatorDescriptor authDescriptor = (AuthenticatorDescriptor) j.next();
-      if (authenticators.containsKey(authDescriptor.getId())) {
-        throw new LocationException(
-            LocationException.DUPLICATE_AUTHENTICATOR_KEY,
-            new Object[] {authDescriptor.getId(), WorkingContext.getConfigurationBaseDir().getPath()}
-        );
-      }
-      authenticators.put(authDescriptor.getId(), authDescriptor);
-    }
+    // todo replace by LocationModule stuff.
 
     // Recurse over all xml files in the locations directory.
     //
+    DirectoryScanner scanner = new DirectoryScanner();
+    scanner.setBasedir(workingContext.getLocationStore());
+    scanner.setIncludes(new String[]{"**/*.xml"});
+    scanner.scan();
 
-    String[] files = workingContext.getLocationStore().list(new XMLFilenameFilter());
+    String[] files = scanner.getIncludedFiles();
 
     if (files == null || files.length <= 0) {
       throw new LocationException(LocationException.NO_LOCATION_DATA_FOUND);
@@ -131,20 +90,15 @@ public final class LocationLoader {
 
     for (int i = 0; i < files.length; i++) {
 
-      digester = new Digester();
-      digester.addObjectCreate("locations", "java.util.ArrayList");
-      digester.addFactoryCreate("locations/location", "nl.toolforge.karma.core.location.digester.LocationDescriptorCreationFactory");
-      digester.addCallMethod("locations/location/protocol", "setProtocol", 0);
-      digester.addCallMethod("locations/location/host", "setHost", 0);
-      digester.addCallMethod("locations/location/port", "setPort", 0);
-      digester.addCallMethod("locations/location/repository", "setRepository", 0);
-      digester.addSetNext("locations/location", "add");
+      Digester digester = LocationDescriptor.getDigester();
 
+      List subList = null;
       try {
         subList = (List) digester.parse(new File(workingContext.getLocationStore(), files[i]).getPath());
       } catch (IOException e) {
         throw new LocationException(e, LocationException.LOCATION_LOAD_ERROR);
       } catch (SAXException e) {
+        e.printStackTrace();
         throw new LocationException(e, LocationException.LOCATION_LOAD_ERROR);
       }
 
@@ -152,6 +106,7 @@ public final class LocationLoader {
         for (Iterator j = subList.iterator(); j.hasNext();) {
 
           LocationDescriptor d = (LocationDescriptor) j.next();
+
           if (locations.containsKey(d.getId())) {
             locations.remove(d.getId());
             throw new LocationException(
@@ -160,38 +115,11 @@ public final class LocationLoader {
             );
           }
 
-          // Get the authenticator
-          //
-          AuthenticatorDescriptor authDescriptor = (AuthenticatorDescriptor) authenticators.get(d.getId());
-
-          if (authDescriptor == null) {
-            throw new LocationException(LocationException.AUTHENTICATOR_NOT_FOUND, new Object[]{d.getId()});
-          }
-          locations.put(d.getId(), getLocation(d, authDescriptor));
+          Location location = LocationFactory.getInstance().createLocation(d);
+          locations.put(location.getId(), location);
         }
       }
     }
-  }
-
-  private Location getLocation(LocationDescriptor locDescriptor, AuthenticatorDescriptor authDescriptor) {
-
-    if (Location.Type.CVS_REPOSITORY.type.equals(locDescriptor.getType().toUpperCase())) {
-
-      CVSLocationImpl cvsLocation = new CVSLocationImpl(locDescriptor.getId());
-
-      cvsLocation.setProtocol(locDescriptor.getProtocol());
-      cvsLocation.setHost(locDescriptor.getHost());
-      cvsLocation.setPort(new Integer(locDescriptor.getPort()).intValue());
-      cvsLocation.setRepository(locDescriptor.getRepository());
-
-      cvsLocation.setUsername(authDescriptor.getUsername());
-
-      return cvsLocation;
-
-    } else if (Location.Type.SUBVERSION_REPOSITORY.type.equals(locDescriptor.getType().toUpperCase())) {
-      return new SubversionLocationImpl(locDescriptor.getId());
-    }
-    return null;
   }
 
   /**
@@ -206,7 +134,8 @@ public final class LocationLoader {
   /**
    * Gets a <code>Location</code> instance by its <code>locationAlias</code>.
    *
-   * @param locationAlias The <code>location</code>-attribute from the <code>module</code>-element in the manifest.
+   * @param  locationAlias      The <code>location</code>-attribute from the <code>module</code>-element
+   *                            in the manifest.
    * @return A <code>Location</code> instance, representing e.g. a CVS repository or a Maven repository.
    * @throws LocationException See {@link LocationException#LOCATION_NOT_FOUND}.
    */

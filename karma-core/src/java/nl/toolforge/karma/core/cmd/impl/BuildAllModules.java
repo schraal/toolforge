@@ -78,11 +78,13 @@ public class BuildAllModules extends DefaultCommand {
 
       Command command = null;
       try {
-        String commandLineString = "pm -m " + module.getName() + " -n";
+        String commandLineString = PackageModule.COMMAND_NAME + " -m " + module.getName() + " -n";
+
         command = CommandFactory.getInstance().getCommand(commandLineString);
         command.setContext(getContext());
         command.registerCommandResponseListener(getResponseListener());
         command.execute();
+        
       } catch (CommandException ce) {
         if (ce.getErrorCode().equals(CommandException.DEPENDENCY_DOES_NOT_EXIST) ||
             ce.getErrorCode().equals(CommandException.BUILD_FAILED) ) {

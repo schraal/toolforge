@@ -6,7 +6,8 @@ import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.LocationLoader;
 import nl.toolforge.karma.core.manifest.ManifestCollector;
 import nl.toolforge.karma.core.manifest.ManifestLoader;
-import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
+import nl.toolforge.karma.core.vc.Authenticator;
+import nl.toolforge.karma.core.vc.cvs.CVSRepository;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -88,7 +89,6 @@ public final class WorkingContext {
     }
   }
 
-
   /**
    * Base directory
    */
@@ -99,12 +99,15 @@ public final class WorkingContext {
   public static final String MANIFEST_STORE_HOST = "manifest-store.cvs.host";
   public static final String MANIFEST_STORE_PORT = "manifest-store.cvs.port";
   public static final String MANIFEST_STORE_REPOSITORY = "manifest-store.cvs.repository";
+  public static final String MANIFEST_STORE_MODULE = "manifest-store.cvs.module"; // Including offset
+//  public static final String MANIFEST_STORE_OFFSET = "manifest-store.cvs.offset";
   public static final String MANIFEST_STORE_PROTOCOL = "manifest-store.cvs.protocol";
   public static final String MANIFEST_STORE_USERNAME = "manifest-store.cvs.username";
 
   public static final String LOCATION_STORE_HOST = "location-store.cvs.host";
   public static final String LOCATION_STORE_PORT = "location-store.cvs.port";
   public static final String LOCATION_STORE_REPOSITORY = "location-store.cvs.repository";
+  public static final String LOCATION_STORE_MODULE = "location-store.cvs.module";
   public static final String LOCATION_STORE_PROTOCOL = "location-store.cvs.protocol";
   public static final String LOCATION_STORE_USERNAME = "location-store.cvs.username";
 
@@ -235,7 +238,7 @@ public final class WorkingContext {
           new ConfigurationItem(MANIFEST_STORE_PROTOCOL, "What is your CVS server protocol ? (pserver|local)", "local")
       );
     } else {
-      if (CVSLocationImpl.PSERVER.equals(protocol)) {
+      if (CVSRepository.PSERVER.equals(protocol)) {
         if ((String) configuration.getProperty(MANIFEST_STORE_HOST) == null) {
           invalids.add(
               new ConfigurationItem(MANIFEST_STORE_HOST, "At which host is your CVS server located ?", "127.0.0.1")
@@ -246,17 +249,16 @@ public final class WorkingContext {
               new ConfigurationItem(MANIFEST_STORE_PORT, "What is your CVS server port ?", "2401")
           );
         }
-        if ((String) configuration.getProperty(MANIFEST_STORE_REPOSITORY) == null) {
-          invalids.add(
-              new ConfigurationItem(MANIFEST_STORE_REPOSITORY, "Which repository is used for the 'manifests' module ?", "/home/cvs")
-          );
-        }
-      } else {
-        if ((String) configuration.getProperty(MANIFEST_STORE_REPOSITORY) == null) {
-          invalids.add(
-              new ConfigurationItem(MANIFEST_STORE_REPOSITORY, "Which repository is used for the 'manifests' module ?", "/home/cvs")
-          );
-        }
+      }
+      if ((String) configuration.getProperty(MANIFEST_STORE_REPOSITORY) == null) {
+        invalids.add(
+            new ConfigurationItem(MANIFEST_STORE_REPOSITORY, "Which repository is used for the manifest store ?", "/home/cvs")
+        );
+      }
+      if ((String) configuration.getProperty(MANIFEST_STORE_MODULE) == null) {
+        invalids.add(
+            new ConfigurationItem(MANIFEST_STORE_MODULE, "Which module is used for the manifests ?", "manifests")
+        );
       }
       if ((String) configuration.getProperty(MANIFEST_STORE_USERNAME) == null) {
         invalids.add(new ConfigurationItem(MANIFEST_STORE_USERNAME, "What is your login username ?", null));
@@ -276,7 +278,7 @@ public final class WorkingContext {
           new ConfigurationItem(LOCATION_STORE_PROTOCOL, "What is your CVS server protocol ? (pserver|local)", "local")
       );
     } else {
-      if (CVSLocationImpl.PSERVER.equals(protocol)) {
+      if (CVSRepository.PSERVER.equals(protocol)) {
         if ((String) configuration.getProperty(LOCATION_STORE_HOST) == null) {
           invalids.add(
               new ConfigurationItem(LOCATION_STORE_HOST, "At which host is your CVS server located ?", "127.0.0.1")
@@ -287,17 +289,16 @@ public final class WorkingContext {
               new ConfigurationItem(LOCATION_STORE_PORT, "What is your CVS server port ?", "2401")
           );
         }
-        if ((String) configuration.getProperty(LOCATION_STORE_REPOSITORY) == null) {
-          invalids.add(
-              new ConfigurationItem(LOCATION_STORE_REPOSITORY, "Which repository is used for the 'locations' module ?", "/home/cvs")
-          );
-        }
-      } else {
-        if ((String) configuration.getProperty(LOCATION_STORE_REPOSITORY) == null) {
-          invalids.add(
-              new ConfigurationItem(LOCATION_STORE_REPOSITORY, "Which repository is used for the 'locations' module ?", "/home/cvs")
-          );
-        }
+      }
+      if ((String) configuration.getProperty(LOCATION_STORE_REPOSITORY) == null) {
+        invalids.add(
+            new ConfigurationItem(LOCATION_STORE_REPOSITORY, "Which repository is used for the 'locations' module ?", "/home/cvs")
+        );
+      }
+      if ((String) configuration.getProperty(LOCATION_STORE_MODULE) == null) {
+        invalids.add(
+            new ConfigurationItem(LOCATION_STORE_MODULE, "What module is used for your locations ?", "locations")
+        );
       }
       if ((String) configuration.getProperty(LOCATION_STORE_USERNAME) == null) {
         invalids.add(new ConfigurationItem(LOCATION_STORE_USERNAME, "What is your login username ?", null));
@@ -334,7 +335,13 @@ public final class WorkingContext {
    * @throws IOException When the configuration could not be stored.
    */
   public void storeConfiguration() throws IOException {
+
     getConfiguration().store(new FileOutputStream(getConfigurationFile()), "");
+
+    // We know we are dealing with VersionControlSystem instances, so we can cast,
+    //
+    storeAuthentication("manifest-store", configuration.getProperty(MANIFEST_STORE_USERNAME));
+    storeAuthentication("location-store", configuration.getProperty(LOCATION_STORE_USERNAME));
   }
 
   public class ConfigurationItem {
@@ -372,10 +379,21 @@ public final class WorkingContext {
       throw new KarmaRuntimeException("Local environment has not been initialized. Call initialize().");
     }
 
-    CVSLocationImpl location = new CVSLocationImpl("manifest-store");
+    CVSRepository location = new CVSRepository("manifest-store");
 
     try {
       location.setRepository(configuration.getProperty(MANIFEST_STORE_REPOSITORY));
+
+      String module = configuration.getProperty(MANIFEST_STORE_MODULE);
+
+      if (module.lastIndexOf("/") > 0) {
+        location.setOffset(module.substring(0, module.lastIndexOf("/")));
+      } else if (module.lastIndexOf("/") > 0) {
+        location.setOffset(module.substring(0, module.lastIndexOf("\\")));
+      } else {
+        location.setOffset(null);
+      }
+
     } catch (Exception e) {
       throw new LocationException(LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_REPOSITORY+"'"});
     }
@@ -384,7 +402,7 @@ public final class WorkingContext {
     } catch (Exception e) {
       throw new LocationException(LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_PROTOCOL+"'"});
     }
-    if (!location.getProtocol().equals(CVSLocationImpl.LOCAL)) {
+    if (!location.getProtocol().equals(CVSRepository.LOCAL)) {
       try {
         location.setHost(configuration.getProperty(MANIFEST_STORE_HOST));
       } catch (Exception e) {
@@ -401,12 +419,13 @@ public final class WorkingContext {
         throw new LocationException(LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_USERNAME+"'"});
       }
     }
+
     return location;
   }
 
   /**
    * Gets a reference to the location where <code>location.xml</code> can be retrieved. Supports only CVS for now (a
-   * <code>CVSLocationImpl</code> is returned).
+   * <code>CVSRepository</code> is returned).
    */
   public Location getLocationStoreLocation() throws LocationException {
 
@@ -414,9 +433,20 @@ public final class WorkingContext {
       throw new KarmaRuntimeException("Local environment has not been initialized. Call initialize().");
     }
 
-    CVSLocationImpl location = new CVSLocationImpl("location-store");
+    CVSRepository location = new CVSRepository("location-store");
     try {
       location.setRepository(configuration.getProperty(LOCATION_STORE_REPOSITORY));
+
+      String module = configuration.getProperty(LOCATION_STORE_MODULE);
+
+      if (module.lastIndexOf("/") > 0) {
+        location.setOffset(module.substring(0, module.lastIndexOf("/")));
+      } else if (module.lastIndexOf("/") > 0) {
+        location.setOffset(module.substring(0, module.lastIndexOf("\\")));
+      } else {
+        location.setOffset(null);
+      }
+
     } catch (Exception e) {
       throw new LocationException(LocationException.INVALID_LOCATION_STORE_LOCATION, new Object[]{"'"+LOCATION_STORE_REPOSITORY+"'"});
     }
@@ -425,7 +455,7 @@ public final class WorkingContext {
     } catch (Exception e) {
       throw new LocationException(LocationException.INVALID_LOCATION_STORE_LOCATION, new Object[]{"'"+LOCATION_STORE_PROTOCOL+"'"});
     }
-    if (!location.getProtocol().equals(CVSLocationImpl.LOCAL)) {
+    if (!location.getProtocol().equals(CVSRepository.LOCAL)) {
       try {
         location.setHost(configuration.getProperty(LOCATION_STORE_HOST));
       } catch (Exception e) {
@@ -442,7 +472,22 @@ public final class WorkingContext {
         throw new LocationException(LocationException.INVALID_LOCATION_STORE_LOCATION, new Object[]{"'"+LOCATION_STORE_USERNAME+"'"});
       }
     }
+
     return location;
+  }
+
+  /**
+   *
+   * @param id
+   * @param userName
+   */
+  private void storeAuthentication(String id, String userName) {
+
+    Authenticator authenticator = new Authenticator();
+    authenticator.setId(id);
+    authenticator.setUsername(userName);
+
+    authenticator.addAuthenticator(authenticator);
   }
 
 
@@ -522,20 +567,77 @@ public final class WorkingContext {
   }
 
   /**
-   * Returns a <code>File</code> reference to the manifest store directory for the working context. When the directory
+   * Returns a <code>File</code> reference to the administration directory for the working context. When the directory
    * does not exist, it will be created. This directory is a direct subdirectory for
    * {@link #getWorkingContextProjectDir}.
    *
-   * @return A reference to the manifest store directory.
+   * @return A reference to the administration directory.
    */
-  public  File getManifestStore() {
+  public File getAdminDir() {
 
-    File m = new File(getWorkingContextProjectDir(), "manifests");
+    File m = new File(getWorkingContextProjectDir(), ".admin");
     if (!m.exists()) {
       m.mkdir();
     }
 
     return m;
+  }
+
+
+  /**
+   * Gets the module name from the value of the <code>MANIFEST_STORE_MODULE</code> property by grabbing the bit after
+   * the last <code>"/"</code>.
+   */
+  public String getManifestStoreModule() {
+
+    String module = configuration.getProperty(MANIFEST_STORE_MODULE);
+
+    if (module.lastIndexOf("/") > 0) {
+      return module.substring(0, module.lastIndexOf("/"));
+    } else if (module.lastIndexOf("/") > 0) {
+      return module.substring(0, module.lastIndexOf("\\"));
+    } else {
+      return module;
+    }
+  }
+
+  /**
+   * Gets the module name from the value of the <code>LOCATION_STORE_MODULE</code> property by grabbing the bit after
+   * the last <code>"/"</code>.
+   */
+  public String getLocationStoreModule() {
+
+    String module = configuration.getProperty(LOCATION_STORE_MODULE);
+
+    if (module.lastIndexOf("/") > 0) {
+      return module.substring(0, module.lastIndexOf("/"));
+    } else if (module.lastIndexOf("/") > 0) {
+      return module.substring(0, module.lastIndexOf("\\"));
+    } else {
+      return module;
+    }
+  }
+
+
+  /**
+   * Returns a <code>File</code> reference to the location store directory for the working context. When the directory
+   * does not exist, it will be created. This directory is a direct subdirectory for
+   * {@link #getWorkingContextProjectDir}.
+   *
+   * @return A reference to the location store directory.
+   */
+  public File getManifestStore() {
+
+    // Hardcoded ...
+
+//    new File(getAdminDir(), "manifest-store").mkdir();
+
+    File l = new File(new File(getAdminDir(), "manifest-store"), configuration.getProperty(MANIFEST_STORE_MODULE)); // including offset
+    if (!l.exists()) {
+      l.mkdir();
+    }
+
+    return l;
   }
 
   /**
@@ -547,7 +649,11 @@ public final class WorkingContext {
    */
   public File getLocationStore() {
 
-    File l = new File(getWorkingContextProjectDir(), "locations");
+    // Hardcoded ...
+
+//    new File(getAdminDir(), "location-store").mkdir();
+
+    File l = new File(new File(getAdminDir(), "location-store"), configuration.getProperty(LOCATION_STORE_MODULE)); // including offset
     if (!l.exists()) {
       l.mkdir();
     }
@@ -575,13 +681,12 @@ public final class WorkingContext {
   /**
    * Returns the <code>File</code> location for the repository where <code>jar</code>-dependencies can be found. The
    * system property {@link LOCAL_REPOSITORY} is used to determine the location. If not set, the default jar
-   * repository ($HOME/.karma/.repository) is returned. If the directory does not exist, or denotes a file, an
-   * IOException it thrown.
+   * repository ($HOME/.karma/.repository) is returned. If the directory does not exist, a <code>.repository</code> is
+   * created relative to {@link #getConfigurationBaseDir}.
    *
    * @return See method description.
-   * @throws IOException When the local repository directory does not exist.
    */
-  public static File getLocalRepository() throws IOException {
+  public static File getLocalRepository() {
 
     if (localRepositoryBaseDir == null) {
       localRepositoryBaseDir = new File(getConfigurationBaseDir(), ".repository");

@@ -27,6 +27,7 @@ import nl.toolforge.karma.core.cmd.CommandFactory;
 import nl.toolforge.karma.core.cmd.CommandLoadException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.CompositeCommand;
+import nl.toolforge.karma.core.cmd.ErrorMessage;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.cmd.threads.ParallelCommandWrapper;
 import nl.toolforge.karma.core.manifest.Manifest;
@@ -82,7 +83,6 @@ public class UpdateAllModulesCommand extends CompositeCommand {
    * This command will update all modules in the active manifest from the version control system. An update is done when
    * the module is already present, otherwise a checkout will be performed. The checkout directory for the module
    * is relative to the root directory of the <code>active</code> manifest.
-   *
    */
   public void execute() throws CommandException {
 
@@ -92,8 +92,6 @@ public class UpdateAllModulesCommand extends CompositeCommand {
       throw new CommandException(ManifestException.NO_ACTIVE_MANIFEST);
     }
 
-    // todo what to do about jarmodules etc ?
-    //
     Collection modules = getContext().getCurrentManifest().getAllModules().values();
 
     // Initialize an array of threads.
@@ -124,6 +122,15 @@ public class UpdateAllModulesCommand extends CompositeCommand {
 
       try {
         threads[i].join();
+
+        if (threads[i].getException() != null) {
+          getCommandResponse().addMessage(
+              new ErrorMessage(
+                  threads[i].getException().getErrorCode(),
+                  threads[i].getException().getMessageArguments()
+              )
+          );
+        }
       } catch (InterruptedException e) {
         throw new KarmaRuntimeException(e.getMessage());
       }

@@ -36,6 +36,7 @@ public final class ParallelCommandWrapper extends Thread {
 
   private Command command = null;
   private CommandResponseListener listener;
+  private CommandException exception = null;
 
   public ParallelCommandWrapper(Command command, CommandResponseListener listener) {
     this.command = command;
@@ -55,8 +56,7 @@ public final class ParallelCommandWrapper extends Thread {
       command.execute();
 
     } catch (CommandException c) {
-      c.printStackTrace();
-//      todo iso throwing the exception to the calling class, we have to catch it and store it so the
+      exception = c;
     } finally {
       stopRunning();
     }
@@ -78,6 +78,16 @@ public final class ParallelCommandWrapper extends Thread {
 
   public synchronized boolean isRunning() {
     return running;
+  }
+
+  /**
+   * Returns the <code>CommandException</code> when the <code>run</code>-method had thrown one. This method can thus be
+   * used to check the actual results (if an error occurred).
+   *
+   * @return A <code>CommandException</code> or <code>null</code> if no exception was thrown.
+   */
+  public CommandException getException() {
+    return exception;
   }
 
 }

@@ -66,15 +66,6 @@ public final class ReleaseManifest extends AbstractManifest {
    */
   protected void applyWorkingContext(WorkingContext context, Module module) {
 
-    try {
-      File manifestDirectory = new File(context.getDevelopmentHome(), getName());
-      module.setBaseDir(new File(manifestDirectory, module.getName()));
-    } catch(Exception e) {
-      // Basically, if we can't do this, we have nothing ... really a RuntimeException
-      //
-      throw new KarmaRuntimeException("Could not set base directory for module " + module.getName());
-    }
-
     module.markDevelopmentLine(false);
 
     if (!isLocal(module)) {
@@ -82,10 +73,6 @@ public final class ReleaseManifest extends AbstractManifest {
       //
       setState(module, Module.STATIC);
     }
-
-    // As a last check, determine if an 'old' local version is available.
-    //
-    removeLocal(module);
   }
 
 }

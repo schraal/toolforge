@@ -1,11 +1,5 @@
 package nl.toolforge.karma.core.cmd.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
@@ -15,6 +9,11 @@ import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.Utils;
+
+import java.io.File;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Dependency management is heavily used by Karma. This helper class provides methods to resolve dependencies, check
@@ -171,27 +170,24 @@ public final class DependencyHelper {
     for (Iterator iterator = module.getDependencies().iterator(); iterator.hasNext();) {
 
       ModuleDependency dep = (ModuleDependency) iterator.next();
-      try {
-        if (dep.isLibModuleDependency() || !dep.isModuleDependency()) {
-          DependencyPath path;
-          if (dep.isLibModuleDependency()) {
-            //dep on jar in lib module. This one is relative to the base dir of the manifest.
-            path = new DependencyPath(manifest.getBaseDirectory(), new File(dep.getJarDependency()));
-          } else {
-            //dep on jar in Maven-style repo.
-            path = new DependencyPath(WorkingContext.getLocalRepository(), new File(dep.getJarDependency()));
-          }
-          if (!path.exists()) {
-            // todo this bit could have to download the dependency, like maven does.
-            throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getJarDependency()});
-          }
 
-          if (!doPackage || dep.doPackage()) {
-              s.add(path);
-          }
+      if (dep.isLibModuleDependency() || !dep.isModuleDependency()) {
+        DependencyPath path;
+        if (dep.isLibModuleDependency()) {
+          //dep on jar in lib module. This one is relative to the base dir of the manifest.
+          path = new DependencyPath(manifest.getBaseDirectory(), new File(dep.getJarDependency()));
+        } else {
+          //dep on jar in Maven-style repo.
+          path = new DependencyPath(WorkingContext.getLocalRepository(), new File(dep.getJarDependency()));
         }
-      } catch (IOException e) {
-        throw new DependencyException(e, DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getJarDependency()});
+        if (!path.exists()) {
+          // todo this bit could have to download the dependency, like maven does.
+          throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getJarDependency()});
+        }
+
+        if (!doPackage || dep.doPackage()) {
+          s.add(path);
+        }
       }
     }
     return s;

@@ -19,7 +19,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.location;
 
 import nl.toolforge.karma.core.test.BaseTest;
-import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
+import nl.toolforge.karma.core.vc.cvs.CVSRepository;
+import nl.toolforge.karma.core.vc.VersionControlSystem;
 
 /**
  * @author D.A. Smedes
@@ -45,7 +46,7 @@ public class TestLocationLoader extends BaseTest {
 
       assertEquals(loader.getLocations().keySet().size(), 6);
 
-      assertEquals(((CVSLocationImpl) loader.get("test-id-1")).getUsername(), "asmedes");
+      assertEquals("modules", ((VersionControlSystem) loader.get("test-id-1")).getModuleOffset());
 
     } catch (LocationException e) {
       fail(e.getMessage());

@@ -18,9 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.location;
 
-
-
-
 /**
  * <code>BaseLocation</code> implements some generic <code>Location</code> functionality.
  *
@@ -30,7 +27,7 @@ package nl.toolforge.karma.core.location;
 public abstract class BaseLocation implements Location {
 
   private String id = null;
-  private Location.Type type = null;
+  private LocationType type = null;
 
   /**
    * Constructs a <code>Location</code> skeleton.
@@ -38,7 +35,7 @@ public abstract class BaseLocation implements Location {
    * @param id   The unique identifier for the location. Cannot be null.
    * @param type The type of the location. Cannot be null.
    */
-  public BaseLocation(String id, Location.Type type) {
+  public BaseLocation(String id, LocationType type) {
 
     if (id == null) {
       throw new IllegalArgumentException("Location id must be set.");
@@ -50,7 +47,7 @@ public abstract class BaseLocation implements Location {
     this.type = type;
   }
 
-  public final Location.Type getType() {
+  public final LocationType getType() {
     return type;
   }
 

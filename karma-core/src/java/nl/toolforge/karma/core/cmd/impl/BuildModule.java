@@ -29,10 +29,19 @@ import nl.toolforge.karma.core.cmd.util.BuildEnvironment;
 import nl.toolforge.karma.core.cmd.util.DependencyException;
 import nl.toolforge.karma.core.cmd.util.DependencyHelper;
 import nl.toolforge.karma.core.manifest.ModuleTypeException;
+import nl.toolforge.karma.launcher.KarmaLauncher;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
+import java.util.Arrays;
+import java.util.Set;
+import java.util.Iterator;
 
 /**
  * Builds a module in a manifest. Building a module means that all java sources will be compiled into the
@@ -74,6 +83,46 @@ public class BuildModule extends AbstractBuildCommand {
       project.setProperty("classpath", helper.getClassPath(getCurrentModule()));
       project.setProperty("module-source-dir", env.getModuleSourceDirectory().getPath());
 
+
+//      //
+//      //
+//
+//      Set s1 = helper.getJarDependencies(getCurrentModule());
+//      s1.addAll(helper.getModuleDependencies(getCurrentModule()));
+//
+//      String[] deps = new String[s1.size() + 1];
+//
+//      deps[0] = "/tmp/dev/build";
+//
+//      int j = 1;
+//      for (Iterator i = s1.iterator(); i.hasNext();) {
+//        deps[j] = (String) i.next();
+//        j++;
+//      }
+//
+//      try {
+//        KarmaLauncher.getInstance().run(
+//            "nl.toolforge.karma.core.cmd.util.AntJavacWrapper",
+//            "compile",
+//            new Object[]{project},
+//            deps
+//        );
+//
+//      } catch (IllegalAccessException e) {
+//        e.printStackTrace();
+//      } catch (NoSuchMethodException e) {
+//        e.printStackTrace();
+//      } catch (FileNotFoundException e) {
+//        e.printStackTrace();
+//      } catch (IOException e) {
+//        e.printStackTrace();
+//      } catch (InvocationTargetException e) {
+//        e.printStackTrace();
+//      } catch (ClassNotFoundException e) {
+//        e.printStackTrace();
+//      }
+
+
       project.executeTarget("run");
 
     } catch (DependencyException e) {
@@ -95,4 +144,7 @@ public class BuildModule extends AbstractBuildCommand {
   public CommandResponse getCommandResponse() {
     return this.commandResponse;
   }
+
+
+
 }

@@ -36,6 +36,8 @@ public class CommandException extends Exception {
 
   public static final ErrorCode NO_IMPLEMENTING_CLASS = new ErrorCode(EXCEPTION_PREFIX + "00001");
 
+  public static final ErrorCode UNKNOWN_COMMAND = new ErrorCode(EXCEPTION_PREFIX + "00029");
+
   /**
    * The command that is requested from <code>CommandFactory.getCommand()</code> is invalid. The command could
    * not be created.
@@ -151,7 +153,9 @@ public class CommandException extends Exception {
   /**
    * Thrown when a module is not working and the user wants to stop work on it.
    */
-  public static final ErrorCode INVALID_STATE_MODULE_NOT_WORKING = new ErrorCode(EXCEPTION_PREFIX + "00102");;
+  public static final ErrorCode INVALID_STATE_MODULE_NOT_WORKING = new ErrorCode(EXCEPTION_PREFIX + "00102");
+
+  public static final ErrorCode MODULE_NOT_LOCAL = new ErrorCode(EXCEPTION_PREFIX + "00103");
 
   public CommandException(ErrorCode errorCode) {
     this(errorCode, null);

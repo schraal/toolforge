@@ -46,6 +46,7 @@ public abstract class BaseModule implements Module {
   private String name = null;
 
   private File baseDir = null;
+  private File checkoutDir = null;
 
   private Version version = null;
   private boolean patchLine = false;
@@ -173,6 +174,27 @@ public abstract class BaseModule implements Module {
       throw new KarmaRuntimeException("Basedir not set.");
     }
     return baseDir;
+  }
+
+  public final void setCheckoutDir(File checkoutDir) {
+
+    if (checkoutDir == null) {
+      throw new IllegalArgumentException("If you use it, initialize it with a valid 'File' instance ...");
+    }
+    this.checkoutDir = checkoutDir;
+  }
+
+  /**
+   * Warning, as for {@link #getBaseDir}, this method will throw a KarmaRuntimeException when the checkoutdir has not
+   * been set.
+   *
+   * @return The directory where a version control system should check out the module.
+   */
+  public final File getCheckoutDir() {
+    if (checkoutDir == null) {
+      throw new KarmaRuntimeException("CheckoutDir not set.");
+    }
+    return checkoutDir;
   }
 
   /**

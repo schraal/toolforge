@@ -47,12 +47,15 @@ public final class TestWorkingContext extends TestCase {
 //      p.put(WorkingContext.MANIFEST_STORE_HOST, "one");
 //      p.put(WorkingContext.MANIFEST_STORE_PORT, "four");
       p.put(WorkingContext.MANIFEST_STORE_USERNAME, "five");
+      p.put(WorkingContext.MANIFEST_STORE_MODULE, "six");
 
       p.put(WorkingContext.LOCATION_STORE_PROTOCOL, "pserver");
       p.put(WorkingContext.LOCATION_STORE_HOST, "one");
       p.put(WorkingContext.LOCATION_STORE_REPOSITORY, "two");
       p.put(WorkingContext.LOCATION_STORE_PORT, "four");
       p.put(WorkingContext.LOCATION_STORE_USERNAME, "five");
+      p.put(WorkingContext.LOCATION_STORE_MODULE, "six");
+
 
     } catch (IOException e) {
       fail(e.getMessage());
@@ -80,8 +83,8 @@ public final class TestWorkingContext extends TestCase {
 
     assertEquals(projectsDir, ctx.getProjectBaseDirectory());
     assertEquals(new File(projectsDir, "blaat"), ctx.getWorkingContextProjectDir());
-    assertEquals(new File(projectsDir, "blaat/manifests"), ctx.getManifestStore());
-    assertEquals(new File(projectsDir, "blaat/locations"), ctx.getLocationStore());
+    assertEquals(new File(projectsDir, "blaat/.admin/manifest-store/six"), ctx.getManifestStore());
+    assertEquals(new File(projectsDir, "blaat/.admin/location-store/six"), ctx.getLocationStore());
     assertEquals(new File(projectsDir, "blaat/projects"), ctx.getDevelopmentHome());
   }
 

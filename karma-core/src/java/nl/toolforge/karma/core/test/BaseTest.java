@@ -71,12 +71,15 @@ public class BaseTest extends TestCase {
     p.put(WorkingContext.MANIFEST_STORE_PROTOCOL, "local");
     p.put(WorkingContext.MANIFEST_STORE_REPOSITORY, "/tmp/test-CVSROOT");
     p.put(WorkingContext.MANIFEST_STORE_USERNAME, "asmedes");
+    p.put(WorkingContext.MANIFEST_STORE_MODULE, "");
 
     p.put(WorkingContext.LOCATION_STORE_HOST, "localhost");
     p.put(WorkingContext.LOCATION_STORE_PORT, "2401");
     p.put(WorkingContext.LOCATION_STORE_PROTOCOL, "local");
     p.put(WorkingContext.LOCATION_STORE_REPOSITORY, "/tmp/test-CVSROOT");
     p.put(WorkingContext.LOCATION_STORE_USERNAME, "asmedes");
+    p.put(WorkingContext.LOCATION_STORE_MODULE, "");
+
 
     ctx = new WorkingContext("test", wcBaseDir, projectBaseDir, p);
 
@@ -105,6 +108,11 @@ public class BaseTest extends TestCase {
 
   public void tearDown() {
     try {
+
+      MyFileUtils.makeWriteable(wcBaseDir);
+      MyFileUtils.makeWriteable(projectBaseDir);
+      MyFileUtils.makeWriteable(localRepo);
+
       FileUtils.deleteDirectory(wcBaseDir);
       FileUtils.deleteDirectory(projectBaseDir);
       FileUtils.deleteDirectory(localRepo);

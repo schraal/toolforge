@@ -21,6 +21,8 @@ package nl.toolforge.karma.core.vc.subversion;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.vc.ManagedFile;
 import nl.toolforge.karma.core.vc.VersionControlSystem;
+import nl.toolforge.karma.core.vc.AuthenticationException;
+import nl.toolforge.karma.core.location.LocationType;
 
 /**
  * <p>Subversion implementation of the version control system.
@@ -31,18 +33,33 @@ import nl.toolforge.karma.core.vc.VersionControlSystem;
  * @author D.A. Smedes
  * @version $Id$
  */
-public class SubversionRepository implements VersionControlSystem {
+public class SubversionRepository extends VersionControlSystem {
 
+  public SubversionRepository(String id) {
+    super(id, LocationType.SUBVERSION);
+  }  
 
-	public void checkout(Module module) {
-	}
+  public void authenticate() throws AuthenticationException {
 
-	public void update(Module module) {
-	}
+  }
 
-	public void commit(ManagedFile file) {
-	}
+  protected String getPassword() {
+    return null;
+  }
 
-	public void commit(Module module) {
-	}
+  public boolean isAvailable() {
+    return false;
+  }
+
+  public void checkout(Module module) {
+  }
+
+  public void update(Module module) {
+  }
+
+  public void commit(ManagedFile file) {
+  }
+
+  public void commit(Module module) {
+  }
 }

@@ -92,7 +92,6 @@ public final class KarmaConsole {
 
         if (immediate) {
 
-//          ConsoleWriter writer = new ConsoleWriter(true);
           String text = FRONTEND_MESSAGES.getString("message.THANK_YOU");
           int length = text.length();
 

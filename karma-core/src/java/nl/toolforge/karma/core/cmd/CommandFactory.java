@@ -248,7 +248,7 @@ public final class CommandFactory {
     }
     // At this point, we have no command
     //
-    throw new CommandException(CommandException.INVALID_COMMAND, new Object[]{commandLineString});
+    throw new CommandException(CommandException.UNKNOWN_COMMAND, new Object[]{commandName});
   }
 
   /**

@@ -169,6 +169,7 @@ public class TestCVSRunner extends LocalCVSInitializer {
       runner.update(module, new Version("0-1")); // On the mainline (HEAD)
 
       assertTrue(response.isOK());
+      assertTrue("Should be readonly.", !new File(module.getBaseDir(), Module.MODULE_DESCRIPTOR).canWrite());
 
     } catch (VersionControlException c) {
       fail(c.getMessage());

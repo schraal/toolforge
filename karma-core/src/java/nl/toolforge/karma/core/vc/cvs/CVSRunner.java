@@ -38,9 +38,11 @@ import nl.toolforge.karma.core.vc.PatchLine;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.SymbolicName;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.VersionControlSystem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.tools.ant.DirectoryScanner;
 import org.netbeans.lib.cvsclient.Client;
 import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
 import org.netbeans.lib.cvsclient.command.CommandException;
@@ -55,6 +57,8 @@ import org.netbeans.lib.cvsclient.command.tag.TagCommand;
 import org.netbeans.lib.cvsclient.command.update.UpdateCommand;
 import org.netbeans.lib.cvsclient.connection.AuthenticationException;
 import org.netbeans.lib.cvsclient.connection.Connection;
+import org.netbeans.lib.cvsclient.connection.ConnectionFactory;
+import org.netbeans.lib.cvsclient.connection.PServerConnection;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -110,22 +114,30 @@ public final class CVSRunner implements Runner {
    */
   public CVSRunner(Location location) throws CVSException {
 
-    CVSLocationImpl cvsLocation = null;
+    CVSRepository cvsLocation = null;
     try {
-      cvsLocation = ((CVSLocationImpl) location);
+      cvsLocation = ((CVSRepository) location);
     } catch (ClassCastException e) {
-      logger.error("Wrong type for location. Should be CVSLocationImpl.", e);
-      throw new KarmaRuntimeException("Wrong type for location. Should be CVSLocationImpl.", e);
+      logger.error("Wrong type for location. Should be CVSRepository.", e);
+      throw new KarmaRuntimeException("Wrong type for location. Should be CVSRepository.", e);
     }
 
-    this.connection = cvsLocation.getConnection();
+    try {
+      cvsLocation.authenticate();
+    } catch (nl.toolforge.karma.core.vc.AuthenticationException e) {
+      throw new CVSException(CVSException.AUTHENTICATION_ERROR);
+    }
 
+    connection = ConnectionFactory.getConnection(cvsLocation.getCVSRoot());
+    if (connection instanceof PServerConnection) {
+      ((PServerConnection) connection).setEncodedPassword(cvsLocation.getPassword());
+    }
     // The default ...
     //
     this.listener = new CVSResponseAdapter();
 
     logger.debug("CVSRunner using CVSROOT : " + cvsLocation.toString());
-    globalOptions.setCVSRoot(cvsLocation.getCVSRootAsString());
+    globalOptions.setCVSRoot(cvsLocation.getCVSRoot());
   }
 
   private Connection getConnection() {
@@ -139,6 +151,14 @@ public final class CVSRunner implements Runner {
    */
   public void setCommandResponse(CommandResponse response) {
     listener = new CVSResponseAdapter(response);
+  }
+
+  private String getOffSetLocation(Module module) {
+    if (((VersionControlSystem) module.getLocation()).getModuleOffset() == null) {
+      return module.getName();
+    } else {
+      return ((VersionControlSystem) module.getLocation()).getModuleOffset() + "/" + module.getName();
+    }
   }
 
   /**
@@ -168,7 +188,8 @@ public final class CVSRunner implements Runner {
     // Step 1 : create an empty module structure
     //
     ImportCommand importCommand = new ImportCommand();
-    importCommand.setModule(module.getName());
+//    importCommand.setModule(module.getName());
+    importCommand.setModule(getOffSetLocation(module));
     importCommand.setLogMessage("Module " + module.getName() + " created automatically by Karma on " + new Date().toString());
     importCommand.setVendorTag("Karma");
     importCommand.setReleaseTag("MAINLINE_0-0");
@@ -204,7 +225,8 @@ public final class CVSRunner implements Runner {
     } catch (IOException e) {
       throw new KarmaRuntimeException("Panic! Failed to create temporary directory.");
     }
-    module.setBaseDir(new File(tmp, module.getName()));
+    module.setBaseDir(new File(tmp, getOffSetLocation(module)));
+//    module.setBaseDir(new File(tmp, module.getName()));
 
     checkout(module, null, null);
 
@@ -233,7 +255,7 @@ public final class CVSRunner implements Runner {
 
     //module has been created. Now, create the module history.
     try {
-      String author = ((CVSLocationImpl) module.getLocation()).getUsername();
+      String author = ((CVSRepository) module.getLocation()).getUsername();
       addModuleHistoryEvent(null, module, ModuleHistoryEvent.CREATE_MODULE_EVENT, Version.INITIAL_VERSION, new Date(), author, comment);
 
       tag(module, Version.INITIAL_VERSION);
@@ -277,22 +299,23 @@ public final class CVSRunner implements Runner {
   }
 
   public void checkout(Module module, DevelopmentLine developmentLine, Version version) throws CVSException {
-//    checkout(module, developmentLine, version, module.getBaseDir());
-//  }
-//
-//  private void checkout(Module module, DevelopmentLine developmentLine, Version version, File baseDir) throws CVSException {
+
+    MyFileUtils.makeWriteable(module.getBaseDir());
+
+    boolean readonly = false;
 
     Map arguments = new Hashtable();
     arguments.put("MODULE", module.getName());
     arguments.put("REPOSITORY", module.getLocation().getId());
 
     CheckoutCommand checkoutCommand = new CheckoutCommand();
-    checkoutCommand.setModule(module.getName());
+    checkoutCommand.setModule(getOffSetLocation(module));
 
     if ((version != null) || (developmentLine != null)) {
       checkoutCommand.setCheckoutByRevision(Utils.createSymbolicName(module, developmentLine, version).getSymbolicName());
       if (version != null) {
         arguments.put("VERSION", version.toString());
+        readonly = true;
       }
     } else {
       checkoutCommand.setResetStickyOnes(true);
@@ -301,10 +324,22 @@ public final class CVSRunner implements Runner {
     // todo to be investigated further.
     //    checkoutCommand.setPruneDirectories(true);
 
-    executeOnCVS(checkoutCommand, module.getBaseDir().getParentFile(), arguments);
+    // The checkout directory for a module has to be relative to
+
+    executeOnCVS(checkoutCommand, module.getCheckoutDir(), arguments);
+
+    if (readonly) {
+      MyFileUtils.makeReadOnly(module.getBaseDir());
+    }
   }
 
 
+
+  /**
+   * For a module, the <code>cvs -q update -Pd</code> command is executed.
+   *
+   * @param module The module that should be updated.
+   */
   public void update(Module module) throws CVSException {
     update(module, null);
   }
@@ -316,6 +351,8 @@ public final class CVSRunner implements Runner {
    * @param version The version of the module or <code>null</code> when no specific version applies.
    */
   public void update(Module module, Version version) throws CVSException {
+
+    boolean readonly = false;
 
     Map arguments = new Hashtable();
     arguments.put("MODULE", module.getName());
@@ -329,14 +366,19 @@ public final class CVSRunner implements Runner {
       updateCommand.setUpdateByRevision(Utils.createSymbolicName(module, version).getSymbolicName());
       if (version != null) {
         arguments.put("VERSION", version.toString());
+        readonly = true;
       }
     } else {
       updateCommand.setResetStickyOnes(true);
     }
 
-    // todo add data to the exception. this sort of business logic should be here, not in CVSResponseAdapter.
-    //
+// todo add data to the exception. this sort of business logic should be here, not in CVSResponseAdapter.
+//
     executeOnCVS(updateCommand, module.getBaseDir(), arguments);
+
+    if (readonly) {
+      MyFileUtils.makeReadOnly(module.getBaseDir());
+    }
   }
 
   public void add(Module module, File[] files, File[] dirs) throws CVSException {
@@ -362,15 +404,15 @@ public final class CVSRunner implements Runner {
     Map arguments = new Hashtable();
     arguments.put("MODULE", module.getName());
 
-    // Step 1 : Add the file to the CVS repository
-    //
+// Step 1 : Add the file to the CVS repository
+//
     AddCommand addCommand = new AddCommand();
     addCommand.setMessage("Initial checkin in repository by Karma.");
 
     File modulePath = module.getBaseDir();
 
-    // Create temp files
-    //
+// Create temp files
+//
     Collection cvsFilesCollection = new ArrayList();
     int i = 0;
     for (i=0; i < files.length; i++) {
@@ -394,8 +436,8 @@ public final class CVSRunner implements Runner {
       cvsFilesCollection.add(fileToAdd);
     }
 
-    // Create temp directories
-    //
+// Create temp directories
+//
     for (i=0; i < dirs.length; i++) {
       File dirToAdd = new File(modulePath, dirs[i]);
 
@@ -404,8 +446,8 @@ public final class CVSRunner implements Runner {
       }
       logger.debug("Created directory " + dirs[i] + " for module " + module.getName() + ".");
 
-      // Ensure that all directories are added correctly
-      //
+// Ensure that all directories are added correctly
+//
       StringTokenizer tokenizer = new StringTokenizer(dirs[i], "/");
       String base = "";
       while (tokenizer.hasMoreTokens()) {
@@ -419,39 +461,18 @@ public final class CVSRunner implements Runner {
     File[] cvsFiles = (File[]) cvsFilesCollection.toArray(new File[cvsFilesCollection.size()]);
     addCommand.setFiles(cvsFiles);
 
-    // A file is added against a module, thus the contextDirectory is constructed based on the basePoint and the
-    // modules' name.
-    //
+// A file is added against a module, thus the contextDirectory is constructed based on the basePoint and the
+// modules' name.
+//
     executeOnCVS(addCommand, module.getBaseDir(), arguments);
 
-    // Step 2 : Commit the file to the CVS repository
-    //
+// Step 2 : Commit the file to the CVS repository
+//
     CommitCommand commitCommand = new CommitCommand();
     commitCommand.setFiles(cvsFiles);
     commitCommand.setMessage("File added automatically by Karma.");
 
     executeOnCVS(commitCommand, module.getBaseDir(), arguments);
-  }
-
-  /**
-   * For a module, the <code>cvs commit -m "&lt;some-message&gt;"</code>command is executed.
-   *
-   * @param module  The module. Will be committed recursively.
-   * @param message A commit message.
-   */
-  private void commit(Module module, String message) throws CVSException {
-
-    CommitCommand commitCommand = new CommitCommand();
-
-    commitCommand.setFiles(new File[]{module.getBaseDir()});
-    commitCommand.setRecursive(true);
-    commitCommand.setMessage(message);
-
-    executeOnCVS(commitCommand, module.getBaseDir(), null);
-  }
-
-  private void commit(Module module, File file, String message) throws CVSException {
-    commit(null, module, file, message);
   }
 
   private void commit(DevelopmentLine developmentLine, Module module, File file, String message) throws CVSException {
@@ -471,7 +492,7 @@ public final class CVSRunner implements Runner {
 
     try {
       //Add an event to the module history.
-      String author = ((CVSLocationImpl) module.getLocation()).getUsername();
+      String author = ((CVSRepository) module.getLocation()).getUsername();
       addModuleHistoryEvent(null, module, ModuleHistoryEvent.PROMOTE_MODULE_EVENT, version, new Date(), author, comment);
 
       tag(module, version);
@@ -488,9 +509,9 @@ public final class CVSRunner implements Runner {
     tag(module, Utils.createSymbolicName(module, version), false);
   }
 
-  //
-  // Private for the time being
-  //
+//
+// Private for the time being
+//
   private void tag(Module module, SymbolicName symbolicName, boolean branch) throws CVSException {
 
     TagCommand tagCommand = new TagCommand();
@@ -520,8 +541,8 @@ public final class CVSRunner implements Runner {
       throw new KarmaRuntimeException("Only instances of type SourceModule can use this method.");
     }
 
-    // Logs are run on a temporary checkout of the module.info of a module.
-    //
+// Logs are run on a temporary checkout of the module.info of a module.
+//
     File tmp = null;
 
     try {
@@ -533,20 +554,20 @@ public final class CVSRunner implements Runner {
 
       CheckoutCommand checkoutCommand = new CheckoutCommand();
 //      checkoutCommand.setModule(module.getName() + "/" + Module.MODULE_INFO);
-      checkoutCommand.setModule(module.getName() + "/" + Module.MODULE_DESCRIPTOR);
+      checkoutCommand.setModule(getOffSetLocation(module) + "/" + Module.MODULE_DESCRIPTOR);
 
       executeOnCVS(checkoutCommand, tmp, arguments);
 
       LogCommand logCommand = new LogCommand();
 
-      // Determine the location of module.info, relative to where we are.
-      //
-      // Todo a reference to SourceModule is used here. Verify ...
+// Determine the location of module.info, relative to where we are.
+//
+// Todo a reference to SourceModule is used here. Verify ...
 //      File moduleInfo = new File(new File(tmp, module.getName()), Module.MODULE_INFO);
-      File moduleInfo = new File(new File(tmp, module.getName()), Module.MODULE_DESCRIPTOR);
+      File moduleInfo = new File(new File(tmp, getOffSetLocation(module)), Module.MODULE_DESCRIPTOR);
       logCommand.setFiles(new File[]{moduleInfo});
 
-      executeOnCVS(logCommand, new File(tmp, module.getName()), arguments);
+      executeOnCVS(logCommand, new File(tmp, getOffSetLocation(module)), arguments);
 
     } catch (IOException e) {
       throw new KarmaRuntimeException("Panic! Failed to create temporary directory for module " + module.getName());
@@ -579,7 +600,7 @@ public final class CVSRunner implements Runner {
   public void createPatchLine(Module module) throws CVSException {
     try {
       //Add an event to the module history.
-      String author = ((CVSLocationImpl) module.getLocation()).getUsername();
+      String author = ((CVSRepository) module.getLocation()).getUsername();
       tag(module, new CVSTag(module.getPatchLine().getName()), true);
 
       addModuleHistoryEvent(module.getPatchLine(), module, ModuleHistoryEvent.CREATE_PATCH_LINE_EVENT, module.getVersion(), new Date(), author, "Patch line created by Karma");
@@ -607,7 +628,7 @@ public final class CVSRunner implements Runner {
 
     CheckoutCommand checkoutCommand = new CheckoutCommand();
 //    checkoutCommand.setModule(module.getName() + "/" + Module.MODULE_INFO);
-    checkoutCommand.setModule(module.getName() + "/" + Module.MODULE_DESCRIPTOR);
+    checkoutCommand.setModule(getOffSetLocation(module) + "/" + Module.MODULE_DESCRIPTOR);
 
     File tmp = null;
     try {
@@ -620,8 +641,8 @@ public final class CVSRunner implements Runner {
       executeOnCVS(checkoutCommand, tmp, arguments);
     } catch (CVSException e) {
       if (e.getErrorCode().equals(CVSException.MODULE_EXISTS_IN_REPOSITORY)) {
-        // If the module already exists in the repository.
-        //
+// If the module already exists in the repository.
+//
         return true;
       }
       return false;
@@ -629,8 +650,8 @@ public final class CVSRunner implements Runner {
 
     File moduleDirectory = new File(tmp, module.getName());
 
-    // todo het volgende is ronduit kutcode ....
-    //
+// todo het volgende is ronduit kutcode ....
+//
     if (moduleDirectory.exists()) {
       try {
         FileUtils.deleteDirectory(tmp);
@@ -648,8 +669,8 @@ public final class CVSRunner implements Runner {
     }
   }
 
-  // todo hmm, do we want his here ??? For the time being ... yes.
-  //
+// todo hmm, do we want his here ??? For the time being ... yes.
+//
   public final UpdateParser getUpdateParser() {
     return listener.getUpdateParser();
   }
@@ -692,20 +713,20 @@ public final class CVSRunner implements Runner {
     logger.debug("Running CVS command : '" + command.getCVSCommand() + "' in " + client.getLocalPath());
 
     try {
-      // A CVSResponseAdapter is registered as a listener for the response from CVS. This one adapts to Karma
-      // specific stuff.
-      //
+// A CVSResponseAdapter is registered as a listener for the response from CVS. This one adapts to Karma
+// specific stuff.
+//
       listener.setArguments(args);
       client.getEventManager().addCVSListener(listener);
       client.executeCommand(command, globalOptions);
 
     } catch (CommandException e) {
       logger.debug(e);
-      // Trick to get a hold of the exception we threw in the CVSResponseAdapter.
-      //
+// Trick to get a hold of the exception we threw in the CVSResponseAdapter.
+//
       if (e.getUnderlyingException() instanceof CVSRuntimeException) {
 
-        // todo somehow, messagearguments should be added ...
+// todo somehow, messagearguments should be added ...
         ErrorCode code = ((CVSRuntimeException) e.getUnderlyingException()).getErrorCode();
         Object[] messageArgs = ((CVSRuntimeException) e.getUnderlyingException()).getMessageArguments();
 
@@ -716,8 +737,8 @@ public final class CVSRunner implements Runner {
     } catch (AuthenticationException e) {
       throw new CVSException(CVSException.AUTHENTICATION_ERROR, new Object[]{client.getConnection()});
     } finally {
-      // See the static block in this class and corresponding documentation.
-      //
+// See the static block in this class and corresponding documentation.
+//
       try {
         client.getConnection().close();
       } catch (IOException e) {
@@ -760,12 +781,12 @@ public final class CVSRunner implements Runner {
       event.setComment(comment);
       history.addEvent(event);
       if (history.getHistoryLocation().exists()) {
-        //history already exists. commit changes.
+//history already exists. commit changes.
         history.save();
 //        commit(module, "History updated by Karma");
         commit(developmentLine, module, new File(module.getBaseDir(), ModuleHistory.MODULE_HISTORY_FILE_NAME), "History updated by Karma");
       } else {
-        //history did not exist yet. add to CVS and commit it.
+//history did not exist yet. add to CVS and commit it.
         history.save();
         add(module, new String[]{history.getHistoryLocation().getName()}, null);
       }

@@ -118,7 +118,7 @@ public final class AdminHandler {
             } else {
               removedStuff.add(new File(moduleDirectories[i], entry.getName()).getPath());
             }
-          } else if (fileEntry.isFile() && entry.getLastModified().getTime() != fileEntry.lastModified()) {
+          } else if (fileEntry.isFile() && (entry.getLastModified() == null ? 0 : entry.getLastModified().getTime()) != fileEntry.lastModified()) {
             if (moduleDirectories[i].equals("")) {
               changedStuff.add(entry.getName());
             } else {
@@ -216,9 +216,9 @@ public final class AdminHandler {
 
     CVSRoot cvsRoot = CVSRoot.parse(cvsRootString);
 
-    CVSLocationImpl loc = (CVSLocationImpl) module.getLocation();
+    CVSRepository loc = (CVSRepository) module.getLocation();
     try {
-      return cvsRoot.toString().equals(loc.getCVSRootAsString());
+      return cvsRoot.toString().equals(loc.getCVSRoot());
     } catch (CVSException e) {
       return true;
     }

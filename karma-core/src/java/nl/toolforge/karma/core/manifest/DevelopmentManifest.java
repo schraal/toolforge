@@ -52,17 +52,6 @@ public final class DevelopmentManifest extends AbstractManifest {
    */
   protected void applyWorkingContext(WorkingContext context, Module module) {
 
-    try {
-      if (module instanceof SourceModule) {
-        File manifestDirectory = new File(context.getDevelopmentHome(), getName());
-        module.setBaseDir(new File(manifestDirectory, module.getName()));
-      }
-    } catch(Exception e) {
-      // Basically, if we can't do this, we have nothing ... really a RuntimeException
-      //
-      throw new KarmaRuntimeException("Could not set base directory for module " + module.getName());
-    }
-
     if (module.hasVersion()) {
       setState(module, Module.STATIC);
     } else {
@@ -72,7 +61,6 @@ public final class DevelopmentManifest extends AbstractManifest {
         setState(module, Module.DYNAMIC);
       }
     }
-    removeLocal((SourceModule) module);
   }
 
 }

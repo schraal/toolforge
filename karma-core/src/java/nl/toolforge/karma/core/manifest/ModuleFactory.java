@@ -52,42 +52,6 @@ public final class ModuleFactory {
       version = new Version(digester.getVersion());
     }
 
-//    //
-//    // Create a SourceModule instance.
-//    //
-//    if (version != null) {
-//
-//      //
-//      // <module name="" location="" version="">
-//      //
-//      switch (digester.getType()) {
-//        case ModuleDigester.SOURCE_MODULE :
-//          module = new SourceModule(digester.getName(), location, version);
-//          break;
-//        case ModuleDigester.MAVEN_MODULE :
-//          module = new MavenModule(digester.getName(), location, version);
-//          break;
-//        case ModuleDigester.LIB_MODULE :
-//          module = new LibModule(digester.getName(), location, version);
-//          break;
-//      }
-//    } else {
-//      //
-//      // <module name="" location="">
-//      //
-//      switch (digester.getType()) {
-//        case ModuleDigester.SOURCE_MODULE :
-//          module = new SourceModule(digester.getName(), location);
-//          break;
-//        case ModuleDigester.MAVEN_MODULE :
-//          module = new MavenModule(digester.getName(), location);
-//          break;
-//        case ModuleDigester.LIB_MODULE :
-//          module = new LibModule(digester.getName(), location);
-//          break;
-//      }
-//    }
-
     return new SourceModule(digester.getName(), location, version);
   }
 

@@ -71,6 +71,8 @@ import nl.toolforge.karma.core.manifest.ModuleTypeException;
  */
 public class PackageModule extends AbstractBuildCommand {
 
+  public static final String COMMAND_NAME = "package-module";
+
   private static final Log logger = LogFactory.getLog(PackageModule.class);
 
   private CommandResponse commandResponse = new ActionCommandResponse();
@@ -80,7 +82,7 @@ public class PackageModule extends AbstractBuildCommand {
     super(descriptor);
 
   }
-
+  
   public void execute() throws CommandException {
 
     super.execute();
@@ -227,7 +229,7 @@ public class PackageModule extends AbstractBuildCommand {
       project.executeTarget("project");
 
     } catch (BuildException e) {
-e.printStackTrace();
+      e.printStackTrace();
       if (logger.isDebugEnabled()) {
         commandResponse.addMessage(new AntErrorMessage(e));
       }
@@ -476,10 +478,10 @@ e.printStackTrace();
       ear.execute();
 
     } catch (ManifestException m) {
-m.printStackTrace();
+      m.printStackTrace();
       throw new CommandException(m.getErrorCode(), m.getMessageArguments());
     } catch (BuildException e) {
-e.printStackTrace();
+      e.printStackTrace();
       if (logger.isDebugEnabled()) {
         commandResponse.addMessage(new AntErrorMessage(e));
       }
@@ -495,5 +497,5 @@ e.printStackTrace();
   public CommandResponse getCommandResponse() {
     return commandResponse;
   }
-  
+
 }

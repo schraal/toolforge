@@ -22,6 +22,7 @@ import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.scm.ModuleDependency;
+import nl.toolforge.karma.core.vc.VersionControlSystem;
 import nl.toolforge.karma.core.vc.cvs.AdminHandler;
 import org.apache.commons.io.FileUtils;
 
@@ -155,7 +156,11 @@ public abstract class AbstractManifest implements Manifest {
     manifestTempDirectory = new File(getBaseDirectory(), "tmp");
 
     for (Iterator i = moduleCache.values().iterator(); i.hasNext();) {
-      applyWorkingContext(workingContext, (Module) i.next());
+
+      Module module = (Module) i.next();
+      setModuleBaseDir(module);
+      applyWorkingContext(workingContext, module);
+      removeLocal(module);
     }
   }
 
@@ -339,56 +344,6 @@ public abstract class AbstractManifest implements Manifest {
     return name.hashCode();
   }
 
-//  /**
-//   * <p>Determines the correct artifact name for <code>module</code>. The artifact-name is determined as follows:
-//   *
-//   * <ul>
-//   *   <li/>If the state of the module is <code>WORKING</code>, the artifact-name is
-//   *        <code>&lt;module-name&gt;_WORKING.jar</code>.
-//   *   <li/>If the state of the module is <code>DYNAMIC</code>, the artifact-name is
-//   *        <code>&lt;module-name&gt;_&lt;latest-versions&gt;.jar</code>.
-//   *   <li/>If the state of the module is <code>STATIC</code>, the artifact-name is
-//   *        <code>&lt;module-name&gt;_&lt;version&gt;.jar</code>.
-//   * </ul>
-//   *
-//   * <p>The extension if <code>.war</code> if the module is a <code>webapp</code>-module.
-//   *
-//   * @param module A <code>SourceModule</code> instance.
-//   * @return The artifact-name as determined the way as described above.
-//   * @throws ManifestException
-//   */
-//  public final String resolveArchiveName(Module module) throws ManifestException {
-//
-//    String jar = module.getName() + "_";
-//
-//    // todo introduce a method to determine if a module is webapp-module; maybe its own class.
-//    //
-//    String extension;
-//    if (module.getDeploymentType().equals(Module.WEBAPP)) {
-//      extension = ".war";
-//    } else if (module.getDeploymentType().equals(Module.WEBAPP)) {
-//      extension = ".ear";
-//    } else {
-//      extension = ".jar";
-//    }
-//
-//    try {
-//      if (getState(module).equals(Module.WORKING)) {
-//        jar += Module.WORKING.toString();
-//      } else if (getState(module).equals(Module.DYNAMIC)) {
-//        jar += (Utils.getLocalVersion(module));
-//      } else { // STATIC module
-//        jar += ((SourceModule) module).getVersionAsString();
-//      }
-//      jar += extension;
-//    } catch (VersionControlException v) {
-//      throw new ManifestException(v.getErrorCode(), v.getMessageArguments());
-//    }
-//
-//    return jar;
-//  }
-
-
   /**
    *
    *
@@ -475,7 +430,7 @@ public abstract class AbstractManifest implements Manifest {
    * @param module
    * @return <code>true</code> if a local version has been removed or <code>false</code> if nothing has been removed.
    */
-  protected boolean removeLocal(Module module) {
+  private boolean removeLocal(Module module) {
 
     // todo this method is not abstract ! handles CVS only.
 
@@ -491,6 +446,22 @@ public abstract class AbstractManifest implements Manifest {
     return true;
   }
 
+  private void setModuleBaseDir(Module module) {
+
+    try {
+      if (((VersionControlSystem)module.getLocation()).getModuleOffset() == null) {
+        module.setBaseDir(new File(getBaseDirectory(), module.getName()));
+      } else {
+        module.setBaseDir(new File(new File(getBaseDirectory(), ((VersionControlSystem)module.getLocation()).getModuleOffset()), module.getName()));
+      }
+      module.setCheckoutDir(getBaseDirectory());
+    } catch(Exception e) {
+      // Basically, if we can't do this, we have nothing ... really a RuntimeException
+      //
+      throw new KarmaRuntimeException("Could not set base directory for module " + module.getName());
+    }
+  }
+
   /**
    * Sets a modules' state when the module is locally available.
    *
@@ -498,11 +469,6 @@ public abstract class AbstractManifest implements Manifest {
    * @param state
    */
   public final void setState(Module module, Module.State state) {
-
-//    if (!contextEnabled) {
-//      throw new KarmaRuntimeException("Working context has not been enabled.");
-//    }
-
     if (state == null) {
       throw new IllegalArgumentException("Parameter state cannot be null.");
     }

@@ -20,6 +20,7 @@ package nl.toolforge.karma.core.vc.subversion;
 
 import nl.toolforge.karma.core.location.BaseLocation;
 import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.location.LocationType;
 
 /**
  * @author D.A. Smedes
@@ -31,7 +32,7 @@ public final class SubversionLocationImpl extends BaseLocation {
 	private String password = null;
 
 	public SubversionLocationImpl(String id) {
-		super(id, Location.Type.SUBVERSION_REPOSITORY);
+		super(id, LocationType.SUBVERSION);
 	}
 
 	public void setUsername(String username) {
@@ -49,7 +50,7 @@ public final class SubversionLocationImpl extends BaseLocation {
    * Always true; Subversion not yet supported.
    * @return
    */
-  public boolean ping() {
+  public boolean isAvailable() {
     return true;
   }
 }
