@@ -102,14 +102,6 @@ public final class CommandLoader {
 
     while (enum.hasMoreElements()) {
       commandSet.addAll((CommandDescriptorMap) load((URL) enum.nextElement()));
-//      List l = (List) load((URL) enum.nextElement());
-//      for (Iterator i = l.iterator(); i.hasNext();) {
-//         Object o = i.next();
-//        if (commandSet.contains(o)) {
-//          throw new CommandLoadException(CommandLoadException.DUPLICATE_COMMAND, new Object[]{o});
-//        }
-//        commandSet.add(o);
-//      }
     }
 
     return commandSet;
@@ -121,7 +113,7 @@ public final class CommandLoader {
    * @param resource         The resource url to a command <code>xml</code> file. Use
    *                         {@link #load} to use the default settings.
    * @return                 A <code>List</code> of {@link CommandDescriptor} instances.
-   * 
+   *
    * @throws CommandLoadException
    */
   CommandDescriptorMap load(URL resource) throws CommandLoadException {
@@ -147,20 +139,9 @@ public final class CommandLoader {
     try {
       String defaultCommands = DEFAULT_COMMANDS_BASEDIR + "/" + CORE_COMMANDS_FILE;
 
-//      Set newSet = new HashSet();
-
       CommandDescriptorMap cds = (CommandDescriptorMap) getCommandDigester().parse(this.getClass().getClassLoader().getResourceAsStream(defaultCommands));
-//      for (Iterator i = cds.iterator(); i.hasNext();) {
-//        Object o = i.next();
-//        if (newSet.contains(o)) {
-//          throw new CommandLoadException(CommandLoadException.DUPLICATE_COMMAND, new Object[]{o});
-//        }
-//        newSet.add(o);
-//      }
 
       return cds;
-
-//      return (Set) getCommandDigester().parse(this.getClass().getClassLoader().getResourceAsStream(defaultCommands));
     } catch (IOException e) {
       logger.error(e);
       throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_DEFAULT_COMMANDS, new Object[]{CORE_COMMANDS_FILE});
