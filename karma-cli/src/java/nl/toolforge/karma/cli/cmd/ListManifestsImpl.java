@@ -26,12 +26,16 @@ import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.impl.ListManifests;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.ManifestHeader;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Command line interface implementation of the {@link ListManifests} command.
@@ -49,29 +53,50 @@ public class ListManifestsImpl extends ListManifests {
   }
 
   public void execute() throws CommandException {
+
+    super.execute();
+
     CommandResponse response = getCommandResponse();
 
-    Collection manifests = null;
-    manifests = getContext().getAllManifests();
+    Set headers = getHeaders();
 
-    if (manifests.size() == 0) {
+    if (headers.size() == 0) {
       response.addMessage(new SuccessMessage("No manifests found."));
     } else {
 
+      Iterator manifestsIterator = headers.iterator();
+      ManifestHeader header;
+
+      Manifest currentManifest = getContext().getCurrentManifest();
+
+      StringBuffer buffer = new StringBuffer();
+
+      buffer.append("\nManifests for working context `"+ getWorkingContext().getName() +"`:\n\n");
+
+      String h1 = "Type";
+      int MAX_TYPE_LENGTH = 13;
+
+      String h2 = "Name";
+      int MAX_NAME_LENGTH = 30;
+
+      buffer.append(h1 + StringUtils.repeat(" ", 13 - h1.length()) + " | ");
+      buffer.append(h2 + StringUtils.repeat(" ", 32 - h1.length()) + "\n");
+      buffer.append(StringUtils.repeat("_", 71) + "\n");
+
+
       List manifestList = new ArrayList();
 
-      Iterator manifestsIterator = manifests.iterator();
-      String manifest;
-      int index;
-      Manifest currentManifest = getContext().getCurrentManifest();
       while (manifestsIterator.hasNext()) {
-        manifest = (String) manifestsIterator.next();
-        index = manifest.indexOf(".xml");
-        String manifestName = manifest.substring(0, index);
-        if ((currentManifest != null) && manifestName.equals(currentManifest.getName())) {
-          manifestList.add(" -> " + manifestName + " ** current manifest **");
+
+        header = (ManifestHeader) manifestsIterator.next();
+
+        String typeSpaces = StringUtils.repeat(" ", MAX_TYPE_LENGTH - header.getType().length());
+        String nameSpaces = StringUtils.repeat(" ", MAX_NAME_LENGTH - header.getName().length());
+
+        if ((currentManifest != null) && header.getName().equals(currentManifest.getName())) {
+          manifestList.add(header.getType() + typeSpaces + " | " + header.getName() + nameSpaces + " ** current manifest **\n");
         } else {
-          manifestList.add(" -  " + manifestName + " ");
+          manifestList.add(header.getType() + typeSpaces + " | " + header.getName() + nameSpaces + "\n");
         }
       }
 
@@ -79,8 +104,12 @@ public class ListManifestsImpl extends ListManifests {
 
       manifestsIterator = manifestList.iterator();
       while (manifestsIterator.hasNext()) {
-        response.addMessage(new SuccessMessage((String) manifestsIterator.next()));
+
+        buffer.append((String) manifestsIterator.next());
+
+//        response.addMessage(new SuccessMessage((String) manifestsIterator.next()));
       }
+      response.addMessage(new SuccessMessage(buffer.toString()));
     }
 
   }

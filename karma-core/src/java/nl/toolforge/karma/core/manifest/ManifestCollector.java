@@ -44,26 +44,15 @@ public class ManifestCollector {
   private Collection manifests = new ArrayList();
   private WorkingContext workingContext = null;
 
-
-//  private static ManifestCollector instance = null;
-
-//  private ManifestCollector() {
-//    init();
-//  }
-
-//  public static ManifestCollector getInstance() {
-//
-//    if (instance== null) {
-//      instance = new ManifestCollector();
-//    }
-//    return instance;
-//  }
-
   public ManifestCollector(WorkingContext workingContext) {
     this.workingContext = workingContext;
   }
 
-
+  /**
+   * Returns a collection of manifest file names, located in the the manifest store.
+   * 
+   * @return
+   */
   public Collection getAllManifests() {
     File manifestStore = workingContext.getManifestStore();
 
