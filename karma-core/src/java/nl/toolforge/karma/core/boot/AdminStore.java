@@ -70,7 +70,7 @@ public abstract class AdminStore implements Store {
 
     // todo this is a good place to check if the existing directory is from the same cvs location.
     //
-    if (module.getBaseDir().exists()) {
+    if (getModule().getBaseDir().exists()) {
       runner.update(getModule());
     } else {
       runner.checkout(getModule());
