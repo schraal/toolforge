@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<document>
+
+<properties>
+  <title>Reference Documentation</title>
+</properties>
+
+<body>
+
+  <section name="Properties">
+
+  <p>
+    Some commands can be configured by defining properties. These properties are
+    stored in the <code>karma.properties</code> in the project base dir of a
+    working context.
+  </p>
+  <p>
+    An example of such a properties file (in this case with properties for
+    the <code>build-module</code> command) is:
+    <source>
+      java.compiler=modern
+      java.source=1.4
+      java.target=1.4
+      java.debug=true
+      java.debuglevel=none
+      javac.nowarn=true
+      javac.optimize=off
+      javac.deprecation=off
+      javac.verbose=yes
+      javac.depend=off
+    </source>
+    See the documentation of the commands for their respective options.
+  </p>
+
+  </section>
+
+</body>
+
+</document>

@@ -49,6 +49,7 @@
 
     <menu name="Reference Manual">
       <item name="Working Context" href="/reference/working-context/index.html" collapse="false">
+        <item name="Properties" href="/reference/working-context/properties.html"/>
         <item name="Directories" href="/reference/working-context/directories.html"/>
       </item>
       <item name="Locations" href="/reference/locations/index.html"/>
