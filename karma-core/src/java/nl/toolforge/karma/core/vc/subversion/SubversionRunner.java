@@ -23,7 +23,11 @@ public final class SubversionRunner implements Runner {
 
 	}
 
-	public CommandResponse create(Module module) {
+  public void setCommandResponse(CommandResponse response) {
+    
+  }
+
+  public CommandResponse create(Module module) {
 		return null;
 	}
 

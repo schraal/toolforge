@@ -56,6 +56,7 @@ public final class CVSRunner implements Runner {
 	}
 
   private CVSResponseAdapter listener = null; // The listener that receives events from this runner.
+  private CommandResponse commandResponse = null;
 
 	private static Log logger = LogFactory.getLog(CVSRunner.class);
 
@@ -75,9 +76,8 @@ public final class CVSRunner implements Runner {
 	 *                  the location and connection details of the CVS repository.
 	 * @param basePoint The basePoint determines the base point where cvs commands should be run. If not used by commands and extended,
 	 *                  this <code>basePoint.getPath()</code> will be used by the CVS client as the
-   * @param listener  The class that can receive CommandResponseEvent objects, generated
 	 */
-	public CVSRunner(Location location, File basePoint, CommandResponseListener listener) throws CVSException {
+	public CVSRunner(Location location, File basePoint) throws CVSException {
 
 		CVSLocationImpl cvsLocation = null;
 		try {
@@ -92,13 +92,13 @@ public final class CVSRunner implements Runner {
 		}
 		this.connection = cvsLocation.getConnection();
 		this.basePoint = basePoint;
-
-    // Get the listener and wrap it in a CVSResponseAdapter.
-    //
-    if (listener == null) {
-      throw new IllegalArgumentException("A CVSRunner requires a non-null listener.");
-    }
-    this.listener = new CVSResponseAdapter(listener);
+//
+//    // Get the listener and wrap it in a CVSResponseAdapter.
+//    //
+//    if (listener == null) {
+//      throw new IllegalArgumentException("A CVSRunner requires a non-null listener.");
+//    }
+    this.listener = new CVSResponseAdapter();
 
 		logger.debug("CVSRunner using CVSROOT : " + cvsLocation.toString());
 		globalOptions.setCVSRoot(cvsLocation.getCVSRootAsString());
@@ -112,7 +112,18 @@ public final class CVSRunner implements Runner {
 		return connection;
 	}
 
-	/**
+  /**
+   * Assigns a CommandResponse instance to the runner to optionally promote interactivity.
+   *
+   * @param response A - possibly <code>null</code> response instance.
+   */
+  public void setCommandResponse(CommandResponse response) {
+    this.commandResponse = response;
+
+    this.listener = new CVSResponseAdapter(listener);
+  }
+
+  /**
 	 * <p>Creates a module in a CVS repository. This is done through the CVS <code>import</code> command. The basic structure
 	 * of the module directory is defined by the file <code>module-structure.model</code>, which should be available from
 	 * the classpath. If the file cannot be located, a basic structure is created:

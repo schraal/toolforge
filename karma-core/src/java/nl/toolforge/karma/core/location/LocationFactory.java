@@ -11,11 +11,14 @@ import org.netbeans.lib.cvsclient.CVSRoot;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.InputStream;
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -158,13 +161,17 @@ public final class LocationFactory {
 		Document locationRoot = null;
 		Document authenticatorRoot = null;
 
-		try {
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			locationRoot = builder.parse(locationStream);
-			authenticatorRoot = builder.parse(authenticatorStream);
-		} catch (Exception e) {
-			throw new LocationException(LocationException.GENERAL_LOCATION_ERROR);
-		}
+    try {
+      DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+      locationRoot = builder.parse(locationStream);
+      authenticatorRoot = builder.parse(authenticatorStream);
+    } catch (ParserConfigurationException e) {
+      throw new LocationException(LocationException.GENERAL_LOCATION_ERROR);
+    } catch (SAXException e) {
+      throw new LocationException(LocationException.GENERAL_LOCATION_ERROR);
+    } catch (IOException e) {
+      throw new LocationException(LocationException.GENERAL_LOCATION_ERROR);
+    }
 
 		load(locationRoot, authenticatorRoot);
 	}
@@ -180,6 +187,9 @@ public final class LocationFactory {
 		if (locations == null) {
 			locations = new Hashtable();
 		}
+
+    // todo replace with Digester code and use a factory create the correct implementation
+    //
 
 		NodeList locationElements = locationRoot.getElementsByTagName("location");
 

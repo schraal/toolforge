@@ -14,6 +14,8 @@ public interface Runner {
 
 	// TODO runner.log should be defined in this interface. Right now, only impl. is in CVSRUnner.
 
+  public void setCommandResponse(CommandResponse response);
+
 	/**
 	 * Creates a module in a version control repository.
 	 */

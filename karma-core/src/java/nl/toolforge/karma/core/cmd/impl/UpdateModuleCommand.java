@@ -9,8 +9,14 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.CommandResponseHandler;
+import nl.toolforge.karma.core.cmd.SimpleCommandResponse;
+import nl.toolforge.karma.core.cmd.ActionCommandResponse;
+import nl.toolforge.karma.core.cmd.CommandMessage;
+import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.vc.RunnerFactory;
+import nl.toolforge.karma.core.vc.cvs.CVSResponseAdapter;
 
 /**
  * <p>This command updates a module on a developers' local system. When the module has not been updated before, the
@@ -29,6 +35,7 @@ import nl.toolforge.karma.core.vc.Runner;
  */
 public class UpdateModuleCommand extends DefaultCommand {
 
+  private CommandResponse response = null;
   /**
    * Creates a <code>UpdateModuleCommand</code> for module <code>module</code> that should be updated. This module
    * requires an <code>Option</code>
@@ -38,6 +45,9 @@ public class UpdateModuleCommand extends DefaultCommand {
   public UpdateModuleCommand(CommandDescriptor descriptor) throws CommandException {
 
     super(descriptor);
+
+    // todo CVSResponseAdapter ???????
+    response = new CVSResponseAdapter();
   }
 
   /**
@@ -46,6 +56,7 @@ public class UpdateModuleCommand extends DefaultCommand {
    * is relative to the root directory of the <code>active</code> manifest.
    */
   public void execute() {
+
     try {
       // A manifest must be present for this command
       //
@@ -64,9 +75,9 @@ public class UpdateModuleCommand extends DefaultCommand {
         version = new Version(getCommandLine().getOptionValue("v"));
       }
 
-      Runner runner = getContext().getRunner(module);
+      Runner runner = RunnerFactory.getRunner(module, getContext().getCurrent().getDirectory());
+      runner.setCommandResponse(response);
 
-      CommandResponse response = null;
       if (getContext().getCurrent().isLocal(module)) {
         response = runner.update(module, version);
       } else {
@@ -75,7 +86,7 @@ public class UpdateModuleCommand extends DefaultCommand {
 
       // todo message to be internationalized.
       //
-      handler.commandResponseChanged(new CommandResponseEvent("Module " + module.getName() + " updated ..."));
+      response.addMessage(new SimpleCommandMessage("Module " + module.getName() + " updated ..."));
 
     } catch (Exception e) {
       //todo proper exception handling
@@ -83,4 +94,7 @@ public class UpdateModuleCommand extends DefaultCommand {
     }
   }
 
+  public CommandResponse getCommandResponse() {
+    return this.response;
+  }
 }
