@@ -487,17 +487,13 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
   public void executeMkdir(File dir) throws CommandException {
 
     if (project == null) {
-      throw new KarmaRuntimeException("Ant project not initialized.");
+      project = getProjectInstance();
     }
 
-    try {
-      Mkdir mkdir = new Mkdir();
-      mkdir.setProject(project);
-      mkdir.setDir(dir);
-      mkdir.execute();
-    } catch (RuntimeException r) {
-      throw new CommandException(CommandException.BUILD_FAILED, new Object[]{r.getMessage()});
-    }
+    Mkdir mkdir = new Mkdir();
+    mkdir.setProject(project);
+    mkdir.setDir(dir);
+    mkdir.execute();
   }
 
   /**
@@ -506,10 +502,10 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
   public void executeDelete(File dir, String includes) throws CommandException {
 
     if (project == null) {
-      throw new KarmaRuntimeException("Ant project not initialized.");
+      project = getProjectInstance();
     }
 
-    try {
+    if (dir != null && dir.exists()) {
 
       // <delete>
       //
@@ -522,15 +518,13 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
       delete.addFileset(fileset);
       delete.execute();
-    } catch (RuntimeException r) {
-      throw new CommandException(CommandException.BUILD_FAILED, new Object[]{r.getMessage()});
     }
   }
 
   public void executeDelete(File dir) throws CommandException {
 
     if (project == null) {
-      throw new KarmaRuntimeException("Ant project not initialized.");
+      project = getProjectInstance();
     }
 
     try {

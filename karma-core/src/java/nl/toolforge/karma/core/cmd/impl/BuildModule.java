@@ -62,6 +62,13 @@ public class BuildModule extends AbstractBuildCommand {
 //      File compileDirectory = new File(getBuildDirectory().getParentFile(), getCompileDirectory().getPath());
 //      File compileDirectory = getCompileDirectory();
 
+      File srcBase = getSourceDirectory();
+      if (!srcBase.exists()) {
+        // No point in building a module, if no src/java is available.
+        //
+        throw new CommandException(CommandException.NO_SRC_DIR, new Object[] {getCurrentModule().getName(), DEFAULT_SRC_PATH});
+      }
+
       // Ant project
       //
       Project project = getProjectInstance();
@@ -79,15 +86,6 @@ public class BuildModule extends AbstractBuildCommand {
       javac.setCompiler("javac1.4");
       javac.setDebug(true);
       javac.setDeprecation(true);
-
-      File srcBase = getSourceDirectory();
-      if (!srcBase.exists()) {
-        // No point in building a module, if no src/java is available.
-        //
-        //todo: make the source dir dynamic (getSourceDir()).
-        throw new CommandException(CommandException.NO_SRC_DIR, new Object[] {getCurrentModule().getName()});
-      }
-
       javac.setDestdir(getCompileDirectory());
 
       Path classPath = new Path(project);

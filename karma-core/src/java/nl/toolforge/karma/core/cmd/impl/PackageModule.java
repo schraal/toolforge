@@ -116,7 +116,7 @@ public class PackageModule extends AbstractBuildCommand {
       fileSet.setIncludes("**/*");
 
       copy.addFileset(fileSet);
-
+      copy.execute();
 
 
       copy = new Copy();
@@ -130,6 +130,7 @@ public class PackageModule extends AbstractBuildCommand {
       fileSet.setExcludes("resources");
 
       copy.addFileset(fileSet);
+      copy.execute();
 
       // Copy all class files to the package directory.
       //
@@ -143,7 +144,6 @@ public class PackageModule extends AbstractBuildCommand {
       fileSet.setIncludes("**/*.class");
 
       copy.addFileset(fileSet);
-
       copy.execute();
 
       Jar jar = new Jar();
@@ -181,19 +181,23 @@ public class PackageModule extends AbstractBuildCommand {
       FileSet fileSet = new FileSet();
       fileSet.setDir(getCurrentModule().getBaseDir());
       fileSet.setIncludes("WEB-INF/**");
+      fileSet.setExcludes("WEB-INF/web.xml");
 
       copy.addFileset(fileSet);
+      copy.execute();
 
       // Fileset that copies contents of 'web' to the package directory.
       //
-      fileSet = new FileSet();
-      fileSet.setDir(new File(getCurrentModule().getBaseDir(), "web"));
-      fileSet.setIncludes("**");
-      fileSet.setExcludes("web");
+      File webdir = new File(getCurrentModule().getBaseDir(), "web");
+      if (webdir.exists()) {
+        fileSet = new FileSet();
+        fileSet.setDir(webdir);
+        fileSet.setIncludes("**");
+//      fileSet.setExcludes("web");
 
-      copy.addFileset(fileSet);
-
-      copy.execute();
+        copy.addFileset(fileSet);
+        copy.execute();
+      }
 
       // Copy dependencies
       //
@@ -201,7 +205,8 @@ public class PackageModule extends AbstractBuildCommand {
       String moduleDeps = getModuleDependencies(getCurrentModule().getDependencies(), true, DEPENDENCY_SEPARATOR_CHAR);
       String jarDeps = getJarDependencies(getCurrentModule().getDependencies(), true, DEPENDENCY_SEPARATOR_CHAR);
 
-      if (moduleDeps != null && !"".equals(moduleDeps) && jarDeps != null && !"".equals(moduleDeps)) {
+      if ( (moduleDeps != null && !"".equals(moduleDeps)) ||
+              (jarDeps != null && !"".equals(jarDeps))) {
 
         copy = new Copy();
         copy.setProject(getProjectInstance());
@@ -212,14 +217,14 @@ public class PackageModule extends AbstractBuildCommand {
         //
         if (moduleDeps != null && !"".equals(moduleDeps)) {
           fileSet = new FileSet();
-          fileSet.setDir(getCurrentManifest().getDirectory());
+          fileSet.setDir(getBuildDirectory());
           fileSet.setIncludes(moduleDeps);
           copy.addFileset(fileSet);
         }
 
         // Jar dependencies
         //
-        if (jarDeps != null && !"".equals(moduleDeps)) {
+        if (jarDeps != null && !"".equals(jarDeps)) {
           fileSet = new FileSet();
           fileSet.setDir(LocalEnvironment.getLocalRepository());
           fileSet.setIncludes(jarDeps);
@@ -322,7 +327,6 @@ public class PackageModule extends AbstractBuildCommand {
       filterSet.setFiltersfile(new File(getModuleBuildDirectory(), "archives.properties"));
 
       copy.addFileset(fileSet);
-
       copy.execute();
 
 
@@ -336,7 +340,6 @@ public class PackageModule extends AbstractBuildCommand {
       fileSet.setIncludesfile(new File(getModuleBuildDirectory(), "arvices.includes"));
 
       copy.addFileset(fileSet);
-
       copy.execute();
 
 
