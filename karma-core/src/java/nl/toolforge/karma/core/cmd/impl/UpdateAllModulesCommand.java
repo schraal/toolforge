@@ -26,6 +26,7 @@ import nl.toolforge.karma.core.cmd.CommandFactory;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.CompositeCommand;
 import nl.toolforge.karma.core.cmd.ErrorMessage;
+import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
@@ -87,6 +88,11 @@ public class UpdateAllModulesCommand extends CompositeCommand {
       command.registerCommandResponseListener(this);
       try {
         getContext().execute(command);
+
+        //empty line between updating 2 modules.
+        SuccessMessage message = new SuccessMessage("");
+        commandResponse.addMessage(message);
+
       } catch (CommandException c) {
         commandResponse.addMessage(new ErrorMessage(c.getErrorCode()));
         break; //break out of the for loop.
