@@ -23,7 +23,7 @@ public class ViewManifestImpl extends ViewManifest {
 	/**
 	 * Shows the contents using simple rendering.
 	 */
-	public CommandResponse execute() throws VersionControlException, CommandException{
+	public CommandResponse execute() throws ManifestException{
 
 		super.execute(); // Ignore the response from the superclass
 

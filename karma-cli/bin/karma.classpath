@@ -3,7 +3,7 @@
 # class.
 #
 [karma.root]
-	id=ant, version=1.5.4
+	id=ant, version=1.5.4-TWEAKED
 	id=log4j, version=1.2.8
 	id=netbeans, jar=netbeans-cvs-beta3.6.jar
 	id=commons-lang, version=1.0.1
@@ -15,6 +15,10 @@
 	id=commons-logging, jar=commons-logging-1.0.3.jar
 	id=commons-cli, jar=commons-cli-1.0.jar
 	id=commons-io, jar=commons-io-20030203.000550.jar
+	id=commons-collections, jar=commons-collections-2.1.jar
+	id=commons-beanutils, jar=commons-beanutils-1.6.1.jar
+	id=maven, version=1.0-rc2
+	id=commons-digester, version=1.5
 	dir=target/classes
 	dir=resources
 	

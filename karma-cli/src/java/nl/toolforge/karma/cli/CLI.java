@@ -1,15 +1,5 @@
 package nl.toolforge.karma.cli;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ResourceBundle;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Options;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.Manifest;
@@ -18,6 +8,14 @@ import nl.toolforge.karma.core.cmd.CommandContext;
 import nl.toolforge.karma.core.cmd.CommandFactory;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ResourceBundle;
 
 /**
  * <p>The <code>CLI</code> is the command-line interface for Karma. The class presents a simple-to-use command-line
@@ -157,16 +155,6 @@ public class CLI {
 		catch (IOException e) {
 			logger.error(e.getMessage(), e);
 			System.exit(1);
-		}
-	}
-
-	/**
-	 * Extension to be able to access the protected <code>renderOptions</code>-method.
-	 */
-	private class CLIHelpFormatter extends HelpFormatter {
-
-		public StringBuffer renderOptions(StringBuffer buffer, int width, Options options, int leftPad, int descPad) {
-			return super.renderOptions(buffer, width, options, leftPad, descPad);
 		}
 	}
 }
