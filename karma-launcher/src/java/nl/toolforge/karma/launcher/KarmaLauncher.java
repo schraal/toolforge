@@ -6,7 +6,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * The KarmaLauncher can launch an application. 
+ * The KarmaLauncher can launch an application.
  *
  * @author Martin Oosterom
  */
@@ -61,9 +61,6 @@ public class KarmaLauncher
     KarmaLauncher launcher = getInstance();
 
     try {
-
-      System.out.println("Arjen Smedes.");
-
       launcher.run(args);
     }
     catch (Exception e) {
