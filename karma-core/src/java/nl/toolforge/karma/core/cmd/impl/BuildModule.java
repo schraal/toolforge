@@ -79,8 +79,9 @@ public class BuildModule extends AbstractBuildCommand {
       Javac javac = new Javac();
       javac.setProject(project);
       javac.setSource("1.4");
-      javac.setCompiler("modern");
+      javac.setCompiler("javac1.4");
       javac.setDebug(true);
+      javac.setDeprecation(true);
 
       File srcBase = getSourceDirectory();
       if (!srcBase.exists()) {
