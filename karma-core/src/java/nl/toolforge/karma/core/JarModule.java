@@ -51,8 +51,13 @@ public class JarModule extends BaseModule {
 	public void setState(State state) {
 	}
 
-  public String getDependencyName() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  /**
+   * Returns <code>null</code>. A jarmodule in itself has no other dependencies.
+   * 
+   * @return <code>null</code>.
+   */
+  public String getDependencies() {
+    return null;
   }
 
   /**

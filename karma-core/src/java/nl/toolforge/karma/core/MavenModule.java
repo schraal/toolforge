@@ -1,13 +1,11 @@
 package nl.toolforge.karma.core;
 
 import nl.toolforge.karma.core.scm.DependencyReader;
-import nl.toolforge.karma.core.scm.SourceModuleDependencyReader;
-import nl.toolforge.karma.core.scm.MavenDependencyReader;
-import nl.toolforge.karma.core.scm.DependencyReader;
-import nl.toolforge.karma.core.scm.MavenDependencyReader;
+import nl.toolforge.karma.core.scm.maven.MavenDependencyReader;
+import org.apache.maven.project.Dependency;
 
 import java.io.File;
-import java.util.List;
+import java.util.Iterator;
 
 public class MavenModule extends SourceModule {
 
@@ -15,19 +13,38 @@ public class MavenModule extends SourceModule {
     super(descriptor, manifestDirectory);
   }
 
-  /**
-   * Overrides {@link SourceModule#getDependencies()}. Dependencies are determined based on the <code>project.xml</code>
-   * file.
-   *
-   * @throws KarmaException
-   */
-  public List getDependencies() throws KarmaException {
+  public String getDependencies() throws KarmaException {
 
-    if (dependencies == null) {
+    // 1. Get the correct module type. If type == maven, get project.xml, else get module.xml.
+    //
+    StringBuffer buf = new StringBuffer();
 
-      DependencyReader reader = new MavenDependencyReader();
-      dependencies = reader.parse(new File(getModuleDirectory(), "project.xml"));
+    DependencyReader reader = new MavenDependencyReader();
+    dependencies = reader.parse(new File(getModuleDirectory(), "project.xml"));
+
+    for (Iterator i = dependencies.iterator(); i.hasNext();) {
+      Dependency dep = (Dependency) i.next();
+      String jarDir =
+        MavenEnvironment.getMavenRepository() + File.separator +
+        dep.getArtifactDirectory() + File.separator +
+        "jars" + File.separator +
+        dep.getArtifactId();
+      if (dep.getVersion() != null) {
+        jarDir += "-" + dep.getVersion();
+      }
+      jarDir += ".jar";
+
+      buf.append(jarDir);
+      if (i.hasNext()) {
+        // Separator char for classpath parts
+        //
+        buf.append(":");
+      }
     }
-    return dependencies;
+
+    return buf.toString();
   }
+
+
+
 }

@@ -4,6 +4,7 @@ import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.Manifest;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.ModuleMap;
+import nl.toolforge.karma.core.SourceModule;
 
 import java.util.Iterator;
 
@@ -34,8 +35,8 @@ public final class ManifestDependencyBuilder implements DependencyBuilder {
     ModuleMap modules = manifest.getModules();
 
     for (Iterator i = modules.values().iterator(); i.hasNext();) {
-      ModuleDependencyBuilder builder = new ModuleDependencyBuilder((Module) i.next());
-      buf.append(builder.getDependencies());
+      Module module = (Module) i.next();
+      buf.append(((SourceModule) module).getDependencies());
     }
     return buf.toString();
   }

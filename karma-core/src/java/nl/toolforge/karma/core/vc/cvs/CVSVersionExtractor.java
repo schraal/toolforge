@@ -5,7 +5,6 @@ import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.SourceModule;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.vc.VersionExtractor;
-import nl.toolforge.karma.core.vc.VersionControlException;
 import org.netbeans.lib.cvsclient.command.log.LogInformation;
 
 import java.io.File;

@@ -1,9 +1,6 @@
 package nl.toolforge.karma.core;
 
 import nl.toolforge.karma.core.vc.DevelopmentLine;
-import nl.toolforge.karma.core.scm.DependencyReader;
-import nl.toolforge.karma.core.scm.SourceModuleDependencyReader;
-import nl.toolforge.karma.core.scm.SourceModuleDependencyReader;
 
 import java.io.File;
 import java.util.List;
@@ -99,13 +96,7 @@ public class SourceModule extends BaseModule {
     return new File(getManifestDirectory(), getName());
   }
 
-  public List getDependencies() throws KarmaException {
-
-    if (dependencies == null) {
-
-      DependencyReader reader = new SourceModuleDependencyReader();
-      return reader.parse(new File(getModuleDirectory(), "module.xml"));
-    }
-    return dependencies;
+  public String getDependencies() throws KarmaException {
+    return null;
   }
 }

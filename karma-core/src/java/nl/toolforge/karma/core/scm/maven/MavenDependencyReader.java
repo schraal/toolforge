@@ -1,6 +1,7 @@
-package nl.toolforge.karma.core.scm;
+package nl.toolforge.karma.core.scm.maven;
 
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.scm.SourceModuleDependencyReader;
 import org.apache.commons.digester.Digester;
 import org.xml.sax.SAXException;
 

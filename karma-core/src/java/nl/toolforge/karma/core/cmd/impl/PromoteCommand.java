@@ -1,14 +1,13 @@
 package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.Module;
-import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.SourceModule;
+import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.SimpleCommandResponse;
-import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.VersionExtractor;
 import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;

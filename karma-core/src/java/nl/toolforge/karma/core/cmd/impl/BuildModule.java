@@ -4,21 +4,20 @@ import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.Manifest;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
 import nl.toolforge.karma.core.cmd.SimpleCommandResponse;
-import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.scm.DependencyBuilder;
 import nl.toolforge.karma.core.scm.ModuleDependencyBuilder;
-import nl.toolforge.karma.core.scm.DependencyBuilder;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.taskdefs.Javac;
-import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.types.FileList;
+import org.apache.tools.ant.types.Path;
 
 /**
  * Builds a module in a manifest.
@@ -73,7 +72,7 @@ public class BuildModule extends DefaultCommand {
     DependencyBuilder builder = new ModuleDependencyBuilder(module);
 
     FileList deps = new FileList();
-    deps.setFiles(builder.getDependencies());
+    deps.setFiles(module.getDependencies());
     classPath.addFilelist(deps);
 
 //    task.setClasspath();

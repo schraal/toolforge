@@ -30,32 +30,10 @@ public interface Module {
 
 	public static final int SOURCE_MODULE = 0;
 	public static final int JAR_MODULE = 1;
-//
-//	/**
-//	 * Element name for an include-element in a manifest XML file
-//	 */
-//	public static final String INCLUDE_ELEMENT_NAME = "include";
 
 	public static final State WORKING = new State("WORKING");
 	public static final State DYNAMIC = new State("DYNAMIC");
 	public static final State STATIC = new State("STATIC");
-
-//	public static final String DESCRIPTION_ATTRIBUTE = "description";
-//
-//	/**
-//	 * The <code>name</code>-attribute for a module.
-//	 */
-//	public static final String NAME_ATTRIBUTE = "name";
-//
-//	/**
-//	 * The <code>location</code>-attribute for a module.
-//	 */
-//	public static final String LOCATION_ATTRIBUTE = "location";
-//
-//	/**
-//	 * The <code>name</code>-attribute for an <code>include</code>-element.
-//	 */
-//	public static final String INCLUDE_NAME_ATTRIBUTE = "name";
 
 	/**
 	 * ;
@@ -78,11 +56,11 @@ public interface Module {
 	public void setState(State state);
 
   /**
-   * When a module has been built, it can be asked for its dependency name, usually its jar-name.
+   * A modules dependencies, formatted as ...
    * 
    * @return
    */
-  public String getDependencyName();
+  public String getDependencies() throws KarmaException;
 
   /**
    * Access to the modules' local directory. The <code>File</code> reference returns a reference to the directory on

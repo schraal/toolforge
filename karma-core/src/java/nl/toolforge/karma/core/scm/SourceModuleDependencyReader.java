@@ -1,7 +1,6 @@
 package nl.toolforge.karma.core.scm;
 
 import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.scm.DependencyReader;
 import org.apache.commons.digester.Digester;
 
 import java.io.File;

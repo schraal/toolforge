@@ -4,8 +4,6 @@ import nl.toolforge.karma.core.ManifestException;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 
-import java.util.Set;
-
 /**
  * Base implementation for the ListManifests command.
  *

@@ -112,4 +112,6 @@ public abstract class BaseModule implements Module {
   protected final File getManifestDirectory() {
     return this.manifestDirectory;
   }
+
+  public abstract String getDependencies() throws KarmaException;
 }
