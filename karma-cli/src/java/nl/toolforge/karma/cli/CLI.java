@@ -2,11 +2,9 @@ package nl.toolforge.karma.cli;
 
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.bundle.BundleCache;
-import nl.toolforge.karma.core.cmd.CommandContext;
-import nl.toolforge.karma.core.cmd.CommandDescriptor;
-import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.CommandMessage;
-import nl.toolforge.karma.core.cmd.CommandFactory;
+import nl.toolforge.karma.core.cmd.*;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -101,12 +99,7 @@ public class CLI {
           //
           if (line.trim().toLowerCase().startsWith("help") || line.trim().startsWith("?")) {
 
-            writer.writeln(FRONTEND_MESSAGES.getString("message.VALID_COMMANDS"));
-
-            String[] commandStrings = cli.formatCommands(CommandFactory.getInstance().getCommands());
-            for (int i = 0; i < commandStrings.length; i++) {
-              writer.writeln(commandStrings[i]);
-            }
+            cli.renderCommands(writer);
 
           } else {
 
@@ -120,7 +113,6 @@ public class CLI {
             // TODO do something better with the message array
             //
             writer.writeln(messages[0].getMessageText());
-
           }
         } catch (KarmaException e) {
           writer.writeln(e.getErrorMessage());
@@ -136,25 +128,48 @@ public class CLI {
     }
   }
 
-  private String[] formatCommands(Collection commands) {
+  /**
+   * Renders all commands <code>org.apache.commons.cli.style</code>.
+   *
+   * @throws KarmaException Could be thrown when loading the commands fails.
+   */
+  private void renderCommands(ConsoleWriter writer) throws KarmaException {
 
-    String[] commandStrings = new String[commands.size()];
+    Collection descriptors = CommandFactory.getInstance().getCommands();
 
-    int j = 0;
+    writer.writeln(FRONTEND_MESSAGES.getString("message.VALID_COMMANDS"));
+    writer.blankLine();
 
-    for (Iterator i = commands.iterator(); i.hasNext();) {
+    for (Iterator i = descriptors.iterator(); i.hasNext();) {
+
       CommandDescriptor descriptor = (CommandDescriptor) i.next();
+      Options commandOptions = descriptor.getOptions();
 
-      int count1 = 25 - (descriptor.getName().length() + descriptor.getAlias().length() + 2);
-//      logger.debug(">> count : " + count1);
+      CLIHelpFormatter formatter = new CLIHelpFormatter();
 
-      commandStrings[j++] =
-        descriptor.getName() + "(" + descriptor.getAlias() + ")" +
-        StringUtils.repeat(" ", count1) + descriptor.getDescription();
-//			logger.debug(">> String: " + commandStrings[j-1]);
+      StringBuffer buffer = new StringBuffer();
+
+      String commandName = descriptor.getName() + " (" + descriptor.getAlias() + ")";
+
+      //int count = commandName.length();
+      writer.writeln(false, commandName);
+//      writer.writeln(false, commandName + StringUtils.repeat(" ", 30 - count) + descriptor.getDescription());
+
+      if (commandOptions != null) {
+        buffer = formatter.renderOptions(buffer, 100, commandOptions, 4, 15);
+        writer.writeln(false, buffer.toString());
+      }
+      writer.blankLine();
     }
+  }
 
-    return commandStrings;
+  /**
+   * Extension to be able to access the protected <code>renderOptions</code>-method.
+   */
+  private class CLIHelpFormatter extends HelpFormatter {
 
+    public StringBuffer renderOptions(StringBuffer buffer, int width, Options options, int leftPad, int descPad) {
+      return super.renderOptions(buffer, width, options, leftPad, descPad);
+    }
   }
 }

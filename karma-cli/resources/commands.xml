@@ -29,7 +29,7 @@
 
 	</command>
 
-	<command name="update" alias="upd">
+	<command name="update-module" alias="upd">
 
 		<description lang="en">
 			The update command updates a module from a version control system.
@@ -39,10 +39,8 @@
     </description>
 
 		<options>
-			<option opt="m" longOpt="module" required="true" description="The module name that should be updated">
+			<option opt="m" longOpt="module-name" required="true" description="The module name that should be updated">
 				<arg name="module-name"/>
-			</option>
-			<option opt="m" longOpt="module" required="true">
 			</option>
 		</options>
 

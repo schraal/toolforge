@@ -2,6 +2,7 @@ package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
 import org.apache.commons.cli.Options;
+import org.apache.commons.cli.CommandLine;
 
 import java.util.Map;
 
@@ -56,13 +57,6 @@ public interface Command {
 	public String getDescription();
 
 	/**
-	 * Gets all command options, as a <code>org.apache.commons.cli.Options</code> object.
-	 *
-	 * @return All command options.
-	 */
-	public Options getOptions();
-
-	/**
 	 * The Java class implementing the commands' behavior.
 	 *
 	 * @return The Java class implementing the commands' behavior.
@@ -78,7 +72,7 @@ public interface Command {
 	 *
 	 * @return
 	 */
-	public Map getDependencies();
+//	public Map getDependencies();
 
 	/**
 	 * The command's help text. Help text can be unlimited. Use <code>HTML</code> for formatting.
@@ -86,13 +80,6 @@ public interface Command {
 	 * @return
 	 */
 	public String getHelp();
-
-	/**
-	 * Validates a command, before the {@link #execute} method is called on the command.
-	 *
-	 * @throws KarmaException
-	 */
-	public void validate() throws KarmaException;
 
 	/**
 	 * Executes the command and captures its results in a <code>CommandResponse</code> object for further reference.
@@ -109,10 +96,13 @@ public interface Command {
 	 */
 	public void setContext(CommandContext context);
 
+  public void setCommandLine(CommandLine commandLine);
+
   /**
-   * Gets this command's descriptor instance, which was passed during instantiation.
+   * Gets the parsed command line for this command. This command line can be queried by commands to check if options
+   * had been set, or to retrieve application data.
    *
-   * @return The command's descriptor instance.
+   * @return A command line instance.
    */
-  CommandDescriptor getDescriptor();
+  public CommandLine getCommandLine();
 }

@@ -1,11 +1,13 @@
 package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
-import org.apache.commons.cli.Options;
+import nl.toolforge.karma.core.bundle.BundleCache;
+import org.apache.commons.cli.CommandLine;
 
-import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
+ * Default stuff for a command. Provides the datastructure and some helper methods to implementing commands.
  *
  * @author D.A. Smedes
  *
@@ -13,12 +15,21 @@ import java.util.Map;
  */
 public abstract class DefaultCommand implements Command {
 
-  private CommandDescriptor descriptor = null;
   private CommandContext contextRef = null;
 
-  public final CommandDescriptor getDescriptor() {
-    return this.descriptor;
-  }
+  // Data fields
+  //
+
+  private CommandLine commandLine = null;
+  private String name = null;
+  private String alias = null;
+  private String description = null;
+  private String helpText = null;
+  private Class implementation = null;
+
+//  public final CommandDescriptor getDescriptor() {
+//    return this.descriptor;
+//  }
 
   /**
    * Creates a command by initializing the command through its <code>CommandDescriptor</code>.
@@ -30,7 +41,11 @@ public abstract class DefaultCommand implements Command {
     if (descriptor == null) {
       throw new IllegalArgumentException("Command descriptor cannot be null.");
     }
-    this.descriptor = descriptor;
+    name = descriptor.getName();
+    alias = descriptor.getAlias();
+    description = descriptor.getDescription();
+    helpText = descriptor.getHelp();
+    implementation = descriptor.getImplementation();
   }
 
   /**
@@ -43,15 +58,13 @@ public abstract class DefaultCommand implements Command {
     this.contextRef = contextRef;
   }
 
-
-
   /**
    * Gets a command's name.
    *
    * @return A command's name as a <code>String</code>.
    */
   public final String getName() {
-    return descriptor.getName();
+    return name;
   }
 
   /**
@@ -60,7 +73,7 @@ public abstract class DefaultCommand implements Command {
    * @return A command's alias as a <code>String</code>.
    */
   public final String getAlias() {
-    return descriptor.getAlias();
+    return alias;
   }
 
   /**
@@ -69,15 +82,29 @@ public abstract class DefaultCommand implements Command {
    * @return A command's description as a <code>String</code>.
    */
   public final String getDescription() {
-    return descriptor.getDescription();
+    return description;
   }
 
-  public final Options getOptions() {
-    return descriptor.getOptions();
+  public final void setCommandLine(CommandLine commandLine) {
+    this.commandLine = commandLine;
   }
 
-  public Class getImplementation() {
-    return descriptor.getImplementation();
+  /**
+   * Gets the parsed command line for this command. This command line can be queried by commands to check if options
+   * had been set, or to retrieve application data.
+   *
+   * @return A command line instance.
+   */
+  public final CommandLine getCommandLine() {
+    return commandLine;
+  }
+
+//  public final Options getOptions() {
+//    return descriptor.getOptions();
+//  }
+
+  public final Class getImplementation() {
+    return implementation;
   }
 
   /**
@@ -86,9 +113,9 @@ public abstract class DefaultCommand implements Command {
    *
    * @return A <code>Map</code> containing all dependencies as name-value pairs (both are <code>String</code>s).
    */
-  public final Map getDependencies() {
-    return descriptor.getDependencies();
-  }
+//  public final Map getDependencies() {
+//    return dependencies;
+//  }
 
   /**
    * Accessor method for the commands' {@link CommandContext}.
@@ -103,17 +130,12 @@ public abstract class DefaultCommand implements Command {
    * A commands help text. Can be overridden for commands that have not provided xml data for the
    * <code>&lt;help&gt;</code>-element.
    *
-   * @return
+   * @return Help text for this command.
    */
   public String getHelp() {
-    return descriptor.getHelp();
+    return helpText;
   }
 
-  public void validate() throws KarmaException {
-    throw new KarmaException(KarmaException.NOT_IMPLEMENTED);
-  }
-
-  public abstract CommandResponse execute() throws KarmaException;
 
   /**
    * See {@link #execute}. Implementations must implement this method to get something out of the command.
@@ -122,6 +144,15 @@ public abstract class DefaultCommand implements Command {
    *
    * @throws KarmaException
    */
-  //public abstract CommandResponse executeCommand() throws KarmaException;
+  public abstract CommandResponse execute() throws KarmaException;
+
+  /**
+   * Provides the {@link BundleCache#FRONTEND_MESSAGES} resource bundle to implementations of the default command.
+   *
+   * @return The <code>ResourceBundle</code> for the current locale for frontend messages.
+   */
+  protected final ResourceBundle getFrontendMessages() {
+    return BundleCache.getInstance().getBundle(BundleCache.FRONTEND_MESSAGES_KEY);
+  }
 
 }

@@ -34,6 +34,8 @@ public class BundleCache {
 	public static final ResourceBundle ERROR_MESSAGES =
 		ResourceBundle.getBundle("error-messages", Preferences.getInstance().getLocale());
 
+  public static final String ERROR_MESSAGES_KEY = "ERROR_MESSAGES";
+
 	/**
 	 * <p>All messages that are sent to a frontend interface application (messages not coming from an exception).
 	 *
@@ -44,6 +46,9 @@ public class BundleCache {
 	 */
 	public static final ResourceBundle FRONTEND_MESSAGES =
 		ResourceBundle.getBundle("frontend-messages", Preferences.getInstance().getLocale());
+
+  public static final String FRONTEND_MESSAGES_KEY = "FRONTEND_MESSAGES";
+
 
 	private static BundleCache instance = null;
 

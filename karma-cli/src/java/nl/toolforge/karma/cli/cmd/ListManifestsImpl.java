@@ -22,7 +22,6 @@ public class ListManifestsImpl extends ListManifests {
 
     CommandResponse response = new SimpleCommandResponse();
 
-
 		return response;
 	}
 }

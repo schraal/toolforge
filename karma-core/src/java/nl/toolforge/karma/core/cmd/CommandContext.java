@@ -17,6 +17,7 @@ import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
 import nl.toolforge.karma.core.vc.subversion.SubversionRunner;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.cli.Options;
 
 /**
  * <p>The command context is the class that provides a runtime for commands to run in. The command context maintains
@@ -140,8 +141,23 @@ public final class CommandContext {
     //
     command.setContext(this);
 
-    return command.execute();
+    CommandResponse response = command.execute();
+
+//    storeCommandOptions(command.getOptions());
+//    resetCommandOptions(command);
+
+    return response;
   }
+
+//  private void resetCommandOptions(Options options) {
+//
+//    this.savedOptions = options;
+//  }
+//
+//  private void storeCommandOptions(Command command) {
+//
+//  }
+
 
 
   /**

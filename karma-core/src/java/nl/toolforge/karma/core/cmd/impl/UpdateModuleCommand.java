@@ -46,7 +46,7 @@ public class UpdateModuleCommand extends DefaultCommand {
       throw new CommandException(CommandException.NO_MANIFEST_SELECTED);
     }
 
-    String moduleName = getOptions().getOption("m").getValue();
+    String moduleName = getCommandLine().getOptionValue("m");
 
     try {
       this.module = getContext().getCurrent().getModule(moduleName);

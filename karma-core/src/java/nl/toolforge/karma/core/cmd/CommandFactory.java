@@ -117,8 +117,12 @@ public final class CommandFactory {
         // Parse the command line options.
         //
         CommandLineParser parser = new PosixParser();
-//        CommandLine commandLine = parser.parse(cmd.getOptions(), commandOptions);
-        parser.parse(cmd.getOptions(), commandOptions);
+        Options parserOptions = descriptor.getOptions();
+        CommandLine commandLine = parser.parse(parserOptions, commandOptions);
+        parserOptions = null;
+
+        cmd.setCommandLine(commandLine);
+//        commandLine = null;
 
       } catch (NoSuchMethodException e) {
         throw new CommandException(CommandException.INVALID_COMMAND, e);
