@@ -275,7 +275,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
     ClassLoader loader = this.getClass().getClassLoader();
 
     BufferedReader in =
-        new BufferedReader(new InputStreamReader(loader.getResourceAsStream("ant" + File.separator + buildFile)));
+        new BufferedReader(new InputStreamReader(loader.getResourceAsStream("ant/" + buildFile)));
     BufferedWriter out =
         new BufferedWriter(new FileWriter(new File(tmp, buildFile)));
 
