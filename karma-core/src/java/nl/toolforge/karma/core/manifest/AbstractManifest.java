@@ -49,8 +49,6 @@ import java.util.Set;
  */
 public abstract class AbstractManifest implements Manifest {
 
-  private static Collection duplicates = null; // To detect duplicate included manifests.
-
   private Collection childManifests = new ArrayList();
 
   private String name = null;
@@ -330,7 +328,7 @@ public abstract class AbstractManifest implements Manifest {
   }
 
   public final boolean isLocal(Module module) {
-    return new File(getModuleBaseDirectory(), module.getName()).exists();
+    return module.getBaseDir().exists();
   }
 
   /**
@@ -342,8 +340,6 @@ public abstract class AbstractManifest implements Manifest {
   public final Collection getIncludes() {
     return childManifests;
   }
-
-//  public abstract Module.State getLocalState(Module module);
 
   /**
    * Saves the manifest to disk, including all its included manifests.
@@ -533,15 +529,11 @@ public abstract class AbstractManifest implements Manifest {
       stateFile.createNewFile();
 
     } catch (Exception e) {
-      throw new KarmaRuntimeException(e.getMessage());
+      throw new KarmaRuntimeException(e);
     }
   }
 
   public final Module.State getState(Module module) {
-
-//    if (!contextEnabled) {
-//      throw new KarmaRuntimeException("Working context has not been enabled.");
-//    }
 
     if (!isLocal(module)) {
       if (module.hasVersion() || this instanceof ReleaseManifest) {
