@@ -31,14 +31,16 @@ export JAVACMD
 
 # Please note the inclusion of tools.jar from the jdk.
 #
-JARS=`ls $KARMA_HOME/lib/*.jar`
+JARS=`ls $KARMA_HOME/lib/*.jar 2>/dev/null`
 CLASSPATH="$KARMA_HOME/resources"
 for JAR in $JARS ; do
   CLASSPATH=$CLASSPATH:$JAR
 done
 
-PLUGINS=`ls $KARMA_HOME/lib/plugins/*.jar`
+echo "Loading plugins"
+PLUGINS=`ls $KARMA_HOME/lib/plugins/*.jar 2>/dev/null`
 for PLUGIN in $PLUGINS ; do
+  echo "  plugin ${PLUGIN} found."	
   CLASSPATH=$CLASSPATH:$PLUGIN
 done
 
