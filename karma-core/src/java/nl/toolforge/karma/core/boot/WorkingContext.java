@@ -139,12 +139,16 @@ public final class WorkingContext {
    * The property that identifies the local directory where jar dependencies can be found. Dependencies are
    * resolved Maven style, but to support environments where Maven is not available, the directory is configurable.
    * The default Maven repository is used when this property is not set in <code>karma.properties</code>.
+   * todo what field does this comment describe ?
    */
 
   /** The default working context. */
   public static final String DEFAULT = "default";
+  
+  private static final Log logger = LogFactory.getLog(WorkingContext.class);
 
   private static File localRepository = null;
+  private static File configurationBaseDir = null;
 
   private String workingContext = null;
 
@@ -153,10 +157,9 @@ public final class WorkingContext {
   private LocationLoader locationLoader = null;
 
   private WorkingContextConfiguration configuration = null;
+  
+  private Properties properties = null; 
 
-  private static final Log logger = LogFactory.getLog(WorkingContext.class);
-
-  private static File configurationBaseDir = null;
 
   /**
    * Constructs a <code>WorkingContext</code> in the default configuration base directory. The
@@ -250,15 +253,21 @@ public final class WorkingContext {
    * @return A Properties object containing the properties of this working
    * context or an empty Properties object when something went wrong.
    */
-  public Properties getProperties() {
-    Properties properties = new Properties();
-    try {
-      properties.load(new FileInputStream(new File(getProjectBaseDirectory(), "karma.properties")));
-    } catch (FileNotFoundException fnfe) {
-      logger.info("karma.properties not found for working context '"+getName()+"'.");
-    } catch (IOException ioe) {
-      logger.error("karma.properties could not be loaded for working context '"+getName()+"'", ioe);
+  public synchronized Properties getProperties() {
+    if (properties == null) {
+      properties = new Properties();
+
+      try {
+        properties.load(new FileInputStream(new File(getProjectBaseDirectory(), "karma.properties")));
+      }
+      catch (FileNotFoundException fnfe) {
+        logger.info("karma.properties not found for working context '" + getName() + "'.");
+      }
+      catch (IOException ioe) {
+        logger.error("karma.properties could not be loaded for working context '" + getName() + "'", ioe);
+      }
     }
+    
     return properties;
   }
 
