@@ -1,2 +1,33 @@
-To be able to use the karma-cli module, create a lib module in this directory
-and make sure you have a copy of karma-launcher-1.2.jar in that directory.
+****************
+
+Welcome to Karma
+
+****************
+
+This is the second alpha version of Karma, the tool-to-be for software
+configuration management.
+
+Sit back and relax, this is NOT Windows, and will not take forever to
+install; a mere 15 seconds is all.
+
+For now, we assume you have JDK1.4.2_xx installed and an environment variable
+JAVA_HOME set. In later versions, we'll package the JRE as well.
+
+After installation :
+
+- If you have old seet
+
+- Set your KARMA_HOME environment variable to where you installed Karma.
+
+- Add $KARMA_HOME/bin to you PATH and make sure your new PATH settings are
+  activated.
+
+- Start Karma (linux/unix : 'karma', Windows : 'karma.bat')
+
+- Following the instructions. You will be walked through a few configuration
+  items to enable Karma to find manifests and locations. This is all CVS
+  stuff, so you should be able to deduct what is meant here.
+
+This README file is available after installation for further reference.
+
+Enjoy !
