@@ -27,7 +27,7 @@
     component. Karma doesn't care ! A manifest is an XML definition for
     modules and other manifests (the so-called manifest-includes). Manifests
     are covered in much more detail in the <a
-    href="/reference/manifests/index.html">Reference Documentation</a>, but
+    href="reference/manifests/index.html">Reference Documentation</a>, but
     here's what it looks like:
   </p>
 

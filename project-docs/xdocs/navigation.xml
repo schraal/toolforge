@@ -10,16 +10,19 @@
     </links>
 
     <menu name="General Information">
-      <item name="Overview"              href="/index.html"/>
-      <item name="Basics"                href="/basics.html"/>
-      <item name="Getting Started"       href="/getting-started.html">
-        <item name="Administration Guide" href="/administration-guide.html"/>
+      <item name="Overview"               href="index.html"/>
+      <item name="The Standard Problem"   href="problem.html"/>
+      <item name="Basics"                 href="basics.html"/>
+      <item name="Getting Started"        href="getting-started.html">
+        <item name="Administration Guide" href="administration-guide.html"/>
       </item>
+      <item name="News and Status"        href="news.html"/>
     </menu>
 
     <menu name="Questions and Concerns">
-      <item name="Ant is Good"           href="/ant-is-good.html"/>
-      <item name="Maven is Good"         href="/maven-is-good.html"/>
+      <item name="Frequently Asked Questions" href="faq.html"/>
+      <item name="Comparison with Ant"        href="ant-is-good.html"/>
+      <item name="Comparison with Maven"      href="maven-is-good.html"/>
     </menu>
 
     <menu name="Component Reference">
@@ -32,10 +35,11 @@
     <menu name="User Interfaces">
       <item name="Command Line Interface"  href="/ui/cli.html"/>
       <item name="Console" href="/ui/console.html"/>
+      <item name="Screenshots" href="/ui/screenshots.xml"/>
 
       <item name="IDE Plugins" href="/ui/plugins/index.html">
         <item name="Intelli-J" href="/ui/plugins/intelli-j.html"/>
-        <item name="Eclipse" href="/ui/plugins/eclipse.html"/>
+        <item name="Eclipse"   href="/ui/plugins/eclipse.html"/>
       </item>
     </menu>
 

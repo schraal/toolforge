@@ -48,7 +48,7 @@
     <code>JAVA_HOME</code> environment variable is set the correct JDK.
 
     <li/>Run <code>java -jar
-    karma-cli-&lt;version&gt;-INSTALLER.jar</code>. This will start a GUI
+    karma-&lt;version&gt;-INSTALLER.jar</code>. This will start a GUI
     installer. Just follow the instructions.
 
   </ul>
@@ -68,8 +68,8 @@
   </p>
 
   <p>
-    Please refer to the <a href="administration-guide.html">administration
-    guide</a> for further information about the manifest store configuration.
+    Please refer to the <a href="administration-guide.html">Administration
+    Guide</a> for further information about the manifest store configuration.
   </p>
 
   </subsection>
@@ -142,8 +142,7 @@ Checking manifest store configuration ...
     Karma will start and try and locate the settings for the working context
     specified with the <code>-w</code> argument. If the working context does
     not yet exist, Karma will create the working context and ask the user for
-    some configuration settings. Please read the <a href="#wc">Working Context
-    Configuration</a> section for further reference. 
+    some configuration settings. 
   </p>
 
   </subsection>
@@ -153,20 +152,22 @@ Checking manifest store configuration ...
   <subsection name="Working Context Configuration">
 
   <p>
-    In the <a href="/basics#working-context-support">basics</a> section, the
-    working context concept is explained.
+    In the <a href="basics.html#working-context-support">Basics</a> section, the
+    working context concept was defined.
   </p>
 
   <p>
     Having started Karma, you have configured your first working context. The
     properties for a working context can be changed in
     <code>workingcontext.properties</code>, located in the working context
-    subdirectory of <code>${user.home}/.karma</code>.
+    subdirectory of <code>${user.home}/.karma</code>. Please check the <a
+    href="reference/working-context/index.html">Reference Documentation</a>
+    for further reference.
   </p>
 
   <p>
      For an in-depth discussion on working contexts, see the <a
-     href="/reference/working-context/index.xml">reference</a> documentation.
+     href="reference/working-context/index.xml">Reference Documentation</a>.
   </p>
 
   </subsection>

@@ -23,8 +23,8 @@
   <section name="What is Karma ?">
 
   <p>
-    Karma is a tool that is positioned in the following areas of software
-    development:
+    Karma is a tool, developed under the Toolforge project, covering the
+    following areas of software development:
 
     <ul>
       <li>Component Management</li>
@@ -65,12 +65,10 @@
 
   <section name="What is there to use ?">
 
-<!--    <subsection name="Open source and free"> -->
-
     <p>
       The <b>Toolforge</b> project on <a
       href="http://sourceforge.net/projects/toolforge">Sourceforge</a>
-      contains what is there to get. <b>Read</b> the <a href="basics.html">basics</a>
+      contains what is there to get. <b>Read</b> the <a href="basics.html">Basics</a>
       section before anything else to get an idea of what Karma could mean for
       your organization.
     </p>
@@ -79,8 +77,6 @@
       Released versions of Karma can be found at
       <a href="http://sourceforge.net/projects/toolforge">Sourceforge</a>.
     </p>
-
-<!--    </subsection> -->
 
   </section>
 
