@@ -1,3 +1,21 @@
+/*
+Karma core - Core of the Karma application
+Copyright (C) 2004  Toolforge <www.toolforge.nl>
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
 package nl.toolforge.karma.core.cmd.util;
 
 import java.io.File;
@@ -18,6 +36,7 @@ import nl.toolforge.karma.core.manifest.ModuleTypeException;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvsimpl.Utils;
+import nl.toolforge.karma.core.Version;
 
 /**
  * Dependency management is heavily used by Karma. This helper class provides methods to resolve dependencies, check
@@ -87,8 +106,6 @@ public final class DependencyHelper {
       throw new IllegalArgumentException("Module cannot be null.");
     }
 
-    BuildEnvironment env = new BuildEnvironment(manifest, module);
-
     Set s = new LinkedHashSet();
 
     for (Iterator iterator = module.getDependencies().iterator(); iterator.hasNext();) {
@@ -102,9 +119,9 @@ public final class DependencyHelper {
           //when packaging we want to have the archive
           //when we are not packaging, i.e. building or testing, then we want the classes.
           if (doPackage) {
-            path = new DependencyPath(env.getBuildRootDirectory(), new File(dep.getModule(), resolveArchiveName(depModule)));
+            path = new DependencyPath(manifest.getBuildBaseDirectory(), new File(dep.getModule(), resolveArchiveName(depModule)));
           } else {
-            path = new DependencyPath(env.getBuildRootDirectory(), new File(dep.getModule(), "build"));
+            path = new DependencyPath(manifest.getBuildBaseDirectory(), new File(dep.getModule(), "build"));
           }
           if (!path.exists()) {
             throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getModule()});
@@ -240,7 +257,6 @@ public final class DependencyHelper {
         DependencyPath path;
         if (dep.isLibModuleDependency()) {
           //dep on jar in lib module. This one is relative to the base dir of the manifest.
-//          path = new DependencyPath(manifest.getBaseDirectory(), new File(dep.getJarDependency()));
           path = new DependencyPath(manifest.getModuleBaseDirectory(), new File(dep.getJarDependency()));
         } else {
           //dep on jar in Maven-style repo.
@@ -265,11 +281,11 @@ public final class DependencyHelper {
    *
    * <ul>
    *   <li/>If the state of the module is <code>WORKING</code>, the artifact-name is
-   *        <code>&lt;module-name&gt;_WORKING</code>.
+   *        <code>&lt;module-name&gt;-WORKING</code>.
    *   <li/>If the state of the module is <code>DYNAMIC</code>, the artifact-name is
-   *        <code>&lt;module-name&gt;_&lt;latest-versions&gt;</code>.
+   *        <code>&lt;module-name&gt;-&lt;latest-versions&gt;</code>.
    *   <li/>If the state of the module is <code>STATIC</code>, the artifact-name is
-   *        <code>&lt;module-name&gt;_&lt;version&gt;</code>.
+   *        <code>&lt;module-name&gt;-&lt;version&gt;</code>.
    * </ul>
    *
    * @param module  The module for which to determine the artifact name.
@@ -277,16 +293,18 @@ public final class DependencyHelper {
    */
   public String resolveArtifactName(Module module) throws DependencyException {
 
-    String artifact = module.getName() + "_";
+    String artifact = module.getName() + "-";
 
+    String version = "";
     try {
       if (manifest.getState(module).equals(Module.WORKING)) {
-        artifact += Module.WORKING.toString();
+        version = Module.WORKING.toString();
       } else if (manifest.getState(module).equals(Module.DYNAMIC)) {
-        artifact += (Utils.getLocalVersion(module));
+        version = Utils.getLocalVersion(module).toString();
       } else { // STATIC module
-        artifact += ((Module) module).getVersionAsString();
+        version = ((Module) module).getVersionAsString();
       }
+      version = version.replaceAll(Version.VERSION_SEPARATOR_CHAR, ".");
     } catch (VersionControlException v) {
       throw new DependencyException(v.getErrorCode(), v.getMessageArguments());
     }
