@@ -4,19 +4,19 @@
 
 	<!-- The 'id'-attribute maps on a 'location'-attribute in a module -->
 
-	<location type="cvs-repository" id="cvs-local">
+	<location type="cvs-repository" id="local-test">
 		<host>localhost</host>
 		<port>2401</port>
 		<repository>/home/cvs</repository>
 	</location>
 
-	<location type="cvs-repository" id="sourceforge">
+	<location type="cvs-repository" id="sourceforge-test">
 		<host>cvs.sourceforge.net</host>
 		<port>2401</port>
 		<repository>/cvsroot/</repository>
 	</location>
 
-	<location type="subversion-repository" id="subversion-local">
+	<location type="subversion-repository" id="subversion-test">
 		<host>localhost</host>
 		<port>9999</port>
 		<repository>/home/subversion</repository>

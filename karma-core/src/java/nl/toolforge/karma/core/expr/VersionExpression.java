@@ -13,6 +13,6 @@ package nl.toolforge.karma.core.expr;
 public class VersionExpression implements Expression
 {
     public String getPatternString() {
-        return "\\d_[\\d_\\d]+";
+        return "\\d\\-[\\d\\-\\d]+";
     }
 }

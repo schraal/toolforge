@@ -24,7 +24,7 @@ public final class SubversionRunner implements Runner {
 
 	}
 
-	public CommandResponse add(File file) {
+	public CommandResponse add(Module module, File filePath) {
 		return null;
 	}
 

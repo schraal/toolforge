@@ -1,24 +1,19 @@
 package nl.toolforge.karma.core.test;
 
-import nl.toolforge.karma.core.test.BaseTest;
-import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.prefs.Preferences;
-import nl.toolforge.karma.core.vc.Runner;
-import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
-import nl.toolforge.karma.core.vc.cvs.InitializationException;
-import nl.toolforge.karma.core.vc.cvs.CVSRunner;
-import nl.toolforge.karma.core.vc.cvs.CVSException;
+import junit.framework.Assert;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.SourceModule;
-
-import java.util.Properties;
-import java.util.Random;
-import java.io.File;
-import java.io.IOException;
-
+import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.vc.cvs.CVSException;
+import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
+import nl.toolforge.karma.core.vc.cvs.CVSRunner;
+import nl.toolforge.karma.core.vc.cvs.InitializationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import junit.framework.Assert;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
+import java.util.Random;
 
 /**
  * <p>Initializes tests that need a local CVS repository. This local repository can be found as a <code>zip</code>-file
@@ -55,8 +50,10 @@ public class LocalCVSInitializer extends BaseTest {
 
 		try {
 			Properties props = new Properties();
-			props.load(getClass().getClassLoader().getResourceAsStream("test-cvs.properties"));
+			props.load(getClass().getClassLoader().getResourceAsStream("test/test-cvs.properties"));
 			localPath = props.getProperty("cvs.local.path");
+
+			logger.debug("cvs.local.path = " + localPath);
 
 			location = new CVSLocationImpl("local");
 
@@ -93,11 +90,11 @@ public class LocalCVSInitializer extends BaseTest {
 	 * Deletes the temporary directory.
 	 */
 	public void tearDown() {
-		if (tempDevelopmentHome.delete()) {
-			logger.info("Temporary directory " + tempDevelopmentHome.getPath() + " deleted.");
-		} else {
-			logger.info("Temporary directory " + tempDevelopmentHome.getPath() + " could not be deleted.");
-		}
+//		if (tempDevelopmentHome.delete()) {
+//			logger.info("Temporary directory " + tempDevelopmentHome.getPath() + " deleted.");
+//		} else {
+//			logger.info("Temporary directory " + tempDevelopmentHome.getPath() + " could not be deleted.");
+//		}
 	}
 
 	/**
@@ -146,7 +143,7 @@ public class LocalCVSInitializer extends BaseTest {
 
 			CommandResponse response = runner.checkout(module, tempDevelopmentHome);
 
-			Assert.assertEquals(new CVSException(CVSException.INVALID_CVSROOT), response.getException());
+			assertEquals(new CVSException(CVSException.INVALID_CVSROOT), response.getException());
 
 		} catch (Exception e) {
 			fail(e.getMessage());

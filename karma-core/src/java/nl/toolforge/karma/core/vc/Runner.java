@@ -17,10 +17,11 @@ public interface Runner {
 	/**
 	 * Adds a file to the version control system.
 	 *
-	 * @param file
+	 * @param module The module that contains the file (or will contain the file).
+	 * @param filePath The full path to the filename that should be added to the version control system repository.
 	 * @return
 	 */
-	public CommandResponse add(File file);
+	public CommandResponse add(Module module, File filePath);
 
 	/**
 	 * Checks out a module from a version control system.

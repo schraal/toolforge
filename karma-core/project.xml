@@ -104,9 +104,14 @@
 		<unitTestSourceDirectory>src/java</unitTestSourceDirectory>
 
 		<unitTest>
+
 			<includes>
 				<include>**/Test*.java</include>
 			</includes>
+
+			<excludes>
+				<exclude>**/TestBundle*.java</exclude>
+			</excludes>
 
 			<resources>
 				<resource>

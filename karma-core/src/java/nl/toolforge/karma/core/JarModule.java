@@ -5,6 +5,8 @@ import nl.toolforge.karma.core.expr.ModuleNameExpression;
 import nl.toolforge.karma.core.expr.VersionExpression;
 import nl.toolforge.karma.core.location.Location;
 
+import java.io.File;
+
 /**
  * <p>A <code>JarModule</code> represents a Java <code>jar</code>-artifact. *
  *
@@ -66,10 +68,13 @@ public class JarModule extends BaseModule {
 		return version;
 	}
 
-//	/**
-//	 * @see {@link Module#getController}
-//	 */
-//	public ModuleController getController() {
-//		return null;
-//	}
+	/**
+	 * Not implemented for this type of module (<b>yet</b>).
+	 *
+	 * @return Nothing, will throw <code>KarmaRuntimeException</code>.
+	 */
+	public File getLocalPath() {
+		throw new KarmaRuntimeException("Not implemented.");
+	}
+
 }

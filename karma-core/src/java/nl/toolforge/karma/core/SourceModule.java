@@ -3,6 +3,9 @@ package nl.toolforge.karma.core;
 import nl.toolforge.core.regexp.Pattern;
 import nl.toolforge.karma.core.expr.VersionExpression;
 import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.prefs.Preferences;
+
+import java.io.File;
 
 /**
  * <p>A <code>SourceModule</code> represents a module for which the developer wants to have the sources available to
@@ -17,6 +20,8 @@ import nl.toolforge.karma.core.location.Location;
  * @version $Id$
  */
 public class SourceModule extends BaseModule {
+
+	private static Preferences prefs = Preferences.getInstance();
 
 	/** Element name for a source module in a manifest XML file */
 	public static final String ELEMENT_NAME = "sourcemodule";
@@ -99,6 +104,24 @@ public class SourceModule extends BaseModule {
 	 */
 	public final String getVersion() throws KarmaException {
 		return version;
+	}
+
+	/**
+	 * Returns the full path, based on {@link Preferences#getDevelopmentHome} and the modules' name {@link #getName}.
+	 *
+	 * @return
+	 */
+	public File getLocalPath() {
+
+    String localPath = null;
+		try {
+			localPath = prefs.getDevelopmentHome().getPath().concat(File.separator).concat(this.getName());
+			logger.debug("getLocalPath() = " + localPath);
+		} catch (KarmaException e) {
+			e.printStackTrace();
+		}
+
+		return new File(localPath);
 	}
 
 	/**

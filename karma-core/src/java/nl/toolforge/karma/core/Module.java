@@ -2,6 +2,9 @@ package nl.toolforge.karma.core;
 
 import nl.toolforge.karma.core.location.Location;
 
+import java.io.File;
+import java.io.IOException;
+
 
 /**
  * <p>A module is an important concept for the Karma tool. It represents a main building block of an application system.
@@ -29,6 +32,8 @@ public interface Module {
 	public static final State DYNAMIC = new State("DYNAMIC");
 	public static final State STATIC = new State("STATIC");
 
+	public static final String DESCRIPTION_ATTRIBUTE = "description";
+
 	/** The <code>name</code>-attribute for a module. */
 	public static final String NAME_ATTRIBUTE = "name";
 
@@ -53,12 +58,17 @@ public interface Module {
 	 */
 	public Location getLocation() throws KarmaException;
 
-//	/**
-//	 * Provides a reference to a modules' {@link nl.toolforge.karma.core.ModuleController} instance.
-//	 *
-//	 * @return A reference to the modules' <code>ModuleController</code>.
-//	 */
-//	public ModuleController getController();
+	/**
+	 * <p>Some module-types (e.g. source modules) have a physical location on disk where the module can be located. This
+	 * method returns a valid reference to that location. When the module-root is located at
+	 * <code>/home/jensen/dev/modules/CORE-conversion</code>, <code>getLocalPath()</code> will return a <code>File</code>
+	 * handle to that directory.
+	 *
+	 * <p>A runtime exception wrapped in a <code>KarmaRuntimeException</code> may be thrown when
+	 *
+	 * @return The local directory where the module root can be found.
+	 */
+	public File getLocalPath();
 
 	/**
 	 * Sets the {@link State} of this module.

@@ -14,6 +14,7 @@ import org.netbeans.lib.cvsclient.connection.AuthenticationException;
 import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
 import org.netbeans.lib.cvsclient.command.GlobalOptions;
 import org.netbeans.lib.cvsclient.command.CommandException;
+import org.netbeans.lib.cvsclient.command.add.AddCommand;
 import org.netbeans.lib.cvsclient.command.checkout.CheckoutCommand;
 
 import java.io.File;
@@ -157,11 +158,28 @@ public final class CVSRunner implements Runner {
 	/**
 	 * Adds a file to the CVS repository.
 	 *
-	 * @param file A file that is not yet in the CVS repository.
+	 * @param module The module that contains the file.
+	 * @param filePath The path to the file to add, relative to {@link Module#getLocalPath}.
+	 *
 	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
 	 */
-	public CommandResponse add(File file) {
-		return null;
+	public CommandResponse add(Module module, File filePath) {
+
+		AddCommand addCommand = new AddCommand();
+		addCommand.setMessage("Testcase message ... ");
+
+		File fileToAdd = new File(module.getLocalPath().getPath() + File.separator + filePath.getPath());
+		addCommand.setFiles(new File[]{fileToAdd});
+
+		try {
+			client.setLocalPath(fileToAdd.getPath());
+			client.executeCommand(addCommand, globalOptions);
+		} catch (CommandException e) {
+			e.printStackTrace();
+		} catch (AuthenticationException e) {
+			e.printStackTrace();
+		}
+		return adapter;
 	}
 
 	/**

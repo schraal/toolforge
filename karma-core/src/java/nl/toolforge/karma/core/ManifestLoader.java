@@ -35,7 +35,7 @@ public final class ManifestLoader {
 
 	//private Manifest currentManifest = null;
 
-	private static Preferences prefs = Preferences.getInstance(true);
+	private static Preferences prefs = Preferences.getInstance();
 	private static ClassLoader classLoader = null;
 	private static String resourceDir = null;
 
@@ -158,8 +158,6 @@ public final class ManifestLoader {
 			throw new ManifestException(ManifestException.MANIFEST_LOAD_ERROR, s);
 		} catch (IOException i) {
 			throw new ManifestException(ManifestException.MANIFEST_LOAD_ERROR, i);
-		} catch (Exception e) {
-			throw new KarmaRuntimeException(e.getMessage(), e);
 		}
 
 		return manifest;
@@ -193,46 +191,64 @@ public final class ManifestLoader {
 
 				Element node = (Element) moduleElements.item(i);
 
-				// Mandatory fields
-				//
-				String moduleName = node.getAttribute(Module.NAME_ATTRIBUTE);
-				String locationAlias = node.getAttribute(Module.LOCATION_ATTRIBUTE);
-
-				Location location = LocationFactory.getInstance().get(locationAlias);
-
-				if (node.getNodeName().equals(SourceModule.ELEMENT_NAME)) {
-
-					// SourceModule specific fields
+				if (node.getNodeName().equals(Module.DESCRIPTION_ATTRIBUTE)) {
+					// Ignore
 					//
-					String version = node.getAttribute(SourceModule.VERSION_ATTRIBUTE);
 
-					SourceModule sourceModule;
-					if (version == null) {
-						sourceModule = new SourceModule(moduleName, location);
-					} else {
-						sourceModule = new SourceModule(moduleName, location, version);
-					}
-					//sourceModule.setBranch(node.getAttribute(SourceModule.BRANCH_ATTRIBUTE));
-
-					manifest.addModule(sourceModule);
-
-				} else if (node.getNodeName().equals(JarModule.ELEMENT_NAME)) {
-
-					String version = node.getAttribute(JarModule.VERSION_ATTRIBUTE);
-
-					JarModule jarModule;
-					if (version == null) {
-						jarModule = new JarModule(moduleName, location);
-					} else {
-						jarModule = new JarModule(moduleName, location, version);
-					}
-
-					manifest.addModule(jarModule);
-
-				} else if (node.getNodeName().equals(Module.INCLUDE_ELEMENT_NAME)) {
-					// Recursive call
+					// TODO Maybe later .... assign to description attribute.
 					//
-					add(duplicates, manifest, node.getAttribute(Module.INCLUDE_NAME_ATTRIBUTE));
+
+				} else {
+
+					// Mandatory fields
+					//
+
+          String nodeName = node.getNodeName();
+
+					if (nodeName.equals(SourceModule.ELEMENT_NAME)) {
+
+						String moduleName = node.getAttribute(Module.NAME_ATTRIBUTE);
+						Location location = LocationFactory.getInstance().get(node.getAttribute(Module.LOCATION_ATTRIBUTE));
+
+						// SourceModule specific fields
+						//
+						String version = node.getAttribute(SourceModule.VERSION_ATTRIBUTE);
+
+						SourceModule sourceModule;
+						if (version == null) {
+							sourceModule = new SourceModule(moduleName, location);
+						} else {
+							sourceModule = new SourceModule(moduleName, location, version);
+						}
+						//sourceModule.setBranch(node.getAttribute(SourceModule.BRANCH_ATTRIBUTE));
+
+						manifest.addModule(sourceModule);
+
+					}
+
+					if (nodeName.equals(JarModule.ELEMENT_NAME)) {
+
+						String moduleName = node.getAttribute(Module.NAME_ATTRIBUTE);
+						Location location = LocationFactory.getInstance().get(node.getAttribute(Module.LOCATION_ATTRIBUTE));
+
+						String version = node.getAttribute(JarModule.VERSION_ATTRIBUTE);
+
+						JarModule jarModule;
+						if (version == null) {
+							jarModule = new JarModule(moduleName, location);
+						} else {
+							jarModule = new JarModule(moduleName, location, version);
+						}
+
+						manifest.addModule(jarModule);
+
+					}
+
+					if (nodeName.equals(Module.INCLUDE_ELEMENT_NAME)) {
+						// Recursive call
+						//
+						add(duplicates, manifest, node.getAttribute(Module.INCLUDE_NAME_ATTRIBUTE));
+					}
 				}
 			}
 		} catch (KarmaException k) {
@@ -260,7 +276,7 @@ public final class ManifestLoader {
 			} else {
 				logger.debug("Loading manifest " + fileName + " from file-system ...");
 
-				InputStream inputStream = classLoader.getResourceAsStream(resourceDir + File.separator + fileName);
+				InputStream inputStream = classLoader.getResourceAsStream(fileName);
 
 				if (inputStream == null) {
 					throw new ManifestException(ManifestException.MANIFEST_FILE_NOT_FOUND);

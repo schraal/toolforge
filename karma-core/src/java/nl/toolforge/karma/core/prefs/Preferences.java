@@ -6,10 +6,7 @@ import nl.toolforge.karma.core.ManifestException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -25,7 +22,7 @@ import java.util.*;
  * <p>A user's environment consists of the following :</p>
  *
  * <ul>
- *   <li/>A home directory, where Karma enabled projects are stored. ALl project source code is checked out using this
+ *   <li/>A home directory, where Karma enabled projects are stored. All project source code is checked out using this
  *        directory as the root. The environment variable <code>KARMA_HOME</code> or <code>karma.home</code> can be
  *        used to assign a directory. Using '<code>java -Dkarma.home</code> overrides the value of
  *        <code>KARMA_HOME</code>. This way, multiple threads of Karma can be run.
@@ -51,9 +48,35 @@ import java.util.*;
  *
  * @version $Id$
  */
-public final class Preferences
-{
+public final class Preferences {
+
 	private static Log logger = LogFactory.getLog(Preferences.class);
+
+	//
+	//
+
+	/**
+	 * This property is used to determine the path to the bootstrap properties file (<code>karma.properties</code>). The
+	 * convention is that a filename <b>NOT</b> starting with a <code>/</code> means that it will be loaded from the
+	 * classpath (the filename can be preceded with a ; otherwise it will be loaded from
+	 */
+	public static final String BOOTSTRAP_CONFIGURATION_FILE_PROPERTY = "bootstrap.configuration";
+
+	/**
+	 * The property that contains the configuration directory for Karma. This property is expected to be set in the
+	 * bootstrap configuration file (see {@link #BOOTSTRAP_CONFIGURATION_FILE_PROPERTY}).
+	 */
+	public static final String CONFIGURATION_DIRECTORY_PROPERTY = "configuration.directory";
+
+	/**
+	 * The property that contains the development home directory for Karma; where projects are stored on the local
+	 * harddisk.
+	 */
+	public static final String DEVELOPMENT_HOME_DIRECTORY_PROPERTY = "development.home";
+
+	//
+	//
+
 
 	private static final boolean COMMAND_LINE_MODE = System.getProperty("MODE", "UNKNOWN").equals("COMMAND_LINE_MODE");
 
@@ -62,13 +85,7 @@ public final class Preferences
 		(System.getProperty("TESTMODE") == null ? false : System.getProperty("TESTMODE").equals("true"));
 
 	/** The property that contains the configuration directory for Karma. */
-	public static final String CONFIGURATION_DIRECTORY_PROPERTY = "karma.configuration.directory";
-
-	/**
-	 * The property that contains the development home directory for Karma; where projects are stored on the local
-	 * harddisk.
-	 */
-	public static final String DEVELOPMENT_HOME_DIRECTORY_PROPERTY = "karma.development.home";
+	//public static final String CONFIGURATION_DIRECTORY_PROPERTY = "karma.configuration.directory";
 
 	public static final String LOCALE_PROPERTY = "locale";
 
@@ -112,7 +129,7 @@ public final class Preferences
 	// Private variable that holds the user's development home directory, the root
 	// directory where the user has stored his/her Karma managed projects.
 	//
-	private static String developmentHome = System.getProperty(DEVELOPMENT_HOME_DIRECTORY_PROPERTY);
+	private static String developmentHome = null;
 
 	// See 'developmentHome'; when that parameter is null, the defaultDevelopmentHome
 	// will be returned. This paramater is initialized in a static block, based on the
@@ -130,7 +147,7 @@ public final class Preferences
 	private static String defaultKarmaConfigurationDirectory = System.getProperty("user.home").concat(File.separator).concat(".karma");
 
 	//private OsFamily operatingSystemFamily = null;
-	private static String operatingSystem = null;
+//	private static String operatingSystem = null;
 
 	private static Preferences instance = null;
 
@@ -145,62 +162,70 @@ public final class Preferences
 	 *        no system property <code>karma.configuration.directory</code> can be found.
 	 * </ul>
 	 *
-	 * @param create Determines if resources should be created when non-existing (<code>true</code>). This
-	 *               is usefull for testing purposes (test clients would call this constructor with
-	 *               <code>false</code>.
 	 *
 	 * @return A <code>Preferences<code> instance, ready to rock 'n roll !
 	 *
 	 */
-	public synchronized static Preferences getInstance(boolean create) {
+	public synchronized static Preferences getInstance() {
+
 		if (instance == null) {
 			instance = new Preferences();
-			instance.load();
-
-			instance.initUserEnvironment(create);
+			instance.initUserEnvironment();
 		}
 		return instance;
 	}
 
-	/**
-	 * See {@link #getInstance}. <code>create</code> defaults to <code>true</code>. Use with care when performing
-	 * JUnit tests.
-	 *
-	 * @return A <code>Preferences<code> instance, ready to rock 'n roll !
-	 */
-	public synchronized static Preferences getInstance() {
-		return getInstance(true);
-	}
-
 	private Properties values = new Properties();
+  private Properties bootstrapConfiguration = new Properties();
 
 	// Private constructor to prevent direct instantiation
 	//
 	private Preferences() {
 
-		// We first try to load the preferences that might be there on disk
+		// Bootstrapping configuration
 		//
-		load();
-
-		// Next we try to load the karma.properties file, which could override
-		// the preferences that are loaded before. The preferences might be outdated you know.
-		//
-		Properties props = new Properties();
 		try {
 
-			if (!TESTMODE) {
-				//logger.info("Application runs in non-test mode.");
-				props.load(new FileInputStream(new File(getConfigurationDirectoryAsString() + File.separator + "karma.properties")));
-			} else {
-				// Read from classpath
-				//
-				//logger.error("Application runs in test mode.");
-				props.load(getClass().getClassLoader().getResourceAsStream("resources/test/karma.properties"));
+			String bootstrapConfigurationFile = System.getProperty(BOOTSTRAP_CONFIGURATION_FILE_PROPERTY);
+      bootstrapConfigurationFile = (bootstrapConfigurationFile == null ? null : bootstrapConfigurationFile.trim());
+
+			if (bootstrapConfigurationFile == null) {
+				throw new KarmaRuntimeException(
+					"Bootstrap PANIC. Property 'bootstrap.configuration' should be provided as system property.");
 			}
 
-			for (Enumeration e = props.propertyNames(); e.hasMoreElements();) {
+			InputStream f = null;
+			if (new File(bootstrapConfigurationFile).isAbsolute()) {
+				// Load from disk
+				//
+//				System.out.println("111 " + bootstrapConfigurationFile);
+				f = new FileInputStream(new File(bootstrapConfigurationFile));
+			} else {
+				// Load from classpath
+				//
+//				System.out.println("222 " + bootstrapConfigurationFile);
+				f = getClass().getClassLoader().getSystemResourceAsStream(bootstrapConfigurationFile);
+			}
+
+			bootstrapConfiguration.load(f);
+
+		} catch (Exception e) {
+			throw new KarmaRuntimeException(
+				"Bootstrap PANIC. Karma could not be started, bootstrap configuration could not be found.");
+		}
+
+		// We first try to load the preferences that might be there on disk
+		//
+		load(bootstrapConfiguration.getProperty(CONFIGURATION_DIRECTORY_PROPERTY));
+
+		// Next we traverse the bootstrap properties in the karma.properties file, which could override
+		// the preferences that are loaded before. The preferences might be outdated.
+		//
+		try {
+
+			for (Enumeration e = bootstrapConfiguration.propertyNames(); e.hasMoreElements();) {
 				String prop = (String) e.nextElement();
-				put(prop, props.getProperty(prop));
+				put(prop, bootstrapConfiguration.getProperty(prop));
 			}
 
 		} catch (Exception e) {
@@ -213,40 +238,24 @@ public final class Preferences
 		flush();
 	}
 
-	private void initUserEnvironment(boolean create) {
+//	private void initUserEnvironment(boolean create) {
+		private void initUserEnvironment() {
 
 		// Determine the Operation System the user works on
 		//
-		operatingSystem = System.getProperty("os.name");
+		//operatingSystem = System.getProperty("os.name");
 
 
 		// Try to obtain the 'karma.configuration.directory property, which was optionally
 		// passed as a Java command line option.
 		//
-		karmaConfigurationDirectory = System.getProperty(CONFIGURATION_DIRECTORY_PROPERTY);
+		karmaConfigurationDirectory = values.getProperty(CONFIGURATION_DIRECTORY_PROPERTY);
 
 		if ((karmaConfigurationDirectory == null) || (karmaConfigurationDirectory.length() == 0)) {
-
-			// The property wasn't passed with the 'java' command during startup, so we're
-			// going to use the defaultKarmaConfigurationDirectory property.
 			karmaConfigurationDirectory = defaultKarmaConfigurationDirectory;
-
-			// If this configuration directory does not yet exist, it will be created, but only
-			// if the 'create' parameter is 'true'
-			//
-			if (create == true) {
-
-				try {
-					if (!TESTMODE) {
-						new File(karmaConfigurationDirectory).createNewFile();
-					}
-				} catch (IOException i) {
-					throw new KarmaRuntimeException("Configuration home directory cannot be created", i);
-				}
-			}
 		}
 
-		developmentHome = System.getProperty(DEVELOPMENT_HOME_DIRECTORY_PROPERTY);
+		developmentHome = values.getProperty(DEVELOPMENT_HOME_DIRECTORY_PROPERTY);
 
 		if ((developmentHome == null) || (developmentHome.length() == 0)) {
 
@@ -254,18 +263,12 @@ public final class Preferences
 			// going to use the defaultDevelopmentHome property.
 			developmentHome = defaultDevelopmentHome;
 
-			// If the home directory does not yet exist, it will be created, but only
-			// if the 'create' parameter is 'true'
+			// If the home directory does not yet exist, it will be created.
 			//
-			if (create == true) {
-
-				try {
-					if (!TESTMODE) {
-						new File(developmentHome).createNewFile();
-					}
-				} catch (IOException i) {
-					throw new KarmaRuntimeException("Development home directory cannot be created.", i);
-				}
+			if (new File(developmentHome).mkdir()) {
+				logger.info("Development home directory " + developmentHome + " has been created.");
+			} else {
+				logger.info("Development home directory " + developmentHome + " already exists.");
 			}
 		}
 
@@ -360,31 +363,35 @@ public final class Preferences
 		}
 	}
 
-	private void load() {
+	/**
+	 * Loads preference data from a file called <code>preferences</code>. If the file cannot be found, fine, we ignore
+	 * that and print a message to the log-file. This is handy for JUnit tests. The code remains the same ...
+	 *
+	 * @param configDir
+	 */
+	private void load(String configDir) {
 
-		if (!TESTMODE) {
-			if (COMMAND_LINE_MODE) {
-				FileInputStream in = null;
-				try {
-					in = new FileInputStream(new File(getConfigurationDirectoryAsString(), "preferences"));
-					values.load(in);
-				}
-				catch (IOException e) {
-					// ignore, we assume it did not exist yet
-				}
-				finally {
-					if (in != null) {
-						try {
-							in.close();
-						}
-						catch (IOException e) {
-							// ignore
-						}
+		if (COMMAND_LINE_MODE) {
+			FileInputStream in = null;
+			try {
+				in = new FileInputStream(new File(configDir, "preferences"));
+				values.load(in);
+			}
+			catch (IOException e) {
+				logger.info("No preferences could be found. Ignoring ...");
+			}
+			finally {
+				if (in != null) {
+					try {
+						in.close();
+					}
+					catch (IOException e) {
+						logger.info("No preferences could be found. Ignoring ...");
 					}
 				}
-			} else {
-				logger.info("NOT in COMMAND_LINE_MODE");
 			}
+		} else {
+			logger.info("NOT in COMMAND_LINE_MODE");
 		}
 	}
 
@@ -453,7 +460,8 @@ public final class Preferences
 	}
 
 	/**
-	 * Retrieves the user's configuration directory, where all projects are stored.
+	 * Retrieves the user's configuration directory, where all projects are stored. This method uses the
+	 * <code>configuration.directory</code> property from <code>karma.properties</code>.
 	 *
 	 * @return The user's karma configuration directory.
 	 * @throws NullPointerException When the
@@ -493,9 +501,9 @@ public final class Preferences
 	 *
 	 * @return The operating system (family)name that the user works on.
 	 */
-	public final String getOperationSystem() {
-		return operatingSystem;
-	}
+//	public final String getOperationSystem() {
+//		return operatingSystem;
+//	}
 
 	public final File getManifestStore() throws ManifestException {
 
