@@ -48,5 +48,9 @@ public class TestModuleDescriptor extends BaseTest {
     } catch (IOException e) {
       fail();
     }
+
+    if (tmp != null && tmp.exists()) {
+      tmp.delete();
+    }
   }
 }
