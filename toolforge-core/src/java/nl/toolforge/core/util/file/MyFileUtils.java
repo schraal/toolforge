@@ -18,15 +18,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.core.util.file;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.NameFileFilter;
-import org.apache.tools.ant.DirectoryScanner;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Random;
+
+import org.apache.tools.ant.DirectoryScanner;
 
 
 /**
@@ -64,19 +60,19 @@ public final class MyFileUtils {
    *
    * @param dir Starting directory.
    */
-  public static void makeWriteable(File dir) {
+  public static void makeWriteable(File dir) throws IOException, InterruptedException {
 
     String osName = System.getProperty("os.name");
-    try {
-      if (osName.equalsIgnoreCase("WINDOWS NT") || osName.equals("Windows 2000")) {
-        Runtime.getRuntime().exec("cmd.exe /c attrib -r *.*");
-      } else {
-        Process Proc = Runtime.getRuntime().exec("chmod -R u+w " + dir + File.separator);
-      }
-//      Thread.currentThread().sleep(100);
-    } catch (Exception e) {
-      System.out.println(e.getMessage());
+    Process proc = null;
+    if (osName.toUpperCase().startsWith("WINDOWS")) {
+      proc = Runtime.getRuntime().exec("cmd.exe /c attrib -r *.*");
+    } else if (osName.toUpperCase().startsWith("LINUX")) {
+      proc = Runtime.getRuntime().exec("chmod -Rf u+w " + dir + File.separator);
+    } else {
+      //all os-es other then Windows and Linux.
+      proc = Runtime.getRuntime().exec("chmod -Rf u+w " + dir + File.separator);
     }
+    proc.waitFor();
   }
 
   /**
