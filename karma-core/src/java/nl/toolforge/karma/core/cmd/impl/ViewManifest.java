@@ -103,15 +103,15 @@ public class ViewManifest extends DefaultCommand {
       try {
 
         if (manifest.getState(module).equals(Module.WORKING)) {
-          moduleData[1] = "   ";
+          moduleData[1] = "HEAD";
         } else {
           Version localVersion = moduleStatus.getLocalVersion();
-          moduleData[1] = (localVersion == null ? "   " : localVersion.getVersionNumber());
+          moduleData[1] = (localVersion == null ? "" : localVersion.getVersionNumber());
         }
 
         if (existsInRepository) {
           Version remoteVersion = moduleStatus.getLastVersion();
-          moduleData[2] = (remoteVersion == null ? "   " : "(" + remoteVersion.getVersionNumber() + ")");
+          moduleData[2] = (remoteVersion == null ? "" : "(" + remoteVersion.getVersionNumber() + ")");
         } else {
           moduleData[2] = "";
         }
