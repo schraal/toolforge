@@ -224,8 +224,9 @@ public final class CVSRunner implements Runner {
     } catch (IOException e) {
       throw new KarmaRuntimeException("Panic! Failed to create temporary directory.");
     }
+    
     module.setBaseDir(new File(tmp, getOffSetLocation(module)));
-//    module.setBaseDir(new File(tmp, module.getName()));
+    module.setCheckoutDir(tmp);
 
     checkout(module, null, null);
 
