@@ -4,6 +4,7 @@ import nl.toolforge.karma.core.exception.ErrorCode;
 import nl.toolforge.karma.core.prefs.Preferences;
 
 import java.text.MessageFormat;
+import java.util.Locale;
 
 /**
  * Root exception for <code>nl.toolforge.karma</code> classes. A <code>KarmaException</code> can be initialized with a
@@ -166,7 +167,9 @@ public class KarmaException extends Exception {
 			//TODO: deze call zorgt IMHO voor een eindeloze loop.
 			return getMessage();
 		} else {
-			String errorMessage = errorCode.getErrorMessage(LocalEnvironment.getLocale());
+//			String errorMessage = errorCode.getErrorMessage(LocalEnvironment.getLocale());
+      //todo read from system
+			String errorMessage = errorCode.getErrorMessage(Locale.ENGLISH);
 			if (getMessageArguments().length != 0) {
 				MessageFormat messageFormat = new MessageFormat(errorMessage);
 				return messageFormat.format(getMessageArguments());

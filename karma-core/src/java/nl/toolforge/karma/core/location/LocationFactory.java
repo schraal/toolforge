@@ -110,7 +110,8 @@ public final class LocationFactory {
 			// Repeat this step for authenticator files.
 			//
 
-			files = new File(env.getConfigurationDirectory()).list(new AuthenticationFilenameFilter());
+//todo refactor
+			//files = new File(env.getConfigurationDirectory()).list(new AuthenticationFilenameFilter());
 
 			Document authenticationRoot = null;
 
@@ -118,7 +119,8 @@ public final class LocationFactory {
 
 				// Load the first file. todo Later on, more than one file can be supported.
 				//
-				authenticationRoot = builder.parse(new File(env.getConfigurationDirectory(), files[0]));
+//todo refactor
+//				authenticationRoot = builder.parse(new File(env.getConfigurationDirectory(), files[0]));
 
 				// Load the rest of them
 				//
@@ -131,7 +133,8 @@ public final class LocationFactory {
 					authenticationRoot = (Document) authenticationRoot.importNode(document.getDocumentElement(), true);
 				}
 			} else {
-				logger.info("No authentication files found in " + env.getConfigurationDirectory() + ".");
+//todo refactor
+//				logger.info("No authentication files found in " + env.getConfigurationDirectory() + ".");
 			}
 
 			load(locationRoot, authenticationRoot);

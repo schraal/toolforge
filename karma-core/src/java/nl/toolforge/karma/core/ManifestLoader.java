@@ -85,7 +85,7 @@ public final class ManifestLoader {
 		String historyId = null;
 
 		try {
-			historyId = env.getManifestHistory();
+//			historyId = env.getManifestHistory();
 		} catch (UnavailableValueException u) {
 			// TODO : logger.debug("No history available for manifest. Returning null.);
 			// No history property available. Fine, we'll just return nothing.

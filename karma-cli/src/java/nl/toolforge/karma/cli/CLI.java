@@ -44,7 +44,7 @@ public class CLI {
 	 */
 	public static void main(String[] args) {
 
-		LocalEnvironment env = new LocalEnvironment();
+		LocalEnvironment env = LocalEnvironment.getInstance();
 
 		ConsoleWriter writer = new ConsoleWriter(true);
 
@@ -143,7 +143,7 @@ public class CLI {
 
 			// Flush the preferences.
 			//
-			env.flushPreferences();
+			//env.flushPreferences();
 
 			System.exit(0);
 		}

@@ -135,7 +135,7 @@ public class ManifestImpl implements Manifest {
 		throw new KarmaRuntimeException("Has to be implemented");
 	}
 
-	public boolean isLocal(Module module) {
+	public boolean isLocal(Module module) throws KarmaException {
 
 		File moduleDirectory = new File(new File(env.getDevelopmentHome(), getName()), module.getName());
 		return moduleDirectory.exists();

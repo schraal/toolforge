@@ -10,7 +10,7 @@ public class TestManifestLoader extends BaseTest {
 
 	public void testParse1() {
 
-		LocalEnvironment env = new LocalEnvironment();
+		LocalEnvironment env = LocalEnvironment.getInstance();
 
 		ManifestLoader ml = ManifestLoader.getInstance(env);
 

@@ -117,7 +117,7 @@ public interface Manifest {
 	 * @param module The module that should be checked.
 	 * @return <code>true</code> if the module is present locally.
 	 */
-	public boolean isLocal(Module module);
+	public boolean isLocal(Module module) throws KarmaException;
 
 	/**
 	 * A manifest on a users' local disk is located in a directory relative to

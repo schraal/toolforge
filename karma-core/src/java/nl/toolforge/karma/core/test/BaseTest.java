@@ -28,7 +28,7 @@ public class BaseTest extends TestCase {
 
 		// Overrides karma.properties for Junit testing.
 		//
-		System.setProperty(LocalEnvironment.BOOTSTRAP_CONFIGURATION, "test/test-karma.properties");
+		System.setProperty(LocalEnvironment.BOOTSTRAP_CONFIGURATION_DIRECTORY, "test/test-karma.properties");
 
 		// Initialize the LocationFactory
 		//

@@ -2,6 +2,7 @@ package nl.toolforge.karma.cli.cmd;
 
 import nl.toolforge.karma.cli.ConsoleConfiguration;
 import nl.toolforge.karma.core.ManifestException;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.prefs.Preferences;
 import nl.toolforge.karma.core.cmd.*;
@@ -34,12 +35,13 @@ public class SelectManifestImpl extends SelectManifest {
 
 		ConsoleConfiguration.setManifest(getContext().getCurrent());
 
-    getContext().getLocalEnvironment().setManifestHistory(getContext().getCurrent().getName());
+    throw new KarmaRuntimeException("refactor this");
+    //getContext().getLocalEnvironment().setManifestHistory(getContext().getCurrent().getName());
 
-    CommandMessage message = new SimpleCommandMessage(getFrontendMessages().getString("message.MANIFEST_ACTIVATED"));
-    CommandResponse response = new SimpleCommandResponse();
-    response.addMessage(message);
+//    CommandMessage message = new SimpleCommandMessage(getFrontendMessages().getString("message.MANIFEST_ACTIVATED"));
+//    CommandResponse response = new SimpleCommandResponse();
+//    response.addMessage(message);
 
-    return response;
+//    return response;
   }
 }

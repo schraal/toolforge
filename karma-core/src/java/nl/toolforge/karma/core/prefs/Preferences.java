@@ -165,7 +165,7 @@ public final class Preferences {
 //		//
 //		try {
 //
-//			String bootstrapConfigurationFile = System.getProperty(BOOTSTRAP_CONFIGURATION);
+//			String bootstrapConfigurationFile = System.getProperty(BOOTSTRAP_CONFIGURATION_DIRECTORY);
 //			bootstrapConfigurationFile = (bootstrapConfigurationFile == null ? null : bootstrapConfigurationFile.trim());
 //
 //			if (bootstrapConfigurationFile == null) {

@@ -9,6 +9,7 @@ import org.apache.commons.logging.LogFactory;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Locale;
 
 /**
  * <p>Helper class initializing <code>ResourceBundle</code> and caching instances to enable localized messages.
@@ -32,7 +33,9 @@ public class BundleCache {
 	 * <p>This bundle can also be obtained using <code>getBundle("ERROR_MESSAGES")</code>.
 	 */
 	private static final ResourceBundle ERROR_MESSAGES =
-			ResourceBundle.getBundle("error-messages", LocalEnvironment.getLocale());
+      ResourceBundle.getBundle("error-messages", Locale.ENGLISH);
+//  ResourceBundle.getBundle("error-messages", LocalEnvironment.getLocale());
+  //todo read from system
 
 	public static final String ERROR_MESSAGES_KEY = "ERROR_MESSAGES";
 
@@ -45,7 +48,9 @@ public class BundleCache {
 	 * <p>This bundle can also be obtained using <code>getBundle("FRONTEND_MESSAGES")</code>
 	 */
 	private static final ResourceBundle FRONTEND_MESSAGES =
-			ResourceBundle.getBundle("frontend-messages", LocalEnvironment.getLocale());
+			ResourceBundle.getBundle("frontend-messages", Locale.ENGLISH);
+//			ResourceBundle.getBundle("frontend-messages", LocalEnvironment.getLocale());
+  //todo read from system
 
 	public static final String FRONTEND_MESSAGES_KEY = "FRONTEND_MESSAGES";
 
