@@ -27,10 +27,10 @@
     development:
 
     <ul>
-      <li/>Component Management
-      <li/>Version Management
-      <li/>Build Management
-      <li/>Release Management
+      <li>Component Management</li>
+      <li>Version Management</li>
+      <li>Build Management</li>
+      <li>Release Management</li>
     </ul>
   </p>
 
