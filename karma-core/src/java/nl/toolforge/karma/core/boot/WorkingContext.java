@@ -79,7 +79,8 @@ public final class WorkingContext {
         File defaultLogFile = new File(karmaHome, "logs/karma-default.log");
 
         PatternLayout patternLayout = new PatternLayout(DEFAULT_CONVERSION_PATTERN);
-        FileAppender fileAppender = new FileAppender(patternLayout, defaultLogFile.getPath());
+        //the log file will be truncated everytime it is opened.
+        FileAppender fileAppender = new FileAppender(patternLayout, defaultLogFile.getPath(), false);
         fileAppender.setName("Default Karma logging appender.");
 
         // The default Appender for a Logger. We don't want it.
