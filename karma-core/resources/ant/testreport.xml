@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="testreport" default="run">
+
+  <target name="run">
+
+    <!-- debug -->
+    <echo level="debug" message="build-dir: ${build-dir}"/>
+    <echo level="debug" message="reports-dir: ${reports-dir}"/>
+
+    <delete dir="${reports-dir}/test"/>
+    <mkdir dir="${reports-dir}/test"/>
+
+    <junitreport todir="${reports-dir}/test">
+      <fileset dir="${build-dir}">
+        <include name="**/TEST-*.xml"/>
+      </fileset>
+
+      <report format="frames" todir="${reports-dir}/test"/>
+    </junitreport>
+  </target>
+
+</project>

@@ -57,6 +57,8 @@ public class CommandException extends Exception {
   public static final ErrorCode BUILD_FAILED_TOO_MANY_MISSING_DEPENDENCIES = new ErrorCode(EXCEPTION_PREFIX + "00046");
   /** The test of a module failed. */
   public static final ErrorCode TEST_FAILED = new ErrorCode(EXCEPTION_PREFIX + "00050");
+  /** Generating the test report failed. */
+  public static final ErrorCode TEST_REPORT_FAILED = new ErrorCode(EXCEPTION_PREFIX + "00052");
   /** The test of a module failed. */
   public static final ErrorCode CLEAN_MODULE_FAILED = new ErrorCode(EXCEPTION_PREFIX + "00060");
   /** The test of a module failed. */

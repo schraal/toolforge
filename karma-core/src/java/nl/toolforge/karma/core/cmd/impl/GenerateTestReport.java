@@ -18,10 +18,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.DefaultCommand;
+import nl.toolforge.karma.core.manifest.Manifest;
 
 /**
  * Generates a test report based on the test output of all modules. The command
@@ -30,18 +35,42 @@ import nl.toolforge.karma.core.cmd.DefaultCommand;
  *
  * @author W.H. Schraal
  */
-public class GenerateTestReport extends DefaultCommand {
+public class GenerateTestReport extends AbstractBuildCommand {
+
+  private static final Log logger = LogFactory.getLog(GenerateTestReport.class);
+
+  private CommandResponse commandResponse = new CommandResponse();
 
   public GenerateTestReport(CommandDescriptor descriptor) {
     super(descriptor);
   }
 
   public void execute() throws CommandException {
-    //To change body of implemented methods use File | Settings | File Templates.
+    super.execute();
+
+    // Configure the Ant project
+    //
+    Project project = getAntProject("testreport.xml");
+
+    Manifest currentManifest = getContext().getCurrentManifest();
+    logger.debug("Setting 'build-dir' to: "+ currentManifest.getBuildBaseDirectory().getPath());
+    logger.debug("Setting 'reports-dir' to: "+ currentManifest.getReportsBaseDirectory().getPath());
+    project.setProperty("build-dir", currentManifest.getBuildBaseDirectory().getPath());
+    project.setProperty("reports-dir", currentManifest.getReportsBaseDirectory().getPath());
+
+    try {
+      project.executeTarget("run");
+    } catch (BuildException e) {
+      logger.info(e.getMessage(), e);
+      throw new CommandException(CommandException.TEST_REPORT_FAILED);
+    }
   }
 
+  /**
+   * @{inheritDoc}
+   */
   public CommandResponse getCommandResponse() {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
+    return this.commandResponse;
   }
 
 }
