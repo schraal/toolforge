@@ -567,6 +567,10 @@ public abstract class AbstractManifest implements Manifest {
 
     if (this instanceof ReleaseManifest) {
       return Module.STATIC;
+    } else {
+      if (module.hasVersion()) {
+        return Module.STATIC;
+      }
     }
     return Module.DYNAMIC;
   }
