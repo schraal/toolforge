@@ -20,6 +20,7 @@ package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.location.BaseLocation;
 import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.core.util.net.Ping;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.connection.Connection;
@@ -85,6 +86,19 @@ public final class CVSLocationImpl extends BaseLocation {
 
   String getHost() {
     return host;
+  }
+
+  /**
+   * 'Pings' the cvs repository host on the specified port. Returns <code>false</code> if a timeout occurs after 1 sec.
+   *
+   * @return
+   */
+  public boolean ping() {
+    if (host != null && port != -1) {
+      return Ping.ping(host, port, 500);
+    } else {
+      return true; // Local, apparently.
+    }
   }
 
   /**

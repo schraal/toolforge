@@ -23,6 +23,7 @@ import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
+import nl.toolforge.karma.core.cmd.MessageLogger;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
@@ -404,6 +405,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
 
       DefaultLogger logger = new DefaultLogger();
+//      DefaultLogger logger = new MessageLogger(this);
       // todo hmm, this mechanism doesn't integrate with the commandresponse mechanism
       //
       logger.setOutputPrintStream(System.out);

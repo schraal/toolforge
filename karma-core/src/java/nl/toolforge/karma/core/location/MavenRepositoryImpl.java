@@ -31,4 +31,12 @@ public final class MavenRepositoryImpl extends BaseLocation {
 		super(id, Location.Type.MAVEN_REPOSITORY);
 	}
 
+  /**
+   * Always <code>true</code>.
+   *
+   * @return 
+   */
+  public boolean ping() {
+    return true;
+  }
 }

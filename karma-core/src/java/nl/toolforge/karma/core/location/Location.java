@@ -31,6 +31,12 @@ package nl.toolforge.karma.core.location;
  */
 public interface Location {
 
+  /**
+   * Is the (remote) location available on the specified port ? Usefull to implement for remote locations.
+   * @return <code>false</code> if the location is not available, <code>true</code> if it is.
+   */
+  public boolean ping();
+
 	/**
 	 * The locations' type descriptor.
 	 *

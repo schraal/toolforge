@@ -39,6 +39,8 @@ import org.apache.tools.ant.taskdefs.Ear;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.FilterSet;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Target;
 import org.xml.sax.SAXException;
 
 import java.io.File;
@@ -102,6 +104,17 @@ public class PackageModule extends AbstractBuildCommand {
 
     try {
 
+      Project blaat = getProjectInstance();
+
+      Target t = new Target();
+      t.setName("blaat");
+      t.setProject(blaat);
+
+      blaat.addTarget(t);
+
+
+
+
       executeDelete(getModuleBuildDirectory(), "*.jar");
 
       Copy copy = null;
@@ -116,7 +129,9 @@ public class PackageModule extends AbstractBuildCommand {
       fileSet.setIncludes("**/*");
 
       copy.addFileset(fileSet);
-      copy.execute();
+//      copy.execute();
+
+      t.addTask(copy);
 
 
       copy = new Copy();
@@ -130,7 +145,9 @@ public class PackageModule extends AbstractBuildCommand {
       fileSet.setExcludes("resources");
 
       copy.addFileset(fileSet);
-      copy.execute();
+
+      t.addTask(copy);
+//      copy.execute();
 
       // Copy all class files to the package directory.
       //
@@ -144,18 +161,21 @@ public class PackageModule extends AbstractBuildCommand {
       fileSet.setIncludes("**/*.class");
 
       copy.addFileset(fileSet);
-      copy.execute();
+      t.addTask(copy);
+//      copy.execute();
 
       Jar jar = new Jar();
       jar.setProject(getProjectInstance());
       jar.setDestFile(packageName);
       jar.setBasedir(getPackageDirectory());
       jar.setExcludes("*.jar");
+t.addTask(jar);
+//      jar.execute();
 
-      jar.execute();
+      blaat.executeTarget("blaat");
 
     } catch (BuildException e) {
-//      e.printStackTrace();
+      e.printStackTrace();
       if (logger.isDebugEnabled()) {
         commandResponse.addMessage(new AntErrorMessage(e));
       }

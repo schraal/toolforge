@@ -44,4 +44,12 @@ public final class SubversionLocationImpl extends BaseLocation {
 		//
 		password = encodedPassword;
 	}
+
+  /**
+   * Always true; Subversion not yet supported.
+   * @return
+   */
+  public boolean ping() {
+    return true;
+  }
 }
