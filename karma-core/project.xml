@@ -170,7 +170,7 @@
     <dependency>
       <groupId>sillyexceptions</groupId>
       <artifactId>sillyexceptions</artifactId>
-      <version>1-0-1</version>
+      <version>1.0.1</version>
     </dependency>
 
   </dependencies>
