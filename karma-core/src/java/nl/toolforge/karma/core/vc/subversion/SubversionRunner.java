@@ -24,6 +24,10 @@ public final class SubversionRunner implements Runner {
 
 	}
 
+  public CommandResponse create(Module module, Location location) {
+    return null;
+  }
+
 	public CommandResponse add(Module module, String fileName) {
 		return null;
 	}

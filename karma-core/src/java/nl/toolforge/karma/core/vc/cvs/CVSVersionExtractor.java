@@ -44,7 +44,7 @@ public final class CVSVersionExtractor implements VersionExtractor {
 
     if (module instanceof SourceModule) {
        if (((SourceModule) module).hasModuleInfo()) {
-         throw new KarmaException(KarmaException.NO_MODULE_INFO);
+         throw new KarmaException(KarmaException.NO_MODULE_INFO, new Object[]{module.getName()});
        }
     }
 

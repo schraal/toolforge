@@ -2,7 +2,6 @@ package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.Module;
-import nl.toolforge.karma.core.Manifest;
 import nl.toolforge.karma.core.cmd.*;
 import nl.toolforge.karma.core.vc.Runner;
 
@@ -14,8 +13,6 @@ import nl.toolforge.karma.core.vc.Runner;
  * @version $Id$
  */
 public class UpdateModuleCommand extends DefaultCommand {
-
-  private Module module = null;
 
   /**
    * Creates a <code>UpdateModuleCommand</code> for module <code>module</code> that should be updated. This module
@@ -46,7 +43,7 @@ public class UpdateModuleCommand extends DefaultCommand {
 
     String moduleName = getCommandLine().getOptionValue("m");
 
-    this.module = getContext().getCurrent().getModule(moduleName);
+    Module module = getContext().getCurrent().getModule(moduleName);
 
     Runner runner = getContext().getRunner(module);
 

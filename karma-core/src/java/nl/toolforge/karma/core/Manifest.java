@@ -33,6 +33,14 @@ public interface Manifest {
   public void addModule(Module module);
 
   /**
+   * Creates a <code>SourceModule</code>.
+   *
+   * @param name The (unique) name of the module within a <code>vcs</code>.
+   * @param locationAlias The version control system in which this module should be created.
+   */
+  public Module createModule(String name, String locationAlias) throws KarmaException;
+
+  /**
    * Retrieves a module instance from this manifest.
    *
    * @param moduleName The name of the module contained in this manifest.
@@ -53,8 +61,8 @@ public interface Manifest {
    * instance. See {@link nl.toolforge.karma.core.ManifestLoader}.
    *
    * @param typeIdentifier See {@link Module}. A type identifier should be provided.
-   * @param name The (unique) name of the module within a <code>vcs</code>.
-   * @param locationAlias The version control system in which this module should be created.
+   * @param name See {@link #createModule(java.lang.String, java.lang.String)}.
+   * @param locationAlias See {@link #createModule(java.lang.String, java.lang.String)}
    *
    * @return A <code>Module</code> instance.
    *
@@ -63,9 +71,9 @@ public interface Manifest {
   public Module createModule(int typeIdentifier, String name, String locationAlias) throws KarmaException;
 
   /**
-   * @param typeIdentifier See {@link Module}. A type identifier should be provided.
-   * @param locationAlias An existing alias to a location object.
-   * @param name The (unique) name of the module within a <code>vcs</code>.
+   * @param typeIdentifier See {@link Module}. A type identifier should be provided. <b>NOTE:</b> unused at this moment.
+   * @param locationAlias {@link #createModule(java.lang.String, java.lang.String)}.
+   * @param name {@link #createModule(java.lang.String, java.lang.String)}.
    * @param addToFile <code>true</code> when the module should be added to the manifest file
    *   irrespective of succesfull creation in the version control system. Defaults to <code>false</code>.
    *

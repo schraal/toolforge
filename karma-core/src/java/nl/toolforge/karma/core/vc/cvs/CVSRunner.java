@@ -16,6 +16,7 @@ import org.netbeans.lib.cvsclient.Client;
 import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
 import org.netbeans.lib.cvsclient.command.CommandException;
 import org.netbeans.lib.cvsclient.command.GlobalOptions;
+import org.netbeans.lib.cvsclient.command.importcmd.ImportCommand;
 import org.netbeans.lib.cvsclient.command.log.LogInformation;
 import org.netbeans.lib.cvsclient.command.log.LogCommand;
 import org.netbeans.lib.cvsclient.command.update.UpdateCommand;
@@ -26,6 +27,7 @@ import org.netbeans.lib.cvsclient.connection.AuthenticationException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * <p>Runner class for CVS. Executes stuff on a CVS repository.
@@ -82,6 +84,18 @@ public final class CVSRunner implements Runner {
 
     logger.debug("CVSRunner using CVSROOT : " + cvsLocation.toString());
     globalOptions.setCVSRoot(cvsLocation.getCVSRootAsString());
+  }
+
+  /**
+   * Creates a module in a CVS repository. This is done through the CVS <code>import</code> command.
+   */
+  public CommandResponse create(Module module, Location location) {
+
+    ImportCommand importCommand = new ImportCommand();
+    importCommand.setModule(module.getName());
+    importCommand.setLogMessage("Module " + module.getName() + " created on " + new Date().toString());
+
+    throw new RuntimeException("Not implemented yet.");
   }
 
   /**

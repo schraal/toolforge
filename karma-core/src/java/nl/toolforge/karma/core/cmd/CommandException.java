@@ -53,4 +53,14 @@ public class CommandException extends KarmaException {
     super(errorCode, t);
   }
 
+  /**
+   * Create a new KarmaException, with the specific errorCode and Throwable that caused the exception.
+   *
+   * @param errorCode         The errorCode that identifies the specific error that has occurred.
+   * @param messageArguments  These arguments are filled in into the error codes' message.
+   * @param t                 The Throwable that caused this specific exception.
+   */
+  public CommandException(ErrorCode errorCode, Object[] messageArguments, Throwable t) {
+    super(errorCode, messageArguments, t);
+  }
 }

@@ -4,6 +4,41 @@
 
 <commands>
 
+  <command name="create-module" alias="cm">
+
+    <description lang="en">
+      Creates a module (optionally includes it in the manifest as well).
+    </description>
+
+    <options>
+      <option opt="m" longOpt="module" required="true" description="The module name">
+        <arg name="module-name"/>
+      </option>
+      <option opt="l" longOpt="location" required="true" description="The location alias">
+        <arg name="location-alias"/>
+      </option>
+      <option opt="t" longOpt="type" required="true" description="The module type">
+        <arg name="module-type"/>
+      </option>
+<!--      <option opt="i" longOpt="include" required="false" description="Include the module in the manifest"/>-->
+    </options>
+
+    <classname>nl.toolforge.karma.core.cmd.impl.CreateModuleCommand</classname>
+
+    <!--		<dependencies>-->
+    <!--			<dependency type="vc-support" name="cvs"/>-->
+    <!--			<dependency type="vc-support" name="subversion"/>-->
+    <!--			<dependency type="module-support" name="lib"/>-->
+    <!--			<dependency type="module-support" name="source"/>-->
+    <!--		</dependencies>-->
+
+    <help>
+      This command adds a module to a version control system and optionally includes the module in the active
+      manifest.
+    </help>
+
+  </command>
+
   <command name="promote-module" alias="pm">
 
     <description lang="en">

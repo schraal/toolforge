@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.Module;
+import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 
 import java.io.File;
@@ -15,6 +16,11 @@ import java.io.File;
 public interface Runner {
 
   // TODO runner.log should be defined in this interface. Right now, only impl. is in CVSRUnner.
+
+  /**
+   * Creates a module in a version control repository.
+   */
+  public CommandResponse create(Module module, Location location);
 
 	/**
 	 * Adds a file to the version control system. If the file does not exists, the file will be created.

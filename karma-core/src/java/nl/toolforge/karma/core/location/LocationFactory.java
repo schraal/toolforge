@@ -255,7 +255,7 @@ public final class LocationFactory {
 		if (locations.containsKey(locationAlias)) {
 			return (Location) locations.get(locationAlias);
 		}
-		throw new KarmaException(KarmaException.LOCATION_NOT_FOUND);
+		throw new KarmaException(KarmaException.LOCATION_NOT_FOUND, new Object[]{locationAlias});
 	}
 
 	/**

@@ -104,8 +104,9 @@ public final class CommandFactory {
 
     if (isCommand(commandName)) {
 
+      CommandDescriptor descriptor = null;
       try {
-        CommandDescriptor descriptor = getCommandDescriptor(commandName);
+        descriptor = getCommandDescriptor(commandName);
 
         // Construct the command implementation, with the default constructor
         //
@@ -139,7 +140,7 @@ public final class CommandFactory {
       } catch (ParseException e) {
 
         if (e instanceof MissingOptionException) {
-          throw new CommandException(CommandException.MISSING_OPTION, e);
+          throw new CommandException(CommandException.MISSING_OPTION, new Object[]{descriptor.getName()}, e);
         }
         if (e instanceof MissingArgumentException) {
           throw new CommandException(CommandException.MISSING_ARGUMENT, e);

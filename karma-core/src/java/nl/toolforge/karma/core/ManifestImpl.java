@@ -57,13 +57,20 @@ public class ManifestImpl implements Manifest {
     }
   }
 
+  /**
+   * Creates a <code>SourceModule</code>.
+   */
+  public final Module createModule(String name, String locationAlias) throws KarmaException {
+    return createModule(Module.SOURCE_MODULE, name, locationAlias);
+  }
+
   public final Module createModule(int typeIdentifier, String name, String locationAlias) throws KarmaException {
     return ModuleFactory.getInstance().createModule(typeIdentifier, name, locationAlias);
   }
 
   public final Module createModule(int typeIdentifier, String name, String locationAlias, boolean addToFile) throws KarmaException {
 
-    Module module = ModuleFactory.getInstance().createModule(typeIdentifier, name, locationAlias);
+    Module module = createModule(typeIdentifier, name, locationAlias);
 
     addModule(module);
 
