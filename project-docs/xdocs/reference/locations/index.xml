@@ -8,17 +8,18 @@
   <body>
     <section name="Locations">
       <p>
-        Modules are stored in locations. Currently the only supported type of location
+        Modules are stored in locations. When creating a module you have to specify the
+        location in which to create the module.
+        When including a module in your manifest you have to specify the location of
+        the module. For Karma this is the only way to know where to retrieve modules from.
+      </p>
+      <p>
+        Currently the only supported type of location
         is a CVS repository. We intend to add more types of locations after the 1.0
         release. Possible other types are subversion, disk, ClearCase.
       </p>
       <p>
-        When creating a module you have to specify the location in which to create the module.
-        When including a module in your manifest you have to specify the location of
-        the module. For Karma this is the only way to know where to retrieve the modules.
-      </p>
-      <p>
-        Locations are defined in an xml file. An example of such an xml file is:
+        Locations are defined in an xml file. An example of such a location definition is:
 <source>
 <![CDATA[
   <?xml version="1.0" ?>
@@ -33,10 +34,23 @@
   </locations>
 ]]>
 </source>
-        The <code>type</code> attribute specifies the type of the location, which currently
-        has to be <code>cvs-repository</code>. The <code>id</code> attribute defined the unique
-        id by which the location is identified. This <code>id</code> is used when specifying a module's
-        location when creating it or including it in a manifest.
+        <table>
+          <tr>
+            <th>Attribute name</th>
+            <th>Description</th>
+            <th>Value(s)</th>
+          </tr>
+          <tr>
+            <td>type</td>
+            <td>Type of the location. Currently only CVS repositories are supported</td>
+            <td>cvs-repository</td>
+          </tr>
+          <tr>
+            <td>id</td>
+            <td>Unique identifier of the location.</td>
+            <td>E.g. cvs.sf.net or local.</td>
+          </tr>
+        </table>
       </p>
       <p>
         In case of a <code>cvs-repository</code> type location the following elements are
@@ -45,7 +59,7 @@
           <tr>
             <th>Element name</th>
             <th>Description</th>
-            <th>Values</th>
+            <th>Value(s)</th>
           </tr>
           <tr>
             <td>protocol</td>
@@ -72,9 +86,29 @@
           </tr>
         </table>
       </p>
-
+      <p>
+        In the above example only one location is defined in the xml file. However 
+        it is possible to define more than one location in one xml file. If you prefer,
+        you can also define all locations in separate xml files.
+      </p>
     </section>
-    <section name="Location store"/>
+    <section name="Location store">
+      <p>
+        The location definitions are stored in the location store. Each working context
+        has exactly one location store. The location store of a working contexts is part
+        of the bootstrap configuration of a working context. You have to specify the location
+        of the location store when creating a new working context.
+      </p>
+      <p>
+        Since CVS is currently the only supported type of location, the location store
+        itself is also stored in CVS. Your local copy of the location store is stored within
+        the working context directory on your hard disk: &lt;workingcontext dir&gt;/.admin/location-store.
+      </p>
+      <p>
+        All locations defined in the location store are loaded by Karma. It does not matter
+        what their file name is or how many locations are defined in one definition file.
+      </p>
+    </section>
     
  </body>
 </document>
