@@ -235,8 +235,10 @@ public final class KarmaConsole {
       //
       BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
-      prompt();
+
       while (true) {
+
+        prompt();
 
         String line = null;
         if (reader != null || reader.readLine() != null) {
@@ -258,9 +260,8 @@ public final class KarmaConsole {
         try {
           commandContext.execute(line);
         } catch (CommandException e) {
-          writeln(e.getMessage());
-          logger.fatal(e.getMessage(), e);
-          System.exit(1);
+          // The command context has already sent all required messages.
+          //
         }
       }
     } catch (RuntimeException r) {
