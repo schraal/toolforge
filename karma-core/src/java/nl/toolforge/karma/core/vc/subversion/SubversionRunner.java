@@ -11,6 +11,8 @@ import nl.toolforge.karma.core.vc.SymbolicName;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.CVSException;
 
+import java.io.File;
+
 /**
  * // TODO Lots of todo's, subversion implementation
  *
@@ -39,7 +41,11 @@ public final class SubversionRunner implements Runner {
 //		return null;
 	}
 
-	public CommandResponse execute(Command command) {
+    public void add(Module module, String fileName, File basePoint) throws VersionControlException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public CommandResponse execute(Command command) {
 		return null;
 	}
 
@@ -54,7 +60,11 @@ public final class SubversionRunner implements Runner {
 //		return null;
 	}
 
-	public void update(Module module) throws SVNException {
+    public void checkout(Module module, File basePoint) throws VersionControlException {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public void update(Module module) throws SVNException {
 //		return update(module, null);
 	}
 

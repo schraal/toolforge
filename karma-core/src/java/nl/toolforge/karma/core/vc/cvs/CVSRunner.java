@@ -229,10 +229,7 @@ public final class CVSRunner implements Runner {
     checkout(module, null, getBasePoint());
   }
 
-  //
-  // For the time being, private
-  //
-  private void checkout(Module module, File basePoint) throws CVSException {
+  public void checkout(Module module, File basePoint) throws CVSException {
     checkout(module, null, basePoint);
   }
 
@@ -316,7 +313,7 @@ public final class CVSRunner implements Runner {
     add(module, fileName, getBasePoint());
   }
 
-  private void add(Module module, String fileName, File basePoint) throws CVSException {
+  public void add(Module module, String fileName, File basePoint) throws CVSException {
 
     Map arguments = new Hashtable();
     arguments.put("MODULE", module.getName());

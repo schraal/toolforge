@@ -1,8 +1,11 @@
 package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.manifest.Module;
+
+import java.io.File;
 
 /**
  * This interface defines methods for runner classes that perform actions on a physical version control system.
@@ -29,7 +32,16 @@ public interface Runner {
 	 */
 	public void add(Module module, String fileName) throws VersionControlException;
 
-	/**
+    /**
+     * Adds a file to the version control system. If the file does not exists, the file will be created.
+     *
+     * @param module   The module that contains the file (or will contain the file).
+     * @param fileName The filename of the file that should be added to the version control system repository.
+     * @param basePoint Location to write the file to.
+     */
+    public void add(Module module, String fileName, File basePoint) throws VersionControlException;
+
+    /**
 	 * Checks out a module from a version control system.
 	 *
 	 * @param module
@@ -47,6 +59,16 @@ public interface Runner {
 	 */
 	public void checkout(Module module, Version version) throws VersionControlException;
 
+
+    /**
+     * Checks out a module from a version control system.
+     *
+     * @param module
+     * @param basePoint
+     * @throws VersionControlException When the module does not exist in the repository or when the symbolic name is
+     *                                 not attached to the module in the repository.
+     */
+    public void checkout(Module module, File basePoint) throws VersionControlException;
 
 	/**
 	 * Updates an already checked out module on a user's harddisk.
