@@ -9,7 +9,7 @@
     <description lang="en">descp</description>
 
     <options>
-      <option opt="w" longOpt="working-context" required="true" description="The name of the working context">
+      <option opt="w" longOpt="working-context" hasArgs="true" required="true" description="The name of the working context">
         <arg>working-context</arg>
       </option>
     </options>
@@ -24,14 +24,14 @@
     <description lang="en">todo Something.</description>
 
     <options>
-      <option opt="r" longOpt="release-manifest" required="true" description="The manifest name (release manifest)">
+      <option opt="r" longOpt="release-manifest" hasArgs="true" required="true" description="The manifest name (release manifest)">
         <arg>manifest-name</arg>
       </option>
-      <option opt="d" longOpt="development-manifest" required="false" description="The manifest name (development manifest)">
+      <option opt="d" longOpt="development-manifest" hasArgs="true" required="false" description="The manifest name (development manifest)">
         <arg>manifest-name</arg>
       </option>
-      <option opt="l" longOpt="load-manifest" required="false" description="Load the release manifest."/>
-      <option opt="o" longOpt="overwrite" required="false" description="Force overwrite of the manifest file."/>
+      <option opt="l" longOpt="load-manifest" hasArgs="false" required="false" description="Load the release manifest."/>
+      <option opt="o" longOpt="overwrite" hasArgs="false" required="false" description="Force overwrite of the manifest file."/>
     </options>
 
     <classname>nl.toolforge.karma.core.cmd.impl.CreateRelease</classname>
@@ -43,10 +43,10 @@
     <description lang="en">todo Something.</description>
 
     <options>
-      <option opt="m" longOpt="module" required="true" description="The module name">
+      <option opt="m" longOpt="module" hasArgs="true" required="true" description="The module name">
         <arg>module-name</arg>
       </option>
-      <option opt="n" longOpt="no-test" required="false" description="Do not run the unit-tests."/>
+      <option opt="n" longOpt="no-test" hasArgs="false" required="false" description="Do not run the unit-tests."/>
     </options>
 
     <classname>nl.toolforge.karma.core.cmd.impl.PackageModule</classname>
@@ -58,7 +58,7 @@
     <description lang="en">todo Something.</description>
 
     <options>
-      <option opt="m" longOpt="module" required="true" description="The module name">
+      <option opt="m" longOpt="module" hasArgs="true" required="true" description="The module name">
         <arg>module-name</arg>
       </option>
     </options>
@@ -72,7 +72,7 @@
     <description lang="en">todo Something.</description>
 
     <options>
-      <option opt="m" longOpt="module" required="true" description="The module name">
+      <option opt="m" longOpt="module" hasArgs="true" required="true" description="The module name">
         <arg>module-name</arg>
       </option>
     </options>
@@ -86,7 +86,7 @@
     <description lang="en">todo Something.</description>
 
     <options>
-      <option opt="m" longOpt="module" required="true" description="The module name">
+      <option opt="m" longOpt="module" hasArgs="true" required="true" description="The module name">
         <arg>module-name</arg>
       </option>
     </options>
@@ -110,7 +110,7 @@
     <description lang="en">Runs the unit tests that are available in the given module.</description>
 
     <options>
-      <option opt="m" longOpt="module" required="true" description="The module name">
+      <option opt="m" longOpt="module" hasArgs="true" required="true" description="The module name">
         <arg>module-name</arg>
       </option>
     </options>
@@ -144,7 +144,7 @@
     <description lang="en">Generate API documentation for the given module.</description>
 
     <options>
-      <option opt="m" longOpt="module" required="true" description="The module name">
+      <option opt="m" longOpt="module" hasArgs="true" required="true" description="The module name">
         <arg>module-name</arg>
       </option>
     </options>
@@ -168,7 +168,7 @@
     <description lang="en">Removes all built artifacts of the module.</description>
 
     <options>
-      <option opt="m" longOpt="module" required="true" description="The module name">
+      <option opt="m" longOpt="module" hasArgs="true" required="true" description="The module name">
         <arg>module-name</arg>
       </option>
     </options>
@@ -193,10 +193,10 @@
     <description lang="nl">Het update commando doet een update op een module vanuit een versie beheer systeem.</description>
 
     <options>
-      <option opt="m" longOpt="module-name" required="true" description="The module name that should be updated">
+      <option opt="m" longOpt="module-name" hasArgs="true" required="true" description="The module name that should be updated">
         <arg>module-name</arg>
       </option>
-      <option opt="v" longOpt="version" required="false" description="A specific version">
+      <option opt="v" longOpt="version" hasArgs="true" required="false" description="A specific version">
         <arg>version-number</arg>
       </option>
     </options>
@@ -245,13 +245,13 @@
     <description lang="en">Creates a module (optionally includes it in the manifest as well).</description>
 
     <options>
-      <option opt="m" longOpt="module" required="true" description="The module name">
+      <option opt="m" longOpt="module" hasArgs="true" required="true" description="The module name">
         <arg>module-name</arg>
       </option>
-      <option opt="l" longOpt="location" required="true" description="The location alias">
+      <option opt="l" longOpt="location" hasArgs="true" required="true" description="The location alias">
         <arg>location-alias</arg>
       </option>
-      <option opt="c" longOpt="comment" required="true" description="The developer's comment">
+      <option opt="c" longOpt="comment" hasArgs="true" required="true" description="The developer's comment">
         <arg>comment</arg>
       </option>
     </options>
@@ -268,18 +268,19 @@
     <description lang="en">Promotes a module to the next version.</description>
 
     <options>
-      <option opt="m" longOpt="module" required="true" description="The module name">
+      <option opt="m" longOpt="module" hasArgs="true" required="true" description="The module name">
         <arg>module-name</arg>
       </option>
-      <option opt="c" longOpt="comment" required="true" description="The developer's comment">
+      <option opt="c" longOpt="comment" hasArgs="true" required="true" description="The developer's comment">
         <arg>comment</arg>
       </option>
-      <option opt="v" longOpt="version" required="false" description="The new version number for the module">
+      <option opt="v" longOpt="version" hasArgs="true" required="false" description="The new version number for the module">
         <arg>new-version</arg>
       </option>
+      <option opt="f" longOpt="force" hasArgs="false" required="false" description="Promote with uncommitted work as well"/>
     </options>
 
-    <classname>nl.toolforge.karma.cli.cmd.PromoteModuleImpl</classname>
+    <classname>nl.toolforge.karma.core.cmd.impl.PromoteCommand</classname>
     <help/>
   </command>
 
@@ -288,7 +289,7 @@
     <description lang="en">The select-manifest command activates a manifest by reading it from disk and loading it into Karma.</description>
 
     <options>
-      <option opt="m" longOpt="manifest" required="true" description="The manifest name">
+      <option opt="m" longOpt="manifest" hasArgs="true" required="true" description="The manifest name">
         <arg>manifest-name</arg>
       </option>
     </options>

@@ -18,6 +18,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd;
 
+import net.sf.sillyexceptions.OutOfTheBlueException;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.MissingArgumentException;
+import org.apache.commons.cli.MissingOptionException;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.apache.commons.cli.UnrecognizedOptionException;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -29,15 +38,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.MissingArgumentException;
-import org.apache.commons.cli.MissingOptionException;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
-import org.apache.commons.cli.UnrecognizedOptionException;
-
-import net.sf.sillyexceptions.OutOfTheBlueException;
+//import net.sf.sillyexceptions.OutOfTheBlueException;
 
 /**
  * This factory is the single resource of Command objects. <code>KarmaRuntimeException</code>s are thrown when
@@ -211,9 +212,6 @@ public final class CommandFactory {
         }
 
         Constructor defaultConstructor = implementingClass.getConstructor(new Class[]{CommandDescriptor.class});
-//        Constructor defaultConstructor =
-//            descriptor.getImplementation().getConstructor(new Class[]{CommandDescriptor.class});
-
         cmd = (Command) defaultConstructor.newInstance(new Object[]{descriptor});
 
         // Parse the command line options.

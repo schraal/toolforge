@@ -34,11 +34,14 @@ public class OptionDescriptorCreationFactory extends AbstractObjectCreationFacto
   public Object createObject(Attributes attributes) throws Exception {
 
     String opt = attributes.getValue("opt");
-    String longOpt = attributes.getValue("longOpt");
     String description = attributes.getValue("description");
-    boolean required = ("true".equals(attributes.getValue("required")) ? true : false);
+    String longOpt = attributes.getValue("longOpt");
+    boolean hasArgs = ("true".equals(attributes.getValue("hasArgs")) ? true : false);
 
-    Option option = new Option(opt, longOpt, required, description);
+    Option option = new Option(opt, longOpt, hasArgs, description);
+
+    boolean required = ("true".equals(attributes.getValue("required")) ? true : false);
+    option.setRequired(required);
 
     return option;
   }
