@@ -18,6 +18,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
+import java.util.regex.PatternSyntaxException;
+
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
@@ -59,7 +61,7 @@ public class UpdateModuleCommand extends DefaultCommand {
    *
    * @param descriptor The command descriptor for this command.
    */
-  public UpdateModuleCommand(CommandDescriptor descriptor) throws CommandException {
+  public UpdateModuleCommand(CommandDescriptor descriptor) {
 
     super(descriptor);
 
@@ -95,7 +97,11 @@ public class UpdateModuleCommand extends DefaultCommand {
     if (getCommandLine().getOptionValue("v") != null) {
       // The module should be updated to a specific version.
       //
-      version = new Version(getCommandLine().getOptionValue("v"));
+      try {
+        version = new Version(getCommandLine().getOptionValue("v"));
+      } catch (PatternSyntaxException pse) {
+        throw new CommandException(CommandException.INVALID_ARGUMENT, new Object[]{getCommandLine().getOptionValue("v"), "Version has to be <number>-<number>, e.g. '0-0'"});
+      }
     } else if (((SourceModule) module).getState().equals(Module.STATIC)) {
       version = ((SourceModule) module).getVersion();
     } else if (((SourceModule) module).getState().equals(Module.DYNAMIC)) {
