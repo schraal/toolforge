@@ -18,6 +18,8 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
+import org.apache.tools.ant.Target;
+import org.apache.tools.ant.taskdefs.Javac;
 import org.apache.tools.ant.helper.ProjectHelperImpl;
 
 import java.io.BufferedReader;

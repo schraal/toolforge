@@ -10,6 +10,9 @@
 
   <target name="jar" depends="compile" >
 
+    <!-- Remove all jar-files -->
+    <delete dir="${jar-base-dir}" includes="*.jar"/>
+
     <jar destfile="${jar-file-name}" basedir="${jar-base-dir}"/>
 
   </target>

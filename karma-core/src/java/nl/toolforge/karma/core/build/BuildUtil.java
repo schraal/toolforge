@@ -11,7 +11,12 @@ import nl.toolforge.karma.core.vc.VersionControlException;
 
 import java.util.Set;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Collection;
 import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
 
 /**
  * Validates a modules' dependencies by checking if the actual artifacts already exists on a local disk.
@@ -57,19 +62,13 @@ public final class BuildUtil {
 
         File moduleBuildDir = new File(new File(baseDir, DEFAULT_BUILD_DIR), dep.getModule());
 
-        // Use BuildUtil again to determine the correct jar name.
-//        BuildUtil util = new BuildUtil(currentManifest);
-        String dependencyJarName = currentManifest.resolveJarName(currentManifest.getModule(dep.getModule()));
+        File dependencyJar =
+            new File(moduleBuildDir + File.separator + currentManifest.resolveJarName(currentManifest.getModule(dep.getModule())));
 
-        File dependencyJar = new File(moduleBuildDir + File.separator + dependencyJarName);
-
-        try {
-          if (!dependencyJar.exists()) {
-            throw new CommandException(CommandException.DEPENDENCY_DOES_NOT_EXIST, new Object[] {jar});
-          }
-        } catch(Exception e) {
-          throw new CommandException(e, CommandException.BUILD_FAILED);
+        if (!dependencyJar.exists()) {
+          throw new CommandException(CommandException.DEPENDENCY_DOES_NOT_EXIST, new Object[] {jar});
         }
+        jar = dependencyJar.getPath();
       }
 
       buffer.append(jar);
@@ -79,6 +78,51 @@ public final class BuildUtil {
     }
 
     return buffer.toString();
+  }
+
+  /**
+   * Cleans a modules' dependencies, by (recursively) traversing all modules that depend on <code>module</code> and
+   * cleaning their <code>build</code>-directories.
+   *
+   * @param module The (root)-module for which dependencies should be cleaned.
+   * //@param modules All modules that have a dependency on <code>module</code>.
+   */
+  public void cleanDependencies(Module module) {
+
+    // todo proper exception handling --> CommandException ????
+
+    // Get all modules that depend on this module.
+    //
+    Collection modules = currentManifest.getModuleInterdependencies(module);
+
+    for (Iterator i = modules.iterator(); i.hasNext();) {
+
+      Module dep = (Module) i.next();
+
+      if (currentManifest.getInterdependencies().containsKey(module.getName())) {
+
+        stackoverflow .......
+
+        // Recurse until je een ons weegt.
+        //
+//        cleanDependencies(module, (Collection) currentManifest.getInterdependencies().get(module));
+        cleanDependencies(module);
+      } else {
+        // No more interdependencies encountered. Removing 'build'-directory.
+        //
+        try {
+          File buildDir = new File(new File(currentManifest.getDirectory(), "build"), dep.getName());
+
+          FileUtils.deleteDirectory(buildDir);
+
+        } catch (ManifestException e) {
+          e.printStackTrace();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+
   }
 
 

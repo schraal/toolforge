@@ -3,10 +3,10 @@ package nl.toolforge.karma.core.manifest;
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
-import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
-import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.xmlrules.DigesterLoader;
 import org.apache.commons.logging.Log;
@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.HashSet;
 
 /**
@@ -186,7 +187,7 @@ public final class Manifest {
    */
   private void copyToThis(Manifest manifest) throws LocationException, ManifestException {
 
-   // Copy all loaded data into this instance
+    // Copy all loaded data into this instance
     //
     setDescription(manifest.getDescription());
     setVersion(manifest.getVersion());
@@ -604,5 +605,75 @@ public final class Manifest {
     return jar;
   }
 
+  public Collection getModuleInterdependencies(Module module) {
+    return (Collection) getInterdependencies().get(module.getName());
+  }
+
+  /**
+   * <p>Calculates interdepencies between modules in the manifest; interdependencies are inverse relationships
+   * between a module and other modules (being <code>SourceModule</code> instances).
+   *
+   * <p>If a module <code>B</code> has a dependency on module <code>A</code>, then this method will return a map, with
+   * a key <code>A</code> and its value a <code>Collection</code> of interdependencies (in this case, <code>B</code>).
+   *
+   * @return
+   */
+  public Map getInterdependencies() {
+
+    Map interDependencies = new Hashtable();
+
+    // Interdependencies can only be determined if the module has been checked out locally ...
+    //
+
+    Map allModules = getAllModules();
+
+    for (Iterator i = allModules.keySet().iterator(); i.hasNext();) {
+
+      Module module = (Module) allModules.get((String) i.next());
+
+      if (isLocal(module)) {
+
+        // Does the module have 'module'-deps ?
+        //
+
+        Set moduleDependencies = null;
+        try {
+          moduleDependencies = ((SourceModule) module).getDependencies();
+        } catch (ManifestException e) {
+          e.printStackTrace();
+        }
+
+        // Iterate over all dependencies. If it is a module dep, check if we already have an
+        // entry in the interdep-collection; create one when necessary.
+        //
+        for (Iterator j = moduleDependencies.iterator(); j.hasNext();) {
+          ModuleDependency moduleDependency = (ModuleDependency) j.next();
+          if (moduleDependency.isModuleDependency()) {
+
+            // Check if a key for the module dep already exists.
+            //
+            if (interDependencies.containsKey(moduleDependency.getModule())) {
+
+              // If so, get the corresponding collection and add the module to the collection.
+              //
+              Collection col = (Collection) interDependencies.get(moduleDependency.getModule());
+              col.add(module);
+            } else {
+              // For the dependency, no entry exists, so we create one.
+              //
+              Collection col = new HashSet();
+              col.add(module);
+              // todo TEST (!) if the mechanism works for 'duplicate' keys.
+              interDependencies.put(moduleDependency.getModule(), col);
+            }
+          }
+        }
+      } else {
+        // todo else what ???
+      }
+    }
+
+    return interDependencies;
+  }
 
 }

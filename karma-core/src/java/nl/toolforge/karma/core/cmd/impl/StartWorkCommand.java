@@ -16,6 +16,13 @@ import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.build.BuildUtil;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
+
+import org.apache.commons.io.FileUtils;
 
 /**
  *
@@ -25,6 +32,7 @@ import nl.toolforge.karma.core.vc.VersionControlException;
 public class StartWorkCommand extends DefaultCommand {
 
   private CommandResponse response = null;
+
   /**
    *
    * @param descriptor The command descriptor for this command.
@@ -89,6 +97,9 @@ public class StartWorkCommand extends DefaultCommand {
 
       try {
 
+        // Step 1 : make the module WORKING
+        //
+
         // A developer always works on the HEAD of a DevelopmentLine.
         //
         Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getCurrentManifest().getDirectory());
@@ -102,6 +113,25 @@ public class StartWorkCommand extends DefaultCommand {
         // todo what if user has made changes to files, even if not allowed by the common process ?
 
         currentManifest.setState(module, Module.WORKING);
+
+        // Step 2 : clean up any 'old' build directories for this module.
+        //
+        File buildDir = new File(new File(currentManifest.getDirectory(), "build"), moduleName);
+        try {
+          FileUtils.deleteDirectory(buildDir);
+        } catch (IOException e) {
+          // todo check this ! these sort of warning's should be handled differently.
+          //
+          response.addMessage(
+              new SuccessMessage("WARNING : Build directory could not be deleted. Possible synchronization error."));
+        }
+
+        // Step 3 : determine which modules depend on the module which has just changed state. Based
+        //          on a switch build.check-dependencies-on-state-change (whatever), this process is started.
+        // todo the switch has to be implemented.
+
+        BuildUtil util = new BuildUtil(currentManifest);
+        util.cleanDependencies(module);
 
         // todo message to be internationalized.
         //

@@ -4,6 +4,9 @@
   <component name="NewModuleRootManager">
     <output url="file://$MODULE_DIR$/build" />
     <output-test url="file://$MODULE_DIR$/build" />
+    <content url="file://$MODULE_DIR$/../apache-ant-1.6.1/src/main">
+      <sourceFolder url="file://$MODULE_DIR$/../apache-ant-1.6.1/src/main" isTestSource="false" />
+    </content>
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/karma-cli/src/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/karma-core/src/java" isTestSource="false" />
@@ -43,15 +46,6 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../.maven/repository/log4j/jars/log4j-1.2.8.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../.maven/repository/netbeans/jars/netbeans-cvs-beta3.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -159,7 +153,43 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../.maven/repository/ant/jars/ant-1.6.1.jar!/" />
+          <root url="jar:///usr/local/j2sdk1.4.2_04/lib/tools.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/../../.maven/repository/xalan/jars" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../.maven/repository/xalan/jars/xalan-j_2_6_0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../.maven/repository/xalan/jars/xsltc.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../.maven/repository/netbeans/jars/cvslib-3.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -169,6 +199,42 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../.maven/repository/ant/jars/ant-launcher-1.6.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../apache-ant-1.6.1/lib/mail.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../apache-ant-1.6.1/lib/activation.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../.maven/repository/bsf/jars/bsf-2.3.0.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../.maven/repository/ant/jars/ant-1.6.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
