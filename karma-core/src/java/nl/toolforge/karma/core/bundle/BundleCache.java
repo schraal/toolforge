@@ -44,7 +44,7 @@ public class BundleCache {
 	 *
 	 * @return The cache instance.
 	 */
-	public static BundleCache getInstance() {
+	public synchronized static BundleCache getInstance() {
 		return (instance == null ? new BundleCache() : instance);
 	}
 
@@ -62,7 +62,7 @@ public class BundleCache {
 	 */
 	public final void register(String bundleKey, ResourceBundle bundle) {
 
-    if ((bundleKey == null) && (bundleKey.length() == 0)) {
+    if ((bundleKey == null) || (bundleKey.length() == 0)) {
       throw new KarmaRuntimeException("Registration key for the resource bundle cannot be null or empty.");
 		}
 
@@ -86,7 +86,7 @@ public class BundleCache {
 	 */
 	public final ResourceBundle getBundle(String bundleKey) {
 
-		if (bundles.keySet().contains(bundleKey.toUpperCase())) {
+		if (bundles.keySet().contains(bundleKey)) {
 			  return (ResourceBundle) bundles.get(bundleKey);
 		}
 		throw new KarmaRuntimeException("Resource bundle for key " + bundleKey + " does not exist in this cache.");
@@ -95,10 +95,11 @@ public class BundleCache {
 	/**
 	 * Flushes this cache.
 	 */
-	public final void flush() {
+	public synchronized final void flush() {
 
     for (Iterator i = bundles.keySet().iterator(); i.hasNext();) {
-			bundles.remove(i.next());
+			Object o = i.next();
+			bundles.remove(o);
 		}
 	}
 

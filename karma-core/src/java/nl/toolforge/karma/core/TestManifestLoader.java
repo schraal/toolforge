@@ -16,7 +16,7 @@ public class TestManifestLoader extends BaseTest {
 
 		try {
 			Manifest m =
-				ml.load("test-manifest-1.xml", this.getClass().getClassLoader(), "test");
+				ml.load("test-manifest-1.xml", this.getClass().getClassLoader(), "resources/test");
 
 			assertEquals(2, m.countSourceModules());
 			assertEquals(2, m.countJarModules());

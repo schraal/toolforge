@@ -94,7 +94,7 @@
 			<resources>
 				<resource>
 					<directory>resources/test</directory>
-					<targetPath>resources</targetPath>
+					<targetPath>resources/test</targetPath>
 					<includes>
 						<include>**/*.xml</include>
 						<include>**/*.dtd</include>

@@ -45,7 +45,6 @@ public class ErrorCode {
 	 */
 	public String getErrorMessage(Locale locale) {
 
-		String message = null;
 		ResourceBundle bundle = null;
 
 		try {

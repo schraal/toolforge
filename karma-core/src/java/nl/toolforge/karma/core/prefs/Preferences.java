@@ -6,10 +6,7 @@ import nl.toolforge.karma.core.ManifestException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -43,6 +40,9 @@ import java.util.*;
  *
  * <p>This class is a <b>BOOTSTRAP</b> class, not dependent on any other Karma classes.
  *
+ * TODO TESTMODE should be refactored out and an implementation with a factory should be used. This was a quick hack.
+ * TODO the 'create'-mechanism and TESTMODE are duplicate methods.
+ *
  * @author W.M.Oosterom
  * @author D.A. Smedes
  *
@@ -53,6 +53,10 @@ public final class Preferences
 	private static Log logger = LogFactory.getLog(Preferences.class);
 
 	private static final boolean COMMAND_LINE_MODE = System.getProperty("MODE", "UNKNOWN").equals("COMMAND_LINE_MODE");
+
+	/** Determines testmodes and disables file access */
+	public static final boolean TESTMODE =
+		(System.getProperty("TESTMODE") == null ? false : System.getProperty("TESTMODE").equals("true"));
 
 	/** The property that contains the configuration directory for Karma. */
 	public static final String CONFIGURATION_DIRECTORY_PROPERTY = "karma.configuration.directory";
@@ -144,9 +148,6 @@ public final class Preferences
 	 *
 	 * @return A <code>Preferences<code> instance, ready to rock 'n roll !
 	 *
-	 //     * @throws KarmaRuntimeException When creation of the Karma configuration directory failed (creation is
-	 //     *                               done when the user has not provided a configuration directory property
-	 //     *                               when starting a Karma user interface).
 	 */
 	public synchronized static Preferences getInstance(boolean create) {
 		if (instance == null) {
@@ -183,12 +184,22 @@ public final class Preferences
 		//
 		Properties props = new Properties();
 		try {
-			props.load(new FileInputStream(new File(getConfigurationDirectoryAsString() + File.separator + "karma.properties")));
+
+			if (!TESTMODE) {
+				//logger.info("Application runs in non-test mode.");
+				props.load(new FileInputStream(new File(getConfigurationDirectoryAsString() + File.separator + "karma.properties")));
+			} else {
+				// Read from classpath
+				//
+				//logger.error("Application runs in test mode.");
+				props.load(getClass().getClassLoader().getResourceAsStream("resources/test/karma.properties"));
+			}
 
 			for (Enumeration e = props.propertyNames(); e.hasMoreElements();) {
 				String prop = (String) e.nextElement();
 				put(prop, props.getProperty(prop));
 			}
+
 		} catch (Exception e) {
 			logger.error("Could not load " + Preferences.CONFIGURATION_DIRECTORY_PROPERTY + "/karma.properties, exiting...");
 			throw new KarmaRuntimeException("Could not load karma.properties. Has the configuration dir been set ? Exiting...", e);
@@ -204,6 +215,7 @@ public final class Preferences
 		// Determine the Operation System the user works on
 		//
 		operatingSystem = System.getProperty("os.name");
+
 
 		// Try to obtain the 'karma.configuration.directory property, which was optionally
 		// passed as a Java command line option.
@@ -222,7 +234,9 @@ public final class Preferences
 			if (create == true) {
 
 				try {
-					new File(karmaConfigurationDirectory).createNewFile();
+					if (!TESTMODE) {
+						new File(karmaConfigurationDirectory).createNewFile();
+					}
 				} catch (IOException i) {
 					throw new KarmaRuntimeException("Configuration home directory cannot be created", i);
 				}
@@ -243,7 +257,9 @@ public final class Preferences
 			if (create == true) {
 
 				try {
-					new File(developmentHome).createNewFile();
+					if (!TESTMODE) {
+						new File(developmentHome).createNewFile();
+					}
 				} catch (IOException i) {
 					throw new KarmaRuntimeException("Development home directory cannot be created.", i);
 				}
@@ -318,21 +334,23 @@ public final class Preferences
 
 	public void flush() {
 
-		if (COMMAND_LINE_MODE) {
-			FileOutputStream out = null;
-			try {
-				out = new FileOutputStream(new File(getConfigurationDirectoryAsString(), "preferences"));
-				values.store(out, "Karma Preferences");
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			finally {
-				if (out != null) {
-					try {
-						out.close();
-					}
-					catch (IOException e) {
-						// ignore
+		if (!TESTMODE) {
+			if (COMMAND_LINE_MODE) {
+				FileOutputStream out = null;
+				try {
+					out = new FileOutputStream(new File(getConfigurationDirectoryAsString(), "preferences"));
+					values.store(out, "Karma Preferences");
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				finally {
+					if (out != null) {
+						try {
+							out.close();
+						}
+						catch (IOException e) {
+							// ignore
+						}
 					}
 				}
 			}
@@ -341,27 +359,29 @@ public final class Preferences
 
 	private void load() {
 
-		if (COMMAND_LINE_MODE) {
-			FileInputStream in = null;
-			try {
-				in = new FileInputStream(new File(getConfigurationDirectoryAsString(), "preferences"));
-				values.load(in);
-			}
-			catch (IOException e) {
-				// ignore, we assume it did not exist yet
-			}
-			finally {
-				if (in != null) {
-					try {
-						in.close();
-					}
-					catch (IOException e) {
-						// ignore
+		if (!TESTMODE) {
+			if (COMMAND_LINE_MODE) {
+				FileInputStream in = null;
+				try {
+					in = new FileInputStream(new File(getConfigurationDirectoryAsString(), "preferences"));
+					values.load(in);
+				}
+				catch (IOException e) {
+					// ignore, we assume it did not exist yet
+				}
+				finally {
+					if (in != null) {
+						try {
+							in.close();
+						}
+						catch (IOException e) {
+							// ignore
+						}
 					}
 				}
+			} else {
+				logger.info("NOT in COMMAND_LINE_MODE");
 			}
-		} else {
-			logger.info("NOT in COMMAND_LINE_MODE");
 		}
 	}
 
@@ -501,8 +521,11 @@ public final class Preferences
 	public final Locale getLocale() {
 
 		try {
-			return new Locale(get(LOCALE_PROPERTY));
+			Locale locale = new Locale(get(LOCALE_PROPERTY));
+			logger.info("Current locale : " + locale);
+			return locale;
 		} catch (UnavailableValueException u) {
+			logger.info("Property 'locale' has not been set. Default to ENGLISH.");
 			return Locale.ENGLISH;
 		}
 	}
