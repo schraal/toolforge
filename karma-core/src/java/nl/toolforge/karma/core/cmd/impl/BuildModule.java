@@ -18,6 +18,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Iterator;
+import java.util.Set;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.AntErrorMessage;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
@@ -31,19 +42,6 @@ import nl.toolforge.karma.core.cmd.util.DependencyHelper;
 import nl.toolforge.karma.core.cmd.util.DependencyPath;
 import nl.toolforge.karma.core.manifest.ModuleTypeException;
 import nl.toolforge.karma.launcher.KarmaLauncher;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.File;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.Iterator;
 
 /**
  * Builds a module in a manifest. Building a module means that all java sources will be compiled into the
@@ -105,7 +103,7 @@ public class BuildModule extends AbstractBuildCommand {
       }
 
       try {
-        KarmaLauncher.getInstance().run(
+        KarmaLauncher.getInstance().invoke(
             "nl.toolforge.karma.core.cmd.util.AntJavacWrapper",
             "compile",
             new Object[]{project},
