@@ -619,12 +619,11 @@ public final class CVSRunner implements Runner {
       event.setComment(comment);
       history.addEvent(event);
       if (history.getHistoryLocation().exists()) {
-//history already exists. commit changes.
+         //history already exists. commit changes.
         history.save();
-//        commit(module, "History updated by Karma");
         commit(developmentLine, module, new File(module.getBaseDir(), ModuleHistory.MODULE_HISTORY_FILE_NAME), "History updated by Karma");
       } else {
-//history did not exist yet. add to CVS and commit it.
+        //history did not exist yet. add to CVS and commit it.
         history.save();
         add(module, new String[]{history.getHistoryLocation().getName()}, null);
       }
