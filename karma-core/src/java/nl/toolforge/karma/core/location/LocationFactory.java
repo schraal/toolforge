@@ -243,11 +243,13 @@ public final class LocationFactory {
 
 				// TODO refactor out, see 'includeAuthentication()'
 				//
-				cvsLocation = includeAuthentication(cvsLocation, authenticatorRoot);
-
-				//checkLocation(cvsLocation);
-
-				locations.put(cvsLocation.getId(), cvsLocation);
+        if (authenticatorRoot != null) {
+//				cvsLocation = includeAuthentication(cvsLocation, authenticatorRoot);
+//
+//				//checkLocation(cvsLocation);
+//
+//				locations.put(cvsLocation.getId(), cvsLocation);
+        }
 			}
 
 			if (Location.Type.SUBVERSION_REPOSITORY.type.equals(locationElement.getAttribute("type").toUpperCase())) {
