@@ -140,6 +140,31 @@ public final class DependencyHelper {
 
 
   /**
+   *
+   * @param module      The module for which is checked whether it has <code>dependency</code> as a dependency.
+   * @param dependency  The module for which to check whether it is a dependency of the current module.
+   * @param doPackage   Whether to include only the deps that are to be packaged or all deps.
+   * @return
+   */
+  public boolean hasModuleDependency(Module module, Module dependency, boolean doPackage) {
+    Iterator it = module.getDependencies().iterator();
+    ModuleDependency dep;
+    boolean found = false;
+
+    while (it.hasNext() && !found) {
+      dep = (ModuleDependency) it.next();
+      if (dep.isModuleDependency()) {
+        if (dep.getModule().equals(dependency.getName())) {
+          found = (!doPackage || dep.doPackage());
+        }
+      }
+    }
+
+    return found;
+  }
+
+
+  /**
    * See {@link #getJarDependencies(Module, boolean, boolean)}. This method returns a set with the absolute pathnames.
    * All defined jar dependencies are returned.
    */
@@ -177,7 +202,6 @@ public final class DependencyHelper {
     for (Iterator iterator = module.getDependencies().iterator(); iterator.hasNext();) {
 
       ModuleDependency dep = (ModuleDependency) iterator.next();
-System.out.println("dep: "+dep);
       if (!dep.isModuleDependency()) {
         try {
           if (!new File(WorkingContext.getLocalRepository(), dep.getJarDependency()).exists()) {
