@@ -191,6 +191,16 @@ public abstract class AbstractManifest implements Manifest {
     return f;
   }
 
+  public File getReportsBaseDirectory() {
+    
+    File f = new File(getBaseDirectory(), "reports");
+
+    if (!f.exists()) {
+      f.mkdir();
+    }
+    return f;
+  }
+
   public File getModuleBaseDirectory() {
 
     File f = new File(getBaseDirectory(), "modules");

@@ -62,13 +62,21 @@ public interface Manifest {
    */
   public File getBaseDirectory();
 
-   /**
+  /**
    * The <code>build</code> default child directory of the {@link #getBaseDirectory}. This location stores a
    * manifests' build output.
    *
    * @return The <code>build</code> default child directory of the {@link #getBaseDirectory}.
    */
   public File getBuildBaseDirectory();
+
+  /**
+   * The <code>reports</code> default child directory of the {@link #getBaseDirectory}. This location stores
+   * the output of commands that generate reports.
+   *
+   * @return The <code>reports</code> default child directory of the {@link #getBaseDirectory}.
+   */
+  public File getReportsBaseDirectory();
 
   /**
    * The <code>modules</code> default child directory of the {@link #getBaseDirectory}. This location stores a
