@@ -185,7 +185,7 @@ public final class KarmaConsole {
         String start = "";
         try {
           while (!start.matches("n|y")) {
-            write("[ console ] Working context not initialized property, start configurator ? [Y|N] (Y) :");
+            write("[ console ] Working context not initialized properly, start configurator ? [Y|N] (Y) :");
             start = (reader.readLine().trim()).toLowerCase();
             start = ("".equals(start) ? "y" : start);
           }
