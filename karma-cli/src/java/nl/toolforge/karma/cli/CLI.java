@@ -6,15 +6,13 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.PosixParser;
 
-import java.util.Calendar;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 import nl.toolforge.karma.core.cmd.CommandContext;
+import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.KarmaException;
 
 /**
@@ -37,6 +35,16 @@ public class CLI {
 		quitCmd.add("EXIT");
 	}
 
+	private static String getPrompt() {
+
+		Calendar now = Calendar.getInstance();
+
+		return
+			StringUtils.leftPad("" + now.get(Calendar.HOUR_OF_DAY) , 2, "0") + ":" +
+			StringUtils.leftPad("" + now.get(Calendar.MINUTE) , 2, "0") + ":" +
+			StringUtils.leftPad("" + now.get(Calendar.SECOND) , 2, "0") + PROMPT;
+	}
+
 	public static void main(String[] args) {
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -56,12 +64,8 @@ public class CLI {
 
 			while (true) {
 
-				Calendar now = Calendar.getInstance();
-
-				System.out.print(
-					StringUtils.leftPad("" + now.get(Calendar.HOUR_OF_DAY) , 2, "0") + ":" +
-					StringUtils.leftPad("" + now.get(Calendar.MINUTE) , 2, "0") + ":" +
-					StringUtils.leftPad("" + now.get(Calendar.SECOND) , 2, "0") + PROMPT);
+				// TODO replace System.out
+				System.out.print(getPrompt());
 
 				String line = reader.readLine().trim();
 
@@ -84,40 +88,64 @@ public class CLI {
 
 					// The first word (until a space is reached)
 
-					System.out.println(">> " + line);
+//					System.out.println(getPrompt() + " >> " + line);
 
 					String commandName = null;
 					String options = "";
 
+					// Filter out the HELP command
+					//
+					if (line.trim().toLowerCase().startsWith("help") || line.trim().startsWith("?")) {
 
-					if (line.indexOf(" ") > 0) {
-						commandName = line.substring(0, line.indexOf(" "));
-					} else {
-						commandName = line.substring(0);
-					}
+						// Replace by the logging mechanism
+						//
 
-					if (ctx.isCommand(commandName)) {
+						// TODO replace System.out
+						System.out.println(getPrompt() + " The following commands are valid:");
 
-						if (line.indexOf(" ") > 0) {
-							options = line.substring(line.indexOf(" ") + 1);
+						for (Iterator i = ctx.getCommands().iterator(); i.hasNext();) {
+
+							CommandDescriptor descriptor = (CommandDescriptor) i.next();
+							// TODO replace System.out
+							System.out.println(getPrompt() + " " + descriptor.getName());
 						}
 
-						System.out.println(
-							">> DEBUG : context will execute command '" + commandName +
-							"' with options '" + options);
 
 					} else {
-						System.out.println(">> Invalid command ...");
+
+						// Other commands ...
+						//
+						if (line.indexOf(" ") > 0) {
+							commandName = line.substring(0, line.indexOf(" "));
+						} else {
+							commandName = line.substring(0);
+						}
+
+						if (ctx.isCommand(commandName)) {
+
+							if (line.indexOf(" ") > 0) {
+								options = line.substring(line.indexOf(" ") + 1);
+							}
+
+//						System.out.println(
+//							">> DEBUG : context will execute command '" + commandName +
+//							"' with options '" + options);
+
+						} else {
+							// TODO replace System.out
+							System.out.println(getPrompt() + " --> Invalid command ...");
+						}
+
+						// Check if the command is a valid command
+						//
+
+						if (quitCmd.contains(line.trim().toUpperCase())) {
+							break;
+						}
+
+						ctx.execute(commandName, options);
+
 					}
-
-					// Check if the command is a valid command
-					//
-
-					if (quitCmd.contains(line.trim().toUpperCase())) {
-						break;
-					}
-
-					ctx.execute(commandName, options);
 				}
 				catch (KarmaException k) {
 					k.printStackTrace();

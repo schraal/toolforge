@@ -1,5 +1,6 @@
 package nl.toolforge.karma.core;
 
+
 /**
  * <p>A module is an important concept for the Karma tool. It represents a main building block of an application system.
  * An application system consists of one or more (generally more) modules.
@@ -43,7 +44,7 @@ public interface Module {
 
 	public void setVersion(String version) throws KarmaException;
 
-	public Location getRepository();
+	public nl.toolforge.karma.core.location.Location getRepository();
 
 	/**
 	 * Provides a reference to a modules' {@link nl.toolforge.karma.core.ModuleController} instance.

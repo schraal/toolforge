@@ -67,6 +67,8 @@ public final class UserEnvironment {
     public static final String MANIFEST_STORE_USERNAME_PROPERTY = "karma.manifest-store.vc.username";
     public static final String MANIFEST_STORE_PASSWORD_PROPERTY = "karma.manifest-store.vc.password";
 
+	public static final String LOCATION_STORE_DIRECTORY_PROPERTY = "karma.location-store.directory";
+
     private static List requiredProperties = new ArrayList();
 
     // Compile a list of all required properties, which can easily be referenced by clients to present all

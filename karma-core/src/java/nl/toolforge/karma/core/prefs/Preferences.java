@@ -48,9 +48,12 @@ public final class Preferences
         //
         Properties props = new Properties();
         try {
-            props.load(new FileInputStream(new File(UserEnvironment.CONFIGURATION_DIRECTORY_PROPERTY, "karma.properties")));
+			System.out.println(">> Karma properties " + new File(System.getProperty(UserEnvironment.CONFIGURATION_DIRECTORY_PROPERTY) + File.separator + "karma.properties").getPath());
 
-            for (Enumeration e = props.propertyNames(); e.hasMoreElements();) {
+
+            props.load(new FileInputStream(new File(System.getProperty(UserEnvironment.CONFIGURATION_DIRECTORY_PROPERTY) + File.separator + "karma.properties")));
+
+           for (Enumeration e = props.propertyNames(); e.hasMoreElements();) {
                 String prop = (String) e.nextElement();
                 put(prop, props.getProperty(prop));
             }

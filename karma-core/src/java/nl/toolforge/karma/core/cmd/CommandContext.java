@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.location.LocationFactory;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.PosixParser;
 
@@ -53,6 +54,11 @@ public class CommandContext {
 				commandNames.add(descriptor.getName());
 				commandNames.add(descriptor.getAlias());
 			}
+
+			// Read in all location data
+			//
+			LocationFactory.getInstance().load();
+
 		}
 		initialized = true;
 	}
@@ -89,7 +95,7 @@ public class CommandContext {
 		return new CommandResponse();
 	}
 
-	public Set commands() {
+	public Set getCommands() {
 
 		return commands;
 	}
@@ -101,7 +107,8 @@ public class CommandContext {
 	 * @return
 	 */
 	public boolean isCommand(String name) {
-
-       return commandNames.contains(name);
+		return commandNames.contains(name);
 	}
+
+
 }

@@ -1,5 +1,6 @@
 package nl.toolforge.karma.core;
 
+
 /**
  *
  * @author D.A. Smedes
@@ -7,7 +8,7 @@ package nl.toolforge.karma.core;
 public abstract class DefaultModule implements Module {
 
 	private State state = null;
-    private Location location = null;
+    private nl.toolforge.karma.core.location.Location location = null;
 	private String name = null;
 
 	/**
@@ -23,7 +24,7 @@ public abstract class DefaultModule implements Module {
 		this.name = name;
 	}
 
-	public Location getRepository() {
+	public nl.toolforge.karma.core.location.Location getRepository() {
 		return null;
 	}
 
