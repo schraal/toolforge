@@ -25,7 +25,9 @@ import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.CVSModuleStatus;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
+import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.vc.threads.RunnerThread;
+import nl.toolforge.karma.core.ErrorCode;
 
 /**
  * A <code>CVSLogThread</code> runs a <code>cvs log</code> command on a modules' <code>.module.info</code> file and
@@ -62,10 +64,13 @@ public class CVSLogThread extends RunnerThread {
       moduleStatus.setExistsInRepository(true);
 
     } catch (VersionControlException e) {
-      if (e.getErrorCode().equals(LocationException.CONNECTION_EXCEPTION)) {
+      ErrorCode code = e.getErrorCode();
+      if (code.equals(LocationException.CONNECTION_EXCEPTION) ||
+          code.equals(CVSException.INVALID_CVSROOT) ||
+          code.equals(CVSException.AUTHENTICATION_ERROR)) {
         ((CVSModuleStatus) moduleStatus).setConnnectionFailure();
       }
-      if (e.getErrorCode().equals(VersionControlException.MODULE_NOT_IN_REPOSITORY)) {
+      if (code.equals(VersionControlException.MODULE_NOT_IN_REPOSITORY)) {
         moduleStatus.setExistsInRepository(false);
       }
     }

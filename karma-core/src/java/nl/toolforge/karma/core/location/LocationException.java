@@ -101,7 +101,7 @@ public final class LocationException extends Exception {
   /**
    * A connection to the location could not be made.
    */
-  public static final ErrorCode CONNECTION_EXCEPTION = new ErrorCode(VersionControlException.EXCEPTION_PREFIX + "00019");
+  public static final ErrorCode CONNECTION_EXCEPTION = new ErrorCode(EXCEPTION_PREFIX + "00019");
 
   public LocationException(ErrorCode errorCode) {
     this(errorCode, null);

@@ -267,9 +267,9 @@ public final class CommandFactory {
 
   /**
    * Retrieves the correct command descriptor either by name or by alias (whichever is passed as a
-   * parameter).
+   * parameter). Returns <code>null</code> if the descriptor could not be found.
    */
-  private CommandDescriptor getCommandDescriptor(String commandId) {
+  public CommandDescriptor getCommandDescriptor(String commandId) {
 
     try {
       init(); //this fixes the bug where the previous value of an option is returned

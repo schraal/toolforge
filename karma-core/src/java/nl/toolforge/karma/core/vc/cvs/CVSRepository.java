@@ -184,35 +184,19 @@ public class CVSRepository extends VersionControlSystem {
     super.setRepository(repository);
   }
 
-//  /**
-//   * Returns a connection object to a CVS repository.
-//   *
-//   * @return A CVS Connection object.
-//   * @throws CVSException <code>INVALID_CVSROOT</code>; <code>CONNECTION_EXCEPTION</code> is thrown when
-//   *   <code>location</code> cannot be reached (remote locations) or is not present (local locations).
-//   */
-//  public Connection getConnection() throws CVSException {
-//    if ( getProtocol().equals(LOCAL) ) {
-//      if ( !new File(getRepository()).exists() ) {
-//        //for local protocol check whether the cvsroot is present.
-//        throw new CVSException(LocationException.CONNECTION_EXCEPTION, new Object[]{getId()});
-//      }
-//    } else if ( !ping() ) {
-//      throw new CVSException(LocationException.CONNECTION_EXCEPTION, new Object[]{getId()});
-//    }
-//
-//    if (cvsRootString != null) {
-//      createCVSRoot();
-//    }
-//
-//    Connection connection = ConnectionFactory.getConnection(getConnectionString());
-//    if (connection instanceof PServerConnection) {
-//      ((PServerConnection) connection).setEncodedPassword(this.getPassword());
-//    }
-//
-//    return connection;
-//  }
-
+  /**
+   * Constructs a CVSROOT string. This method with fail when the CVSROOT string cannot be constructed. This can happen
+   * under the following circumstances:
+   *
+   * <lu>
+   * <li/>For the <code>local</code> protocol : when {@link #getRepository()} returns <code>null</code>.
+   * <li/>For the <code>pserver</code> protocol : when {@link #getUsername()} or {@link #getHost()} return
+   *      <code>null</code>
+   * </ul>
+   *
+   * @return
+   * @throws CVSException
+   */
   public final String getCVSRoot() throws CVSException {
 
     StringBuffer buffer = new StringBuffer(":" + getProtocol() + ":");
@@ -240,16 +224,5 @@ public class CVSRepository extends VersionControlSystem {
     }
     return buffer.toString();
   }
-
-//  public String getConnectionString() throws CVSException {
-//
-//    if (cvsRootString == null) {
-//      createCVSRoot();
-//    }
-//
-//    return cvsRootString;
-//  }
-
-
 
 }

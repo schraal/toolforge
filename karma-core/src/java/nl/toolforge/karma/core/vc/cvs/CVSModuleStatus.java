@@ -46,9 +46,6 @@ import java.util.regex.PatternSyntaxException;
  */
 public class CVSModuleStatus implements ModuleStatus {
 
-//  private Version nextVersion = null;
-//  private Version lastVersion = null;
-//  private Version localVersion = null;
   private boolean existsInRepository = false;
 
   private List matchingList = null;
@@ -133,8 +130,6 @@ public class CVSModuleStatus implements ModuleStatus {
 
       Entry moduleInfo = null;
       for (int i = 0; i < entries.length; i++) {
-
-//        if (entries[i].getName().equals(Module.MODULE_INFO)) {
         if (entries[i].getName().equals(Module.MODULE_DESCRIPTOR)) {
           moduleInfo = entries[i];
         }

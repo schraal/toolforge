@@ -150,12 +150,15 @@ public final class DependencyHelper {
    * <p>Gets a <code>Set</code> of {@link DependencyPath}s, each one identifying a <code>jar</code>-file. Jar files are looked
    * up Maven-style (see {@link ModuleDependency}.
    *
-   * @param module The module for which jar dependencies should be determined.
-   * @param doPackage  Whether to include only the deps that are to be packaged or all deps.
+   * @param module         The module for which jar dependencies should be determined.
+   * @param doPackage      Indicate if the dependencies that are to be packaged (<code>&lt;package="true"&gt;</code>)
+   *                       should be included (<code>true</code>) or all dependencies should be included
+   *                       (<code>false</code>).
    *
-   * @return A <code>Set</code> containing {@link DependencyPath}s
+   * @return               A <code>Set</code> containing {@link DependencyPath}s
    *
-   * @throws DependencyException When a jar dependency is not phsyically available on disk. A check is performed on the
+   * @throws DependencyException
+   *   When a jar dependency is not phsyically available on disk. A check is performed on the
    *   existence of the jar file in either the local jar repository ({@link WorkingContext#getLocalRepository()}) or in
    *   the lib module that is specified as being part of the manifest.
    */

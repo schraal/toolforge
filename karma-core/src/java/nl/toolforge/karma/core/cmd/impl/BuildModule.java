@@ -28,6 +28,7 @@ import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.util.BuildEnvironment;
 import nl.toolforge.karma.core.cmd.util.DependencyException;
 import nl.toolforge.karma.core.cmd.util.DependencyHelper;
+import nl.toolforge.karma.core.cmd.util.DependencyPath;
 import nl.toolforge.karma.core.manifest.ModuleTypeException;
 import nl.toolforge.karma.launcher.KarmaLauncher;
 import org.apache.commons.logging.Log;
@@ -37,6 +38,7 @@ import org.apache.tools.ant.Project;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Arrays;
@@ -84,46 +86,47 @@ public class BuildModule extends AbstractBuildCommand {
       project.setProperty("module-source-dir", env.getModuleSourceDirectory().getPath());
 
 
-//      //
-//      //
-//
-//      Set s1 = helper.getJarDependencies(getCurrentModule());
-//      s1.addAll(helper.getModuleDependencies(getCurrentModule()));
-//
-//      String[] deps = new String[s1.size() + 1];
-//
-//      deps[0] = "/tmp/dev/build";
-//
-//      int j = 1;
-//      for (Iterator i = s1.iterator(); i.hasNext();) {
-//        deps[j] = (String) i.next();
-//        j++;
-//      }
-//
-//      try {
-//        KarmaLauncher.getInstance().run(
-//            "nl.toolforge.karma.core.cmd.util.AntJavacWrapper",
-//            "compile",
-//            new Object[]{project},
-//            deps
-//        );
-//
-//      } catch (IllegalAccessException e) {
-//        e.printStackTrace();
-//      } catch (NoSuchMethodException e) {
-//        e.printStackTrace();
-//      } catch (FileNotFoundException e) {
-//        e.printStackTrace();
-//      } catch (IOException e) {
-//        e.printStackTrace();
-//      } catch (InvocationTargetException e) {
-//        e.printStackTrace();
-//      } catch (ClassNotFoundException e) {
-//        e.printStackTrace();
-//      }
+      //
+      //
 
+      Set s1 = helper.getJarDependencies(getCurrentModule(), false);
+      s1.addAll(helper.getModuleDependencies(getCurrentModule(), false));
 
-      project.executeTarget("run");
+      String[] deps = new String[s1.size() + 3];
+
+      deps[0] = "/home/asmedes/dev/toolforge/karma-cli/lib/karma-core-1.0.jar";
+      deps[1] = "/home/asmedes/.maven/repository/ant/jars/ant-1.6.1.jar";
+      deps[2] = "/home/asmedes/.maven/repository/ant/jars/ant-launcher-1.6.1.jar";
+
+      int j = 3;
+      for (Iterator i = s1.iterator(); i.hasNext();) {
+        deps[j] = ((DependencyPath) i.next()).getFullPath().getPath();
+        j++;
+      }
+
+      try {
+        KarmaLauncher.getInstance().run(
+            "nl.toolforge.karma.core.cmd.util.AntJavacWrapper",
+            "compile",
+            new Object[]{project},
+            deps
+        );
+
+      } catch (IllegalAccessException e) {
+        e.printStackTrace();
+      } catch (NoSuchMethodException e) {
+        e.printStackTrace();
+      } catch (FileNotFoundException e) {
+        e.printStackTrace();
+      } catch (IOException e) {
+        e.printStackTrace();
+      } catch (InvocationTargetException e) {
+        e.printStackTrace();
+      } catch (ClassNotFoundException e) {
+        e.printStackTrace();
+      }
+
+//      project.executeTarget("run");
 
     } catch (DependencyException e) {
       logger.error(e);

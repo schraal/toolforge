@@ -86,7 +86,11 @@ public final class CommandDescriptor {
   }
 
   public Options getOptions() {
-    return this.options;
+    if (options == null) {
+      return new Options();
+    } else {
+      return this.options;
+    }
   }
 
   public String getClassName() {

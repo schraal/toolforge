@@ -21,6 +21,7 @@ package nl.toolforge.karma.core.location;
 import nl.toolforge.core.util.file.XMLFilenameFilter;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.vc.cvs.CVSRepository;
+import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
 import org.apache.commons.digester.Digester;
 import org.apache.tools.ant.DirectoryScanner;
@@ -132,12 +133,14 @@ public final class LocationLoader {
   }
 
   /**
-   * Gets a <code>Location</code> instance by its <code>locationAlias</code>.
+   * Gets a <code>Location</code> instance by its <code>locationAlias</code>. This method checks the availability of the
+   * location as well throwing the corresponding errors when this did not succeed.
    *
    * @param  locationAlias      The <code>location</code>-attribute from the <code>module</code>-element
    *                            in the manifest.
    * @return A <code>Location</code> instance, representing e.g. a CVS repository or a Maven repository.
    * @throws LocationException See {@link LocationException#LOCATION_NOT_FOUND}.
+   * @throws LocationException See {@link LocationException#CONNECTION_EXCEPTION}.
    */
   public final Location get(String locationAlias) throws LocationException {
 

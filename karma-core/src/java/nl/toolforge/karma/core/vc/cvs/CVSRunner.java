@@ -29,6 +29,7 @@ import nl.toolforge.karma.core.history.ModuleHistoryEvent;
 import nl.toolforge.karma.core.history.ModuleHistoryException;
 import nl.toolforge.karma.core.history.ModuleHistoryFactory;
 import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.manifest.util.FileTemplate;
@@ -107,10 +108,9 @@ public final class CVSRunner implements Runner {
    * will be run; modules are checked out in a directory structure, relative to
    * {@link nl.toolforge.karma.core.manifest.Manifest#getBaseDirectory()}.
    *
-   * @param location  A <code>Location</code> instance (typically a <code>CVSLocationImpl</code> instance), containing
-   *   the location and connection details of the CVS repository.
-   * @throws CVSException <code>CONNECTION_EXCEPTION</code> is thrown when <code>location</code> cannot be reached
-   *   (remote locations).
+   * @param location       A <code>Location</code> instance (typically a <code>CVSLocationImpl</code> instance), containing
+   *                       the location and connection details of the CVS repository.
+   * @throws CVSException  <code>AUTHENTICATION_ERROR</code> is thrown when <code>location</code> cannot be authenticated.
    */
   public CVSRunner(Location location) throws CVSException {
 

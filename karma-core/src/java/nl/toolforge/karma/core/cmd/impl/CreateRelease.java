@@ -28,6 +28,7 @@ import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.CompositeCommand;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.ErrorMessage;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.manifest.Manifest;
@@ -36,7 +37,13 @@ import nl.toolforge.karma.core.manifest.ManifestFactory;
 import nl.toolforge.karma.core.manifest.ManifestLoader;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.vc.RunnerFactory;
+import nl.toolforge.karma.core.vc.ModuleStatus;
+import nl.toolforge.karma.core.vc.threads.ParallelRunner;
 import nl.toolforge.karma.core.vc.cvs.Utils;
+import nl.toolforge.karma.core.vc.cvs.CVSException;
+import nl.toolforge.karma.core.vc.cvs.threads.CVSLogThread;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -84,7 +91,7 @@ public class CreateRelease extends CompositeCommand {
       } catch (ManifestException e) {
         throw new CommandException(e.getErrorCode(), e.getMessageArguments());
       } catch (LocationException e) {
-       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+        throw new CommandException(e.getErrorCode(), e.getMessageArguments());
       }
     }
 
@@ -107,6 +114,46 @@ public class CreateRelease extends CompositeCommand {
     CommandMessage message = new SuccessMessage(getFrontendMessages().getString("message.CREATE_RELEASE_STARTED"), new Object[]{releaseName});
     commandResponse.addMessage(message);
 
+    // Checking manifest
+    //
+
+    ParallelRunner runner = new ParallelRunner(releaseManifest, CVSLogThread.class);
+    runner.execute(); // Blocks ...
+
+    Map statusOverview = runner.retrieveResults();
+
+    Map modules = releaseManifest.getAllModules();
+
+    for (Iterator i = modules.values().iterator(); i.hasNext();) {
+
+      Module module = (Module) i.next();
+      ModuleStatus moduleStatus = (ModuleStatus) statusOverview.get(module);
+
+      if (moduleStatus.connectionFailure()) {
+        
+        message = new ErrorMessage(LocationException.CONNECTION_EXCEPTION);
+        getCommandResponse().addMessage(message);
+        message = new SuccessMessage(getFrontendMessages().getString("message.CREATE_RELEASE_FAILED"));
+        getCommandResponse().addMessage(message);
+
+        return;
+      }
+      if (!moduleStatus.existsInRepository()) {
+
+        message = new ErrorMessage(VersionControlException.MODULE_NOT_IN_REPOSITORY, new Object[]{module.getName()});
+        getCommandResponse().addMessage(message);
+        message = new SuccessMessage(getFrontendMessages().getString("message.CREATE_RELEASE_FAILED"));
+        getCommandResponse().addMessage(message);
+
+        return;
+      }
+    }
+
+
+
+
+
+
     // Ok, ww're ready to go now. Let's collect the latest versions of modules.
     //
 
@@ -117,14 +164,12 @@ public class CreateRelease extends CompositeCommand {
 
     buffer.append("  <modules>\n");
 
-    Map modules = releaseManifest.getAllModules();
-
     for (Iterator i = modules.values().iterator(); i.hasNext();) {
 
       // todo NEED AN ADDITIONAL method in Manifest : getDevelopmentManifests() ...
 
       Module module = (Module) i.next();
-      buffer.append(getModule(module));
+      buffer.append(getModule(module, getCommandLine().hasOption("u")));
     }
 
     buffer.append("  </modules>\n");
@@ -171,7 +216,7 @@ public class CreateRelease extends CompositeCommand {
     return commandResponse;
   }
 
-  private String getModule(Module module) throws CommandException {
+  private String getModule(Module module, boolean useRemote) throws CommandException {
 
     String n;
 //    String t;
@@ -189,7 +234,11 @@ public class CreateRelease extends CompositeCommand {
     } else {
 
       try {
-        v = Utils.getLastVersion(module).getVersionNumber();
+        if (useRemote) {
+          v = Utils.getLastVersion(module).getVersionNumber();
+        } else {
+          v = Utils.getLocalVersion(module).getVersionNumber();
+        }
       } catch (VersionControlException e) {
         throw new CommandException(e.getErrorCode(), e.getMessageArguments());
       }
