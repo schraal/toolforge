@@ -30,13 +30,13 @@ public class ErrorCode {
 	/**
 	 * <p>Gets a localized error message for the <code>ErrorCode</code> instance. Error messages are defined in a
 	 * <code>error-messages-&lt;locale&gt;.properties</code> (e.g. <code>error-messages-NL.properties</code>). A message
-	 * text is identified by a key <code>message.</code> concatenated with {@link #getErrorCode}.
+	 * text is identified by a key <code>message.</code> concatenated with {@link #getErrorCodeString}.
 	 * <p/>
 	 * </p>When no resource bundle can be found for <code>locale</code>, the default locale <code>Locale.ENGLISH</code> is
 	 * used.
 	 *
 	 * @param locale A locale object (e.g. representing the current locale of the user environment).
-	 * @return A localized error message or {@link #getErrorCode} when no message was found for this errorcode or the
+	 * @return A localized error message or {@link #getErrorCodeString} when no message was found for this errorcode or the
 	 *         resourcebundle could not be found for <code>locale</code>.
 	 *         <p/>
 	 *         TODO ResourceBundle should be cached.
@@ -57,15 +57,15 @@ public class ErrorCode {
 				bundle = ResourceBundle.getBundle("error_messages", locale);
 			} catch (MissingResourceException m) {
 				logger.error("No default resource bundle available for locale " + locale);
-				return getErrorCode();
+				return getErrorCodeString();
 			}
 		}
 
 		try {
-			return bundle.getString("message." + getErrorCode());
+			return bundle.getString("message." + getErrorCodeString());
 		} catch (RuntimeException r) {
-			logger.error("No message found for errorcode : " + getErrorCode());
-			return getErrorCode();
+			logger.error("No message found for errorcode : " + getErrorCodeString());
+			return getErrorCodeString();
 		}
 	}
 
@@ -74,7 +74,7 @@ public class ErrorCode {
 	 *
 	 * @return This instance' error code.
 	 */
-	public String getErrorCode() {
+	public String getErrorCodeString() {
 		return errorCode;
 	}
 }

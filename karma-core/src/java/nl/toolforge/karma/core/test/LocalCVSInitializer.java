@@ -6,10 +6,13 @@ import nl.toolforge.karma.core.SourceModule;
 import nl.toolforge.karma.core.SourceModuleDescriptor;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
+import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
+import nl.toolforge.karma.core.vc.cvs.CVSResponseAdapter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -156,18 +159,32 @@ public class LocalCVSInitializer extends BaseTest {
     }
   }
 
+  /**
+   * Initializes a Runner for test purposes. This implementation will add an
+   * {@link nl.toolforge.karma.core.cmd.ActionCommandResponse} to the Runner.
+   *
+   * @return A Runner instance.
+   * @throws CVSException When initializing the runner failed.
+   */
   protected final Runner getTestRunner() throws CVSException {
+    return getTestRunner(new CommandResponseFaker());
+  }
 
-    CommandResponseListener listener = new CommandResponseListener() {
-      public void commandHeartBeat() {}
-      public void commandResponseChanged(CommandResponseEvent event) {
-        System.out.println(event.getEventMessage());
-      }
-      public void commandResponseFinished(CommandResponseEvent event) {
-        System.out.println(event.getEventMessage());
-      }
-    };
+  /**
+   * Initializes a Runner for test purposes, with an optional CommandResponse.
+   *
+   * @param response
+   * @return
+   * @throws CVSException When initializing the runner failed.
+   */
+  protected final Runner getTestRunner(CommandResponse response) throws CVSException {
 
-    return new CVSRunner(getTestLocation(), getDevelopmentHome());
+    CVSRunner runner = new CVSRunner(getTestLocation(), getDevelopmentHome());
+
+    if (response != null) {
+      runner.setCommandResponse(response);
+    }
+
+    return runner;
   }
 }

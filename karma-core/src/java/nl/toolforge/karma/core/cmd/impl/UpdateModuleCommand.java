@@ -9,6 +9,7 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
+import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 
@@ -79,7 +80,7 @@ public class UpdateModuleCommand extends DefaultCommand {
 
       // todo message to be internationalized.
       //
-      response.addMessage(new SimpleCommandMessage("Module " + module.getName() + " updated ..."));
+      response.addMessage(new SuccessMessage("Module " + module.getName() + " updated ..."));
 
     } catch (Exception e) {
       //todo proper exception handling

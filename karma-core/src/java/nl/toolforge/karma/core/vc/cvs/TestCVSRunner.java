@@ -6,6 +6,7 @@ import nl.toolforge.karma.core.SourceModule;
 import nl.toolforge.karma.core.SourceModuleDescriptor;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.test.LocalCVSInitializer;
 import nl.toolforge.karma.core.vc.Runner;
 
@@ -30,9 +31,13 @@ public class TestCVSRunner extends LocalCVSInitializer {
     }
   }
 
+  /**
+   * Tests if a module can be added to a CVS repository.
+   */
   public void testAdd1() {
 
     Runner runner = null;
+    ResponseFaker response = new ResponseFaker();
     try {
       runner = getTestRunner();
     } catch (CVSException e) {
@@ -43,30 +48,22 @@ public class TestCVSRunner extends LocalCVSInitializer {
 
       checkoutDefaultModule1();
 
-//      // Prepare a fake module. All set to work for JUnit testing.
-//      //
-//      FakeModule module = new FakeModule(DEFAULT_MODULE_1, getTestLocation());
-//      module.setLocalPath(getModuleHome(DEFAULT_MODULE_1));
-
       Module module =
         new SourceModule(new SourceModuleDescriptor(DEFAULT_MODULE_1, getTestLocation()), getDevelopmentHome());
 
       runner.add(module, getTestFileName());
-fail();
-//      assertTrue(response.hasStatus(CVSResponseAdapter.FILE_ADDED_OK));
+
+      assertTrue(response.isOK());
 
     } catch (KarmaException e) {
       fail(e.getMessage());
     }
   }
 
+  /**
+   * Tests if an update of a module with a non-existing version is handled correctly.
+   */
   public void testUpdateWithInvalidVersion1() {
-
-//		class SourceModuleFaker extends SourceModule {
-//			public SourceModuleFaker() throws KarmaException {
-//				super(DEFAULT_MODULE_1, getTestLocation());
-//			}
-//		}
 
     Runner runner = null;
     try {
@@ -75,7 +72,6 @@ fail();
       fail(e.getMessage());
     }
 
-    CommandResponse response = null;
     try {
 
       checkoutDefaultModule1();
@@ -85,47 +81,38 @@ fail();
 
       runner.update(module, new Version("99-99"));
 
-      fail("Excepted a CVSException.");
-
-      assertTrue(response.hasStatus(CVSResponseAdapter.FILE_ADDED_OK));
+      fail("Expected a CVSException.");
 
     } catch (CVSException c) {
-      assertTrue(c.getErrorCode().equals(CVSException.VERSION_NOT_FOUND));
+      assertEquals(CVSException.VERSION_NOT_FOUND.getErrorCodeString(), c.getErrorCode().getErrorCodeString());
     } catch (KarmaException e) {
       fail(e.getMessage());
     }
   }
 
+  /**
+   * Tests if an update of a module with an existing version from a CVS repository is handled correctly.
+   */
   public void testUpdateWithCorrectVersion() {
 
-//    class SourceModuleFaker extends SourceModule {
-//      public SourceModuleFaker() throws KarmaException {
-//        super(DEFAULT_MODULE_1, getTestLocation());
-//      }
-//    }
-
     Runner runner = null;
+    ResponseFaker response = new ResponseFaker();
     try {
-      runner = getTestRunner();
+      runner = getTestRunner(response);
     } catch (CVSException e) {
       fail(e.getMessage());
     }
 
-    CommandResponse response = null;
     try {
 
       checkoutDefaultModule1();
-//
-//			// Prepare a fake module. All set to work for JUnit testing.
-//			//
-//			SourceModuleFaker module = new SourceModuleFaker();
 
       Module module =
         new SourceModule(new SourceModuleDescriptor(DEFAULT_MODULE_1, getTestLocation()), getDevelopmentHome());
 
       runner.update(module, new Version("0-1")); // On the mainline (HEAD)
 
-      assertTrue(response.hasStatus(CVSResponseAdapter.MODULE_UPDATED_OK));
+      assertTrue(response.isOK());
 
     } catch (CVSException c) {
       fail(c.getMessage());
@@ -133,4 +120,26 @@ fail();
       fail(e.getMessage());
     }
   }
+
+  /**
+   *
+   */
+  class ResponseFaker extends CommandResponse {
+
+    private boolean ok = true;
+
+    /**
+     * Success is reported back to this method, otherwise an exception would have been thrown.
+     *
+     * @param message Some message sent by CVS.
+     */
+    public void addMessage(CommandMessage message) {
+      ok = true;
+    }
+
+    public boolean isOK() {
+      return ok;
+    }
+  }
+
 }

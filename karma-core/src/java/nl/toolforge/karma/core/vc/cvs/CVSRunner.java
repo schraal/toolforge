@@ -71,7 +71,7 @@ public final class CVSRunner implements Runner {
    * a {@link Command} implementation, as that one knows what to fire away on CVS. The runner is instantiated with a
    * <code>location</code> and a <code>manifest</code>. The location must be a <code>CVSLocationImpl</code> instance,
    * reprenting a CVS repository. The manifest is required because it determines the base point from where CVS commands
-   * will be run; modules are checked out in a directory structure, relative to {@link Manifest#getLocalPath()}.
+   * will be run; modules are checked out in a directory structure, relative to {@link Manifest#getDirectory()}.
    *
    * @param location  A <code>Location</code> instance (typically a <code>CVSLocationImpl</code> instance), containing
    *                  the location and connection details of the CVS repository.
@@ -392,50 +392,52 @@ public final class CVSRunner implements Runner {
 
     if (!(this.listener instanceof CVSResponseAdapter)) {
       // todo this stuff sucks, but is a good reminder.
-      throw new KarmaRuntimeException("Due to the way the Netbeans API works, the CVSRunner must be initialized with a" +
-        "CommandResponse object.");
+      throw new KarmaRuntimeException(
+        "Due to the way the Netbeans API works, the CVSRunner must be initialized with a 'CommandResponse' object.");
     }
 
-    if (module instanceof SourceModule) {
+    if (!(module instanceof SourceModule)) {
+      throw new KarmaRuntimeException("Only instances of type SourceModule can use this method.");
+    }
+
+    try {
+
+      // Logs are run on a temporary checkout of the module.info of a module.
+      //
+      File tmp = null;
       try {
-
-        // Logs are run on a temporary checkout of the module.info of a module.
-        //
-        File tmp = null;
-        try {
-          tmp = MyFileUtils.createTempDirectory();
-        } catch (IOException e) {
-          throw new KarmaRuntimeException("Panic! Failed to create temporary directory for module " + module.getName());
-        }
-
-        CheckoutCommand checkoutCommand = new CheckoutCommand();
-        checkoutCommand.setModule(module.getName() + "/" + SourceModule.MODULE_INFO);
-
-        executeOnCVS(checkoutCommand, tmp);
-
-        LogCommand logCommand = new LogCommand();
-
-        // Determine the location of module.info, relative to where we are.
-        //
-        // Todo a reference to SourceModule is used here. Verify ...
-        File moduleInfo = new File(new File(tmp, module.getName()), SourceModule.MODULE_INFO);
-        logCommand.setFiles(new File[]{moduleInfo});
-
-        executeOnCVS(logCommand, new File(tmp, module.getName()));
-
-        try {
-          FileUtils.deleteDirectory(tmp);
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-
-        return ((CVSResponseAdapter) this.listener).getLogInformation();
-
-      } catch (KarmaException k) {
-        throw new CVSException(k.getErrorCode());
+        tmp = MyFileUtils.createTempDirectory();
+      } catch (IOException e) {
+        throw new KarmaRuntimeException("Panic! Failed to create temporary directory for module " + module.getName());
       }
+
+      CheckoutCommand checkoutCommand = new CheckoutCommand();
+      checkoutCommand.setModule(module.getName() + "/" + SourceModule.MODULE_INFO);
+
+      executeOnCVS(checkoutCommand, tmp);
+
+      LogCommand logCommand = new LogCommand();
+
+      // Determine the location of module.info, relative to where we are.
+      //
+      // Todo a reference to SourceModule is used here. Verify ...
+      File moduleInfo = new File(new File(tmp, module.getName()), SourceModule.MODULE_INFO);
+      logCommand.setFiles(new File[]{moduleInfo});
+
+      executeOnCVS(logCommand, new File(tmp, module.getName()));
+
+      try {
+        FileUtils.deleteDirectory(tmp);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
+      return ((CVSResponseAdapter) this.listener).getLogInformation();
+
+    } catch (KarmaException k) {
+      throw new CVSException(k.getErrorCode());
     }
-    throw new KarmaRuntimeException("Only instance of type SourceModule can use this method.");
+
   }
 
   /**
@@ -503,6 +505,8 @@ public final class CVSRunner implements Runner {
    *
    * @param command          A command object, representing the CVS command.
    * @param contextDirectory The directory from where the command should be run.
+   *
+   * @throws CVSException    When CVS has reported an error through its listener.
    */
   private void executeOnCVS(org.netbeans.lib.cvsclient.command.Command command,
                             File contextDirectory) throws CVSException {
@@ -524,11 +528,15 @@ public final class CVSRunner implements Runner {
       client.getConnection().close();
 
     } catch (IOException e) {
-      e.printStackTrace();
       throw new CVSException(CVSException.INTERNAL_ERROR);
     } catch (CommandException e) {
-      e.printStackTrace();
-      throw new CVSException(CVSException.INTERNAL_ERROR);
+      // Trick to get a hold of the exception we threw in the CVSResponseAdapter.
+      //
+      if (e.getUnderlyingException() instanceof CVSRuntimeException) {
+        throw new CVSException(((CVSRuntimeException) e.getUnderlyingException()).getErrorCode());
+      } else {
+        throw new CVSException(CVSException.INTERNAL_ERROR);
+      }
     } catch (AuthenticationException e) {
       throw new CVSException(CVSException.AUTHENTICATION_ERROR, new Object[]{client.getConnection()});
     }

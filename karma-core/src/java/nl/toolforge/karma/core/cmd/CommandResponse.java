@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.vc.cvs.CVSResponseAdapter;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
 
@@ -9,10 +10,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
- * Command response objects are returned by the execute method of the Command Object. It is recognized that a GUI needs
- * to be aware of the result of some commands. Therefor, all communication from to command back to the caller goes through
- * a response object.
+ * A CommandResponse object is used to report messages from 
  *
  * @author W.M. Oosterom
  * @author D.A. Smedes
@@ -21,17 +23,19 @@ import java.util.Set;
  */
 public abstract class CommandResponse {
 
+  private static Log logger = LogFactory.getLog(CommandResponse.class);
+
   private CommandResponseListener listener = null;
-	private List commandMessages = null;
-	private Set statusUpdates = null;
+	//private List commandMessages = null;
+	//private Set statusUpdates = null;
 
 	// Contains the exception that was thrown during execution of the command
 	//
 	private Exception commandException = null;
 
 	public CommandResponse() {
-		commandMessages = new ArrayList();
-		statusUpdates = new HashSet();
+		//commandMessages = new ArrayList();
+		//statusUpdates = new HashSet();
 	}
 
 	/**
@@ -41,38 +45,46 @@ public abstract class CommandResponse {
 	 *
 	 * @return The exception that was thrown during execution of the command.
 	 */
-	public KarmaException getException() {
-		return (KarmaException) commandException;
-	}
+//	public KarmaException getException() {
+//		return (KarmaException) commandException;
+//	}
 
 	/**
 	 * Checks if the command execution resulted in a response that is worth querying.
 	 *
 	 * @return <code>true</code> When this command response has something to tell.
 	 */
-	public final boolean hasResponse() {
-		return true;
-	}
+//	public final boolean hasResponse() {
+//		return true;
+//	}
 
 	/**
 	 * Gets all command messages in an array.
 	 *
 	 * @return An array of <code>CommandMessage</code> objects.
 	 */
-	public final CommandMessage[] getMessages() {
-
-		return (CommandMessage[]) commandMessages.toArray(new SimpleCommandMessage[commandMessages.size()]);
-	}
+//	public final CommandMessage[] getMessages() {
+//
+//		return (CommandMessage[]) commandMessages.toArray(new SimpleCommandMessage[commandMessages.size()]);
+//	}
 
   /**
-   * Add a message to the command response.
+   * Add a message to the command response. When a {@link CommandResponseListener} has been registered with this
+   * response, {@link CommandResponseListener#commandResponseChanged(CommandResponseEvent)} will be called. If no
+   * listener has been registered, a warning will be written to the log system.
    *
-   * @param message  The message to add to the response.
+   * @param message The message to add to the response.
    */
 	public void addMessage(CommandMessage message) {
-    commandMessages.add(message);
+//    commandMessages.add(message);
+    if (listener != null) {
     listener.commandResponseChanged(new CommandResponseEvent(message.getMessageText()));
+    } else {
+      logger.warn("No listener registered for command response (messages sent to /dev/null ...)");
+    }
   }
+
+//  public void sendHeartBeat
 
 
 	/**
@@ -84,14 +96,14 @@ public abstract class CommandResponse {
 	 * @param statusIdentifier A status identifier. Should be unique.
 	 * @see #hasStatus
 	 */
-	public synchronized final void addStatusUpdate(Integer statusIdentifier) throws CommandException {
-
-		if (statusUpdates.contains(statusIdentifier)) {
-			throw new CommandException(CommandException.DUPLICATE_COMMAND_STATUS);
-		}
-
-		statusUpdates.add(statusIdentifier);
-	}
+//	public synchronized final void addStatusUpdate(Integer statusIdentifier) throws CommandException {
+//
+//		if (statusUpdates.contains(statusIdentifier)) {
+//			throw new CommandException(CommandException.DUPLICATE_COMMAND_STATUS);
+//		}
+//
+//		statusUpdates.add(statusIdentifier);
+//	}
 
 	/**
 	 * Checks if this response has a status update <code>statusIdentifier</code> attached.
@@ -99,31 +111,31 @@ public abstract class CommandResponse {
 	 * @param statusIdentifier A status identifier.
 	 * @return <code>true</code> when this response has the status update attached, <code>false</code> if it hasn't.
 	 */
-	public final boolean hasStatus(Integer statusIdentifier) {
-		return statusUpdates.contains(statusIdentifier);
-	}
+//	public final boolean hasStatus(Integer statusIdentifier) {
+//		return statusUpdates.contains(statusIdentifier);
+//	}
 
 	/**
 	 * Clears all statusses for the response.
 	 */
-	public final void clearStatus() {
-
-		statusUpdates.removeAll(statusUpdates);
-	}
+//	public final void clearStatus() {
+//
+//		statusUpdates.removeAll(statusUpdates);
+//	}
 
 	/**
 	 * Includes <code>response</code> in this response.
 	 *
 	 * @param response The response to include in this response.
 	 */
-	public final void addResponse(CommandResponse response) {
-
-		CommandMessage[] messages = response.getMessages();
-
-		for (int i = 0; i < messages.length; i++) {
-			this.addMessage(messages[i]);
-		}
-	}
+//	public final void addResponse(CommandResponse response) {
+//
+//		CommandMessage[] messages = response.getMessages();
+//
+//		for (int i = 0; i < messages.length; i++) {
+//			this.addMessage(messages[i]);
+//		}
+//	}
 
   /**
    * Set the CommandResponseListener. This listener is going to give the user feedback

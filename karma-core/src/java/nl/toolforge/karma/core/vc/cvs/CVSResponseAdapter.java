@@ -1,7 +1,8 @@
 package nl.toolforge.karma.core.vc.cvs;
 
-import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.exception.ErrorCode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.command.FileInfoContainer;
@@ -17,55 +18,22 @@ import org.netbeans.lib.cvsclient.event.TerminationEvent;
 
 /**
  * Adapts a response from CVS to Karma specific messages. This class listens to CVS responses as per the Netbeans API.
+ * Success messages are sent to the <code>CommandResponse</code> instance (which can optionally be registered with this
+ * instance). Errors are thrown as CVSRuntimeExceptions
+ *
+// * @see #getErrorResponse
  *
  * @author D.A. Smedes
  * @version $Id:
  */
 public final class CVSResponseAdapter implements CVSListener {
 
-  /**
-   * CVS aborted unexpectedly
-   */
-  public static final Integer INVALID_SYMBOLIC_NAME = new Integer(0);
-
-  /**
-   * File has succesfully been added to the CVS repository.
-   */
-  public static final Integer FILE_ADDED_OK = new Integer(1);
-
-  /**
-   * File has succesfully been removed from the CVS repository.
-   */
-  public static final Integer FILE_REMOVED_OK = new Integer(2);
-
-  /**
-   * Module has succesfully been updated from CVS.
-   */
-  public static final Integer MODULE_UPDATED_OK = new Integer(3);
-
-  /**
-   * The module does not exist in the CVS repository.
-   */
-  public static final Integer MODULE_NOT_FOUND = new Integer(4);
-
-  /**
-   * File already exists in the CVS repository.
-   */
-  public static final Integer FILE_EXISTS = new Integer(5);
-
-  /**
-   * The symbolic name does not exist.
-   */
-  public static final Integer SYMBOLIC_NAME_NOT_FOUND = new Integer(6);
-
   private FileInfoContainer logInformation = null;
   private CommandResponse response = null;
+//  private ErrorCode errorCode = null;
 
   private static Log logger = LogFactory.getLog(CVSResponseAdapter.class);
 
-  /**
-   *
-   */
   public CVSResponseAdapter() {}
 
   /**
@@ -79,28 +47,11 @@ public final class CVSResponseAdapter implements CVSListener {
   }
 
   /**
-   * Adds a message to a <code>CommandResponse</code>s' messages list.
-   *
-   * @param message A <code>CommandMessage</code>. All types are valid, yet it is wise to add a
-   *                <code>CVSCommandMessage</code>
-   */
-  public void addMessage(CommandMessage message) {
-    this.response.addMessage(message);
-  }
-
-  /**
    * <p>Copied from the Netbeans API documentation : Called when a file is removed.
    *
    * @param event The event from CVS.
    */
-  public void fileRemoved(FileRemovedEvent event) {
-//    super.commandHeartBeat();
-    //logger.debug("FileRemovedEvent from CVS");
-
-//    if (!hasStatus(FILE_REMOVED_OK)) {
-//      try { addStatusUpdate(FILE_REMOVED_OK); } catch (CommandException e) { } // Ignore
-//    }
-  }
+  public void fileRemoved(FileRemovedEvent event) {}
 
   /**
    * <p>Copied from the Netbeans API documentation : Fire a module expansion event. This is called when the servers has
@@ -113,20 +64,14 @@ public final class CVSResponseAdapter implements CVSListener {
    *
    * @param event The event from CVS.
    */
-  public void moduleExpanded(ModuleExpansionEvent event) {
-//    logger.debug("ModuleExpansionEvent from CVS");
-//    listener.commandHeartBeat();
-  }
+  public void moduleExpanded(ModuleExpansionEvent event) {}
 
   /**
    * <p>Copied from the Netbeans API documentation : Called when a file has been added.
    *
    * @param event The event from CVS.
    */
-  public void fileAdded(FileAddedEvent event) {
-//    logger.debug("fileAdded from CVS");
-//    listener.commandHeartBeat();
-  }
+  public void fileAdded(FileAddedEvent event) {}
 
   /**
    * <p>Copied from the Netbeans API documentation : Called when file information has been received.
@@ -137,7 +82,7 @@ public final class CVSResponseAdapter implements CVSListener {
    * @param event The event from CVS.
    */
   public void fileInfoGenerated(FileInfoEvent event) {
-    this.logInformation = event.getInfoContainer();
+    logInformation = event.getInfoContainer();
   }
 
   /**
@@ -146,7 +91,7 @@ public final class CVSResponseAdapter implements CVSListener {
    * @return A <code>LogInformation</code> that can be queried by classes for all information on a (set of) file(s).
    */
   public LogInformation getLogInformation() {
-    return (LogInformation) this.logInformation;
+    return (LogInformation) logInformation;
   }
 
   /**
@@ -154,23 +99,14 @@ public final class CVSResponseAdapter implements CVSListener {
    *
    * @param event The event from CVS.
    */
-  public void commandTerminated(TerminationEvent event) {
-//    logger.debug("TerminationEvent from CVS : " + event.toString());
-//    startTransaction();
-//    listener.commandResponseFinished(new CommandResponseEvent(null));
-//    listener.commandHeartBeat();
-  }
-
+  public void commandTerminated(TerminationEvent event) { }
 
   /**
    * <p>Copied from the Netbeans API documentation : Called when a file has been updated.
    *
    * @param event The event from CVS.
    */
-  public void fileUpdated(FileUpdatedEvent event) {
-//    logger.debug("FileUpdatedEvent from CVS : " + event.toString());
-//    listener.commandHeartBeat();
-  }
+  public void fileUpdated(FileUpdatedEvent event) { }
 
   /**
    * <p>Copied from the Netbeans API documentation : Called when the server wants to send a message to be displayed to
@@ -184,97 +120,64 @@ public final class CVSResponseAdapter implements CVSListener {
     //
     String message = event.getMessage();
 
-//    if (listener != null) {
-
-//      if ("newline".equals(message)) {
-//        listener.commandResponseFinished(new CommandResponseEvent(null));
-//      } else {
-//      listener.commandHeartBeat();
-//      }
-//    }
-
     if (message.startsWith("Checking in")) {
 
       // TODO Localize message
-      String messageText = "File has been added to the CVS repository.";
+      //
+      if (response != null) {
+        response.addMessage(new SuccessMessage("File has been added to the CVS repository."));
+      } else {
+        logger.debug("'SuccessMessage' not routed to CommandResponseHandler : " + event.getMessage());
+      }
 
-      addMessage(new CVSCommandMessage(messageText));
-
-//      if (!hasStatus(FILE_ADDED_OK)) {
-//        try {
-//          addStatusUpdate(FILE_ADDED_OK);
-//        } catch (CommandException e) { }
-//      }
     } else if (message.startsWith("cvs server: Updating")) {
 
       // TODO Localize message
-      String messageText = "Module has been updated.";
-
-      addMessage(new CVSCommandMessage(messageText));
-
-//      if (!hasStatus(MODULE_UPDATED_OK)) {
-//        try {
-//          addStatusUpdate(MODULE_UPDATED_OK);
-//        } catch (CommandException e) { }
-//      }
+      //
+      if (response != null) {
+        response.addMessage(new SuccessMessage("Module has been updated."));
+      } else {
+        logger.debug("'SuccessMessage' not routed to CommandResponseHandler : " + event.getMessage());
+      }
     } else if (message.startsWith("cvs server: cannot find module")) {
 
-      // TODO Localize message
-      String messageText = "Module does not exist in repository.";
+      throw new CVSRuntimeException(CVSException.NO_SUCH_MODULE_IN_REPOSITORY);
 
-      addMessage(new CVSCommandMessage(messageText));
-
-//      if (!hasStatus(MODULE_NOT_FOUND)) {
-//        try {
-//          addStatusUpdate(MODULE_NOT_FOUND);
-//        } catch (CommandException e) { }
-//      }
     } else if (message.startsWith("cvs add:") && message.indexOf("already exists") > 0) {
 
-      // TODO Localize message; guess this is handled by calling class ...
-      String messageText = "File already exists in repository.";
+      throw new CVSRuntimeException(CVSException.FILE_EXISTS_IN_REPOSITORY);
 
-      addMessage(new CVSCommandMessage(messageText));
-
-//      if (!hasStatus(FILE_EXISTS)) {
-//        try {
-//          addStatusUpdate(FILE_EXISTS);
-//        } catch (CommandException e) { }
-//      }
     } else if (message.startsWith("cvs") && message.indexOf("no such tag") > 0) {
 
-      // TODO Localize message; guess this is handled by calling class ...
-      String messageText = "Symbolic name not found.";
+      throw new CVSRuntimeException(CVSException.VERSION_NOT_FOUND);
 
-      addMessage(new CVSCommandMessage(messageText));
-
-//      if (!hasStatus(SYMBOLIC_NAME_NOT_FOUND)) {
-//        try {
-//          addStatusUpdate(SYMBOLIC_NAME_NOT_FOUND);
-//        } catch (CommandException e) { }
-//      }
     } else if (message.indexOf("contains characters other than digits") > 0) {
-      String messageText = event.getMessage();
 
-      addMessage(new CVSCommandMessage(messageText));
-
-//      if (!hasStatus(INVALID_SYMBOLIC_NAME)) {
-//        try {
-//          addStatusUpdate(INVALID_SYMBOLIC_NAME);
-//        } catch (CommandException e) { }
-//      }
+      throw new CVSRuntimeException(CVSException.INVALID_SYMBOLIC_NAME);
     }
 
     if (!"".equals(event.getMessage())) {
       logger.debug("MessageEvent from CVS : " + event.getMessage());
     }
   }
-
-  /**
-   * Marks the end of a CVS command. A <code>commandResponseFinished</code> event is thrown.
-   */
-  void finalizeTransaction() {
-//    listener.commandResponseFinished(new CommandResponseEvent(null));
-  }
+//
+//  /**
+//   * Sets the
+//   * @param errorCode
+//   */
+//  private void setErrorCode(ErrorCode errorCode) {
+//    this.errorCode = errorCode;
+//  }
+//
+//  /**
+//   * Returns the error that was generated by the underlying CVS repository. This class is a listenerand all events from
+//   * the CVS repository pass this class if it is registered as such with the CVS client instance. The last error
+//   * response that was generated is the one that prevails and will be presented by this method.
+//   *
+//   * @return The CVS error response, wrapped in an {@link ErrorCode}.
+//   */
+//  public ErrorCode getErrorResponse() {
+//    return errorCode;
+//  }
 
 }

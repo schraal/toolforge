@@ -205,7 +205,7 @@ public class KarmaException extends Exception {
 
 	public void printStackTrace() {
 
-		//logger.error("ERRORCODE : " + errorCode.getErrorCode());
+		//logger.error("ERRORCODE : " + errorCode.getErrorCodeString());
 
 		super.printStackTrace();
 	}
