@@ -3,7 +3,7 @@
   <component name="ModuleRootManager" />
   <component name="NewModuleRootManager">
     <output url="file:///tmp/dev/build" />
-    <output-test url="file://$MODULE_DIR$/build" />
+    <output-test url="file:///tmp/dev/build" />
     <content url="file://$MODULE_DIR$/../netbeans-src/javacvs/libsrc">
       <sourceFolder url="file://$MODULE_DIR$/../netbeans-src/javacvs/libsrc" isTestSource="false" />
     </content>

@@ -6,6 +6,7 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
+import nl.toolforge.karma.core.cmd.util.DescriptorReader;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ModuleDescriptor;
@@ -68,39 +69,36 @@ public class PackageModule extends AbstractBuildCommand {
         project.executeTarget(BUILD_TARGET_WAR);
 
       } else if (getCurrentModule().getName().startsWith(Module.EAPP_PREFIX)) {
+
         // Create an ear-file
         //
-        Digester digester = new Digester();
-        digester.setValidating(false);   //todo: dit moet true worden
-        digester.addObjectCreate("application", "java.util.ArrayList");
-        digester.addObjectCreate("application/module/ejb", "java.lang.StringBuffer");
-        digester.addCallMethod("application/module/ejb", "append", 0);
-        digester.addSetNext("application/module/ejb", "add", "java.lang.StringBuffer");
-        digester.addObjectCreate("application/module/java", "java.lang.StringBuffer");
-        digester.addCallMethod("application/module/java", "append", 0);
-        digester.addSetNext("application/module/java", "add", "java.lang.StringBuffer");
-        digester.addObjectCreate("application/module/web/web-uri", "java.lang.StringBuffer");
-        digester.addCallMethod("application/module/web/web-uri", "append", 0);
-        digester.addSetNext("application/module/web/web-uri", "add", "java.lang.StringBuffer");
+        DescriptorReader reader = new DescriptorReader(DescriptorReader.APPLICATION_XML);
 
         try {
-          List moduleNames = (List) digester.parse(new File(getCurrentModule().getBaseDir(), "META-INF/application.xml"));
+          reader.parse(new File(getCurrentModule().getBaseDir(), "META-INF"));
+        } catch (IOException e) {
+          e.printStackTrace();
+        } catch (SAXException e) {
+          e.printStackTrace();
+        }
 
-          Map map = new Hashtable();
-          for (Iterator it = moduleNames.iterator(); it.hasNext(); ) {
-            String moduleName = ((StringBuffer) it.next()).toString();
+        Map map = new Hashtable();
+        for (Iterator it = reader.getModuleNames().iterator(); it.hasNext(); ) {
+          String moduleName = ((StringBuffer) it.next()).toString();
 
-            Pattern p = Pattern.compile("@("+ModuleDescriptor.NAME_PATTERN_STRING+")@");
-            Matcher m = p.matcher(moduleName);
+          Pattern p = Pattern.compile("@("+ModuleDescriptor.NAME_PATTERN_STRING+")@");
+          Matcher m = p.matcher(moduleName);
 
-            if (m.matches()) {
-              moduleName = m.group(1);
-              Module module = getCurrentManifest().getModule(moduleName);
-              map.put(moduleName, getCurrentManifest().resolveArchiveName(module));
-            } else {
-              //todo: throw new Exception();
-            }
+          if (m.matches()) {
+            moduleName = m.group(1);
+            Module module = getCurrentManifest().getModule(moduleName);
+            map.put(moduleName, getCurrentManifest().resolveArchiveName(module));
+          } else {
+            //todo: throw new Exception();
           }
+        }
+
+        try {
           FileWriter write1 = new FileWriter(new File(getBuildDirectory(), "archives.properties"));
           FileWriter write2 = new FileWriter(new File(getBuildDirectory(), "archives.includes"));
 
@@ -116,9 +114,7 @@ public class PackageModule extends AbstractBuildCommand {
           write2.close();
 
         } catch (IOException e) {
-          e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (SAXException e) {
-          e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+          e.printStackTrace();
         }
 
         project.setProperty(MODULE_APPXML_PROPERTY, new File(getBuildDirectory(), "META-INF/application.xml".replace('/', File.separatorChar)).getPath());

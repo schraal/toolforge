@@ -11,10 +11,13 @@ import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.manifest.AbstractManifest;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +28,8 @@ import java.io.IOException;
  * @version $Id$
  */
 public class StartWorkCommand extends DefaultCommand {
+
+  private static Log logger = LogFactory.getLog(AbstractManifest.class);
 
   private CommandResponse response = null;
 
@@ -126,7 +131,14 @@ public class StartWorkCommand extends DefaultCommand {
         // todo the switch has to be implemented.
 
         BuildUtil util = new BuildUtil(currentManifest);
-        util.cleanDependencies(module);
+
+        try {
+          util.cleanDependencies(module);
+        } catch (ManifestException e) {
+          // Ignore. When this process fails, we continue anyway.
+          // todo view warning in another console
+          logger.warn("Could not clean dependencies for module " + moduleName + "; dependencies.xml is invalid.");
+        }
 
         // todo message to be internationalized.
         //
