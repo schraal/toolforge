@@ -289,7 +289,7 @@ public final class CommandFactory {
     } catch (CommandLoadException cle) {
       //this can not happen, since the init has already been called in the constructor
       //and it was successful then.
-      throw new OutOfTheBlueException("Tried to reload the commands, but failed. This is strange because they have been loaded earlier with success");
+      throw new OutOfTheBlueException("Tried to reload the commands, but failed. This is strange because they have been loaded earlier with success", cle);
     }
 
     if (commandsByName.containsKey(commandId)) {

@@ -97,7 +97,7 @@ public final class CommandLoader {
       String commands = DEFAULT_COMMANDS_BASEDIR + "/" + COMMAND_PLUGINS_DIR + "/" + PLUGIN_COMMANDS_FILE;
       enum = this.getClass().getClassLoader().getResources(commands);
     } catch (IOException ioe) {
-      throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_PLUGIN_COMMANDS_FILE, new Object[]{PLUGIN_COMMANDS_FILE});
+      throw new CommandLoadException(ioe, CommandLoadException.LOAD_FAILURE_FOR_PLUGIN_COMMANDS_FILE, new Object[]{PLUGIN_COMMANDS_FILE});
     }
 
     while (enum.hasMoreElements()) {
