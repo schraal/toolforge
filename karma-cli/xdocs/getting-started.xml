@@ -94,7 +94,8 @@
   <section name="Start the Command Line Interface">
 
   <p>
-    All set ? Start the command line interface. Use <code>bin/karma</code> on
+    All set ? Start the command line interface. Use
+    <code>bin/karma -Dbootstrap.configuration=&lt;path-to-karma.properties&gt;</code> on
     a Unix system to see the thing happening (Windows users wait a bit or do
     it yourself for now).
   </p>

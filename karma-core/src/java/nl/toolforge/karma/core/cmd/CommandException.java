@@ -4,7 +4,7 @@ import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.exception.ErrorCode;
 
 /**
- *
+ * Exceptions thrown during the execution of a command.
  *
  * @author D.A. Smedes 
  * 
@@ -24,6 +24,9 @@ public class CommandException extends KarmaException {
    * @see CommandResponse#addStatusUpdate
    */
   public static final ErrorCode DUPLICATE_COMMAND_STATUS = new ErrorCode("CMD-00020");
+
+  /** The command
+  public static final ErrorCode INVALID_COMMAND = new ErrorCode("CMD-00021");
 
   public CommandException(ErrorCode errorCode) {
     super(errorCode);
