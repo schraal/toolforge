@@ -62,7 +62,7 @@
 
 			<ul>
 				<li>
-					A configuration directory <code>$HOME/.karma</code> should be created.
+					As stated before, a configuration directory <code>$HOME/.karma</code> should be created.
 					The <code>LocalEnvironment</code> class will create this one upon instantiation,
 					with the default configuration, if you don't supply one.
 				 </li>
@@ -77,23 +77,9 @@
 							<th>Value</th>
 						</tr>
 						<tr>
-							<td><code>development.store</code></td>
-							<td>This is the location on disk where Karma checks out the source code of your projects</td>
-							<td><code>$HOME/karma/projects</code> (default value)</td>
-						</tr>
-						<tr>
-							<td><code>manifest.store</code></td>
-							<td>This is the location on disk where Karma checks out the manifests.</td>
-							<td><code>$HOME/karma/manifests</code> (default value)</td>
-						</tr>
-						<tr>
-							<td><code>location.store</code></td>
-							<td>This is the location on disk where Karma checks out the locations.</td>
-							<td><code>$HOME/karma/locations</code> (default value)</td>
-						</tr>
-						<tr>
-							<td><code>manifest-store.cvs.host</code></td>
-							<td>The name of the CVS server that contains the manifests.</td>
+							<td><code>working-context</code></td>
+							<td>This is	the location on disk where Karma checks	out the source code of your
+							projects, the	manifests and	the locations.</td>
 							<td>Check with your administrator.</td>
 						</tr>
 						<tr>
