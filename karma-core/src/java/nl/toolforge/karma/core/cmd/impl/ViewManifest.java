@@ -124,7 +124,7 @@ public class ViewManifest extends DefaultCommand {
         } else {
           moduleData[2] = "";
         }
-        
+
       } catch (VersionControlException v) {
         // Version for the module is non-existing in the repository.
         //
@@ -132,7 +132,7 @@ public class ViewManifest extends DefaultCommand {
       }
 
       moduleData[3] = "(" + module.getVersionAsString() + ")";
-      moduleData[4] = (module.hasPatchLine() ? "!!!" : "");
+      moduleData[4] = (module.hasPatchLine() ? "available" : "not available");
 
       if (existsInRepository) {
         moduleData[5] = manifest.getState(module).toString();
