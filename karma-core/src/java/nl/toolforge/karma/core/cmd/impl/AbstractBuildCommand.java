@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
+import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.helper.ProjectHelperImpl;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
@@ -188,7 +189,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
     if (project == null) {
 
-      // DefaultLogger logger = new DefaultLogger();
+      //DefaultLogger logger = new DefaultLogger();
       AntLogger logger = new AntLogger(this);
 
       // todo hmm, this mechanism doesn't integrate with the commandresponse mechanism
@@ -196,7 +197,15 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
       logger.setOutputPrintStream(System.out);
 
       //todo: this has to be configurable
-      logger.setMessageOutputLevel(Project.MSG_DEBUG);
+      String logLevel = System.getProperty("antloglevel");
+      int antLogLevel = Project.MSG_WARN;
+      if (logLevel.equalsIgnoreCase("debug")) {
+        antLogLevel = Project.MSG_DEBUG;
+      } else if (logLevel.equalsIgnoreCase("info")) {
+        antLogLevel = Project.MSG_INFO;
+      }
+      logger.setMessageOutputLevel(antLogLevel);
+
       // Configure underlying ant to run a command.
       //
       project = new Project();
