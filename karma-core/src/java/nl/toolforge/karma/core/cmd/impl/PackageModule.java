@@ -157,7 +157,7 @@ public class PackageModule extends AbstractBuildCommand {
       Project project = getProjectInstance();
 
       Target target = new Target();
-      target.setName("project");
+      target.setName("run");
       target.setProject(project);
 
       project.addTarget(target);
@@ -170,7 +170,7 @@ public class PackageModule extends AbstractBuildCommand {
       //copy resources
       commandResponse.addMessage(new StatusMessage("Copying the resources..."));
       if (new File(getCurrentModule().getBaseDir(), "src/resources").exists()) {
-        copy = new Copy();
+        copy = (Copy) project.createTask("copy");
         copy.setProject(getProjectInstance());
         copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
         copy.setOverwrite(true);
@@ -188,15 +188,15 @@ public class PackageModule extends AbstractBuildCommand {
 
       //copy META-INF
       commandResponse.addMessage(new StatusMessage("Copying the META-INF..."));
-      copy = new Copy();
+      copy = (Copy) project.createTask("copy");
       copy.setProject(getProjectInstance());
       copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
       copy.setOverwrite(true);
       copy.setIncludeEmptyDirs(false);
 
       fileSet = new FileSet();
-      fileSet.setDir(getCurrentModule().getBaseDir());
-      fileSet.setIncludes("src/META-INF/**");
+      fileSet.setDir(new File(getCurrentModule().getBaseDir(), "src"));
+      fileSet.setIncludes("META-INF/**");
 
       copy.addFileset(fileSet);
       target.addTask(copy);
@@ -204,7 +204,7 @@ public class PackageModule extends AbstractBuildCommand {
       // Copy all class files to the package directory.
       //
       if (getCompileDirectory().exists()) {
-        copy = new Copy();
+        copy = (Copy) project.createTask("copy");
         copy.setProject(getProjectInstance());
         copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
         copy.setOverwrite(true);
@@ -218,14 +218,14 @@ public class PackageModule extends AbstractBuildCommand {
         target.addTask(copy);
       }
 
-      Jar jar = new Jar();
+      Jar jar = (Jar) project.createTask("jar");
       jar.setProject(getProjectInstance());
       jar.setDestFile(packageName);
       jar.setBasedir(getBuildEnvironment().getModulePackageDirectory());
       jar.setExcludes("*.jar");
       target.addTask(jar);
 
-      project.executeTarget("project");
+      project.executeTarget("run");
 
     } catch (BuildException e) {
       e.printStackTrace();
@@ -241,30 +241,40 @@ public class PackageModule extends AbstractBuildCommand {
 
   private void packageWar(File packageName) throws CommandException {
 
+    Project project = getProjectInstance();
+
+    Target target = new Target();
+    target.setName("run");
+    target.setProject(project);
+
+    project.addTarget(target);
+
     DependencyHelper helper = new DependencyHelper(getCurrentManifest());
 
     try {
       executeDelete(getBuildEnvironment().getModuleBuildDirectory(), "*.war");
 
-      Copy copy = new Copy();
-      copy.setProject(getProjectInstance());
-      copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
-      copy.setOverwrite(true);
-      copy.setIncludeEmptyDirs(false);
-
+      // Fileset that copies contents of 'WEB-INF' to the package directory.
+      //
+      Copy copy = (Copy) project.createTask("copy");
+//      copy.setProject(getProjectInstance());
+//      copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
+//      copy.setOverwrite(true);
+//      copy.setIncludeEmptyDirs(false);
+//
+      File webdir = new File(new File(getCurrentModule().getBaseDir(), "src"), "web");
       FileSet fileSet = new FileSet();
-      fileSet.setDir(getCurrentModule().getBaseDir());
-      fileSet.setIncludes("src/web/WEB-INF/**");
-      fileSet.setExcludes("src/web/WEB-INF/web.xml");
-
-      copy.addFileset(fileSet);
-      copy.execute();
+//      fileSet.setDir(webdir);
+//      fileSet.setIncludes("WEB-INF/**");
+//      fileSet.setExcludes("WEB-INF/web.xml");
+//
+//      copy.addFileset(fileSet);
+//      copy.execute();
 
       // Fileset that copies contents of 'web' to the package directory.
       //
-      File webdir = new File(getCurrentModule().getBaseDir(), "src/web");
       if (webdir.exists()) {
-        copy = new Copy();
+        copy = (Copy) project.createTask("copy");
         copy.setProject(getProjectInstance());
         copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
         copy.setOverwrite(true);
@@ -273,9 +283,11 @@ public class PackageModule extends AbstractBuildCommand {
         fileSet = new FileSet();
         fileSet.setDir(webdir);
         fileSet.setIncludes("**");
+        fileSet.setExcludes("WEB-INF/web.xml");
 
         copy.addFileset(fileSet);
-        copy.execute();
+//        copy.execute();
+        target.addTask(copy);
       }
 
       // Copy dependencies, but only those that need to be packaged
@@ -284,7 +296,7 @@ public class PackageModule extends AbstractBuildCommand {
       Set deps = helper.getAllDependencies(getCurrentModule(), true);
       if (!deps.isEmpty()) {
 
-        copy = new Copy();
+        copy = (Copy) project.createTask("copy");
         copy.setProject(getProjectInstance());
         copy.setTodir(new File(getBuildEnvironment().getModulePackageDirectory(), "WEB-INF/lib"));
         copy.setFlatten(true);
@@ -300,18 +312,21 @@ public class PackageModule extends AbstractBuildCommand {
           copy.addFileset(fileSet);
         }
 
-        copy.execute();
+//        copy.execute();
+        target.addTask(copy);
       }
 
       // Create a war file.
       //
-      War war = new War();
+      War war = (War) project.createTask("war");
       war.setProject(getProjectInstance());
       war.setDestFile(packageName);
       war.setBasedir(getBuildEnvironment().getModulePackageDirectory());
       war.setWebxml(new File(getCurrentModule().getBaseDir(), "src/web/WEB-INF/web.xml".replace('/', File.separatorChar)));
 
-      war.execute();
+//      war.execute();
+      target.addTask(war);
+      project.executeTarget("run");
 
     } catch (BuildException e) {
 //      e.printStackTrace();
@@ -328,6 +343,14 @@ public class PackageModule extends AbstractBuildCommand {
   }
 
   private void packageEar(File packageName) throws CommandException {
+
+    Project project = getProjectInstance();
+
+    Target target = new Target();
+    target.setName("run");
+    target.setProject(project);
+
+    project.addTarget(target);
 
     DependencyHelper helper = new DependencyHelper(getCurrentManifest());
 
@@ -403,15 +426,15 @@ public class PackageModule extends AbstractBuildCommand {
       executeDelete(getBuildEnvironment().getModuleBuildDirectory(), "*.ear");
 
       commandResponse.addMessage(new StatusMessage("Copying META-INF dir."));
-      Copy copy = new Copy();
+      Copy copy = (Copy) project.createTask("copy");
       copy.setProject(getProjectInstance());
       copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
       copy.setOverwrite(true);
       copy.setIncludeEmptyDirs(false);
 
       FileSet fileSet = new FileSet();
-      fileSet.setDir(getCurrentModule().getBaseDir());
-      fileSet.setIncludes("src/META-INF/**");
+      fileSet.setDir(new File(getCurrentModule().getBaseDir(), "src"));
+      fileSet.setIncludes("META-INF/**");
 
       // Filtering
       //
@@ -419,13 +442,14 @@ public class PackageModule extends AbstractBuildCommand {
       filterSet.setFiltersfile(new File(getBuildEnvironment().getModuleBuildDirectory(), ARCHIVES_PROPERTIES));
 
       copy.addFileset(fileSet);
-      copy.execute();
+//      copy.execute();
+      target.addTask(copy);
 
       //copy the module dependencies from the application.xml
       commandResponse.addMessage(new StatusMessage("Copying module dependencies"));
       Set moduleDeps = helper.getModuleDependencies(getCurrentModule(), true);
       if (!moduleDeps.isEmpty()) {
-        copy = new Copy();
+        copy = (Copy) project.createTask("copy");
         copy.setProject(getProjectInstance());
         copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
         copy.setFlatten(true);
@@ -438,7 +462,8 @@ public class PackageModule extends AbstractBuildCommand {
           fileSet.setFile(path.getFullPath());
           copy.addFileset(fileSet);
         }
-        copy.execute();
+//        copy.execute();
+        target.addTask(copy);
       } else {
         logger.info("No module dependencies to package.");
       }
@@ -447,7 +472,7 @@ public class PackageModule extends AbstractBuildCommand {
       commandResponse.addMessage(new StatusMessage("Copying jar dependencies"));
       Set jarDeps = helper.getJarDependencies(getCurrentModule(), true);
       if (!jarDeps.isEmpty()) {
-        copy = new Copy();
+        copy = (Copy) project.createTask("copy");
         copy.setProject(getProjectInstance());
         copy.setTodir(new File(getBuildEnvironment().getModulePackageDirectory(), "lib"));
         copy.setFlatten(true);
@@ -457,25 +482,27 @@ public class PackageModule extends AbstractBuildCommand {
         while (it.hasNext()) {
           DependencyPath path = (DependencyPath) it.next();
           fileSet = new FileSet();
-          fileSet.setDir(path.getFullPath());
+          fileSet.setFile(path.getFullPath());
           copy.addFileset(fileSet);
         }
-        copy.execute();
+//        copy.execute();
+        target.addTask(copy);
       } else {
         logger.info("No jar dependencies to package.");
       }
 
       commandResponse.addMessage(new StatusMessage("Creating ear"));
 
-      Ear ear = new Ear();
+      Ear ear = (Ear) project.createTask("ear");
       ear.setProject(getProjectInstance());
       ear.setDestFile(packageName);
       ear.setBasedir(getBuildEnvironment().getModulePackageDirectory());
-      ear.setExcludes("src/META-INF/application.xml");
-      ear.setAppxml(new File(getBuildEnvironment().getModulePackageDirectory(), "src/META-INF/application.xml".replace('/', File.separatorChar)));
+      ear.setExcludes("META-INF/application.xml");
+      ear.setAppxml(new File(getBuildEnvironment().getModulePackageDirectory(), "META-INF/application.xml".replace('/', File.separatorChar)));
 
-      ear.execute();
-
+//      ear.execute();
+      target.addTask(ear);
+      project.executeTarget("run");
     } catch (ManifestException m) {
       m.printStackTrace();
       throw new CommandException(m.getErrorCode(), m.getMessageArguments());
