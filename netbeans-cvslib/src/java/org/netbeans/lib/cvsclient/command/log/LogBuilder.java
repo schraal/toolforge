@@ -131,7 +131,15 @@ public class LogBuilder implements Builder {
       processRevisionStart(line);
     }
     if (line.startsWith(DATE)) {
-      processRevisionDate(line);
+
+      try {
+        processRevisionDate(line);
+      } catch (RuntimeException e) {
+        System.out.println("ERROR when parsing line : " + line);
+        throw e;
+      }
+
+
     }
 
     if (line.startsWith(KEYWORD_SUBST)) {
@@ -269,7 +277,7 @@ public class LogBuilder implements Builder {
 
   private void processRevisionDate(String line) {
 
-    
+
 
     StringTokenizer token = new StringTokenizer(line, ";", false); //NOI18N
     if (token.hasMoreTokens()) {
