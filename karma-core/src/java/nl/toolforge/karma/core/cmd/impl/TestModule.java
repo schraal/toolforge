@@ -63,19 +63,20 @@ public class TestModule extends AbstractBuildCommand {
     Command command = null;
     try {
       String commandLineString = "bm -m " + module.getName();
-System.out.println("Going to: "+commandLineString);
+//System.out.println("Going to: "+commandLineString);
       command = CommandFactory.getInstance().getCommand(commandLineString);
       command.setContext(getContext());
       command.registerCommandResponseListener(getResponseListener());
       command.execute();
     } catch (CommandException ce) {
-      if (ce.getErrorCode().equals(CommandException.DEPENDENCY_DOES_NOT_EXIST)) {
+      if (    ce.getErrorCode().equals(CommandException.DEPENDENCY_DOES_NOT_EXIST) ||
+              ce.getErrorCode().equals(CommandException.BUILD_FAILED) ) {
         commandResponse.addMessage(new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments()));
-        throw new CommandException(ce, CommandException.BUILD_FAILED, new Object[]{module.getName()});
+        throw new CommandException(ce, CommandException.TEST_FAILED, new Object[]{module.getName()});
       } else {
         message = new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments());
         commandResponse.addMessage(message);
-        message = new ErrorMessage(CommandException.TEST_WARNING);
+        message = new ErrorMessage(CommandException.BUILD_WARNING);
         commandResponse.addMessage(message);
       }
     } finally {
