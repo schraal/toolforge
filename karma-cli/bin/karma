@@ -51,8 +51,6 @@ CLASSPATH=$CLASSPATH:$JAVA_HOME/lib/tools.jar
 #
 KARMA_LAUNCHER_JAR=`ls $KARMA_HOME/lib/karma-launcher-*.jar`
 
-echo $KARMA_LAUNCHER_JAR
-
 # Now finally we are able to run karma
 #
 $JAVACMD -cp $KARMA_LAUNCHER_JAR -DKARMA_CLASSPATH=$CLASSPATH -Dkarma.home=$KARMA_HOME -Dloglevel=DEBUG nl.toolforge.karma.launcher.KarmaLauncher nl.toolforge.karma.cli.FireAway $@
