@@ -84,11 +84,7 @@ public final class SubversionRunner implements Runner {
 //		return null;
 	}
 
-	public void tag(Module module, SymbolicName tag) {
-//		return null;
-	}
-
-	public void tag(Module module, Version version) {
+	public void promote(Module module, Version version) {
 //		return null;
 	}
 }
