@@ -57,6 +57,53 @@
         </p>
       </subsection>
 
+      <subsection name="App module (NOT IMPLEMENTED YET)">
+        <p>
+          <table>
+            <tr>
+              <th>Source</th>
+              <th>Build</th>
+              <th>Package</th>
+            </tr>
+            <tr>
+              <td>src/java</td>
+              <td>build</td>
+              <td>/</td>
+            </tr>
+            <tr>
+              <td>src/resources</td>
+              <td>-</td>
+              <td>/</td>
+            </tr>
+            <tr>
+              <td>src/META-INF</td>
+              <td>-</td>
+              <td>/META-INF</td>
+            </tr>
+            <tr>
+              <td>test/java</td>
+              <td>test</td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td>test/resources</td>
+              <td>-</td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td>&lt;module dependencies&gt;</td>
+              <td>-</td>
+              <td>-</td>
+            </tr>
+            <tr>
+              <td>&lt;jar dependencies&gt;</td>
+              <td>-</td>
+              <td>-</td>
+            </tr>
+          </table>
+        </p>
+      </subsection>
+
       <subsection name="War module">
         <p>
           <table>
@@ -145,9 +192,26 @@
               <th>Package</th>
             </tr>
             <tr>
-              <td>/</td>
+              <td>/lib</td>
               <td>-</td>
               <td>-</td>
+            </tr>
+          </table>
+        </p>
+      </subsection>
+
+      <subsection name="Other module (NOT IMPLEMENTED YET)">
+        <p>
+          <table>
+            <tr>
+              <th>Source</th>
+              <th>Build</th>
+              <th>Package</th>
+            </tr>
+            <tr>
+              <td>/[whatever]</td>
+              <td>-</td>
+              <td>/[whatever]</td>
             </tr>
           </table>
         </p>
