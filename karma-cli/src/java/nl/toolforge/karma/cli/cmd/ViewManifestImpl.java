@@ -64,17 +64,21 @@ public class ViewManifestImpl extends ViewManifest {
       buffer.append("RELEASE MANIFEST\n\n");
 
       String h1 = "MODULE-NAME";
-      String h2 = "VERSION";
-      String h3 = "PATCHLINE";
-      String h4 = "STATE";
-      String h5 = "LOCATION";
+      String h2 = "LOCAL";
+      String h3 = "REMOTE";
+      String h4 = "STATIC";
+      String h5 = "PATCHLINE";
+      String h6 = "STATE";
+      String h7 = "LOCATION";
 
       buffer.append(h1 + StringUtils.repeat(" ", 30 - h1.length()) + "| ");
-      buffer.append(h2 + StringUtils.repeat(" ", 20 - h2.length()) + "| ");
-      buffer.append(h3 + StringUtils.repeat(" ", 20 - h3.length()) + "| ");
-      buffer.append(h4 + StringUtils.repeat(" ", 20 - h4.length()) + "| ");
-      buffer.append(h5 + StringUtils.repeat(" ", 20 - h5.length()) + "|\n");
-      buffer.append(StringUtils.repeat("_", h5.length() + 110));
+      buffer.append(h2 + StringUtils.repeat(" ",  8 - h2.length()) + "| ");
+      buffer.append(h3 + StringUtils.repeat(" ",  8 - h3.length()) + "| ");
+      buffer.append(h4 + StringUtils.repeat(" ",  8 - h4.length()) + "| ");
+      buffer.append(h5 + StringUtils.repeat(" ", 20 - h5.length()) + "| ");
+      buffer.append(h6 + StringUtils.repeat(" ", 20 - h6.length()) + "| ");
+      buffer.append(h7 + StringUtils.repeat(" ", 20 - h7.length()) + "|\n");
+      buffer.append(StringUtils.repeat("_", 114+13));
       buffer.append("\n");
 
       for (Iterator i = renderedData.iterator(); i.hasNext();) {
@@ -85,16 +89,14 @@ public class ViewManifestImpl extends ViewManifest {
         //
         buffer.append(data[0] + StringUtils.repeat(" ", 30 - data[0].length()) + "| ");
 
-        // Column 2
+        // Cols 2-5
         //
-        buffer.append(data[1] + " " + data[2] + " " + data[3]);
-        buffer.append(StringUtils.repeat(" ", 20 - data[1].length() - data[2].length() - data[3].length() - 2) + "| ");
-
-        // Cols 3-5
-        //
-        buffer.append(data[4] + StringUtils.repeat(" ", 20 - data[4].length()) + "| ");
+        buffer.append(data[2] + StringUtils.repeat(" ",  8 - data[2].length()) + "| ");
+        buffer.append(data[3] + StringUtils.repeat(" ",  8 - data[3].length()) + "| ");
+        buffer.append(data[4] + StringUtils.repeat(" ",  8 - data[4].length()) + "| ");
         buffer.append(data[5] + StringUtils.repeat(" ", 20 - data[5].length()) + "| ");
-        buffer.append(data[6] + StringUtils.repeat(" ", 20 - data[6].length()) + "|\n");
+        buffer.append(data[6] + StringUtils.repeat(" ", 20 - data[6].length()) + "| ");
+        buffer.append(data[7] + StringUtils.repeat(" ", 20 - data[7].length()) + "|\n");
       }
 
     } else {
@@ -102,17 +104,19 @@ public class ViewManifestImpl extends ViewManifest {
       buffer.append("DEVELOPMENT MANIFEST\n\n");
 
       String h1 = "MODULE-NAME";
-      String h2 = "VERSION";
-//    String h3 = "PATCHLINE";
-      String h4 = "STATE";
-      String h5 = "LOCATION";
+      String h2 = "LOCAL";
+      String h3 = "REMOTE";
+      String h4 = "STATIC";
+      String h5 = "STATE";
+      String h6 = "LOCATION";
 
       buffer.append(h1 + StringUtils.repeat(" ", 30 - h1.length()) + "| ");
-      buffer.append(h2 + StringUtils.repeat(" ", 20 - h2.length()) + "| ");
-//    buffer.append(h3 + StringUtils.repeat(" ", 20 - h3.length()) + "| ");
-      buffer.append(h4 + StringUtils.repeat(" ", 20 - h4.length()) + "| ");
-      buffer.append(h5 + StringUtils.repeat(" ", 25 - h5.length()) + "|\n");
-      buffer.append(StringUtils.repeat("_", h5.length() + 90));
+      buffer.append(h2 + StringUtils.repeat(" ",  8 - h2.length()) + "| ");
+      buffer.append(h3 + StringUtils.repeat(" ",  8 - h3.length()) + "| ");
+      buffer.append(h4 + StringUtils.repeat(" ",  8 - h4.length()) + "| ");
+      buffer.append(h5 + StringUtils.repeat(" ", 20 - h5.length()) + "| ");
+      buffer.append(h6 + StringUtils.repeat(" ", 25 - h6.length()) + "|\n");
+      buffer.append(StringUtils.repeat("_", 99+11));
       buffer.append("\n");
 
       for (Iterator i = renderedData.iterator(); i.hasNext();) {
@@ -125,12 +129,12 @@ public class ViewManifestImpl extends ViewManifest {
 
         // Column 2
         //
-        buffer.append(data[1] + " " + data[2] + " " + data[3]);
-        buffer.append(StringUtils.repeat(" ", 20 - data[1].length() - data[2].length() - data[3].length() - 2) + "| ");
+        buffer.append(data[1] + StringUtils.repeat(" ",  8 - data[1].length()) + "| ");
+        buffer.append(data[2] + StringUtils.repeat(" ",  8 - data[2].length()) + "| ");
+        buffer.append(data[3] + StringUtils.repeat(" ",  8 - data[3].length()) + "| ");
 
         // Cols 3-5
         //
-        //buffer.append(data[4] + StringUtils.repeat(" ", 20 - data[4].length()) + "| ");
         buffer.append(data[5] + StringUtils.repeat(" ", 20 - data[5].length()) + "| ");
         buffer.append(data[6] + StringUtils.repeat(" ", 25 - data[6].length()) + "|\n");
       }
