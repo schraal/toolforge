@@ -18,6 +18,23 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.ProjectHelper;
+import org.apache.tools.ant.helper.ProjectHelperImpl;
+import org.apache.tools.ant.taskdefs.Delete;
+import org.apache.tools.ant.taskdefs.Mkdir;
+import org.apache.tools.ant.types.FileSet;
+
 import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
@@ -29,22 +46,6 @@ import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ModuleTypeException;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.ProjectHelper;
-import org.apache.tools.ant.helper.ProjectHelperImpl;
-import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.Mkdir;
-import org.apache.tools.ant.types.FileSet;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 /**
  * Superclass for all commands dealing with building modules. This class provides all basic property mappers and methods
@@ -79,28 +80,31 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
       throw new CommandException(ManifestException.NO_ACTIVE_MANIFEST);
     }
 
-    String moduleName = getCommandLine().getOptionValue("m");
+    if (getCommandLine().hasOption("m")) {
+      String moduleName = getCommandLine().getOptionValue("m");
 
-    try {
-      // todo move this bit to aspect-code.
-      //
-      module = getCurrentManifest().getModule(moduleName);
+      try {
+        // todo move this bit to aspect-code.
+        //
+        module = getCurrentManifest().getModule(moduleName);
 
-      if (module == null) {
-        throw new CommandException(ManifestException.MODULE_NOT_FOUND, new Object[]{module});
+        if (module == null) {
+          throw new CommandException(ManifestException.MODULE_NOT_FOUND, new Object[]{module});
+        }
+
+        if (!getCurrentManifest().isLocal(module)) {
+          throw new CommandException(ManifestException.MODULE_NOT_LOCAL, new Object[]{module});
+        }
+
+
+      } catch (ManifestException m) {
+        throw new CommandException(m.getErrorCode(), m.getMessageArguments());
       }
-
-      if (!getCurrentManifest().isLocal(module)) {
-        throw new CommandException(ManifestException.MODULE_NOT_LOCAL, new Object[]{module});
-      }
-
-      // Initialize the current build environment.
-      //
-      env = new BuildEnvironment(getCurrentManifest(), module);
-
-    } catch (ManifestException m) {
-      throw new CommandException(m.getErrorCode(), m.getMessageArguments());
     }
+
+    // Initialize the current build environment.
+    //
+    env = new BuildEnvironment(getCurrentManifest(), module);
   }
 
   /**
@@ -191,7 +195,8 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
       //
       logger.setOutputPrintStream(System.out);
 
-      logger.setMessageOutputLevel(Project.MSG_INFO);
+      //todo: this has to be configurable
+      logger.setMessageOutputLevel(Project.MSG_DEBUG);
       // Configure underlying ant to run a command.
       //
       project = new Project();
