@@ -23,6 +23,7 @@ import nl.toolforge.karma.core.test.LocalCVSInitializer;
 
 import java.io.File;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author W.H. Schraal
@@ -31,27 +32,44 @@ public class TestModuleHistoryFactory extends LocalCVSInitializer {
 
   public void testGetSetHistory() {
       try {
-          checkoutDefaultModule1();
+        checkoutDefaultModule1();
 
-          File projectRoot = getWorkingContext().getProjectBaseDirectory();
-          ModuleHistoryFactory factory = ModuleHistoryFactory.getInstance(projectRoot);
-          assertNotNull(factory);
+        File projectRoot = getWorkingContext().getProjectBaseDirectory();
+        ModuleHistoryFactory factory = ModuleHistoryFactory.getInstance(projectRoot);
+        assertNotNull(factory);
 
-          ModuleHistory moduleHistory = factory.getModuleHistory(checkoutDefaultModule1());
-          assertNotNull(moduleHistory);
+        ModuleHistory moduleHistory = factory.getModuleHistory(checkoutDefaultModule1());
+        assertNotNull(moduleHistory);
 
-          ModuleHistoryEvent event = new ModuleHistoryEvent();
+        ModuleHistoryEvent event = new ModuleHistoryEvent();
 
-          event.setType(ModuleHistoryEvent.CREATE_MODULE_EVENT);
-          event.setDatetime(new Date());
-          event.setAuthor("me");
-          event.setComment("new module created");
-          event.setVersion(new Version("0-0"));
-
-          moduleHistory.addEvent(event);
-          moduleHistory.save();
-
+        event.setType(ModuleHistoryEvent.CREATE_MODULE_EVENT);
+        Date time = new Date();
+        event.setDatetime(time);
+        try {
+          event.setAuthor(null);
+          assertTrue("Excepted an exception here, since the author is null", false);
+        } catch (IllegalArgumentException iae) {
           assertTrue(true);
+        }
+        event.setAuthor("me");
+        event.setComment("new module created");
+        event.setVersion(new Version("0-0"));
+
+        moduleHistory.addEvent(event);
+        moduleHistory.save();
+
+        assertTrue(true);
+
+        List events = moduleHistory.getEvents();
+        assertEquals(events.size(), 3);
+        ModuleHistoryEvent event2 = (ModuleHistoryEvent)events.get(2);
+        assertEquals(event2, event);
+        assertEquals(event2.getAuthor(), "me");
+        assertEquals(event2.getComment(), "new module created");
+        assertEquals(event2.getDatetime(), time);
+        assertEquals(event2.getType(), ModuleHistoryEvent.CREATE_MODULE_EVENT);
+        assertEquals(event2.getVersion(), new Version("0-0"));
       } catch (Exception e) {
           fail(e.getMessage());
       }

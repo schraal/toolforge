@@ -285,7 +285,11 @@ public abstract class BaseModule implements Module {
     event.setAuthor(a.getUsername());
     event.setComment(createComment);
     history.addEvent(event);
-    history.save();
+    try {
+      history.save();
+    } catch (ModuleHistoryException mhe) {
+      logger.error("Troubles when saving the module history.", mhe);
+    }
 
     CVSRunner runner = (CVSRunner) RunnerFactory.getRunner(getLocation());
     runner.addModule(this, createComment);

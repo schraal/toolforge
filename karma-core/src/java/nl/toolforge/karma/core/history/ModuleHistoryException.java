@@ -41,10 +41,15 @@ public class ModuleHistoryException extends Exception {
    */
   public static final ErrorCode INVALID_HISTORY_FILE = new ErrorCode(EXCEPTION_PREFIX + "00001");
 
-    /**
+  /**
    * When <code>history.xml</code> does not exist for the module.
    */
   public static final ErrorCode HISTORY_FILE_DOES_NOT_EXIST = new ErrorCode(EXCEPTION_PREFIX + "00002");
+
+  /**
+   * When the location of the <code>history.xml</code> file has not been defined.
+   */
+  public static final ErrorCode HISTORY_FILE_LOCATION_NOT_DEFINED = new ErrorCode(EXCEPTION_PREFIX + "00003");
 
   public ModuleHistoryException(ErrorCode errorCode) {
     this(errorCode, null);

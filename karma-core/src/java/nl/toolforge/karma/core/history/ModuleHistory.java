@@ -73,8 +73,8 @@ public class ModuleHistory {
     return this.historyLocation;
   }
 
-  public void save() {
-    if (events != null) {
+  public void save() throws ModuleHistoryException {
+    if (events != null && historyLocation != null) {
       logger.info("Saving module history");
 
       String fileContents = "";
@@ -107,8 +107,12 @@ public class ModuleHistory {
         }
       }
     } else {
-      //todo: give decent error message
-      logger.warn("Save called on empty history. Skipping...");
+      if ( events == null ) {
+        logger.warn("Save called on empty history. Skipping...");
+      } else {
+        logger.warn("Save called on history without a location. Skipping...");
+        throw new ModuleHistoryException(ModuleHistoryException.HISTORY_FILE_LOCATION_NOT_DEFINED);
+      }
     }
   }
 

@@ -18,10 +18,5 @@
         <item name="Refcard generator" href="../plugins/karma-plugin-refcard/"/>
       </item>
     </menu>
-
-    <menu name="Development">
-      <item name="Todo"                  href="/todo.html"/>
-    </menu>
-
   </body>
 </project>

@@ -25,8 +25,15 @@ import junit.framework.TestCase;
  */
 public class TestModuleHistory extends TestCase {
 
-  public void testReadModuleHistory() {
-    assertTrue(true);
+  public void testSaveModuleHistoryEmptyLocation() {
+    ModuleHistory history = new ModuleHistory();
+
+    try {
+      history.save();
+      assertTrue("Expected an exception here, since the location is not set", false);
+    } catch (ModuleHistoryException mhe) {
+      assertTrue(true);
+    }
   }
 
 }
