@@ -62,18 +62,25 @@ public final class MyFileUtils {
    *
    * @param dir Starting directory.
    */
-  public static void makeWriteable(File dir) throws IOException, InterruptedException {
+  public static void makeWriteable(File dir, boolean recurse) throws IOException, InterruptedException {
 
     String osName = System.getProperty("os.name");
-    Process proc = null;
+    String recursive;
+    if (recurse) {
+      recursive = "-R";
+    } else {
+      recursive = "";
+    }
+    String command = "";
     if (osName.toUpperCase().startsWith("WINDOWS")) {
-      proc = Runtime.getRuntime().exec("cmd.exe /c attrib -R " + dir + File.separator + "*.* /S /D");
+      command = "cmd.exe /c attrib "+recursive+" " + dir + File.separator + "*.* /S /D";
     } else if (osName.toUpperCase().startsWith("LINUX")) {
-      proc = Runtime.getRuntime().exec("chmod -Rf u+w " + dir + File.separator);
+      command = "chmod "+recursive+" -f u+w " + dir;
     } else {
       //all os-es other then Windows and Linux.
-      proc = Runtime.getRuntime().exec("chmod -Rf u+w " + dir + File.separator);
+      command = "chmod "+recursive+" -f u+w " + dir;
     }
+    Process proc = Runtime.getRuntime().exec(command);
     proc.waitFor();
   }
 
