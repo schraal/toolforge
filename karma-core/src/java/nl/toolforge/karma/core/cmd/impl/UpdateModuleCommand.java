@@ -133,6 +133,9 @@ public class UpdateModuleCommand extends DefaultCommand {
           throw new CommandException(VersionControlException.MODULE_NOT_IN_REPOSITORY, new Object[]{module.getName(), module.getLocation().getId()});
         }
 
+        //todo check whether the requested version does exist for the module.
+        //(issue#1017785)
+
         runner.checkout(module, version);
 
         // todo message to be internationalized.
