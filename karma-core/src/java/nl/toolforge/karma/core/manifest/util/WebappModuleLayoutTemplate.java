@@ -26,8 +26,6 @@ import java.io.File;
  * <p>Layout for a webapp-module. A web-module has the following directory-structure:
  *
  * <ul>
- * <li/><code>module.info</code>
- * <li/><code>dependencies.xml</code>
  * <li/><code>src/java</code>
  * <li/><code>src/resources</code>
  * <li/><code>test/java</code>
@@ -46,7 +44,6 @@ public final class WebappModuleLayoutTemplate extends BaseModuleLayoutTemplate {
   public FileTemplate[] getFileElements() {
     return new FileTemplate[] {
       new FileTemplate(new File("/templates/cvsignore.template"), new File(".cvsignore")),
-//      new FileTemplate(new File("/templates/module-descriptor.xml_template"), new File(Module.MODULE_DESCRIPTOR)),
       new FileTemplate(new File("/templates/dependencies.xml_template"), new File("dependencies.xml")),
       new FileTemplate(new File("/templates/web.xml_template"), new File("src/web/WEB-INF","web.xml"))
     };

@@ -39,8 +39,7 @@ public final class EappModuleLayoutTemplate extends BaseModuleLayoutTemplate {
   public FileTemplate[] getFileElements() {
     return new FileTemplate[] {
       new FileTemplate(new File("/templates/cvsignore.template"), new File(".cvsignore")),
-      new FileTemplate(new File("/templates/module-descriptor.xml_template"), new File(Module.MODULE_DESCRIPTOR)),
-//      new FileTemplate(new File("/templates/dependencies.xml_template"), new File("dependencies.xml")),
+      new FileTemplate(new File("/templates/dependencies.xml_template"), new File("dependencies.xml")),
       new FileTemplate(new File("/templates/application.xml_template"), new File("src/META-INF", "application.xml"))
     };
   }

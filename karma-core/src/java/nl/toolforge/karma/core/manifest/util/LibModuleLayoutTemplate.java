@@ -18,10 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest.util;
 
-import nl.toolforge.karma.core.manifest.Module;
-
 import java.io.File;
-import java.io.IOException;
 
 /**
  * <p>Layout for a lib-module. A lib-module (implemented by the
@@ -29,6 +26,7 @@ import java.io.IOException;
  * directory-structure:
  *
  * <ul>
+ *   <li><code>lib</code>
  * </ul>
  *
  * @author W.H. Schraal
@@ -41,12 +39,13 @@ public final class LibModuleLayoutTemplate extends BaseModuleLayoutTemplate {
   public FileTemplate[] getFileElements() {
     return new FileTemplate[] {
       new FileTemplate(new File("/templates/cvsignore.template"), new File(".cvsignore")),
-//      new FileTemplate(new File("/templates/module-descriptor.xml_template"), new File(Module.MODULE_DESCRIPTOR)),
     };
   }
 
   public String[] getDirectoryElements() {
-    return new String[] {};
+    return new String[] {
+      "lib"
+    };
   }
 
 }
