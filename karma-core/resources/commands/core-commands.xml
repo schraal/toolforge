@@ -59,11 +59,13 @@
       <option opt="l" longOpt="load-manifest" hasArgs="false" required="false" description="Load the release manifest."/>
       <option opt="o" longOpt="overwrite" hasArgs="false" required="false" description="Force overwrite of the manifest file."/>
       <option opt="u" longOpt="use-latest-promoted-version" hasArgs="false" required="false" description="Use the latest promoted versions of the modules before creating the release manifest."/>
+      <option opt="s" longOpt="store" hasArgs="false" required="false" description="Store the manifest in the repository."/>
     </options>
 
     <classname>nl.toolforge.karma.core.cmd.impl.CreateRelease</classname>
     <help lang="en">
-      Creates a release manifest.
+      Creates a release manifest. The manifest can automatically be placed under version control by using the '-s'
+      option
     </help>
   </command>
 

@@ -36,6 +36,7 @@ import nl.toolforge.karma.core.manifest.ManifestLoader;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.cvsimpl.Utils;
 import nl.toolforge.karma.core.vc.cvsimpl.threads.CVSLogThread;
 import nl.toolforge.karma.core.vc.threads.ParallelRunner;
@@ -129,8 +130,7 @@ public class CreateRelease extends CompositeCommand {
       ModuleStatus moduleStatus = (ModuleStatus) statusOverview.get(module);
 
       if (moduleStatus.connectionFailure()) {
-        
-//        message = new ErrorMessage(LocationException.CONNECTION_EXCEPTION);
+
         getCommandResponse().addEvent(new ErrorEvent(this, LocationException.CONNECTION_EXCEPTION));
         message = new SimpleMessage(getFrontendMessages().getString("message.CREATE_RELEASE_FAILED"));
         getCommandResponse().addEvent(new MessageEvent(this, message));
@@ -189,6 +189,27 @@ public class CreateRelease extends CompositeCommand {
       }
     }
 
+    boolean store = getCommandLine().hasOption("s");
+
+    if (store) {
+      try {
+        getWorkingContext().getConfiguration().getManifestStore().commit(releaseName);
+
+        message = new SimpleMessage(getFrontendMessages().getString("message.RELEASE_COMMITTED"), new Object[]{releaseName});
+        commandResponse.addEvent(new MessageEvent(this, message));
+
+      } catch (AuthenticationException e) {
+        logger.error(e);
+        throw new CommandException(e, e.getErrorCode(), e.getMessageArguments());
+      } catch (VersionControlException e) {
+        logger.error(e);
+        throw new CommandException(e, e.getErrorCode(), e.getMessageArguments());
+      }
+    } else {
+      message = new SimpleMessage(getFrontendMessages().getString("message.RELEASE_NOT_COMMITTED"), new Object[]{releaseName});
+      commandResponse.addEvent(new MessageEvent(this, message));
+    }
+
     message = new SimpleMessage(getFrontendMessages().getString("message.CREATE_RELEASE_FINISHED"), new Object[]{releaseName});
     commandResponse.addEvent(new MessageEvent(this, message));
 
@@ -216,7 +237,6 @@ public class CreateRelease extends CompositeCommand {
   private String getModule(Module module, boolean useRemote) throws CommandException {
 
     String n;
-//    String t;
     String v;
     String l;
 

@@ -34,6 +34,14 @@ public interface Runner {
 
   public void setCommandResponse(CommandResponse response);
 
+  /**
+   * Commits <code>file</code> in the version control system. If <code>file</code> is not yet under version control it
+   * will be added.
+   *
+   * @throws VersionControlException Exceptions related to version control operations.
+   */
+  public void commit(File file) throws VersionControlException;
+
 	/**
 	 * Adds a set of files and/or a set of directories (recursively) to the version control system. Files and directories
    * will be created when they don't exist.
@@ -42,7 +50,7 @@ public interface Runner {
 	 * @param files The filenames that should be added to the version control system repository.
 	 * @param dirs The directory-paths that should be added to the version control system repository.
    *
-   * @throws VersionControlException related to version control operations.
+   * @throws VersionControlException Exceptions related to version control operations.
 	 */
   public void add(Module module, File[] files, File[] dirs) throws VersionControlException;
 

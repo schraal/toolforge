@@ -18,38 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.vc.cvsimpl;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
 import net.sf.sillyexceptions.OutOfTheBlueException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.netbeans.lib.cvsclient.Client;
-import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
-import org.netbeans.lib.cvsclient.command.CommandException;
-import org.netbeans.lib.cvsclient.command.GlobalOptions;
-import org.netbeans.lib.cvsclient.command.add.AddCommand;
-import org.netbeans.lib.cvsclient.command.checkout.CheckoutCommand;
-import org.netbeans.lib.cvsclient.command.commit.CommitCommand;
-import org.netbeans.lib.cvsclient.command.importcmd.ImportCommand;
-import org.netbeans.lib.cvsclient.command.log.LogInformation;
-import org.netbeans.lib.cvsclient.command.log.RlogCommand;
-import org.netbeans.lib.cvsclient.command.tag.TagCommand;
-import org.netbeans.lib.cvsclient.command.update.UpdateCommand;
-import org.netbeans.lib.cvsclient.connection.AuthenticationException;
-import org.netbeans.lib.cvsclient.connection.Connection;
-import org.netbeans.lib.cvsclient.connection.ConnectionFactory;
-import org.netbeans.lib.cvsclient.connection.PServerConnection;
-import org.netbeans.lib.cvsclient.event.CVSListener;
-
 import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.ErrorCode;
 import nl.toolforge.karma.core.KarmaRuntimeException;
@@ -70,6 +39,36 @@ import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.SymbolicName;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.VersionControlSystem;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.netbeans.lib.cvsclient.Client;
+import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
+import org.netbeans.lib.cvsclient.command.CommandException;
+import org.netbeans.lib.cvsclient.command.GlobalOptions;
+import org.netbeans.lib.cvsclient.command.add.AddCommand;
+import org.netbeans.lib.cvsclient.command.checkout.CheckoutCommand;
+import org.netbeans.lib.cvsclient.command.commit.CommitCommand;
+import org.netbeans.lib.cvsclient.command.importcmd.ImportCommand;
+import org.netbeans.lib.cvsclient.command.log.LogInformation;
+import org.netbeans.lib.cvsclient.command.log.RlogCommand;
+import org.netbeans.lib.cvsclient.command.tag.TagCommand;
+import org.netbeans.lib.cvsclient.command.update.UpdateCommand;
+import org.netbeans.lib.cvsclient.connection.AuthenticationException;
+import org.netbeans.lib.cvsclient.connection.Connection;
+import org.netbeans.lib.cvsclient.connection.ConnectionFactory;
+import org.netbeans.lib.cvsclient.connection.PServerConnection;
+import org.netbeans.lib.cvsclient.event.CVSListener;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * <p>Runner class for CVS. Executes stuff on a CVS repository.
@@ -194,6 +193,43 @@ public final class CVSRunner implements Runner {
     } else {
       return ((VersionControlSystem) module.getLocation()).getModuleOffset() + "/" + module.getName();
     }
+  }
+
+  public void commit(File file) throws VersionControlException {
+
+    // todo why not use the add()-method ????
+
+    StandardAdminHandler adminHandler = new StandardAdminHandler();
+
+    boolean isEntry = false;
+
+    try {
+      isEntry = (adminHandler.getEntry(file) != null);
+    } catch (IOException e) {
+      isEntry = false;
+    }
+
+    if (isEntry) {
+
+      CommitCommand commitCommand = new CommitCommand();
+      commitCommand.setFiles(new File[]{file});
+      commitCommand.setMessage("<undocumented> File committed by Karma");
+
+      executeOnCVS(commitCommand, file.getParentFile(), null);
+
+    } else {
+      AddCommand addCommand = new AddCommand();
+      addCommand.setFiles(new File[]{file});
+      
+      executeOnCVS(addCommand, file.getParentFile(), null);
+
+      CommitCommand commitCommand = new CommitCommand();
+      commitCommand.setFiles(new File[]{file});
+      commitCommand.setMessage("<undocumented> File committed by Karma");
+
+      executeOnCVS(commitCommand, file.getParentFile(), null);
+    }
+
   }
 
   public void addModule(Module module, String comment) throws CVSException {
@@ -687,7 +723,7 @@ public final class CVSRunner implements Runner {
       try {
         MyFileUtils.makeWriteable(new File(module.getBaseDir(), "CVS"), false);
         if (history.getHistoryLocation().exists()) {
-           //history already exists. commit changes.
+          //history already exists. commit changes.
           MyFileUtils.makeWriteable(history.getHistoryLocation(), false);
           history.save();
 

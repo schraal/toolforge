@@ -1,6 +1,10 @@
 package nl.toolforge.karma.core.boot;
 
 import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.vc.RunnerFactory;
+import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.manifest.BaseModule;
 import nl.toolforge.karma.core.manifest.Module;
@@ -58,12 +62,26 @@ public final class ManifestStore extends AdminStore {
     if (name.lastIndexOf(File.separator) > 0) {
       name = name.substring(name.lastIndexOf(File.separator) + 1);
     }
-    
+
     module = new ManifestModule(name, getLocation());
     module.setBaseDir(new File(getWorkingContext().getManifestStoreBasedir(), getModuleName()));
-//    module.setCheckoutDir(getWorkingContext().getManifestStoreBasedir());
 
     return module;
+  }
+
+  /**
+   * Commits the manifest file identified by <code>releaseName</code> to the repository. The file
+   *
+   * @param releaseName The name of the release that should be committed.
+   * @throws AuthenticationException
+   * @throws VersionControlException
+   */
+  public void commit(String releaseName) throws AuthenticationException, VersionControlException {
+
+    File file = new File(module.getBaseDir(), releaseName + ".xml");
+
+    Runner runner = RunnerFactory.getRunner(getLocation());
+    runner.commit(file);
   }
 
   protected class ManifestModule extends BaseModule {

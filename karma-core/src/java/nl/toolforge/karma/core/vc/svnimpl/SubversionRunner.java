@@ -41,6 +41,10 @@ public final class SubversionRunner implements Runner {
 
   }
 
+  public void commit(File file) throws VersionControlException {
+
+  }
+
   public void addModule(Module module, String comment) throws CVSException {
 
   }
