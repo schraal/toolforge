@@ -36,7 +36,7 @@ public class TestUtils extends LocalCVSInitializer {
       DevelopmentLine line = module.getPatchLine();
 
       assertEquals(
-          new CVSTag("PATCHLINE|p_" + Version.INITIAL_VERSION.createPatch(0).getVersionNumber()),
+          new CVSTag("PATCHLINE_" + Version.INITIAL_VERSION.createPatch(0).getVersionNumber()),
           Utils.createSymbolicName(module, line, Version.INITIAL_VERSION.createPatch(0))
       );
 

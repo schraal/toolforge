@@ -90,12 +90,12 @@ public class TestDevelopmentLine extends TestCase {
 
     Version version = new Version("0-9");
     PatchLine l1 = new PatchLine(version);
-    assertTrue("PATCHLINE|v_0-9".equals(l1.getName()));
+    assertTrue("PATCHLINE_0-9".equals(l1.getName()));
   }
 
   public void testBla() {
 
-    assertTrue("PATCHLINE|v_0-9".matches("PATCHLINE\\|v_\\d{1,4}-\\d{1,4}"));
+    assertTrue("PATCHLINE_0-9".matches("PATCHLINE_\\d{1,4}-\\d{1,4}"));
   }
 
 }
