@@ -31,69 +31,78 @@ import java.util.Date;
  */
 public class ModuleHistoryEvent {
 
-    /** Module history event type for creating a module */
-    public final static String CREATE_MODULE_EVENT = "Create module";
+  /**
+   * Module history event type for creating a module
+   */
+  public final static String CREATE_MODULE_EVENT = "Create module";
 
-    /** Module history event type for promoting a module */
-    public final static String PROMOTE_MODULE_EVENT = "Promote module";
+  /**
+   * Module history event type for creating a path line
+   */
+  public final static String CREATE_PATCH_LINE_EVENT = "Create patch line";
 
-    private String type = "";
-    private Version version = null;
-    private Date datetime = null;
-    private String author = "";
-    private String comment = "";
+  /**
+   * Module history event type for promoting a module
+   */
+  public final static String PROMOTE_MODULE_EVENT = "Promote module";
 
-    public ModuleHistoryEvent() {
+  private String type = "";
+  private Version version = null;
+  private Date datetime = null;
+  private String author = "";
+  private String comment = "";
+
+  public ModuleHistoryEvent() {
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public void setVersion(Version version) {
+    this.version = version;
+  }
+
+  public void setDatetime(Date datetime) {
+    this.datetime = datetime;
+  }
+
+  public void setAuthor(String author) {
+    this.author = author;
+  }
+
+  public void setComment(String comment) {
+    this.comment = comment;
+  }
+
+  public String toXml() {
+    String s = "\t<event";
+
+    s += " type=\"" + type + "\"";
+    s += " author=\"" + author + "\"";
+    s += " comment=\"" + comment + "\">\n";
+    s += "\t\t<version value=\"" + version + "\"/>\n";
+    s += "\t\t<datetime time=\"" + datetime.getTime() + "\"/>\n";
+    s += "\t</event>\n";
+
+    return s;
+  }
+
+  public String toString() {
+    String s = "[";
+
+    s = s + type;
+    s = s + ", " + version;
+    if (datetime != null) {
+      s = s + ", " + datetime.getTime();
+    } else {
+      s = s + ", " + datetime;
     }
+    s = s + ", " + author;
+    s = s + ", " + comment;
+    s = s + "]";
 
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public void setVersion(Version version) {
-        this.version = version;
-    }
-
-    public void setDatetime(Date datetime) {
-        this.datetime = datetime;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public String toXml() {
-        String s = "\t<event";
-
-        s += " type=\"" + type + "\"";
-        s += " author=\"" + author + "\"";
-        s += " comment=\"" + comment + "\">\n";
-        s += "\t\t<version value=\"" + version + "\"/>\n";
-        s += "\t\t<datetime time=\"" + datetime.getTime() + "\"/>\n";
-        s += "\t</event>\n";
-
-        return s;
-    }
-
-    public String toString() {
-        String s = "[";
-
-        s = s + type;
-        s = s + ", " + version;
-        if (datetime != null) {
-            s = s + ", " + datetime.getTime();
-        } else {
-            s = s + ", " + datetime;
-        }
-        s = s + ", " + author;
-        s = s + ", " + comment;
-        s = s + "]";
-
-        return s;
-    }
+    return s;
+  }
 
 }

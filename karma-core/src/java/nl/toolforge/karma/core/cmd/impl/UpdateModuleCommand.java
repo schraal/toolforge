@@ -162,7 +162,7 @@ public class UpdateModuleCommand extends DefaultCommand {
         } else {
           if (manifest instanceof ReleaseManifest) {
             manifest.setState(module, Module.STATIC);
-            message = new SuccessMessage("Module " + module.getName() + " updated with version " + version.toString() + "; state changed to STATIC.");
+            message = new SuccessMessage("Module " + module.getName() + " updated with version " + version.toString() + "; state set to STATIC.");
           } else {
             if (manifest.getState(module).equals(Module.STATIC)) {
               // The module was static.
@@ -170,7 +170,7 @@ public class UpdateModuleCommand extends DefaultCommand {
               message = new SuccessMessage("Module " + module.getName() + " updated.");
             } else {
               manifest.setState(module, Module.DYNAMIC);
-              message = new SuccessMessage("Module " + module.getName() + " updated with version " + version.toString() + "; state changed to DYNAMIC.");
+              message = new SuccessMessage("Module " + module.getName() + " updated with version " + version.toString() + "; state set to DYNAMIC.");
             }
           }
         }

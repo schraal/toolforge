@@ -530,7 +530,16 @@ public final class CVSRunner implements Runner {
   }
 
   public void createPatchLine(Module module) throws CVSException {
-    tag(module, new CVSTag(module.getPatchLine().getName()), true);
+    try {
+      //Add an event to the module history.
+      String author = ((CVSLocationImpl) module.getLocation()).getUsername();
+      addModuleHistoryEvent(module.getBaseDir(), module, ModuleHistoryEvent.CREATE_PATCH_LINE_EVENT, module.getVersion(), new Date(), author, "Patch line created by Karma");
+
+      tag(module, new CVSTag(module.getPatchLine().getName()), true);
+    } catch (ModuleHistoryException mhe) {
+      logger.error("Writing the history.xml failed", mhe);
+      throw new CVSException(CVSException.MODULE_HISTORY_ERROR, new Object[]{mhe.getMessage()});
+    }
   }
 
   /**
