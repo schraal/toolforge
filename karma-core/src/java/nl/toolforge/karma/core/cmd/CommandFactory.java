@@ -151,8 +151,9 @@ public final class CommandFactory {
         part += chars[j];
         j++;
 
-        while ((j < chars.length) && (chars[j] != ' ')) {
-          // doorlopen totdat een spatie is bereikt
+        while ((j < chars.length) && (chars[j] != ' ') && (chars[j] != '\"')) {
+          // Continue until a space or \" is reached.
+          //
           part += chars[j];
           j++;
         }
