@@ -3,3 +3,6 @@ velocity.log
 target
 test_*
 junit.log
+.classpath
+.project
+.settings

@@ -2,3 +2,6 @@ maven.log
 velocity.log
 target
 junit.log
+.classpath
+.project
+.settings
