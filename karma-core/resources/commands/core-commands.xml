@@ -5,6 +5,28 @@
 <commands>
 
 
+  <command name="create-password" alias="passwd">
+    <description lang="en">Creates an (encrypted) password for a location.</description>
+
+    <options>
+      <option opt="l" longOpt="location" hasArgs="true" required="true" description="The location alias.">
+        <arg>location</arg>
+      </option>
+      <option opt="p" longOpt="password" hasArgs="true" required="true" description="The (CLEARTEXT) password.">
+        <arg>password</arg>
+      </option>
+    </options>
+
+    <classname>nl.toolforge.karma.core.cmd.impl.CreatePassword</classname>
+    <help lang="en">
+      Creates a password for a certain location. The password is stored in $HOME/.karma/.authenticators in an
+      encrypted manner. NOTE : the password is entered as cleartext if the command is used in the Karma console or
+      command-line-interface. An 'offline' tool is available, which can do the same as the command, but then the
+      password info is not shown in the console.
+    </help>
+  </command>
+
+
   <command name="create-release-manifest" alias="cr">
     <description lang="en">Creates a release manifest.</description>
 
@@ -25,7 +47,6 @@
       Creates a release manifest.
     </help>
   </command>
-
 
 
   <command name="package-module" alias="pam">
@@ -59,16 +80,6 @@
     <classname>nl.toolforge.karma.core.cmd.impl.BuildModule</classname>
     <help lang="en"/>
   </command>
-
-
-
-  <command name="build-all-modules" alias="bam">
-    <description lang="en">Builds all modules.</description>
-
-    <classname>nl.toolforge.karma.core.cmd.impl.BuildAllModules</classname>
-    <help lang="en"/>
-  </command>
-
 
   <command name="test-module" alias="tm">
     <description lang="en">Runs the module's unit tests.</description>

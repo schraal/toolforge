@@ -38,6 +38,8 @@ public class AuthenticationException extends Exception {
    * No authenticator entry is configured that matches the location alias (the <code>id</code>-attribute).
    */
   public static final ErrorCode AUTHENTICATOR_NOT_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00005");
+  /** Could not write <code>authenticators.xml</code> */
+  public static final ErrorCode AUTHENTICATOR_WRITE_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00006");
 
   public AuthenticationException(ErrorCode errorCode) {
     this(errorCode, null);

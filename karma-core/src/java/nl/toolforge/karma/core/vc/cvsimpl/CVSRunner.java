@@ -37,7 +37,7 @@ import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.SymbolicName;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.VersionControlSystem;
-import org.apache.commons.io.FileUtils;
+import nl.toolforge.karma.core.vc.Authenticator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.Client;
@@ -48,8 +48,8 @@ import org.netbeans.lib.cvsclient.command.add.AddCommand;
 import org.netbeans.lib.cvsclient.command.checkout.CheckoutCommand;
 import org.netbeans.lib.cvsclient.command.commit.CommitCommand;
 import org.netbeans.lib.cvsclient.command.importcmd.ImportCommand;
-import org.netbeans.lib.cvsclient.command.log.LogCommand;
 import org.netbeans.lib.cvsclient.command.log.LogInformation;
+import org.netbeans.lib.cvsclient.command.log.RlogCommand;
 import org.netbeans.lib.cvsclient.command.tag.TagCommand;
 import org.netbeans.lib.cvsclient.command.update.UpdateCommand;
 import org.netbeans.lib.cvsclient.connection.AuthenticationException;
@@ -103,8 +103,9 @@ public final class CVSRunner implements Runner {
    * @param location       A <code>Location</code> instance (typically a <code>CVSLocationImpl</code> instance), containing
    *                       the location and connection details of the CVS repository.
    * @throws CVSException  <code>AUTHENTICATION_ERROR</code> is thrown when <code>location</code> cannot be authenticated.
+   * @throws nl.toolforge.karma.core.vc.AuthenticationException If the location cannot be authenticated.
    */
-  public CVSRunner(Location location) throws CVSException {
+  public CVSRunner(Location location) throws CVSException, nl.toolforge.karma.core.vc.AuthenticationException {
 
     CVSRepository cvsLocation = null;
     try {
@@ -114,12 +115,11 @@ public final class CVSRunner implements Runner {
       throw new KarmaRuntimeException("Wrong type for location. Should be CVSRepository.", e);
     }
 
-    try {
-      cvsLocation.authenticate();
-    } catch (nl.toolforge.karma.core.vc.AuthenticationException e) {
-      logger.error(e.getMessage());
-      throw new CVSException(CVSException.AUTHENTICATION_ERROR);
-    }
+    //
+    //
+    Authenticator a = cvsLocation.authenticate();
+    cvsLocation.setUsername(a.getUsername());
+    cvsLocation.setPassword(a.getPassword());
 
     connection = ConnectionFactory.getConnection(cvsLocation.getCVSRoot());
     if (connection instanceof PServerConnection) {
@@ -171,147 +171,7 @@ public final class CVSRunner implements Runner {
     importCommand.setReleaseTag("MAINLINE_0-0");
 
     executeOnCVS(importCommand, module.getBaseDir(), null);
-
-    // Step 3 : checkout the module to be able to tag create module.info
-    //
-//    File tmp = null;
-//    try {
-//      tmp = MyFileUtils.createTempDirectory();
-//    } catch (IOException e) {
-//      throw new KarmaRuntimeException("Panic! Failed to create temporary directory.");
-//    }
-
-//    module.setBaseDir(new File(tmp, getOffSetLocation(module)));
-//    module.setCheckoutDir(tmp);
-//
-//    checkout(module, null, null);
-
-//    try {
-//      String author = ((CVSRepository) module.getLocation()).getUsername();
-//      addModuleHistoryEvent(null, module, ModuleHistoryEvent.CREATE_MODULE_EVENT, Version.INITIAL_VERSION, new Date(), author, comment);
-//
-////      tag(module, Version.INITIAL_VERSION);
-//    } catch (ModuleHistoryException mhe) {
-//      //writing the module history failed.
-//      //the module will not be tagged, since it is invalid by default.
-//      logger.error("Creating the module history failed.", mhe);
-//      throw new CVSException(CVSException.MODULE_HISTORY_ERROR, new Object[]{mhe.getMessage()});
-//    }
   }
-
-//  /**
-//   * <p>Creates a module in a CVS repository. This is done through the CVS <code>import</code> command. The basic structure
-//   * of the module directory is defined by the file <code>module-structure.model</code>, which should be available from
-//   * the classpath. If the file cannot be located, a basic structure is created:
-//   * <p/>
-//   * <ul>
-//   * <li/>A directory based on <code>module.getName()</code>.
-//   * <li/>A file in that directory, called <code>module.info</code>.
-//   * </ul>
-//   * <p/>
-//   * <p>After creation, the module is available with the initial version <code>0-0</code>.
-//   *
-//   * @param module The module to be created.
-//   * @throws CVSException Errorcode <code>MODULE_EXISTS_IN_REPOSITORY</code>, when the module already exists on the
-//   *                      location as specified by the module.
-//   */
-//  public void create(Module module, String comment, ModuleLayoutTemplate template) throws CVSException {
-//
-//    // TODO the initial version should also be made configurable, together with the patterns for modulenames et al.
-//
-//    if (existsInRepository(module)) {
-//      throw new CVSException(CVSException.MODULE_EXISTS_IN_REPOSITORY, new Object[]{module.getName(), module.getLocation().getId()});
-//    }
-//
-//    // Step 1 : create an empty module structure
-//    //
-//    ImportCommand importCommand = new ImportCommand();
-//    importCommand.setModule(getOffSetLocation(module));
-//    importCommand.setLogMessage("Module " + module.getName() + " created automatically by Karma on " + new Date().toString());
-//    importCommand.setVendorTag("Karma");
-//    importCommand.setReleaseTag("MAINLINE_0-0");
-//
-//    // Create a temporary structure
-//    //
-//    File tmp = null;
-//    try {
-//      tmp = MyFileUtils.createTempDirectory();
-//    } catch (IOException e) {
-//      throw new KarmaRuntimeException("Panic! Failed to create temporary directory.");
-//    }
-//
-//    File moduleDirectory = new File(tmp, module.getName());
-//    if (!moduleDirectory.mkdir()) {
-//      throw new KarmaRuntimeException("Panic! Failed to create temporary directory for module " + module.getName());
-//    }
-//
-//    executeOnCVS(importCommand, moduleDirectory, null); // Use module as context directory
-//
-//    // Remove the temporary structure.
-//    //
-//    try {
-//      FileUtils.deleteDirectory(tmp);
-//    } catch (IOException e) {
-//      throw new KarmaRuntimeException(e.getMessage());
-//    }
-//
-//    // Step 2 : checkout the module to be able to create module.info
-//    //
-//    try {
-//      tmp = MyFileUtils.createTempDirectory();
-//    } catch (IOException e) {
-//      throw new KarmaRuntimeException("Panic! Failed to create temporary directory.");
-//    }
-//
-//    module.setBaseDir(new File(tmp, getOffSetLocation(module)));
-//    module.setCheckoutDir(tmp);
-//
-//    checkout(module, null, null);
-//
-//    //copy the file templates here
-//    try {
-//      FileTemplate[] fileTemplates = template.getFileElements();
-//      String[] templateFiles = new String[fileTemplates.length];
-//      for (int i = 0; i < fileTemplates.length; i++) {
-//        FileTemplate fileTemplate = fileTemplates[i];
-//        logger.debug("Going to write template '"+fileTemplate.getSource()+"' to '"+fileTemplate.getTarget()+"'.");
-//        Reader input = new BufferedReader(new InputStreamReader(CVSRunner.class.getResourceAsStream(fileTemplate.getSource().toString().replace('\\','/'))));
-//        File outputFile = new File(module.getBaseDir() + File.separator + fileTemplate.getTarget());
-//        outputFile.getParentFile().mkdirs();
-//        outputFile.createNewFile();
-//        FileOutputStream output = new FileOutputStream(outputFile);
-//        while (input.ready()) {
-//          output.write(input.read());
-//        }
-//        templateFiles[i] = fileTemplate.getTarget().getPath();
-//        logger.debug("Wrote template.");
-//      }
-//
-//      add(module, templateFiles, template.getDirectoryElements());
-//    } catch (Exception e) {
-//      logger.error("Copying the templates failed.", e);
-//      throw new CVSException(CVSException.TEMPLATE_CREATION_FAILED);
-//    }
-//
-//    //module has been created. Now, create the module history.
-//    try {
-//      String author = ((CVSRepository) module.getLocation()).getUsername();
-//      addModuleHistoryEvent(null, module, ModuleHistoryEvent.CREATE_MODULE_EVENT, Version.INITIAL_VERSION, new Date(), author, comment);
-//
-//      tag(module, Version.INITIAL_VERSION);
-//    } catch (ModuleHistoryException mhe) {
-//      //writing the module history failed.
-//      //the module will not be tagged, since it is invalid by default.
-//      logger.error("Creating the module history failed.", mhe);
-//      throw new CVSException(CVSException.MODULE_HISTORY_ERROR, new Object[]{mhe.getMessage()});
-//    } finally {
-//      try {
-//        FileUtils.deleteDirectory(tmp);
-//      } catch (IOException e) {
-//        throw new KarmaRuntimeException(e.getMessage());
-//      }
-//    }
-//  }
 
   /**
    * Performs the <code>cvs checkout [-r &lt;symbolic-name&gt;] &lt;module&gt;</code>command for a module.
@@ -577,50 +437,20 @@ public final class CVSRunner implements Runner {
   public LogInformation log(Module module) throws CVSException {
 
     if (!(this.listener instanceof CVSResponseAdapter)) {
-      // This stuff sucks, but is a good reminder.
-      // todo aspects ?
-      //
       throw new KarmaRuntimeException(
           "Due to the way the Netbeans API works, the CVSRunner must be initialized with a 'CommandResponse' object.");
     }
 
-    // Logs are run on a temporary checkout of the module-descriptor.xml of a module.
-    //
-    File tmp = null;
+    Map arguments = new Hashtable();
+    arguments.put("MODULE", module.getName());
+    arguments.put("REPOSITORY", module.getLocation().getId());
 
-    try {
-      tmp = MyFileUtils.createTempDirectory();
+    RlogCommand logCommand = new RlogCommand();
+    logCommand.setModule(getOffSetLocation(module) + "/" + Module.MODULE_DESCRIPTOR);
 
-      Map arguments = new Hashtable();
-      arguments.put("MODULE", module.getName());
-      arguments.put("REPOSITORY", module.getLocation().getId());
-
-      CheckoutCommand checkoutCommand = new CheckoutCommand();
-//      checkoutCommand.setModule(module.getName() + "/" + Module.MODULE_INFO);
-      checkoutCommand.setModule(getOffSetLocation(module) + "/" + Module.MODULE_DESCRIPTOR);
-
-      executeOnCVS(checkoutCommand, tmp, arguments);
-
-      LogCommand logCommand = new LogCommand();
-
-// Determine the location of module.info, relative to where we are.
-//
-// Todo a reference to SourceModule is used here. Verify ...
-//      File moduleInfo = new File(new File(tmp, module.getName()), Module.MODULE_INFO);
-      File moduleInfo = new File(new File(tmp, getOffSetLocation(module)), Module.MODULE_DESCRIPTOR);
-      logCommand.setFiles(new File[]{moduleInfo});
-
-      executeOnCVS(logCommand, new File(tmp, getOffSetLocation(module)), arguments);
-
-    } catch (IOException e) {
-      throw new KarmaRuntimeException("Panic! Failed to create temporary directory for module " + module.getName());
-    } finally {
-      try {
-        FileUtils.deleteDirectory(tmp);
-      } catch (IOException e) {
-        throw new KarmaRuntimeException(e.getMessage());
-      }
-    }
+//    long start = System.currentTimeMillis();
+    executeOnCVS(logCommand, module.getBaseDir().getParentFile(), arguments);
+//    System.out.println("Thread " + this.hashCode() + " took " + (System.currentTimeMillis() - start) + " ms.");
 
     return ((CVSResponseAdapter) this.listener).getLogInformation();
   }
@@ -640,9 +470,16 @@ public final class CVSRunner implements Runner {
     }
   }
 
+  /**
+   * Creates a patchline for the module, given the modules' current version.
+   *
+   * @param module The module.
+   * @throws CVSException When an error occurred during the creation process.
+   */
   public void createPatchLine(Module module) throws CVSException {
     try {
-      //Add an event to the module history.
+      // Add an event to the module history.
+      //
       String author = ((CVSRepository) module.getLocation()).getUsername();
       tag(module, new CVSTag(module.getPatchLine().getName()), true);
 
@@ -665,51 +502,15 @@ public final class CVSRunner implements Runner {
       return false;
     }
 
-    Map arguments = new Hashtable();
-    arguments.put("MODULE", module.getName());
-    arguments.put("REPOSITORY", module.getLocation().getId());
-
-    CheckoutCommand checkoutCommand = new CheckoutCommand();
-//    checkoutCommand.setModule(module.getName() + "/" + Module.MODULE_INFO);
-    checkoutCommand.setModule(getOffSetLocation(module) + "/" + Module.MODULE_DESCRIPTOR);
-
-    File tmp = null;
     try {
-      tmp = MyFileUtils.createTempDirectory();
-    } catch (IOException e) {
-      throw new KarmaRuntimeException("Panic! Failed to create temporary directory for module " + module.getName());
-    }
+      RlogCommand logCommand = new RlogCommand();
+      logCommand.setModule(getOffSetLocation(module));
+      executeOnCVS(logCommand, new File("."), null);
 
-    try {
-      executeOnCVS(checkoutCommand, tmp, arguments);
     } catch (CVSException e) {
-      if (e.getErrorCode().equals(CVSException.MODULE_EXISTS_IN_REPOSITORY)) {
-// If the module already exists in the repository.
-//
-        return true;
-      }
       return false;
     }
-
-    File moduleDirectory = new File(tmp, module.getName());
-
-// todo het volgende is ronduit kutcode ....
-//
-    if (moduleDirectory.exists()) {
-      try {
-        FileUtils.deleteDirectory(tmp);
-      } catch (IOException e) {
-        throw new KarmaRuntimeException(e);
-      }
-      return true;
-    } else {
-      try {
-        FileUtils.deleteDirectory(tmp);
-      } catch (IOException e) {
-        throw new KarmaRuntimeException(e);
-      }
-      return false;
-    }
+    return true;
   }
 
 // todo hmm, do we want his here ??? For the time being ... yes.
@@ -750,6 +551,10 @@ public final class CVSRunner implements Runner {
   private void executeOnCVS(org.netbeans.lib.cvsclient.command.Command command,
                             File contextDirectory, Map args) throws CVSException {
 
+    if (contextDirectory == null) {
+      throw new NullPointerException("Context directory cannot be null.");
+    }
+
     Client client = new Client(getConnection(), new StandardAdminHandler());
     client.setLocalPath(contextDirectory.getPath());
 
@@ -765,23 +570,18 @@ public final class CVSRunner implements Runner {
 
     } catch (CommandException e) {
       logger.debug(e);
-// Trick to get a hold of the exception we threw in the CVSResponseAdapter.
-//
       if (e.getUnderlyingException() instanceof CVSRuntimeException) {
-
-// todo somehow, messagearguments should be added ...
         ErrorCode code = ((CVSRuntimeException) e.getUnderlyingException()).getErrorCode();
         Object[] messageArgs = ((CVSRuntimeException) e.getUnderlyingException()).getMessageArguments();
-
         throw new CVSException(code, messageArgs);
       } else {
         throw new CVSException(CVSException.INTERNAL_ERROR, new Object[]{globalOptions.getCVSRoot()});
       }
     } catch (AuthenticationException e) {
-      throw new CVSException(CVSException.AUTHENTICATION_ERROR, new Object[]{client.getConnection()});
+      throw new CVSException(CVSException.AUTHENTICATION_ERROR, new Object[]{client.getGlobalOptions().getCVSRoot()});
     } finally {
-// See the static block in this class and corresponding documentation.
-//
+      // See the static block in this class and corresponding documentation.
+      //
       try {
         client.getConnection().close();
       } catch (IOException e) {

@@ -86,6 +86,11 @@ public class ParallelRunner {
       }
 
       threads[index].start();
+//      try {
+//        Thread.sleep(50);
+//      } catch (InterruptedException e) {
+//        //
+//      }
       index++;
     }
 

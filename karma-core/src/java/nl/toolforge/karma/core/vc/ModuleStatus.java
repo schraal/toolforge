@@ -60,4 +60,6 @@ public interface ModuleStatus extends RunnerResult {
 
   public boolean connectionFailure();
 
+  public boolean authenticationFailure();
+
 }

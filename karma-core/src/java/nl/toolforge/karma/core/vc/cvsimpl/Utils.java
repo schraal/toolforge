@@ -30,6 +30,7 @@ import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.SymbolicName;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.model.MainLine;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -104,7 +105,12 @@ public final class Utils {
 
     logger.debug("Getting last version for module : " + module.getName());
 
-    Runner runner = RunnerFactory.getRunner(module.getLocation());
+    Runner runner = null;
+    try {
+      runner = RunnerFactory.getRunner(module.getLocation());
+    } catch (AuthenticationException e) {
+      throw new CVSException(e.getErrorCode(), e.getMessageArguments());
+    }
 
     ModuleStatus status = new CVSModuleStatus(module, ((CVSRunner) runner).log(module));
     return status.getLastVersion();
@@ -124,7 +130,12 @@ public final class Utils {
 
   public static boolean existsInRepository(Module module) throws VersionControlException {
 
-    Runner runner = RunnerFactory.getRunner(module.getLocation());
+    Runner runner = null;
+    try {
+      runner = RunnerFactory.getRunner(module.getLocation());
+    } catch (AuthenticationException e) {
+      throw new CVSException(e.getErrorCode(), e.getMessageArguments());
+    }
 
     //todo refactor this logic.
     //the idea now is that the retrieval of status would have given an exception when

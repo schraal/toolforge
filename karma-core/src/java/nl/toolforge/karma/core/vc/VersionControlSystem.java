@@ -45,7 +45,7 @@ public abstract class VersionControlSystem extends BaseLocation {
     super(id, type);
   }
 
-  public abstract void authenticate() throws AuthenticationException;
+  public abstract Authenticator authenticate() throws AuthenticationException;
 
   public void setHost(String host) {
 
@@ -117,7 +117,4 @@ public abstract class VersionControlSystem extends BaseLocation {
   public String getUsername() {
     return username;
   }
-
-  protected abstract String getPassword();
-
 }

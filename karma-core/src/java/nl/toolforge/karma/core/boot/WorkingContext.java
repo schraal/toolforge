@@ -4,6 +4,7 @@ import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.LocationLoader;
+import nl.toolforge.karma.core.location.PasswordScrambler;
 import nl.toolforge.karma.core.manifest.ManifestCollector;
 import nl.toolforge.karma.core.manifest.ManifestLoader;
 import nl.toolforge.karma.core.vc.Authenticator;
@@ -112,6 +113,7 @@ public final class WorkingContext {
 //  public static final String MANIFEST_STORE_OFFSET = "manifest-store.cvs.offset";
   public static final String MANIFEST_STORE_PROTOCOL = "manifest-store.cvs.protocol";
   public static final String MANIFEST_STORE_USERNAME = "manifest-store.cvs.username";
+  public static final String MANIFEST_STORE_PASSWORD = "manifest-store.cvs.password";
 
   public static final String LOCATION_STORE_HOST = "location-store.cvs.host";
   public static final String LOCATION_STORE_PORT = "location-store.cvs.port";
@@ -119,6 +121,7 @@ public final class WorkingContext {
   public static final String LOCATION_STORE_MODULE = "location-store.cvs.module";
   public static final String LOCATION_STORE_PROTOCOL = "location-store.cvs.protocol";
   public static final String LOCATION_STORE_USERNAME = "location-store.cvs.username";
+  public static final String LOCATION_STORE_PASSWORD = "location-store.cvs.password";
 
   /**
    * The property that identifies the local directory where jar dependencies can be found. Dependencies are
@@ -279,6 +282,9 @@ public final class WorkingContext {
       if ((String) configuration.getProperty(MANIFEST_STORE_USERNAME) == null) {
         invalids.add(new ConfigurationItem(MANIFEST_STORE_USERNAME, "What is your login username ?", null));
       }
+      if ((String) configuration.getProperty(MANIFEST_STORE_PASSWORD) == null) {
+        invalids.add(new ConfigurationItem(MANIFEST_STORE_PASSWORD, "What is your login password (WARNING: will be clear text!) ?", null, true));
+      }
     }
     invalidConfiguration.put("MANIFEST-STORE", invalids);
   }
@@ -319,6 +325,9 @@ public final class WorkingContext {
       if ((String) configuration.getProperty(LOCATION_STORE_USERNAME) == null) {
         invalids.add(new ConfigurationItem(LOCATION_STORE_USERNAME, "What is your login username ?", null));
       }
+      if ((String) configuration.getProperty(LOCATION_STORE_PASSWORD) == null) {
+        invalids.add(new ConfigurationItem(LOCATION_STORE_PASSWORD, "What is your login password (WARNING: will be clear text!) ?", null, true));
+      }
     }
     invalidConfiguration.put("LOCATION-STORE", invalids);
   }
@@ -356,8 +365,14 @@ public final class WorkingContext {
 
     // We know we are dealing with VersionControlSystem instances, so we can cast,
     //
-    storeAuthentication("manifest-store", configuration.getProperty(MANIFEST_STORE_USERNAME));
-    storeAuthentication("location-store", configuration.getProperty(LOCATION_STORE_USERNAME));
+    storeAuthentication(
+        "manifest-store",
+        configuration.getProperty(MANIFEST_STORE_USERNAME),
+        configuration.getProperty(MANIFEST_STORE_PASSWORD));
+    storeAuthentication(
+        "location-store",
+        configuration.getProperty(LOCATION_STORE_USERNAME),
+        configuration.getProperty(LOCATION_STORE_PASSWORD));
   }
 
   public class ConfigurationItem {
@@ -365,11 +380,17 @@ public final class WorkingContext {
     private String property = null;
     private String label = null;
     private String defaultValue = null;
+    private boolean scrambled = false;
 
     public ConfigurationItem(String property, String label, String defaultValue) {
+      this(property, label, defaultValue, false);
+    }
+
+    public ConfigurationItem(String property, String label, String defaultValue, boolean scrambled) {
       this.property = property;
       this.label = label;
       this.defaultValue = defaultValue;
+      this.scrambled = scrambled;
     }
 
     public String getProperty() {
@@ -382,6 +403,10 @@ public final class WorkingContext {
 
     public String getDefaultValue() {
       return defaultValue;
+    }
+
+    public boolean isScrambled() {
+      return scrambled;
     }
   }
 
@@ -437,6 +462,11 @@ public final class WorkingContext {
       } catch (Exception e) {
         throw new LocationException(LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_USERNAME+"'"});
       }
+      try {
+        location.setPassword(configuration.getProperty(MANIFEST_STORE_PASSWORD));
+      } catch (Exception e) {
+        throw new LocationException(LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_PASSWORD+"'"});
+      }
     }
 
     return location;
@@ -490,6 +520,11 @@ public final class WorkingContext {
       } catch (Exception e) {
         throw new LocationException(LocationException.INVALID_LOCATION_STORE_LOCATION, new Object[]{"'"+LOCATION_STORE_USERNAME+"'"});
       }
+      try {
+        location.setPassword(configuration.getProperty(LOCATION_STORE_PASSWORD));
+      } catch (Exception e) {
+        throw new LocationException(LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+LOCATION_STORE_PASSWORD+"'"});
+      }
     }
 
     return location;
@@ -500,11 +535,12 @@ public final class WorkingContext {
    * @param id
    * @param userName
    */
-  private void storeAuthentication(String id, String userName) {
+  private void storeAuthentication(String id, String userName, String password) {
 
     Authenticator authenticator = new Authenticator();
     authenticator.setId(id);
     authenticator.setUsername(userName);
+    authenticator.setPassword(password);
 
     authenticator.addAuthenticator(authenticator);
   }

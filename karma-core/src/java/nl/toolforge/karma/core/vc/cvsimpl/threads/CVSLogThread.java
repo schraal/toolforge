@@ -24,6 +24,7 @@ import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSException;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSModuleStatus;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
@@ -71,13 +72,19 @@ public class CVSLogThread extends RunnerThread {
       logger.error(e.getMessage());
       ErrorCode code = e.getErrorCode();
       if (code.equals(LocationException.CONNECTION_EXCEPTION) ||
-          code.equals(CVSException.INVALID_CVSROOT) ||
-          code.equals(CVSException.AUTHENTICATION_ERROR)) {
+          code.equals(CVSException.INVALID_CVSROOT)) {
         ((CVSModuleStatus) moduleStatus).setConnnectionFailure();
       }
       if (code.equals(VersionControlException.MODULE_NOT_IN_REPOSITORY)) {
         moduleStatus.setExistsInRepository(false);
       }
+      if (code.equals(CVSException.AUTHENTICATION_ERROR)) {
+        ((CVSModuleStatus) moduleStatus).setAuthenticationFailure();
+      }
+    } catch (AuthenticationException e) {
+      // todo duplicate with the above. mechanism to be refactored.
+      //
+      ((CVSModuleStatus) moduleStatus).setAuthenticationFailure();
     }
 
     result = moduleStatus;

@@ -68,8 +68,8 @@ public final class TestWorkingContext extends TestCase {
 
     assertEquals(2, ctx.getInvalidConfiguration().size());
 
-    assertEquals(0, ((List) ctx.getInvalidConfiguration().get("MANIFEST-STORE")).size());
-    assertEquals(0, ((List) ctx.getInvalidConfiguration().get("LOCATION-STORE")).size());
+    assertEquals(1, ((List) ctx.getInvalidConfiguration().get("MANIFEST-STORE")).size());
+    assertEquals(1, ((List) ctx.getInvalidConfiguration().get("LOCATION-STORE")).size());
   }
 
   public void testDirectories() {

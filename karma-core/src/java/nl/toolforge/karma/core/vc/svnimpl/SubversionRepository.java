@@ -22,6 +22,7 @@ import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.vc.ManagedFile;
 import nl.toolforge.karma.core.vc.VersionControlSystem;
 import nl.toolforge.karma.core.vc.AuthenticationException;
+import nl.toolforge.karma.core.vc.Authenticator;
 import nl.toolforge.karma.core.location.LocationType;
 
 /**
@@ -37,13 +38,9 @@ public class SubversionRepository extends VersionControlSystem {
 
   public SubversionRepository(String id) {
     super(id, LocationType.SUBVERSION);
-  }  
-
-  public void authenticate() throws AuthenticationException {
-
   }
 
-  protected String getPassword() {
+  public Authenticator authenticate() throws AuthenticationException {
     return null;
   }
 

@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.boot.WorkingContext;
+import nl.toolforge.karma.core.location.PasswordScrambler;
 import org.apache.commons.digester.Digester;
 import org.xml.sax.SAXException;
 
@@ -32,6 +33,7 @@ public final class Authenticator {
 
   private String id = null;
   private String username = null;
+  private String password = null;
 
   public String getId() {
     return id;
@@ -50,12 +52,48 @@ public final class Authenticator {
   }
 
   /**
+   * Returns the password (encrypted) or an empty String if the password is null.
+   *
+   * @return
+   */
+  public String getPassword() {
+    return (password == null ? "" : password);
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
+  public synchronized void changePassword(VersionControlSystem location, String newPassword) throws AuthenticationException {
+
+    if (location == null) {
+      throw new IllegalArgumentException("Location cannot be null.");
+    }
+
+    Map authenticators = getAuthenticators();
+
+    Authenticator authenticator = ((Authenticator) authenticators.get(location.getId()));
+
+    if (authenticator == null) {
+      throw new AuthenticationException(AuthenticationException.AUTHENTICATOR_NOT_FOUND, new Object[]{location.getId()});
+    }
+
+    authenticator.setPassword(PasswordScrambler.scramble(newPassword));
+
+    try {
+      flush(authenticators);
+    } catch (IOException e) {
+      throw new AuthenticationException(AuthenticationException.AUTHENTICATOR_WRITE_ERROR);
+    }
+  }
+
+  /**
    * <p>Authenticates <code>location</code> against <code>authenticators.xml</code> by updating the location with the
    * corresponding username.
    *
    * @param location A <code>VersionControlSystem</code> instance, that requires authentication.
    */
-  public void authenticate(VersionControlSystem location) throws AuthenticationException {
+  public Authenticator authenticate(VersionControlSystem location) throws AuthenticationException {
 
     if (location == null) {
       throw new IllegalArgumentException("Location cannot be null.");
@@ -67,6 +105,8 @@ public final class Authenticator {
       throw new AuthenticationException(AuthenticationException.AUTHENTICATOR_NOT_FOUND, new Object[]{location.getId()});
     }
     location.setUsername(authenticator.getUsername());
+
+    return authenticator;
   }
 
   private Map getAuthenticators() throws AuthenticationException {
@@ -125,13 +165,23 @@ public final class Authenticator {
       return false;
     }
 
-    if (authenticators.containsKey(authenticator.getId())) {
-      return false;
-    }
+//    if (authenticators.containsKey(authenticator.getId())) {
+//      authenticators.remove(authenticator);
+//    }
 
     // Add the authenticator.
     //
     authenticators.put(authenticator.getId(), authenticator);
+
+    try {
+      flush(authenticators);
+    } catch (IOException e) {
+      return false;
+    }
+    return true;
+  }
+
+  private synchronized void flush(Map authenticators) throws IOException {
 
     StringBuffer buffer = new StringBuffer();
 
@@ -139,9 +189,16 @@ public final class Authenticator {
     buffer.append("<authenticators>\n");
 
     for (Iterator i = authenticators.values().iterator(); i.hasNext();) {
-      MessageFormat formatter = new MessageFormat("  <authenticator id=\"{0}\" username=\"{1}\"/>\n");
+      MessageFormat formatter = null;
+
       Authenticator a = (Authenticator) i.next();
-      buffer.append(formatter.format(new String[]{a.getId(), a.getUsername()}));
+      if (a.getPassword() != null) {
+        formatter = new MessageFormat("  <authenticator id=\"{0}\" username=\"{1}\" password=\"{2}\"/>\n");
+        buffer.append(formatter.format(new String[]{a.getId(), a.getUsername(), a.getPassword()}));
+      } else {
+        formatter = new MessageFormat("  <authenticator id=\"{0}\" username=\"{1}\"/>\n");
+        buffer.append(formatter.format(new String[]{a.getId(), a.getUsername()}));
+      }
     }
 
     buffer.append("</authenticators>\n");
@@ -155,16 +212,8 @@ public final class Authenticator {
       writer.write(buffer.toString());
       writer.flush();
 
-      return true;
-
-    } catch (IOException e) {
-      return false;
     } finally {
-      try {
-        writer.close();
-      } catch (IOException e) {
-        return false;
-      }
+      writer.close();
     }
   }
 

@@ -45,8 +45,10 @@ public final class RunnerFactory {
    *
    * @param location The location for which a runner is required.
    * @return A version control system specific <code>Runner</code>.
+   * @throws VersionControlException
+   * @throws AuthenticationException
    */
-  public static Runner getRunner(Location location) throws VersionControlException {
+  public static Runner getRunner(Location location) throws VersionControlException, AuthenticationException {
 
     if (location instanceof CVSRepository) {
       logger.debug("Getting new CVSRunner instance.");

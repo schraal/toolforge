@@ -19,12 +19,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.vc.cvsimpl;
 
 import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.cmd.event.Message;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.event.Message;
 import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.test.LocalCVSInitializer;
+import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.VersionControlException;
 
@@ -48,6 +48,8 @@ public class TestCVSRunner extends LocalCVSInitializer {
 
     } catch (CVSException e) {
       fail(e.getMessage());
+    } catch (AuthenticationException e) {
+      fail(e.getMessage());
     }
   }
 
@@ -61,6 +63,8 @@ public class TestCVSRunner extends LocalCVSInitializer {
     try {
       runner = getTestRunner();
     } catch (CVSException e) {
+      fail(e.getMessage());
+    } catch (AuthenticationException e) {
       fail(e.getMessage());
     }
 
@@ -87,6 +91,8 @@ public class TestCVSRunner extends LocalCVSInitializer {
       runner = getTestRunner();
     } catch (CVSException e) {
       fail(e.getMessage());
+    } catch (AuthenticationException e) {
+      fail(e.getMessage());
     }
 
     try {
@@ -100,6 +106,12 @@ public class TestCVSRunner extends LocalCVSInitializer {
     } catch (VersionControlException c) {
       fail(c.getMessage());
     }
+
+    // The following module does not exist.
+    //
+    Module module = new SourceModule("BLAAT", getTestLocation());
+    module.setBaseDir(new File(""));
+    assertFalse(runner.existsInRepository(module));
   }
 
   public void testCheckoutAndAdd() {
@@ -108,6 +120,8 @@ public class TestCVSRunner extends LocalCVSInitializer {
     try {
       runner = getTestRunner();
     } catch (CVSException e) {
+      fail(e.getMessage());
+    } catch (AuthenticationException e) {
       fail(e.getMessage());
     }
 
@@ -136,6 +150,8 @@ public class TestCVSRunner extends LocalCVSInitializer {
       runner = getTestRunner();
     } catch (CVSException e) {
       fail(e.getMessage());
+    } catch (AuthenticationException e) {
+      fail(e.getMessage());
     }
 
     try {
@@ -162,6 +178,8 @@ public class TestCVSRunner extends LocalCVSInitializer {
       runner = getTestRunner(response);
     } catch (CVSException e) {
       fail(e.getMessage());
+    } catch (AuthenticationException e) {
+      fail(e.getMessage());
     }
 
     try {
@@ -185,6 +203,8 @@ public class TestCVSRunner extends LocalCVSInitializer {
     try {
       runner = getTestRunner(response);
     } catch (CVSException e) {
+      fail(e.getMessage());
+    } catch (AuthenticationException e) {
       fail(e.getMessage());
     }
 

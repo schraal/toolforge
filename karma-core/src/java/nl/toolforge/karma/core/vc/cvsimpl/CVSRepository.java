@@ -19,23 +19,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.vc.cvsimpl;
 
 import nl.toolforge.core.util.net.Ping;
-import nl.toolforge.karma.core.location.BaseLocation;
-import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.LocationType;
-import nl.toolforge.karma.core.vc.VersionControlSystem;
 import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.Authenticator;
+import nl.toolforge.karma.core.vc.VersionControlSystem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.netbeans.lib.cvsclient.connection.Connection;
-import org.netbeans.lib.cvsclient.connection.ConnectionFactory;
-import org.netbeans.lib.cvsclient.connection.PServerConnection;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Locale;
 
 /**
  * <p>Class representing a location to a CVS repository. This class is not the 'real' connection, as that is handled
@@ -56,8 +50,9 @@ public class CVSRepository extends VersionControlSystem {
   public static final String LOCAL = "local";
   public static final String EXT = "ext";
   public static final String PSERVER = "pserver";
-
   private String password = null;
+
+//  private String password = null;
 
   public CVSRepository(String id) {
     super(id, LocationType.CVS);
@@ -76,69 +71,23 @@ public class CVSRepository extends VersionControlSystem {
     }
   }
 
-  public void authenticate() throws AuthenticationException {
+  public Authenticator authenticate() throws AuthenticationException {
 //    if (PSERVER.equals(getProtocol())) {
-      Authenticator authenticator = new Authenticator();
-      authenticator.authenticate(this);
+    Authenticator authenticator = new Authenticator();
+    return authenticator.authenticate(this);
 //    }
   }
 
-  /**
-   * Tries to locate the (scrambled) password in <code>$HOME/.cvspass</code>.
-   *
-   * @return The password for this CVS repository.
-   */
-  public String getPassword() {
-
-    if (password == null) {
-      password = lookupPassword();
-    }
-    return password;
+  public void setPassword(String password) {
+    this.password = password;
   }
 
-  // Copied from the netbeans api.
-  //
-  private String lookupPassword() {
-
-    BufferedReader reader = null;
-    String password = null;
-    String cvsRoot = null;
-
-    try {
-
-      cvsRoot = getCVSRoot();
-      String passFile = System.getProperty("user.home") + File.separator + ".cvspass";
-
-      reader = null;
-
-      reader = new BufferedReader(new FileReader(passFile));
-      String line;
-      while ((line = reader.readLine()) != null) {
-        if (line.startsWith("/1 ")) line = line.substring("/1 ".length());
-        if (line.startsWith(cvsRoot)) {
-          password = line.substring(cvsRoot.length() + 1);
-          break;
-        }
-      }
-    }
-    catch (IOException e) {
-      logger.error("Could not read password for CVS host: " + e);
-      return null;
-    } catch (CVSException e) {
-      return null;
-    } finally {
-      if (reader != null) {
-        try {
-          reader.close();
-        }
-        catch (IOException e) {
-          logger.error("Warning: could not close password file.");
-        }
-      }
-    }
-    if (password == null) {
-      logger.error("Didn't find password for CVSROOT '" + cvsRoot + "'.");
-    }
+  /**
+   * Returns the encrypted password.
+   *
+   * @return
+   */
+  public String getPassword() {
     return password;
   }
 
@@ -224,5 +173,4 @@ public class CVSRepository extends VersionControlSystem {
     }
     return buffer.toString();
   }
-
 }
