@@ -225,6 +225,16 @@
   </command>
 
 
+  <command name="view-module-history" alias="vmh">
+    <description lang="en">Shows the history af the given module.</description>
+
+    <options/>
+
+    <classname>nl.toolforge.karma.core.cmd.impl.ViewModuleHistory</classname>
+    <help/>
+  </command>
+
+
   <command name="create-module" alias="crm">
     <description lang="en">Creates a module (optionally includes it in the manifest as well).</description>
 

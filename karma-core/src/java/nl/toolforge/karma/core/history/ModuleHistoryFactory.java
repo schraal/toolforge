@@ -67,7 +67,7 @@ public class ModuleHistoryFactory {
    * @param module  The module for which to retrieve the module history.
    * @return ModuleHistory of the given module or null when no module history can be found or created.
    */
-  public ModuleHistory getModuleHistory(Module module) {
+  public ModuleHistory getModuleHistory(Module module) throws ModuleHistoryException {
     ModuleHistory moduleHistory = null;
 
     try {
@@ -98,12 +98,10 @@ public class ModuleHistoryFactory {
 
     } catch (IOException ioe) {
       logger.error(ioe);
-      ioe.printStackTrace();
-      //todo: fatsoenlijke foutmelding geven
+      throw new ModuleHistoryException("history.xml could not be read");
     } catch (SAXException se) {
       logger.error(se);
-      se.printStackTrace();
-      //todo: fatsoenlijke foutmelding geven
+      throw new ModuleHistoryException("history.xml is invalid");
     }
     return moduleHistory;
   }

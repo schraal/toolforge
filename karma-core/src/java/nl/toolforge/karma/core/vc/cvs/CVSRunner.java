@@ -27,6 +27,7 @@ import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.history.ModuleHistory;
 import nl.toolforge.karma.core.history.ModuleHistoryEvent;
 import nl.toolforge.karma.core.history.ModuleHistoryFactory;
+import nl.toolforge.karma.core.history.ModuleHistoryException;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
@@ -196,7 +197,6 @@ public final class CVSRunner implements Runner {
     } catch (IOException e) {
       throw new KarmaRuntimeException("Panic! Failed to create temporary directory.");
     }
-//    module.setBaseDir(new File(tmp)); //todo hmm.
     module.setBaseDir(new File(tmp, module.getName()));
 
     checkout(module, null, null);
@@ -204,15 +204,22 @@ public final class CVSRunner implements Runner {
     add(module, template.getFileElements(), template.getDirectoryElements());
 
     //module has been created. Now, create the module history.
-    String author = ((CVSLocationImpl) module.getLocation()).getUsername();
-    addModuleHistoryEvent(module.getBaseDir(), module, ModuleHistoryEvent.CREATE_MODULE_EVENT, Version.INITIAL_VERSION, new Date(), author, comment);
-
-    tag(module, Version.INITIAL_VERSION);
-
     try {
-      FileUtils.deleteDirectory(tmp);
-    } catch (IOException e) {
-      throw new KarmaRuntimeException(e.getMessage());
+      String author = ((CVSLocationImpl) module.getLocation()).getUsername();
+      addModuleHistoryEvent(module.getBaseDir(), module, ModuleHistoryEvent.CREATE_MODULE_EVENT, Version.INITIAL_VERSION, new Date(), author, comment);
+
+      tag(module, Version.INITIAL_VERSION);
+    } catch (ModuleHistoryException mhe) {
+      //writing the module history failed.
+      //the module will not be tagged, since it is invalid by default.
+      logger.error("Creating the module history failed.", mhe);
+      throw new CVSException(CVSException.MODULE_HISTORY_ERROR, new Object[]{mhe.getMessage()});
+    } finally {
+      try {
+        FileUtils.deleteDirectory(tmp);
+      } catch (IOException e) {
+        throw new KarmaRuntimeException(e.getMessage());
+      }
     }
   }
 
@@ -330,7 +337,7 @@ public final class CVSRunner implements Runner {
     // Step 1 : Add the file to the CVS repository
     //
     AddCommand addCommand = new AddCommand();
-    addCommand.setMessage("Initial checkin in repository.");
+    addCommand.setMessage("Initial checkin in repository by Karma.");
 
     File modulePath = module.getBaseDir();
 
@@ -417,11 +424,16 @@ public final class CVSRunner implements Runner {
 
   public void promote(Module module, String comment, Version version) throws CVSException {
 
-    //Add an event to the module history.
-    String author = ((CVSLocationImpl) module.getLocation()).getUsername();
-    addModuleHistoryEvent(module.getBaseDir(), module, ModuleHistoryEvent.PROMOTE_MODULE_EVENT, version, new Date(), author, comment);
+    try {
+      //Add an event to the module history.
+      String author = ((CVSLocationImpl) module.getLocation()).getUsername();
+      addModuleHistoryEvent(module.getBaseDir(), module, ModuleHistoryEvent.PROMOTE_MODULE_EVENT, version, new Date(), author, comment);
 
-    tag(module, version);
+      tag(module, version);
+    } catch (ModuleHistoryException mhe) {
+      logger.error("Writing the history.xml failed", mhe);
+      throw new CVSException(CVSException.MODULE_HISTORY_ERROR, new Object[]{mhe.getMessage()});
+    }
   }
 
   private void tag(Module module, Version version) throws CVSException {
@@ -683,10 +695,9 @@ public final class CVSRunner implements Runner {
       Version version,
       Date datetime,
       String author,
-      String comment) throws CVSException
+      String comment) throws CVSException, ModuleHistoryException
   {
     ModuleHistoryFactory factory = ModuleHistoryFactory.getInstance(moduleCheckoutLocation);
-//    ModuleHistory history = factory.getModuleHistory(module.getName());
     ModuleHistory history = factory.getModuleHistory(module);
     if (history != null) {
       ModuleHistoryEvent event = new ModuleHistoryEvent();
@@ -698,12 +709,10 @@ public final class CVSRunner implements Runner {
       history.addEvent(event);
       if (history.getHistoryLocation().exists()) {
         //history already exists. commit changes.
-        //todo: add comment
         history.save();
-        commit(module, "");
+        commit(module, "History updated by Karma");
       } else {
         //history did not exist yet. add to CVS and commit it.
-        //todo: add comment
         history.save();
         add(module, new String[]{history.getHistoryLocation().getName()}, null);
       }
