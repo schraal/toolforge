@@ -236,7 +236,8 @@ public final class CVSRunner implements Runner {
       String[] templateFiles = new String[fileTemplates.length];
       for (int i = 0; i < fileTemplates.length; i++) {
         FileTemplate fileTemplate = fileTemplates[i];
-        Reader input = new BufferedReader(new InputStreamReader(CVSRunner.class.getResourceAsStream(fileTemplate.getSource().toString())));
+        logger.debug("Going to write template '"+fileTemplate.getSource()+"' to '"+fileTemplate.getTarget()+"'.");
+        Reader input = new BufferedReader(new InputStreamReader(CVSRunner.class.getResourceAsStream(fileTemplate.getSource().toString().replace('\\','/'))));
         File outputFile = new File(module.getBaseDir() + File.separator + fileTemplate.getTarget());
         outputFile.getParentFile().mkdirs();
         outputFile.createNewFile();
@@ -245,11 +246,12 @@ public final class CVSRunner implements Runner {
           output.write(input.read());
         }
         templateFiles[i] = fileTemplate.getTarget().getPath();
+        logger.debug("Wrote template.");
       }
 
       add(module, templateFiles, template.getDirectoryElements());
     } catch (Exception e) {
-      logger.error(e);
+      logger.error("Copying the templates failed.", e);
       throw new CVSException(CVSException.TEMPLATE_CREATION_FAILED);
     }
 
@@ -446,7 +448,9 @@ public final class CVSRunner implements Runner {
     for (i=0; i < dirs.length; i++) {
       File dirToAdd = new File(modulePath, dirs[i]);
 
-      if (!dirToAdd.mkdirs()) {
+      //try to create the dirs
+      if (!dirToAdd.mkdirs() && !dirToAdd.exists()) {
+        //failed to create the dirs and they do not exist yet.
         throw new KarmaRuntimeException("Error while creating module layout for module " + module.getName());
       }
       logger.debug("Created directory " + dirs[i] + " for module " + module.getName() + ".");
