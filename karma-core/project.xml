@@ -63,7 +63,7 @@
         <role>Developer</role>
       </roles>
     </developer>
-    <contributor>
+    <developer>
       <name>Age Mooy</name>
       <id>amooy</id>
       <email>age.mooy@gmail.com</email>
@@ -72,7 +72,7 @@
         <role>Developer</role>
         <role>Windows testing</role>
       </roles>
-    </contributor>
+    </developer>
   </developers>
 
   <contributors>
