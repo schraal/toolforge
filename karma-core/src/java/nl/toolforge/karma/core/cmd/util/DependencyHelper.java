@@ -18,15 +18,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.util;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import net.sf.sillyexceptions.OutOfTheBlueException;
-
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.manifest.Manifest;
@@ -233,26 +238,28 @@ public final class DependencyHelper {
    * stored in the build directory of the given module.
    * </p>
    */
-  public void createModuleDependenciesFilter(Module module) throws DependencyException {
-    BuildEnvironment env = new BuildEnvironment(manifest, module);
-
-    FileWriter write1 = null;
+  public File createModuleDependenciesFilter(Module module) throws DependencyException {
+    BuildEnvironment env                = new BuildEnvironment(manifest, module);
+    File             moduleBuildDir     = env.getModuleBuildDirectory();
+    File             archivesProperties = new File(moduleBuildDir, MODULE_DEPENDENCIES_PROPERTIES);
+    Writer           writer             = null;
+    
     try {
-      Set moduleDeps = module.getDependencies();
-      Iterator it = moduleDeps.iterator();
-
-      File moduleBuildDir = env.getModuleBuildDirectory();
+      ModuleDependency dep = null;
+      Module           mod = null;
+      
       moduleBuildDir.mkdirs();
-      File archivesProperties = new File(moduleBuildDir, MODULE_DEPENDENCIES_PROPERTIES);
       archivesProperties.createNewFile();
-      write1 = new FileWriter(archivesProperties);
+      
+      writer = new BufferedWriter(new FileWriter(archivesProperties));
 
-      while (it.hasNext()) {
-        ModuleDependency dep = (ModuleDependency) it.next();
+      for (Iterator it = module.getDependencies().iterator(); it.hasNext(); ) {
+        dep = (ModuleDependency) it.next();
+        
         if (dep.isModuleDependency()) {
-          Module mod = manifest.getModule(dep.getModule());
+          mod = manifest.getModule(dep.getModule());
 
-          write1.write(mod.getName()+"="+resolveArtifactName(mod)+"\n");
+          writer.write(mod.getName() + "=" + resolveArtifactName(mod) + "\n");
         }
       }
     } catch (ManifestException me) {
@@ -261,11 +268,15 @@ public final class DependencyHelper {
       ioe.printStackTrace();
     } finally {
       try {
-        write1.close();
+        writer.close();
       } catch (Exception e) {
         throw new OutOfTheBlueException("Unexpected exception when closing file writer.", e);
       }
     }
+    
+    // todo should this method (re)throw exceptions if things go wrong instead of swallowing them like it does now ?
+    
+    return archivesProperties;
   }
 
   /**
@@ -509,4 +520,126 @@ public final class DependencyHelper {
     return currentSet;
   }
 
+  
+  
+  // =========================================================================
+  
+  
+   
+   // todo Add support for recognizing "doubles" in jar dependencies, ie dependencies with the same name but a different version
+  
+  
+  /**
+   * Method to determine the correct build order for the specifid module based on
+   * its module dependencies. It uses a recursive helper method to traverse the
+   * dependency graph.
+   * 
+   * @param module
+   * @return
+   * @throws DependencyException
+   */
+  public List getModuleBuildOrder(Module module) throws DependencyException {
+    List toBeExamined = new ArrayList();
+    List buildOrder   = new ArrayList();
+   
+    toBeExamined.add(module.getName()); // must be by name because dependencies only contain a name.
+   
+    calculateModuleBuildOrder(toBeExamined, buildOrder, new ArrayList());
+   
+    return Collections.unmodifiableList(buildOrder);
+  }
+
+  /**
+   * Recursive helper method to traverse the dependency graph of a module.
+   * It should be called with the <code>toBeExamined</code> List containing
+   * the name of the module that needs to be build/tested/packaged and empty
+   * lists as the other two arguments.  
+   * 
+   * @param toBeExamined The list of modules to be examined.
+   * @param buildOrder The list containing the build order calculated until now
+   * @param currentPath The list describing the current recursion path.
+   */
+  private void calculateModuleBuildOrder(List toBeExamined, List buildOrder, List currentPath) throws DependencyException {
+    String           moduleName           = null;
+    String           dependencyModuleName = null;
+    Module           module               = null;
+    Set              moduleDependencies   = null;
+    ModuleDependency dependency           = null;
+    
+    while (! (toBeExamined.size() == 0)) {
+      moduleName         = (String) toBeExamined.remove(toBeExamined.size() - 1);
+      module             = getModuleFromManifest(moduleName);
+      moduleDependencies = module.getDependencies();
+      
+      currentPath.add(moduleName);
+      
+      for (Iterator iterator = moduleDependencies.iterator(); iterator.hasNext();) {
+        dependency = (ModuleDependency) iterator.next();
+        
+        if (dependency.isModuleDependency()) {
+          dependencyModuleName = dependency.getModule();
+          
+          if (! buildOrder.contains(dependencyModuleName)) {
+	          if (currentPath.contains(dependencyModuleName)) {
+	            throwCircularDependencyException(currentPath, dependencyModuleName);
+	          }
+	          
+	          toBeExamined.add(dependencyModuleName);
+	          
+	          calculateModuleBuildOrder(toBeExamined, buildOrder, currentPath);
+          }
+        }
+      }
+      
+      currentPath.remove(moduleName);
+      buildOrder.add(moduleName);
+    }
+  }
+  
+  
+  /**
+   * Helper method to get the specified module from the manifest while translating
+   * any ManifestExceptions that might be thrown to a DependencyException.
+   * 
+   * @param moduleName The name of the module to be gotten from the manifest
+   * @return the module instance from the manifest.
+   * @throws DependencyException if the module name does not match any module in the current manifest.
+   */
+  private Module getModuleFromManifest(String moduleName) throws DependencyException {
+    Module module = null;
+    
+    try {
+      module = manifest.getModule(moduleName);
+    }
+    catch (ManifestException e) {
+      throw new DependencyException(DependencyException.MODULE_NOT_IN_MANIFEST, e.getMessageArguments());
+    }
+    
+    return module;
+  }
+  
+  /**
+   * Helper method to throw a circular dependency with a nicely formatted String
+   * representation of the circular dependency that was detected.
+   * 
+   * @param currentPath A list containg the full dependency path up to the point
+   *                    when the circular dependency was detected
+   * @param moduleName  The name of the module that closes the circular dependency
+   * @throws DependencyException the actual DependencyException with the CIRCULAR_DEPENDENCY
+   *                              error code and a an object[] containing the description
+   *                              of the circular dependency. 
+   */
+  private void throwCircularDependencyException(List currentPath, String moduleName) throws DependencyException {
+    StringBuffer path = new StringBuffer();
+    
+    for (int i = currentPath.indexOf(moduleName), s = currentPath.size(); i< s; i++) {
+      path.append(currentPath.get(i));
+      path.append(" --> ");
+    }
+    
+    path.append(moduleName);
+    
+    throw new DependencyException(DependencyException.CIRCULAR_DEPENDENCY, new Object[] {path.toString()});
+  }
+  
 }

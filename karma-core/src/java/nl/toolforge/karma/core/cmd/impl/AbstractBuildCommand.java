@@ -191,11 +191,13 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
       //todo: this has to be configurable
       String logLevel = System.getProperty("antloglevel", "");
       int antLogLevel = Project.MSG_WARN;
+      
       if (logLevel.equalsIgnoreCase("debug")) {
         antLogLevel = Project.MSG_DEBUG;
       } else if (logLevel.equalsIgnoreCase("info")) {
         antLogLevel = Project.MSG_INFO;
       }
+      
       logger.setMessageOutputLevel(antLogLevel);
 
       // Configure underlying ant to run a command.

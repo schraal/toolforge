@@ -35,6 +35,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.taskdefs.Copy;
 import org.apache.tools.ant.taskdefs.Ear;
+import org.apache.tools.ant.taskdefs.Echo;
 import org.apache.tools.ant.taskdefs.Jar;
 import org.apache.tools.ant.taskdefs.War;
 import org.apache.tools.ant.taskdefs.Zip;
@@ -289,51 +290,91 @@ public class PackageModule extends AbstractBuildCommand {
   }
 
   private void packageJar(File packageName) throws CommandException {
-
     try {
       Project project = getProjectInstance();
 
       commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Packaging...")));
+      
       Target target = new Target();
       target.setName("jar");
       target.setProject(project);
 
       project.addTarget(target);
+      
       Jar jar = (Jar) project.createTask("jar");
+      
       jar.setProject(getProjectInstance());
       jar.setDestFile(packageName);
-
-      //resources
+      jar.setExcludes("*.jar");
+      
+      // META-INF
+      // If the module has a MANIFEST.MF file, this file will be copied
+      // using a filter to replace any dependency placeholders with their
+      // "versioned" names to create a valid jar manifest.
+      if (new File(getCurrentModule().getBaseDir(), "src/META-INF/MANIFEST.MF").exists()) {
+        DependencyHelper helper          = new DependencyHelper(getCurrentManifest());
+        Copy             copyMetaInf     = (Copy) project.createTask("copy");
+        FilterSet        filterSet       = copyMetaInf.createFilterSet();
+        FileSet          fileSet         = new FileSet();
+        Target           enhanceManifest = new Target();
+        
+        fileSet.setDir(new File(getCurrentModule().getBaseDir(), "src"));
+        fileSet.setIncludes("META-INF/MANIFEST.MF");
+        
+        filterSet.setFiltersfile(helper.createModuleDependenciesFilter(module));
+        
+        copyMetaInf.setProject(getProjectInstance());
+        copyMetaInf.setTodir(getBuildEnvironment().getModulePackageDirectory());
+        copyMetaInf.setOverwrite(true);
+        copyMetaInf.setIncludeEmptyDirs(false);
+        copyMetaInf.addFileset(fileSet);
+        
+        enhanceManifest.setName("enhance-manifest");
+        enhanceManifest.setProject(project);
+        enhanceManifest.addTask(copyMetaInf);
+        
+        project.addTarget(enhanceManifest);
+        project.executeTarget("enhance-manifest");
+        
+        jar.setManifest(new File(getBuildEnvironment().getModulePackageDirectory(), "META-INF/MANIFEST.MF"));
+      }
+      
+      FileSet metainf = new FileSet();
+      
+      metainf.setDir(new File(getCurrentModule().getBaseDir(), "src"));
+      metainf.setIncludes("META-INF/**/*");
+      metainf.setExcludes("META-INF/MANIFEST.MF");
+      
+      jar.addFileset(metainf);
+      
+      // resources
       if (new File(getCurrentModule().getBaseDir(), "src/resources").exists()) {
         FileSet resources = new FileSet();
         resources.setDir(new File(getCurrentModule().getBaseDir(), "src/resources"));
         resources.setIncludes("**/*");
         jar.addFileset(resources);
       }
-      //META-INF
-      if (new File(getCurrentModule().getBaseDir(), "src").exists()) {
-        FileSet metainf = new FileSet();
-        metainf.setDir(new File(getCurrentModule().getBaseDir(), "src"));
-        metainf.setIncludes("META-INF/**");
-        jar.addFileset(metainf);
-      }
-      //.class files
+      
+      // .class files
       if (getCompileDirectory().exists()) {
         FileSet classes = new FileSet();
+        
         classes.setDir(getCompileDirectory());
         classes.setIncludes("**/*.class");
+        
         jar.addFileset(classes);
       }
 
-      jar.setExcludes("*.jar");
       target.addTask(jar);
 
-      project.executeTarget("jar");
-    } catch (BuildException e) {
+      project.executeTarget("jar");      
+    } catch (Exception e) {
       e.printStackTrace();
+      
       if (logger.isDebugEnabled()) {
         commandResponse.addEvent(new ExceptionEvent(this, e));
       }
+      
       throw new CommandException(e, CommandException.PACKAGE_FAILED, new Object[] {getCurrentModule().getName()});
     }
 
@@ -472,21 +513,20 @@ public class PackageModule extends AbstractBuildCommand {
       copyMetaInf.setOverwrite(true);
       copyMetaInf.setIncludeEmptyDirs(false);
 
+      // Filtering
+      FilterSet filterSet = copyMetaInf.createFilterSet();
+      filterSet.setFiltersfile(helper.createModuleDependenciesFilter(module));
+
       FileSet fileSet = new FileSet();
       fileSet.setDir(new File(getCurrentModule().getBaseDir(), "src"));
       fileSet.setIncludes("META-INF/**");
-
-      // Filtering
-      //
-      helper.createModuleDependenciesFilter(module);
-      FilterSet filterSet = copyMetaInf.createFilterSet();
-      filterSet.setFiltersfile(new File(getBuildEnvironment().getModuleBuildDirectory(), DependencyHelper.MODULE_DEPENDENCIES_PROPERTIES));
-
+      
       copyMetaInf.addFileset(fileSet);
       target.addTask(copyMetaInf);
 
       //copy the module dependencies from the application.xml
       commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Copying module dependencies")));
+      
       Set moduleDeps = helper.getModuleDependencies(getCurrentModule(), false, true);
       if (!moduleDeps.isEmpty()) {
         Copy copy = (Copy) project.createTask("copy");

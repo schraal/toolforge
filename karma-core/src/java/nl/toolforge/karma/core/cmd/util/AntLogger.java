@@ -50,6 +50,7 @@ public class AntLogger extends DefaultLogger {
     //todo: find out which command(s) use these settings and refactor them.
     messagePrefixes.add("Compiling");
     messagePrefixes.add("TEST");
+    
     taskNames.add("javadoc"); // <javadoc>
     taskNames.add("javac"); // <javac>
 
@@ -86,7 +87,6 @@ public class AntLogger extends DefaultLogger {
    * @param event
    */
   public void messageLogged(BuildEvent event) {
-
     int priority = event.getPriority();
 
     if (priority <= msgOutputLevel) {
