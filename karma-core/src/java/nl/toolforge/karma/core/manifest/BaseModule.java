@@ -294,7 +294,7 @@ public abstract class BaseModule implements Module {
     try {
       FileUtils.deleteDirectory(tmpDir);
     } catch (IOException e) {
-      throw new KarmaRuntimeException("Could not remove temporary directory.");
+      logger.error("Could not remove temporary directory.", e);
     }
   }
 
