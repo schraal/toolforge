@@ -8,7 +8,6 @@
   <id>project-docs</id>
   <inceptionYear>2004</inceptionYear>
   <currentVersion>1.0</currentVersion>
-<!--  <package>nl.toolforge.karma.core</package>-->
   <siteAddress>ssh.sf.net</siteAddress>
   <siteDirectory>/home/groups/t/to/toolforge/htdocs/project-docs</siteDirectory>
   <organization>
