@@ -85,14 +85,14 @@ public class DescriptorReader {
 
     Digester digester = new Digester();
     digester.setValidating(false);   //todo: dit moet true worden
-    digester.addObjectCreate("application", "java.template.ArrayList");
-    digester.addObjectCreate("application/module/ejb", "java.lang.StringBuffer");
+    digester.addObjectCreate("application", ArrayList.class);
+    digester.addObjectCreate("application/module/ejb", StringBuffer.class);
     digester.addCallMethod("application/module/ejb", "append", 0);
     digester.addSetNext("application/module/ejb", "add", "java.lang.StringBuffer");
-    digester.addObjectCreate("application/module/java", "java.lang.StringBuffer");
+    digester.addObjectCreate("application/module/java", StringBuffer.class);
     digester.addCallMethod("application/module/java", "append", 0);
     digester.addSetNext("application/module/java", "add", "java.lang.StringBuffer");
-    digester.addObjectCreate("application/module/web/web-uri", "java.lang.StringBuffer");
+    digester.addObjectCreate("application/module/web/web-uri", StringBuffer.class);
     digester.addCallMethod("application/module/web/web-uri", "append", 0);
     digester.addSetNext("application/module/web/web-uri", "add", "java.lang.StringBuffer");
 

@@ -18,16 +18,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.scm.maven;
 
-import nl.toolforge.karma.core.KarmaException;
-import org.apache.commons.digester.Digester;
-import org.xml.sax.SAXException;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+
+import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.digester.Digester;
+import org.xml.sax.SAXException;
+import nl.toolforge.karma.core.KarmaException;
 
 
 /**
@@ -50,7 +52,7 @@ public class MavenDependencyReader {
 
     Digester digester = new Digester();
 
-    digester.addObjectCreate("project", "java.template.ArrayList");
+    digester.addObjectCreate("project", ArrayList.class);
     digester.addObjectCreate("project/dependencies/dependency", "org.apache.maven.project.Dependency");
 
     digester.addCallMethod("project/dependencies/dependency/Id", "setId", 1);
