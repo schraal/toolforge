@@ -8,7 +8,36 @@
   <body>
     <section name="Other modules">
       <p>
+        Module type to be used when none of the others match. This is typically
+        the case when you want to use Karma for version control only, not for
+        building your source code, e.g.
+        <br/>
+        Modules of this type can not be build or tested. When packaging a module of
+        this type a <code>.zip</code> file will be generated containing the contents
+        of the module.
       </p>
     </section>
- </body>
+    <section name="Layout">
+      <p>
+        <table>
+          <tr>
+            <th>Source</th>
+            <th>Build</th>
+            <th>Package</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td>/*</td>
+            <td>-</td>
+            <td>/*</td>
+            <td>
+              All files, except the Karma system files, are included 1-to-1 into
+              the <code>.zip</code> file that is generated when packaging a module
+              of this type.
+            </td>
+          </tr>
+        </table>
+      </p>
+    </section>
+  </body>
 </document>

@@ -14,13 +14,9 @@
       </p>
       <subsection name="Module name">
         <p>
-          A module name must be composed from the characters:
-          <ul>
-            <li>A-Z</li>
-            <li>a-z</li>
-            <li>-</li>
-            <li>0-9</li>
-          </ul>
+          A module name must be composed from the characters: <code>A-Z</code>,
+          <code>a-z</code>, <code>-</code>, <code>0-9</code>.
+
           Valid examples are:
           <ul>
             <li>A</li>
@@ -50,7 +46,7 @@
               <td>
                 This file serves two purposes.
                 <br/>The first is to specify the type
-                of the module. See <a href='#Module_types'>module types</a>.
+                of the module. See <a href='module-types.html'>module types</a>.
                 <br/>
                 The second purpose is that of version storage.
                 Speaking in CVS
@@ -122,75 +118,6 @@ create-module -m karma-core -c "The core of Karma" -t JAVA-SOURCE-MODULE -l karm
         Although not recommended, and much more work, it is possible to create a
         module by hand. Be sure to add all the <a href='#Karma_system_files'>necessary files</a>
         to your module.
-      </p>
-      </subsection>
-      <subsection name="Module types">
-      <p>
-        Karma knows about six types of modules:
-        <table>
-          <tr>
-            <th>Type</th>
-            <th>ID</th>
-            <th>Description</th>
-          </tr>
-          <tr>
-            <td><a href='lib-module.html'>Library module</a></td>
-            <td>LIBRARY-MODULE</td>
-            <td>A module of this type stores libraries (typically 3rd party libraries).
-            These libraries are used as dependencies of a module.</td>
-          </tr>
-          <tr>
-            <td><a href='src-module.html'>Java source module</a></td>
-            <td>JAVA-SOURCE-MODULE</td>
-            <td>A module of this type stores Java source code, the corresponding unit
-            tests and configuration data. The result of packaging a module of this type is
-            a <code>.jar</code> file.</td>
-          </tr>
-          <tr>
-            <td><a href='app-module.html'>Java application module</a></td>
-            <td>N/A</td>
-            <td>This module type is not implemented yet (but is intended to in
-            version 1.0 of Karma).</td>
-          </tr>
-          <tr>
-            <td><a href='webapp-module.html'>Java web application module</a></td>
-            <td>JAVA-WEB-APPLICATION</td>
-            <td>A module of this type stores all information that is needed to create
-            one Java web application. The result of packaging a module of this type is
-            a <code>.war</code> file.</td>
-          </tr>
-          <tr>
-            <td><a href='eapp-module.html'>Java enterprise application module</a></td>
-            <td>JAVA-ENTERPRISE-APPLICATION</td>
-            <td>A module of this type stores all information that is needed to create
-            one Java enterprise application. The result of packaging a module of this type is
-            a <code>.ear</code> file.</td>
-          </tr>
-          <tr>
-            <td><a href='other-module.html'>Other module</a></td>
-            <td>OTHER-MODULE</td>
-            <td>This type of module was introduced for storing files that do not
-            belong in a module of one of the above types. The result of packaging a module of this type is
-            a <code>.zip</code> file containing a 1-to-1 copy of all files in the
-            module, except the Karma system files.</td>
-          </tr>
-        </table>
-      </p>
-      <p>
-        The type of a module is stored in the module's <code>module-descriptor.xml</code>.
-        The following descriptor is generated as a result of the <code>create-module</code>
-        command issued above:
-
-<source>
-<![CDATA[
-<?xml version="1.0"?>
-<module-descriptor version="1-0">
-  <type>JAVA-SOURCE-MODULE</type>
-  <layout-specification/> <!-- for future usage -->
-</module-descriptor>
-]]>
-</source>
-
       </p>
       </subsection>
     </section>

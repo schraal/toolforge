@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<document>
+
+  <properties>
+    <title>Reference Documentation</title>
+  </properties>
+
+  <body>
+    <section name="Module types">
+      <p>
+        A module type is used when you build, test or package a module. Depending on
+        the type of the module, these commands will do different things and/or package
+        the module differently.
+        <br/>
+        Karma knows about six types of modules. Click on the module type's link to
+        learn more about how the module is build, tested and packaged.
+        <table>
+          <tr>
+            <th>Type</th>
+            <th>ID</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td><a href='lib-module.html'>Library module</a></td>
+            <td>LIBRARY-MODULE</td>
+            <td>A module of this type stores libraries (typically 3rd party libraries).
+            These libraries are used as dependencies of a module.</td>
+          </tr>
+          <tr>
+            <td><a href='src-module.html'>Java source module</a></td>
+            <td>JAVA-SOURCE-MODULE</td>
+            <td>A module of this type stores Java source code, the corresponding unit
+            tests and configuration data. The result of packaging a module of this type is
+            a <code>.jar</code> file.</td>
+          </tr>
+          <tr>
+            <td><a href='app-module.html'>Java application module</a></td>
+            <td>N/A</td>
+            <td>This module type is not implemented yet (but is intended to in
+            version 1.0 of Karma).</td>
+          </tr>
+          <tr>
+            <td><a href='webapp-module.html'>Java web application module</a></td>
+            <td>JAVA-WEB-APPLICATION</td>
+            <td>A module of this type stores all information that is needed to create
+            one Java web application. The result of packaging a module of this type is
+            a <code>.war</code> file.</td>
+          </tr>
+          <tr>
+            <td><a href='eapp-module.html'>Java enterprise application module</a></td>
+            <td>JAVA-ENTERPRISE-APPLICATION</td>
+            <td>A module of this type stores all information that is needed to create
+            one Java enterprise application. The result of packaging a module of this type is
+            a <code>.ear</code> file.</td>
+          </tr>
+          <tr>
+            <td><a href='other-module.html'>Other module</a></td>
+            <td>OTHER-MODULE</td>
+            <td>This type of module was introduced for storing files that do not
+            belong in a module of one of the above types. The result of packaging a module of this type is
+            a <code>.zip</code> file containing a 1-to-1 copy of all files in the
+            module, except the Karma system files.</td>
+          </tr>
+        </table>
+      </p>
+      <p>
+        The type of a module is stored in the module's <code>module-descriptor.xml</code>.
+        The following descriptor is generated as a result of a <code>create-module</code>
+        command the specified <code>JAVA-SOURCE-MODULE</code> as the module type:
+
+<source>
+<![CDATA[
+<?xml version="1.0"?>
+<module-descriptor version="1-0">
+  <type>JAVA-SOURCE-MODULE</type>
+  <layout-specification/> <!-- for future usage -->
+</module-descriptor>
+]]>
+</source>
+
+        Depending on the module type a different module template is used. This template
+        describes the directory structure and optionally the default files of a module.
+        See the description of the module types for their directory structures.
+      </p>
+    </section>
+  </body>
+</document>

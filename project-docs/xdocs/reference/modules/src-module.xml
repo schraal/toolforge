@@ -8,6 +8,11 @@
   <body>
     <section name="Java source modules">
       <p>
+        A Java source module contains java sources, as well as the corresponding
+        unit tests and resources.
+        <br/>
+        This type of module is typically build, tested and packaged into a <code>.jar</code>
+        file.
       </p>
 
     </section>
@@ -20,41 +25,82 @@
             <th>Source</th>
             <th>Build</th>
             <th>Package</th>
+            <th>Description</th>
           </tr>
           <tr>
             <td>src/java</td>
             <td>build</td>
             <td>/</td>
+            <td>
+              Contains the Java sources of the module. These sources are built to
+              the build directory of a module's Karma build directory. The compiled
+              <code>.class</code> files are packaged into the root of the
+              <code>.jar</code> file prepended with their package.
+            </td>
           </tr>
           <tr>
             <td>src/resources</td>
             <td>-</td>
             <td>/</td>
+            <td>
+              Contains resources to be used by the Java code in this module. The contents
+              of this directory are copied 1-to-1 to the root of the <code>.jar</code> file,
+              so that they end up in the classpath.
+              <br/>
+              The resources are put on the classpath during the test step.
+            </td>
           </tr>
           <tr>
             <td>src/META-INF</td>
             <td>-</td>
             <td>/META-INF</td>
+            <td>
+              Files to be stored in the <code>META-INF</code> directory of the
+              <code>.jar</code> file. These files are not used during the build or test step.
+            </td>
           </tr>
           <tr>
             <td>test/java</td>
             <td>test</td>
             <td>-</td>
+            <td>
+              Contains the unit tests for the Java sources in this module. There
+              is no limitation on the class name of the unit tests. All classes in
+              this directory are supposed to be unit tests.
+              <br/>
+              During the test step the compiled tests end up in the test directory
+              of the module's Karma build directory.
+              <br/>
+              The unit test classes are not packaged into the <code>.jar</code> file.
+            </td>
           </tr>
           <tr>
             <td>test/resources</td>
             <td>-</td>
             <td>-</td>
+            <td>
+              Contains resources used by the unit tests. The files in this directory
+              are placed on the classpath when running the unit tests.
+            </td>
           </tr>
           <tr>
             <td>&lt;module dependencies&gt;</td>
             <td>-</td>
             <td>-</td>
+            <td>
+              Dependencies on source modules are used during building and testing.
+              These dependencies are not packaged into the <code>.jar</code> file.
+            </td>
           </tr>
           <tr>
             <td>&lt;jar dependencies&gt;</td>
             <td>-</td>
             <td>-</td>
+            <td>
+              Dependencies on <code>.jar</code> files, either via a Maven-like
+              dependency or via a library module dependency, are used when building
+              and testing. They are not packaged into the module's <code>.jar</code> file.
+            </td>
           </tr>
         </table>
       </p>

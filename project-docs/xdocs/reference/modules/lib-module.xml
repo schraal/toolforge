@@ -8,7 +8,37 @@
   <body>
     <section name="Library modules">
       <p>
+        A module of this type stores libraries (typically 3rd party libraries).
+        These libraries are used as dependencies of a module. How to do this is
+        described in <a href='module-dependencies.html'>module dependencies</a>.
+      </p>
+      <p>
+        Since a library module is nothing more than a container for <code>.jar</code>
+        files, building or packaging a library module has no effect.
       </p>
     </section>
- </body>
+    <section name="Layout">
+      <p>
+        The following layout is defined for a library module. All other files and/or
+        directories are ignored.
+        <table>
+          <tr>
+            <th>Source</th>
+            <th>Build</th>
+            <th>Package</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td>/lib</td>
+            <td>-</td>
+            <td>-</td>
+            <td>This directory contains the <code>.jar</code> files to which other
+              modules can have a dependency. Building, testing or packaging has no
+              effect on the contents of this directory.
+            </td>
+          </tr>
+        </table>
+      </p>
+    </section>
+  </body>
 </document>

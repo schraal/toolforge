@@ -10,5 +10,31 @@
       <p>
       </p>
     </section>
- </body>
+    <section name="Layout">
+      <p>
+        <table>
+          <tr>
+            <th>Source</th>
+            <th>Build</th>
+            <th>Package</th>
+          </tr>
+          <tr>
+            <td>src/META-INF</td>
+            <td>-</td>
+            <td>/META-INF</td>
+          </tr>
+          <tr>
+            <td>&lt;module dependencies&gt;</td>
+            <td>-</td>
+            <td>/</td>
+          </tr>
+          <tr>
+            <td>&lt;jar dependencies&gt;</td>
+            <td>-</td>
+            <td>/lib</td>
+          </tr>
+        </table>
+      </p>
+    </section>
+  </body>
 </document>
