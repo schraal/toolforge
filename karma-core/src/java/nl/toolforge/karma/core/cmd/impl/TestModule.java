@@ -33,6 +33,8 @@ import nl.toolforge.karma.core.cmd.util.DependencyHelper;
 import nl.toolforge.karma.core.manifest.ModuleTypeException;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 
@@ -47,7 +49,7 @@ import java.io.File;
  */
 public class TestModule extends AbstractBuildCommand {
 
-//  private final static String DEFAULT_TEST_SRC_DIRECTORY = "test/java";
+  private static final Log logger = LogFactory.getLog(TestModule.class);
 
   private CommandResponse commandResponse = new ActionCommandResponse();
 
@@ -63,8 +65,13 @@ public class TestModule extends AbstractBuildCommand {
 
     Command command = null;
     try {
-      String commandLineString = "bm -m " + module.getName();
-//System.out.println("Going to: "+commandLineString);
+      String commandLineString;
+      if (!getCommandLine().hasOption("n")) {
+        commandLineString = "bm -m " + module.getName();
+      } else {
+        commandLineString = "bm -n -m " + module.getName();
+      }
+      logger.debug("Going to: "+commandLineString);
       command = CommandFactory.getInstance().getCommand(commandLineString);
       command.setContext(getContext());
       command.registerCommandResponseListener(getResponseListener());

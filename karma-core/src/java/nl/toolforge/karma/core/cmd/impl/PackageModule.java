@@ -90,6 +90,62 @@ public class PackageModule extends AbstractBuildCommand {
     DependencyHelper helper = new DependencyHelper(getCurrentManifest());
 
     try {
+      boolean dependenciesChecked = false;
+      while (!dependenciesChecked) {
+        try {
+          helper.getModuleDependencies(getCurrentModule(), false);
+          dependenciesChecked = true;
+        } catch (DependencyException de) {
+          if (de.getErrorCode().equals(DependencyException.DEPENDENCY_NOT_FOUND)) {
+            //a dependency was not found.
+            //if it's a module, package it.
+            //else, rethrow the exception, since we can do nothing about it.
+            String dep = (String) de.getMessageArguments()[0];
+            try {
+              Module module = getCurrentManifest().getModule(dep);
+              Command command = null;
+              try {
+                getCommandResponse().addMessage(new StatusMessage("Module `{0}` is needed, but is not packaged yet. Doing that now.", new Object[]{module.getName()}));
+
+                String commandLineString;
+                if (!getCommandLine().hasOption("n")) {
+                  commandLineString = "pam -m " + module.getName();
+                } else {
+                  commandLineString = "pam -n -m " + module.getName();
+                }
+                logger.debug("Going to: "+commandLineString);
+                command = CommandFactory.getInstance().getCommand(commandLineString);
+                command.setContext(getContext());
+                command.registerCommandResponseListener(getResponseListener());
+                command.execute();
+
+                //the dependency built successfully.
+              } catch (CommandLoadException e) {
+                throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+              } finally {
+                if ( command != null ) {
+                  command.deregisterCommandResponseListener(getResponseListener());
+                }
+              }
+            } catch (ManifestException me) {
+              //obviously it was not a module...
+              throw de;
+            }
+          } else {
+            //rethrow the exception. Don't know what to do with it here.
+            throw de;
+          }
+        }
+      }
+    } catch (DependencyException e) {
+      logger.error(e);
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+    } catch (ModuleTypeException e) {
+      logger.error(e);
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+    }
+    //test and build the module.
+    try {
       //first, when not explicitly set off, run the unit tests
       if ( ! getCommandLine().hasOption("n") ) {
 
@@ -97,7 +153,8 @@ public class PackageModule extends AbstractBuildCommand {
 
         Command command = null;
         try {
-          String commandLineString = "tm -m " + module.getName();
+          //test module, but do test test or build recursively
+          String commandLineString = "tm -n -m " + module.getName();
 
           command = CommandFactory.getInstance().getCommand(commandLineString);
           command.setContext(getContext());
@@ -124,8 +181,37 @@ public class PackageModule extends AbstractBuildCommand {
 
       } else {
         logger.info("User has explicitly disabled running the unit tests.");
+        Command command = null;
+        try {
+          //build the module first, but do not recursivily build dependencies
+          String commandLineString = "bm -n -m " + module.getName();
+          logger.debug("Going to: "+commandLineString);
+          command = CommandFactory.getInstance().getCommand(commandLineString);
+          command.setContext(getContext());
+          command.registerCommandResponseListener(getResponseListener());
+          command.execute();
+        } catch (CommandException ce) {
+          if (    ce.getErrorCode().equals(CommandException.DEPENDENCY_DOES_NOT_EXIST) ||
+              ce.getErrorCode().equals(CommandException.BUILD_FAILED) ||
+              ce.getErrorCode().equals(DependencyException.DEPENDENCY_NOT_FOUND) ) {
+            commandResponse.addMessage(new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments()));
+            throw new CommandException(ce, CommandException.PACKAGE_FAILED, new Object[]{module.getName()});
+          } else {
+            CommandMessage message = new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments());
+            commandResponse.addMessage(message);
+            message = new ErrorMessage(CommandException.BUILD_WARNING);
+            commandResponse.addMessage(message);
+          }
+        } catch (CommandLoadException e) {
+          throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+        } finally {
+          if ( command != null ) {
+            command.deregisterCommandResponseListener(getResponseListener());
+          }
+        }
       }
 
+      //do the actual packaging
       File packageName = new File(getBuildEnvironment().getModuleBuildRootDirectory(), helper.resolveArchiveName(getCurrentModule()));
 
       if (getCurrentModule().getType().equals(Module.JAVA_WEB_APPLICATION)) {
@@ -257,19 +343,8 @@ public class PackageModule extends AbstractBuildCommand {
       // Fileset that copies contents of 'WEB-INF' to the package directory.
       //
       Copy copy = (Copy) project.createTask("copy");
-//      copy.setProject(getProjectInstance());
-//      copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
-//      copy.setOverwrite(true);
-//      copy.setIncludeEmptyDirs(false);
-//
       File webdir = new File(new File(getCurrentModule().getBaseDir(), "src"), "web");
       FileSet fileSet = new FileSet();
-//      fileSet.setDir(webdir);
-//      fileSet.setIncludes("WEB-INF/**");
-//      fileSet.setExcludes("WEB-INF/web.xml");
-//
-//      copy.addFileset(fileSet);
-//      copy.execute();
 
       // Fileset that copies contents of 'web' to the package directory.
       //
@@ -286,7 +361,6 @@ public class PackageModule extends AbstractBuildCommand {
         fileSet.setExcludes("WEB-INF/web.xml");
 
         copy.addFileset(fileSet);
-//        copy.execute();
         target.addTask(copy);
       }
 
@@ -312,7 +386,6 @@ public class PackageModule extends AbstractBuildCommand {
           copy.addFileset(fileSet);
         }
 
-//        copy.execute();
         target.addTask(copy);
       }
 
@@ -324,12 +397,10 @@ public class PackageModule extends AbstractBuildCommand {
       war.setBasedir(getBuildEnvironment().getModulePackageDirectory());
       war.setWebxml(new File(getCurrentModule().getBaseDir(), "src/web/WEB-INF/web.xml".replace('/', File.separatorChar)));
 
-//      war.execute();
       target.addTask(war);
       project.executeTarget("run");
 
     } catch (BuildException e) {
-//      e.printStackTrace();
       if (logger.isDebugEnabled()) {
         commandResponse.addMessage(new AntErrorMessage(e));
       }
@@ -377,7 +448,6 @@ public class PackageModule extends AbstractBuildCommand {
       Map map = new Hashtable();
       for (Iterator it = reader.getModuleNames().iterator(); it.hasNext(); ) {
         String moduleName = ((StringBuffer) it.next()).toString();
-//System.out.println("FOund module name: "+moduleName);
         Pattern p = Pattern.compile("@("+ModuleDigester.NAME_PATTERN_STRING+")@");
         Matcher m = p.matcher(moduleName);
 
