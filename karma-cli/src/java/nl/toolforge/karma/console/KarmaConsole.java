@@ -20,13 +20,11 @@ package nl.toolforge.karma.console;
 
 import nl.toolforge.karma.cli.cmd.ConsoleCommandResponseHandler;
 import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.location.PasswordScrambler;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.bundle.BundleCache;
 import nl.toolforge.karma.core.cmd.CommandContext;
 import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.manifest.Manifest;
-import nl.toolforge.karma.core.manifest.ManifestException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,13 +33,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.MessageFormat;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
@@ -114,56 +110,42 @@ public final class KarmaConsole {
         new WorkingContext(Preferences.userRoot().get(WorkingContext.WORKING_CONTEXT_PREFERENCE, WorkingContext.DEFAULT)) :
         new WorkingContext(args[0]));
 
-//    try {
-//      Preferences.userRoot().put(WorkingContext.WORKING_CONTEXT_PREFERENCE, workingContext.getName());
-//      Preferences.userRoot().flush();
-//    } catch (BackingStoreException e) {
-//      // Too bad ...
-//    }
-
-    // Initialize the command workingContext
-    //
-//    CommandContext commandContext = null;
-
     writeln(
         "********************\n" +
         "Welcome to Karma !!!\n" +
         "********************\n");
 
-    writeln("Loading working context `" + workingContext.getName() + "` ...");
+    writeln("[ console ] Loading working context `" + workingContext.getName() + "` ...");
 
-    writeln("Checking manifest store configuration ...");
+    writeln("[ console ] Checking manifest store configuration ...");
     checkConfiguration(workingContext, "MANIFEST-STORE");
-    writeln("Complete ...");
+    writeln("[ console ] Complete ...");
 
-    writeln("Checking location store configuration ...");
+    writeln("[ console ] Checking location store configuration ...");
     checkConfiguration(workingContext, "LOCATION-STORE");
-    writeln("Complete ...");
+    writeln("[ console ] Complete ...");
 
-    writeln("Configuration can be updated in `" + workingContext.getWorkingContextConfigDir() + "`");
+    writeln("[ console ] Configuration can be updated in `" + workingContext.getWorkingContextConfigDir() + "`");
 
-    writeln("\nStarting up ...\n");
+    writeln("\n[ console ] Starting up ...\n");
 
     //
     //
     commandContext = new CommandContext(workingContext);
     try {
+//      long start = System.currentTimeMillis();
       commandContext.init(new ConsoleCommandResponseHandler(this), true);
-    } catch (LocationException e) {
-      writeln(e.getMessage());
-      logger.error(e.getMessage(), e);
-    } catch (ManifestException e) {
+//      System.out.println("TOTAL STARTUP-TIME: " + (System.currentTimeMillis() - start));
+    } catch (CommandException e) {
       writeln(e.getMessage());
       logger.warn(e.getMessage(), e);
     }
 
-    Manifest currentManifest = commandContext.getCurrentManifest();
-
     String karmaHome = System.getProperty("karma.home");
     if (karmaHome == null) {
-      writeln("Property 'karma.home' not set; logging will be written to " + System.getProperty("user.home") + File.separator + "logs.");
+      writeln("[ console ] Property 'karma.home' not set; logging will be written to " + System.getProperty("user.home") + File.separator + "logs.");
     } else {
-      writeln("Logging will be written to " + System.getProperty("karma.home") + File.separator + "logs.");
+      writeln("[ console ] Logging will be written to " + System.getProperty("karma.home") + File.separator + "logs.");
     }
 
     try {
@@ -195,8 +177,6 @@ public final class KarmaConsole {
         try {
           commandContext.execute(line);
         } catch (CommandException e) {
-//          writeln("");
-//          writeln(e.getMessage());
           logger.error(e.getMessage(), e);
         }
       }
@@ -246,6 +226,10 @@ public final class KarmaConsole {
           if (value == null || "".equals(value)) {
             value = (key.getDefaultValue() == null ? "" : key.getDefaultValue());
           }
+          if (key.isScrambled()) {
+            value = PasswordScrambler.scramble(value);
+          }
+
           workingContext.getConfiguration().setProperty(key.getProperty(), value);
         }
         config = (List) workingContext.getInvalidConfiguration().get(configKey);

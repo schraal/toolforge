@@ -41,6 +41,8 @@ public abstract class DefaultCommand implements Command {
 	private String description = null;
 	private String helpText = null;
 
+  private CommandResponseListener responseListener = null;
+
   /**
 	 * Creates a command by initializing the command through its <code>CommandDescriptor</code>.
 	 *
@@ -120,8 +122,6 @@ public abstract class DefaultCommand implements Command {
 	public final CommandLine getCommandLine() {
 		return commandLine;
 	}
-
-  private CommandResponseListener responseListener = null;
 
   public final void registerCommandResponseListener(CommandResponseListener responseListener) {
     this.responseListener = responseListener;

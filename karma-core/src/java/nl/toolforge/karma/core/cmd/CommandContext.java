@@ -21,19 +21,15 @@ package nl.toolforge.karma.core.cmd;
 import nl.toolforge.core.util.listener.ChangeListener;
 import nl.toolforge.core.util.listener.ListenerManager;
 import nl.toolforge.core.util.listener.ListenerManagerException;
-import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.boot.WorkingContext;
-import nl.toolforge.karma.core.bundle.BundleCache;
 import nl.toolforge.karma.core.cmd.event.CommandFailedEvent;
 import nl.toolforge.karma.core.cmd.event.CommandFinishedEvent;
 import nl.toolforge.karma.core.cmd.event.CommandStartedEvent;
+import nl.toolforge.karma.core.cmd.event.ErrorEvent;
 import nl.toolforge.karma.core.cmd.event.MessageEvent;
 import nl.toolforge.karma.core.cmd.event.SimpleMessage;
-import nl.toolforge.karma.core.cmd.event.ErrorEvent;
-import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
-import nl.toolforge.karma.core.cmd.event.ExceptionEvent;
-import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
@@ -41,12 +37,6 @@ import nl.toolforge.karma.core.manifest.ManifestFactory;
 import nl.toolforge.karma.core.manifest.ManifestLoader;
 import nl.toolforge.karma.core.manifest.ManifestStructure;
 import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.module.LocationModule;
-import nl.toolforge.karma.core.module.ManifestModule;
-import nl.toolforge.karma.core.vc.Runner;
-import nl.toolforge.karma.core.vc.RunnerFactory;
-import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.cvsimpl.AdminHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -56,9 +46,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 
 /**
  * <p>The command context is the class that provides a runtime for commands to run in. The command context maintains
@@ -75,6 +62,7 @@ public final class CommandContext implements ChangeListener {
 
   private Manifest currentManifest;
   private Map modificationMap = new HashMap();
+  private boolean managed = false;
 
   private static ListenerManager manager;
 
@@ -101,124 +89,39 @@ public final class CommandContext implements ChangeListener {
    * @param updateStores   If this paramter is true, the CommandContext will update the local manifest and location store
    *                       with the latest manifests and locations.
    */
-  public synchronized void init(CommandResponseHandler handler, boolean updateStores)
-      throws ManifestException, LocationException {
+  public synchronized void init(CommandResponseHandler handler, boolean updateStores) throws CommandException {
 
     if (handler == null) {
       throw new IllegalArgumentException("CommandResponseHandler may not be null.");
     }
 
-    // todo dit response mechanisme moet wel op de kop in R2.0
+    // Initialize a command response object.
     //
     commandResponse = new CommandResponse();
     commandResponse.addCommandResponseListener(handler);
+    setHandler(handler);
 
-    this.handler = handler;
-
-    if (updateStores) {
-
-      // The location is read from property files.
-      //
-      Location location = workingContext.getManifestStoreLocation();
-      ManifestModule manifestModule = new ManifestModule(workingContext.getManifestStoreModule(), location);
-
-      // Relative the location, which is handy for the future when more than one ManifestModule can be checked
-      // out.
-      manifestModule.setBaseDir(new File(workingContext.getAdminDir(), location.getId()));
-      manifestModule.setCheckoutDir(new File(workingContext.getAdminDir(), location.getId()));
-
-      if (location.isAvailable()) {
-
-        commandResponse.addEvent(new MessageEvent(new SimpleMessage(("Updating manifests ..."))));
-
-        // Check if the locally existing manifest module has the same location (cvsroot e.g.) as the
-        // requested update.
-        //
-        AdminHandler adminHandler = new AdminHandler(manifestModule);
-        if (!adminHandler.isEqualLocation()) {
-          throw new LocationException(LocationException.LOCATION_MISMATCH, new Object[]{manifestModule.getName()});
-        }
-
-        try {
-          Runner runner = RunnerFactory.getRunner(manifestModule.getLocation());
-          runner.checkout(manifestModule);
-        } catch (VersionControlException e) {
-          // todo some sort of notification would be nice ...
-          //
-          logger.warn(e.getMessage());
-          // Nothing serious ...
-          //
-          commandResponse.addEvent(new ErrorEvent(KarmaException.MANIFEST_STORE_UPDATE_FAILED));
-        }
-      } else {
-        handler.commandFinished(new MessageEvent(new SimpleMessage("Manifest store location unreachable!")));
-      }
-
-      // The location is read from property files.
-      //
-      location = workingContext.getLocationStoreLocation();
-      LocationModule locationModule = new LocationModule(workingContext.getLocationStoreModule(), location);
-
-      // Relative the location, which is handy for the future when more than one ManifestModule can be checked
-      // out.
-      locationModule.setBaseDir(new File(workingContext.getAdminDir(), location.getId()));
-      locationModule.setCheckoutDir(new File(workingContext.getAdminDir(), location.getId()));
-
-      if (location.isAvailable()) {
-
-        commandResponse.addEvent(new MessageEvent(new SimpleMessage("Updating locations ...")));
-
-        // Check if the locally existing manifest module has the same location (cvsroot e.g.) as the
-        // requested update.
-        //
-        AdminHandler adminHandler = new AdminHandler(locationModule);
-        if (!adminHandler.isEqualLocation()) {
-          throw new LocationException(LocationException.LOCATION_MISMATCH, new Object[]{locationModule.getName()});
-        }
-
-        try {
-          Runner runner = RunnerFactory.getRunner(locationModule.getLocation());
-          runner.checkout(locationModule);
-        } catch (VersionControlException e) {
-          // todo some sort of notification would be nice ...
-          //
-          logger.warn(e.getMessage());
-          // Nothing serious ...
-          //
-          commandResponse.addEvent(new ErrorEvent(KarmaException.LOCATION_STORE_UPDATE_FAILED));
-        }
-      } else {
-        handler.commandFinished(new MessageEvent(new SimpleMessage("Location store location unreachable!")));
-      }
-    }
-
-    commandResponse.addEvent(new MessageEvent(new SimpleMessage(getFrontendMessages().getString("message.LOADING_MANIFEST_FROM_HISTORY"))));
-
-    // Try reloading the last manifest that was used.
+    // Use a command to initialize this further.
     //
-    currentManifest = workingContext.getManifestCollector().loadFromHistory();
+    Command command = new KarmaInitializationCommand(updateStores);
 
-		SimpleMessage message =
-        new SimpleMessage(getFrontendMessages().getString("message.MANIFEST_ACTIVATED"), new Object[]{currentManifest});
-    commandResponse.addEvent(new MessageEvent(message));
+    command.setContext(this);
+    command.registerCommandResponseListener(getHandler());
 
-    // Register the command context with the listener to allow automaic updates of the manifest.
-    //
-    if (currentManifest != null) {
-      register();
-    }
+    CommandStartedEvent startEvent = new CommandStartedEvent(command);
+//    commandResponse.addEvent(startEvent);
 
     try {
-      Preferences.userRoot().put(WorkingContext.WORKING_CONTEXT_PREFERENCE, workingContext.getName());
-      Preferences.userRoot().flush();
-    } catch (BackingStoreException e) {
-      // Too bad ...
+      command.execute();
+    } catch (CommandException c) {
+      commandResponse.addEvent(new ErrorEvent(command, c.getErrorCode(), c.getMessageArguments()));
+//      commandResponse.addEvent(new CommandFailedEvent(command, c));
+      throw c;
     }
+//    commandResponse.addEvent(new CommandFinishedEvent(command, startEvent.getTime()));
 
-  }
-
-  private ResourceBundle getFrontendMessages() {
-    return BundleCache.getInstance().getBundle(BundleCache.FRONTEND_MESSAGES_KEY);
+    command.deregisterCommandResponseListener(handler);
+    command.cleanUp();
   }
 
 
@@ -299,8 +202,6 @@ public final class CommandContext implements ChangeListener {
       managed = false;
       manager.suspendListener(this);
 
-//      commandResponse.addMessage(new ManifestChangedEvent(null));
-
       logger.error(new ErrorEvent(m.getErrorCode()));
 
       // todo in karma-core-1.1 this should be improved. Right now, the probability of this process failing is remote.
@@ -357,9 +258,10 @@ public final class CommandContext implements ChangeListener {
     }
   }
 
-  private boolean managed = false;
-
-  private synchronized void register() {
+  /**
+   * Registers this <code>CommandContext</code> for automatic manifest file update changes.
+   */
+  synchronized void register() {
 
     setFileModificationTimes();
 
@@ -402,7 +304,7 @@ public final class CommandContext implements ChangeListener {
     try {
       command = CommandFactory.getInstance().getCommand(commandLine);
     } catch (CommandException c) {
-      handler.messageLogged(new ErrorEvent(c.getErrorCode(), c.getMessageArguments()));
+      commandResponse.addEvent(new ErrorEvent(c.getErrorCode(), c.getMessageArguments()));
       throw c;
     } catch (CommandLoadException e) {
       throw new CommandException(e.getErrorCode(),  e.getMessageArguments());
@@ -425,26 +327,35 @@ public final class CommandContext implements ChangeListener {
     // Store a reference to this context in the command
     //
     command.setContext(this);
-    command.registerCommandResponseListener(handler);
+    command.registerCommandResponseListener(getHandler());
     // Register the response handler with this context, so commands have a reference to it.
     //
     //todo what happens when an exception occurs in the execute wrt deregister?
 
     CommandStartedEvent startEvent = new CommandStartedEvent(command);
-    handler.commandStarted(startEvent);
+    commandResponse.addEvent(startEvent);
 
     try {
       command.execute();
     } catch (CommandException c) {
-      handler.messageLogged(new ErrorEvent(command, c.getErrorCode(), c.getMessageArguments()));
-      handler.commandFinished(new CommandFailedEvent(command, c));
+      commandResponse.addEvent(new ErrorEvent(command, c.getErrorCode(), c.getMessageArguments()));
+      commandResponse.addEvent(new CommandFailedEvent(command, c));
       throw c;
     }
-    handler.commandFinished(new CommandFinishedEvent(command, startEvent.getTime()));
+    commandResponse.addEvent(new CommandFinishedEvent(command, startEvent.getTime()));
 
-    command.deregisterCommandResponseListener(handler);
+    command.deregisterCommandResponseListener(getHandler());
     command.cleanUp();
   }
+
+  private void setHandler(CommandResponseHandler handler) {
+    this.handler = handler;
+  }
+
+  private CommandResponseListener getHandler() {
+    return handler;
+  }
+
   /**
    * Checks if a manifest is active for this context.
    *

@@ -1,8 +1,5 @@
 package nl.toolforge.karma.cli;
 
-import java.text.MessageFormat;
-import java.util.prefs.Preferences;
-
 import nl.toolforge.karma.cli.cmd.CLICommandResponseHandler;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.cmd.Command;
@@ -10,8 +7,8 @@ import nl.toolforge.karma.core.cmd.CommandContext;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandFactory;
 import nl.toolforge.karma.core.cmd.CommandLoadException;
-import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.manifest.ManifestException;
+
+import java.util.prefs.Preferences;
 
 /**
  * The command-line-interface for Karma. This class runs one command, then quits (gracefully hopefully). All arguments
@@ -48,24 +45,38 @@ public final class CLI {
       System.exit(0);
     } catch (Exception e) {
       System.out.println("-- catch all ---\n");
-      e.printStackTrace();  
+      System.exit(1);
     }
   }
 
   private void runCommand(String[] arguments) throws CommandException {
 
-    String commandLine = "";
-
     boolean updateStores = false;
 
+    String[] actuals = null;
+    String commandName = null;
     int index = 0;
-    
-    if (arguments.length > 0 && arguments[0].equals("-u")) {
-      updateStores = true;
-      index=1;
+
+    // Filter out the optional '-u' and the command name
+    //
+    if (arguments.length > 0) {
+      if (arguments[0].equals("-u")) {
+        updateStores = true;
+        actuals = new String[arguments.length - 2];
+        commandName = arguments[1];
+        index = 2;
+      } else {
+        actuals = new String[arguments.length - 1];
+        commandName = arguments[0];
+        index = 1;
+      }
     }
+
+    int j = 0;
+
     for (int i = index; i < arguments.length; i++) {
-      commandLine += arguments[i] + " ";
+      actuals[j] = arguments[i];
+      j++;
     }
 
     // todo WorkingContext should be initializing the logging system. Some other way.
@@ -77,7 +88,8 @@ public final class CLI {
 
     Command command = null;
     try {
-      command = CommandFactory.getInstance().getCommand(commandLine);
+      CommandFactory factory = CommandFactory.getInstance();
+      command = factory.getCommand(commandName, actuals);
     } catch (CommandLoadException e) {
       throw new CommandException(e.getErrorCode(),  e.getMessageArguments());
     }
@@ -88,12 +100,10 @@ public final class CLI {
     CommandContext commandContext = new CommandContext(workingContext);
     try {
       commandContext.init(new CLICommandResponseHandler(), updateStores);
-    } catch (LocationException e) {
-      System.out.println("\n" + "[ karma ] " + e.getMessage());
-    } catch (ManifestException e) {
+    }  catch (CommandException e) {
       System.out.println("\n" + "[ karma ] " + e.getMessage());
     }
 
-    commandContext.execute(commandLine);
+    commandContext.execute(command);
   }
 }

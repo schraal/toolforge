@@ -38,6 +38,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import nl.toolforge.karma.core.KarmaRuntimeException;
+
 //import net.sf.sillyexceptions.OutOfTheBlueException;
 
 /**
@@ -108,18 +110,14 @@ public final class CommandFactory {
    * Retrieves the correct <code>Command</code>-instance, by looking up the implementation class through
    * <code>commandLine</code>.
    *
-   * @param commandLineString Command line string (e.g. <code>select-manifest -m karma-1.0</code>).
+   * @param commandLineString Command arguments (e.g. <code>select-manifest -m karma-1.0</code>).
    * @return The implementation of a <code>Command</code> object.
    * @throws CommandException When a correct command could not be constructed. See
    *                          {@link CommandException#INVALID_COMMAND}.
    */
   public Command getCommand(String commandLineString) throws CommandException {
 
-    // Extract the command name from the command line string
-    //
-
     String commandName = null;
-
     commandLineString = commandLineString.trim();
 
     if (commandLineString.indexOf(' ') > 0) {
@@ -127,9 +125,6 @@ public final class CommandFactory {
     } else {
       commandName = commandLineString;
     }
-
-    // todo wordt dit niet gesupport door commons-cli ?
-    //
 
     char[] chars = commandLineString.substring(commandName.length()).toCharArray();
 
@@ -197,6 +192,11 @@ public final class CommandFactory {
 
     String[] commandOptions = (String[]) commandOptionsList.toArray(new String[commandOptionsList.size()]);
 
+    return getCommand(commandName, commandOptions);
+  }
+
+  public Command getCommand(String commandName, String[] arguments) throws CommandException {
+
     Command cmd = null;
 
     if (isCommand(commandName)) {
@@ -222,29 +222,35 @@ public final class CommandFactory {
         CommandLineParser parser = new PosixParser();
 
         Options parserOptions = descriptor.getOptions();
-        cmd.setCommandLine(parser.parse(parserOptions, commandOptions));
+
+//        if (parserOptions.getOptions().size() == 0 && arguments.length > 0) {
+//          // The issue is that this is 1. not an exception and 2. no mechanism to propagate this back in a nice way.
+//          throw new CommandException(CommandException.NO_OPTIONS_REQUIRED);
+//        }
+
+        cmd.setCommandLine(parser.parse(parserOptions, arguments));
 
       } catch (NoSuchMethodException e) {
-        throw new CommandException(e, CommandException.INVALID_COMMAND, new Object[]{commandLineString});
+        throw new KarmaRuntimeException(e.getLocalizedMessage());
       } catch (SecurityException e) {
-        throw new CommandException(e, CommandException.INVALID_COMMAND, new Object[]{commandLineString});
+        throw new KarmaRuntimeException(e.getLocalizedMessage());
       } catch (InstantiationException e) {
-        throw new CommandException(e, CommandException.INVALID_COMMAND, new Object[]{commandLineString});
+        throw new KarmaRuntimeException(e.getLocalizedMessage());
       } catch (IllegalAccessException e) {
-        throw new CommandException(e, CommandException.INVALID_COMMAND, new Object[]{commandLineString});
+        throw new KarmaRuntimeException(e.getLocalizedMessage());
       } catch (IllegalArgumentException e) {
-        throw new CommandException(e, CommandException.INVALID_COMMAND, new Object[]{commandLineString});
+        throw new KarmaRuntimeException(e.getLocalizedMessage());
       } catch (InvocationTargetException e) {
-        throw new CommandException(e, CommandException.INVALID_COMMAND, new Object[]{commandLineString});
+        throw new KarmaRuntimeException(e.getLocalizedMessage());
       } catch (ParseException e) {
         if (e instanceof MissingOptionException) {
-          throw new CommandException(e, CommandException.MISSING_OPTION, new Object[]{commandLineString});
+          throw new CommandException(e, CommandException.MISSING_OPTION, new Object[]{arguments});
         }
         if (e instanceof UnrecognizedOptionException) {
-          throw new CommandException(e, CommandException.INVALID_OPTION, new Object[]{commandLineString});
+          throw new CommandException(e, CommandException.INVALID_OPTION, new Object[]{arguments});
         }
         if (e instanceof MissingArgumentException) {
-          throw new CommandException(e, CommandException.MISSING_ARGUMENT, new Object[]{commandLineString});
+          throw new CommandException(e, CommandException.MISSING_ARGUMENT, new Object[]{arguments});
         }
       }
       return cmd;
