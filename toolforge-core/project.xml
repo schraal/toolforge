@@ -60,7 +60,7 @@
   <build>
 
     <sourceDirectory>src/java/</sourceDirectory>
-    <unitTestSourceDirectory>src/java</unitTestSourceDirectory>
+    <unitTestSourceDirectory>test/java</unitTestSourceDirectory>
 
     <integrationUnitTestSourceDirectory/>
 
