@@ -3,12 +3,13 @@ package nl.toolforge.karma.core.cmd.impl;
 import java.util.Iterator;
 
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.ManifestException;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.ModuleMap;
-import nl.toolforge.karma.core.ManifestException;
+import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.CommandResponseHandler;
+import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 
 /**
@@ -18,8 +19,9 @@ import nl.toolforge.karma.core.cmd.DefaultCommand;
  * @version $Id$
  */
 public class UpdateAllModulesCommand extends DefaultCommand {
+  private CommandResponse commandResponse = new ActionCommandResponse();
 
-	/**
+  /**
 	 * Creates a <code>UpdateAllModulesCommand</code> for module <code>module</code> that should be updated.
 	 *
 	 * @param descriptor The command descriptor for this command.
@@ -54,15 +56,19 @@ public class UpdateAllModulesCommand extends DefaultCommand {
 
         // todo hmm, the commandname is hardcoded whilst we have it dynamically in a file ...
         //
-        getContext().execute("update-module -m ".concat(module.getName()), handler);
+        //getContext().execute("update-module -m ".concat(module.getName()), handler);
       }
-    } catch (CommandException ce) {
+//    } catch (CommandException ce) {
       //todo proper error handling
-      ce.printStackTrace();
+//      ce.printStackTrace();
     } catch (KarmaException ke) {
       //todo proper error handling
       ke.printStackTrace();
     }
+  }
+
+  public CommandResponse getCommandResponse() {
+    return this.commandResponse;
   }
 
 }

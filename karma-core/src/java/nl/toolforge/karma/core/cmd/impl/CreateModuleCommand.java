@@ -24,8 +24,9 @@ import nl.toolforge.karma.core.vc.Runner;
  * @since 2.0
  */
 public class CreateModuleCommand extends DefaultCommand {
+  private CommandResponse commandResponse = new ActionCommandResponse();
 
-	public CreateModuleCommand(CommandDescriptor descriptor) {
+  public CreateModuleCommand(CommandDescriptor descriptor) {
 		super(descriptor);
 	}
 
@@ -76,9 +77,10 @@ public class CreateModuleCommand extends DefaultCommand {
 
 		// Ensure that only this message is passed back to the client
 		//
-		CommandResponse response = new ActionCommandResponse(); // todo is this still required ?
-		response.addMessage(message); // todo is this still required ?
-
-    handler.commandResponseChanged(new CommandResponseEvent(message.getMessageText()));
+		commandResponse.addMessage(message);
 	}
+
+  public CommandResponse getCommandResponse() {
+    return this.commandResponse;
+  }
 }

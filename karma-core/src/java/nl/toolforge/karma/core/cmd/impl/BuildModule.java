@@ -1,14 +1,5 @@
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.Manifest;
-import nl.toolforge.karma.core.Module;
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
-import nl.toolforge.karma.core.cmd.CommandDescriptor;
-import nl.toolforge.karma.core.cmd.CommandMessage;
-import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.CommandResponseHandler;
-import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
@@ -16,10 +7,20 @@ import org.apache.tools.ant.taskdefs.Javac;
 import org.apache.tools.ant.types.FileList;
 import org.apache.tools.ant.types.Path;
 
+import nl.toolforge.karma.core.Manifest;
+import nl.toolforge.karma.core.Module;
+import nl.toolforge.karma.core.cmd.ActionCommandResponse;
+import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import nl.toolforge.karma.core.cmd.CommandMessage;
+import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.DefaultCommand;
+import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
+
 /**
  * Builds a module in a manifest.
  */
 public class BuildModule extends DefaultCommand {
+  private CommandResponse commandResponse = new ActionCommandResponse();
 
   public BuildModule(CommandDescriptor descriptor) {
     super(descriptor);
@@ -105,6 +106,10 @@ public class BuildModule extends DefaultCommand {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  public CommandResponse getCommandResponse() {
+    return this.commandResponse;
   }
 
 }
