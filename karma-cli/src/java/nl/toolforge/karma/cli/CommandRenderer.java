@@ -1,13 +1,16 @@
 package nl.toolforge.karma.cli;
 
-import nl.toolforge.karma.core.cmd.CommandDescriptor;
-import org.apache.commons.cli.Option;
-import org.apache.commons.lang.StringUtils;
-
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.commons.cli.Option;
+import org.apache.commons.lang.StringUtils;
+
+import nl.toolforge.karma.core.cmd.CommandDescriptor;
+
 public class CommandRenderer {
+
+public static final int FILL = 50;
 
   public static String commands = null;
 
@@ -49,7 +52,6 @@ public class CommandRenderer {
 
           Option o = options[j];
 
-          int FILL = 50; // as a constant ...
           String leftPadding = "   ";
 
           buffer.
@@ -64,10 +66,13 @@ public class CommandRenderer {
 
           // todo when the commands are described with too much of text, then FILL will run out of count ...
           //
-          buffer.
-              append(args.concat(StringUtils.repeat(" ", FILL - (o.getLongOpt() + args).length()))).
-              append(leftPadding).append(o.getDescription()).
-              append("\n");
+          buffer.append(args.concat(StringUtils.repeat(" ", FILL - (o.getLongOpt() + args).length())));
+          buffer.append(leftPadding);
+          if (!o.isRequired()) {
+            buffer.append("(Optional) ");
+          }
+          buffer.append(o.getDescription());
+          buffer.append("\n");
         }
       }
 
