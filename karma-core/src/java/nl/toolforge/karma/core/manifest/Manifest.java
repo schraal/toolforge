@@ -49,6 +49,13 @@ public interface Manifest {
    *
    * @return
    */
+  public String getVersion();
+
+  /**
+   * @see AbstractManifest for the time being
+   *
+   * @return
+   */
   public Map getAllModules();
 
   /**

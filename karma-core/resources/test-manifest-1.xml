@@ -2,7 +2,7 @@
 DO NOT CHANGE THE CONTENTS OF THIS FILE. IT IS USED BY JUnit TEST CLASSES
 -->
 
-<manifest name="test-manifest-1" type="development" version="1-0">
+<manifest name="test-manifest-1" type="development" version="13-666">
 
   <description>This manifest is an example of the manifest definition.</description>
   

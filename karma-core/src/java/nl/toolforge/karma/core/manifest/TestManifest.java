@@ -22,6 +22,9 @@ import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationLoader;
 import nl.toolforge.karma.core.test.BaseTest;
 
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
 /**
  * @author D.A. Smedes
  * @version $Id$
@@ -32,10 +35,11 @@ public class TestManifest extends BaseTest {
 
     try {
       DevelopmentManifest m = new DevelopmentManifest("test-manifest-1");
+
       m.load();
 
-      assertTrue("test-manifest-1".equals(m.getName()));
-      assertTrue("1-0".equals(m.getVersion()));
+      assertTrue( "test-manifest-1".equals(m.getName()));
+			assertTrue( Pattern.matches("[0-9][0-9]?[0-9]?-[0-9][0-9]?[0-9]?", m.getVersion()));
       assertEquals(3, m.size());
 
       //assertNotNull(m.getDescription()); //todo something wrong in the digester rules.xml

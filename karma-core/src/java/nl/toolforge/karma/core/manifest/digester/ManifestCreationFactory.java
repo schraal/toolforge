@@ -25,6 +25,8 @@ import nl.toolforge.karma.core.manifest.ReleaseManifest;
 import org.apache.commons.digester.AbstractObjectCreationFactory;
 import org.xml.sax.Attributes;
 
+import java.util.regex.Pattern;
+
 /**
  * Creation factory to be able to create {@link nl.toolforge.karma.core.manifest.Manifest} instances. The reason to have this class
  * is that Digester at some point calls <code>hashCode()</code> on newly created <code>AbstractManifest</code> instances
@@ -47,6 +49,11 @@ public class ManifestCreationFactory extends AbstractObjectCreationFactory {
 
     String name = attributes.getValue("name");
     String type = attributes.getValue("type");
+		String version = attributes.getValue("version");
+
+		if( !Pattern.matches("[0-9][0-9]?[0-9]?-[0-9][0-9]?[0-9]?", version)) {
+			throw new KarmaRuntimeException("A version attribute should look like [0-9][0-9]?[0-9]?-[0-9][0-9]?[0-9]?");
+		}
 
     if (Manifest.DEVELOPMENT_MANIFEST.equals(type)) {
       return new DevelopmentManifest(name);
@@ -54,6 +61,7 @@ public class ManifestCreationFactory extends AbstractObjectCreationFactory {
     if (Manifest.RELEASE_MANIFEST.equals(type)) {
       return new ReleaseManifest(name);
     }
+
     throw new KarmaRuntimeException("A manifest should be of type 'development' or of type 'release'.");
   }
 }
