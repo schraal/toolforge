@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<jnlp
+	spec="1.0+"
+	codebase="http://localhost/~oosterom"
+	href="karma.jnlp">
+
+	<information>
+		<title>Karma</title>
+		<vendor>Wisdom Information Consultants</vendor>
+		<homepage href="http://www.wisdom.nl/"/>
+		<description>Karma Development Tool</description>
+		<description kind="short">Karma Through Java Webstart</description>
+		<description kind="tooltip">Shiny happy people</description>
+		<icon href="icon16x16.png"/>
+		<offline-allowed/>
+	</information>
+
+	<security>
+		<all-permissions/>
+	</security>
+
+	<resources>
+
+		<j2se version="1.3+"/>
+
+		<jar href="karma.classpath.jar"/>
+		<jar href="karma-launcher-1.1.jar" main="true"/>
+		
+		<property name="karma.classloaderrepository.config" value="karma.classpath"/>
+	</resources>
+
+	<application-desc main-class="nl/wisdom/core/tools/karma/launcher/KarmaLauncher">
+		<argument>nl.wisdom.core.tools.karma.TerminalKarma</argument>
+	</application-desc>
+
+</jnlp>

@@ -1,0 +1,17 @@
+# This file defines the karma.root classloader. This classloader
+# is used by the KarmaClassLoaderRepository to start the main
+# class.
+#
+[karma.root]
+	id=ant, version=1.5.1
+	id=log4j, version=1.2.8
+	id=netbeans, jar=netbeans-cvs.jar
+	id=commons-lang, version=1.0.1
+	id=xerces, version=2.3.0
+	id=regexp, version=1.2
+	id=xerces, jar=xercesImpl-2.3.0.jar
+	id=xerces, jar=xmlParserAPIs-2.2.1.jar
+        id=toolforge, jar=karma-core-2.0-dev.jar
+	dir=target/classes
+	dir=resources
+	

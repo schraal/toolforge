@@ -1,0 +1,2 @@
+To be able to use the karma-cli module, create a lib module in this directory
+and make sure you have a copy of karma-launcher-1.2.jar in that directory.

@@ -11,6 +11,8 @@ import java.io.FileInputStream;
 import java.util.HashSet;
 import java.util.Set;
 
+import nl.toolforge.karma.core.prefs.Preferences;
+
 /**
  * <p>The manifest loader is responsible for loading a manifest from disk in memory. Manifests are stored on disk in
  * a directory identified by the property <code>manifest.dir</code>.
@@ -20,6 +22,8 @@ import java.util.Set;
 public final class ManifestLoader {
 
 	private static ManifestLoader instance = null;
+
+	private static Preferences prefs = Preferences.getInstance(true);
 
 	public synchronized static ManifestLoader getInstance() {
 		if (instance == null) {
@@ -38,8 +42,8 @@ public final class ManifestLoader {
 	 */
 	public static Manifest loadFromHistory() throws ManifestException {
 
-        Manifest manifest = null;
-        String historyId = null;
+		Manifest manifest = null;
+		String historyId = null;
 
 		try {
 			// Try to resolve the manifest name from the history
@@ -51,36 +55,41 @@ public final class ManifestLoader {
 		// Try to load it
 		//
 
-        manifest = getInstance().load(historyId);
+		manifest = getInstance().load(historyId);
 
-        return manifest;
+		return manifest;
 
 	}
 
-    /**
-     * <p>Loads a manifest with a given <code>id</code>. The id should be provided as
-     * the filename part without the extension (a manifest file <code>karma-2.0.xml</code>)
-     * is retrieved by providing this method with the <code>id</code> 'karma-2.0'.
-     *
-     * @param id See method description.
-     *
-     * @return A <code>Manifest</code> instance.
-     *
-     * @throws ManifestException When an error occurred while loading the manifest.
-     */
-    public static Manifest load(String id) throws ManifestException {
+	/**
+	 * <p>Loads a manifest with a given <code>id</code>. The id should be provided as
+	 * the filename part without the extension (a manifest file <code>karma-2.0.xml</code>)
+	 * is retrieved by providing this method with the <code>id</code> 'karma-2.0'.
+	 *
+	 * @param id See method description.
+	 *
+	 * @return A <code>Manifest</code> instance.
+	 *
+	 * @throws ManifestException When an error occurred while loading the manifest.
+	 */
+	public static Manifest load(String id) throws ManifestException {
 
 		Manifest manifest = null;
 		String manifestName = null;
 
-        File manifestFile = null;
+		File manifestFile = null;
 
 		Set duplicates = new HashSet();
-        Set recursions = new HashSet();
+		Set recursions = new HashSet();
 
 		try {
 
-		 manifestFile = new File(UserEnvironment.getManifestStore().getPath() + File.separator + id + ".xml");
+			if (id.endsWith(".xml")) {
+				manifestFile = new File(prefs.getManifestStore().getPath() + File.separator + id);
+			} else {
+				manifestFile = new File(prefs.getManifestStore().getPath() + File.separator + id + ".xml");
+			}
+			//System.out.println(" >>>> " + manifestFile.getPath());
 
 		} catch (NullPointerException n) {
 			throw new ManifestException(ManifestException.MANIFEST_FILE_NOT_FOUND);
@@ -91,26 +100,41 @@ public final class ManifestLoader {
 
 		try {
 
+//			System.out.println(getInstance().getClass().getName() + " >>> 1");
+
 			DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			Document manifestDocument = documentBuilder.parse(new FileInputStream(manifestFile));
 
 			// The <manifest>-element
 			//
 			Element manifestElement = manifestDocument.getDocumentElement();
-            manifestName = manifestElement.getAttribute(Manifest.NAME_ATTRIBUTE);
 
-            NodeList sourceModules = manifestElement.getElementsByTagName("sourcemodule");
+//			System.out.println(getInstance().getClass().getName() + " >>> " + manifestElement.toString());
+
+			manifestName = manifestElement.getAttribute(Manifest.NAME_ATTRIBUTE);
+
+			// Create the actual Manifest instance
+			//
+			manifest = new ManifestImpl(manifestName);
+
+			NodeList sourceModules = manifestElement.getElementsByTagName("sourcemodule");
+
+//			System.out.println(getInstance().getClass().getName() + " #sourcemodules : " + sourceModules.getLength());
 
 			for (int i = 0; i < sourceModules.getLength(); i++) {
 
-                ModuleList sList = new ModuleList();
-                SourceModule sourceModule = null;
+				ModuleList sList = new ModuleList();
+				SourceModule sourceModule = null;
 
 				Element sourceModuleElement = (Element) sourceModules.item(i);
 
 				String moduleName = sourceModuleElement.getAttribute(Module.NAME_ATTRIBUTE);
 				String version = sourceModuleElement.getAttribute(SourceModule.VERSION_ATTRIBUTE);
-                String branch = sourceModuleElement.getAttribute(SourceModule.BRANCH_ATTRIBUTE);
+				String branch = sourceModuleElement.getAttribute(SourceModule.BRANCH_ATTRIBUTE);
+
+				System.out.println(getInstance().getClass().getName() + " moduleName : " + moduleName);
+				System.out.println(getInstance().getClass().getName() + " version : " + version);
+				System.out.println(getInstance().getClass().getName() + " branch : " + branch);
 
 				sourceModule = new SourceModule(moduleName);
 
@@ -124,8 +148,10 @@ public final class ManifestLoader {
 
 					duplicates.add(sourceModule);
 				}
-
+				manifest.addModule(sourceModule);
 			}
+
+			System.out.println(getInstance().getClass().getName() + " >>> 2");
 
 			NodeList jarModules = manifestElement.getElementsByTagName("jarmodule");
 
@@ -136,20 +162,11 @@ public final class ManifestLoader {
 
 		} catch (Exception e) {
 
-			//
+			e.printStackTrace();
 
 		}
 
-		// OK, we have all we need, let's fill up the manifest instance
-		//
-
-		try {
-			manifest = new ManifestImpl(manifestName);
-		} catch (Exception e) {
-			throw new ManifestException();
-		}
-
-        return manifest;
-    }
+		return manifest;
+	}
 
 }

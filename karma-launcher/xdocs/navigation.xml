@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="Wisdom Tools : Karma Launcher" href="http://www.wisdom.nl/development/tools/karma-launcher/">
+
+  <title>Wisdom Tools : Builder</title>
+
+  <body>
+    <links>
+      <item name="Maven" href="http://jakarta.apache.org/turbine/maven/"/>
+    </links>
+
+    <menu name="Essentials">
+      <item name="Overview" href="/index.html"/>
+    </menu>
+
+    <menu name="User Documentation">
+      <item name="Setup and Installation" href="javascript:alert('To be implemented.')"/>
+      <item name="Using the launcher" href="javascript:alert('To be implemented.')"/>
+    </menu>
+
+    <menu name="Developer Documentation">
+      <item name="Todo" href="/todo.html"/>
+    </menu>
+
+  </body>
+</project>

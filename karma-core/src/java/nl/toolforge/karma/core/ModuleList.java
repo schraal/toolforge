@@ -13,10 +13,13 @@ public final class ModuleList extends ArrayList
 	/**
 	 * Javadoc inherited.
 	 */
-	public void add(Module module) {
+	public final void add(Module module) {
 
 		if ((module instanceof SourceModule) || (module instanceof JarModule)) {
+
 			super.add(module);
+
+			return;
 		}
 
 		throw new KarmaRuntimeException("Module-type should be SourceModule or JarModule.");
@@ -25,36 +28,43 @@ public final class ModuleList extends ArrayList
 	/**
 	 * Javadoc inherited.
 	 */
-	public void add(int index, Module module) {
+	public final void add(int index, Module module) {
 		super.add(index, module);
 	}
 
 	/**
 	 * Javadoc inherited.
 	 */
-	public boolean addAll(ModuleList moduleList) {
+	public final boolean addAll(ModuleList moduleList) {
 		return super.addAll(moduleList);
 	}
 
 	/**
 	 * Javadoc inherited.
 	 */
-	public boolean addAll(int index, ModuleList moduleList) {
+	public final boolean addAll(int index, ModuleList moduleList) {
 		return super.addAll(index, moduleList);
 	}
 
 	/**
 	 * Javadoc inherited.
 	 */
-	public void set (int index, Module module) {
+	public final void set (int index, Module module) {
 		super.set(index, module);
 	}
 
 	/**
 	 * Javadoc inherited.
 	 */
-	public Iterator iterator() {
+	public final Iterator iterator() {
 		return super.iterator();
+	}
+
+	/**
+	 * Javadoc inherited.
+	 */
+	public final int size() {
+		return super.size();
 	}
 
 	/**
@@ -62,7 +72,7 @@ public final class ModuleList extends ArrayList
 	 *
 	 * @return All <code>SourceModule</code> instances in this list or an empty list if none exists.
 	 */
-	public ModuleList getSourceModules() {
+	public final ModuleList getSourceModules() {
 
 		ModuleList list = new ModuleList();
 
@@ -80,7 +90,7 @@ public final class ModuleList extends ArrayList
 	 *
 	 * @return All <code>JarModule</code> instances in this list or an empty list if none exists.
 	 */
-	public ModuleList getJarModules() {
+	public final ModuleList getJarModules() {
 
 		ModuleList list = new ModuleList();
 

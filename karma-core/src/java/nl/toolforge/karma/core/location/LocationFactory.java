@@ -1,20 +1,19 @@
 package nl.toolforge.karma.core.location;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Element;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
-import java.io.File;
-import java.util.*;
-
 import nl.toolforge.core.util.file.XMLFilenameFilter;
+import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.prefs.Preferences;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.UserEnvironment;
-import nl.toolforge.karma.core.prefs.Preferences;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
+import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * Class to gain access to <code>Location</code> instances.
@@ -43,15 +42,15 @@ public final class LocationFactory {
 		Preferences prefs = Preferences.getInstance();
 
 		load(
-			new File(prefs.get(UserEnvironment.LOCATION_STORE_DIRECTORY_PROPERTY)),
-			UserEnvironment.getConfigurationDirectory().getPath() + File.separator + "location-authentication.xml"
+			new File(prefs.get(Preferences.LOCATION_STORE_DIRECTORY_PROPERTY)),
+			Preferences.getInstance(true).getConfigurationDirectory().getPath() + File.separator + "location-authentication.xml"
 
 		);
 	}
 
 	/**
 	 * Uses all <code>xml</code> files in the directory identified by the
-	 * {@link nl.toolforge.karma.core.UserEnvironment#LOCATION_STORE_DIRECTORY_PROPERTY} property.
+	 * {@link nl.toolforge.karma.core.prefs.Preferences#LOCATION_STORE_DIRECTORY_PROPERTY} property.
 	 *
 	 * @param locationFilesPath
 	 *        The path where all location XML files can be found.

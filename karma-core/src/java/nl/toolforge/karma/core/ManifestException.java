@@ -17,7 +17,7 @@ public final class ManifestException extends KarmaException {
 
     /**
 	 * No manifest store directory could be found. This directory contains all manifest XML files. This directory
-	 * is resolved through the {@link nl.toolforge.karma.core.UserEnvironment#MANIFEST_STORE_DIRECTORY_PROPERTY} property.
+	 * is resolved through the {@link nl.toolforge.karma.core.prefs.Preferences#MANIFEST_STORE_DIRECTORY_PROPERTY} property.
 	 */
 	public static final ErrorCode NO_MANIFEST_STORE_DIRECTORY = new ErrorCode("MNFS-00001");
 

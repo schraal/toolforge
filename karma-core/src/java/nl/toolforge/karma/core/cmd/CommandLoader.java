@@ -1,7 +1,6 @@
 package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.UserEnvironment;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
@@ -18,7 +17,7 @@ import java.util.Set;
 /**
  * <p>Loads command-descriptors from an <code>XML</code>-file. The default filename
  * is <code>commands.xml</code>, which is located in the directory described by
- * {@link nl.toolforge.karma.core.UserEnvironment#CONFIGURATION_DIRECTORY_PROPERTY}.
+ * {@link nl.toolforge.karma.core.prefs.Preferences#CONFIGURATION_DIRECTORY_PROPERTY}.
  *
  * <p>TODO the xml instance should be checked by a DTD or XML Schema document.
  *
@@ -42,7 +41,7 @@ public final class CommandLoader {
 
 	/**
 	 * <p>Loads the default <code>XML</code> file containing command descriptors. The default command descriptor file is
-	 * located in the directory that is set with the {@link UserEnvironment#CONFIGURATION_DIRECTORY_PROPERTY}. The
+	 * located in the directory that is set with the {@link nl.toolforge.karma.core.prefs.Preferences#CONFIGURATION_DIRECTORY_PROPERTY}. The
 	 * default command descriptor <code>XML</code> file is designated with {@link Command#DEFAULT_COMMAND_FILE}.
 	 *
 	 * @return A <code>Set</code> of {@link nl.toolforge.karma.core.cmd.DefaultCommand} instances.
@@ -61,8 +60,6 @@ public final class CommandLoader {
 	 * @return A <code>Set</code> of {@link nl.toolforge.karma.core.cmd.DefaultCommand} instances.
 	 */
 	Set load(String resource) throws KarmaException {
-
-		System.out.println(resource);
 
 		// TODO : I would like to parse this thing using a Digester, yet my first attempts failed.
 

@@ -6,6 +6,10 @@
 	<name>Karma Command Line Interface Module</name>
 	<id>karma-cli</id>
 	<currentVersion>2.0-dev</currentVersion>
+	<organization>
+		<name>Sourceforge</name>
+		<url>http://toolforge.sourceforge.net/</url>
+	</organization>
 	<package>nl.toolforge.karma.cli</package>
 
 	<dependencies>
@@ -88,8 +92,6 @@
 
 		<sourceDirectory>src/java/</sourceDirectory>
 		<unitTestSourceDirectory>src/java</unitTestSourceDirectory>
-
-		<integrationUnitTestSourceDirectory/>
 
 		<unitTest>
 			<includes>

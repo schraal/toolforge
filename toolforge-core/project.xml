@@ -4,6 +4,7 @@
 
 	<pomVersion>3</pomVersion>
 	<name>Toolforge Core Functionality</name>
+        <groupId>toolforge</groupId>
 	<id>toolforge-core</id>
 	<currentVersion>1.0-dev</currentVersion>
 	<package>nl.toolforge.core</package>

@@ -13,6 +13,7 @@
         <root type="simple" url="file://$PROJECT_DIR$/karma-cli/src/java" />
         <root type="simple" url="file://$PROJECT_DIR$/toolforge-core/src/java" />
         <root type="simple" url="file://$PROJECT_DIR$/karma-core/src/java" />
+        <root type="simple" url="file://$PROJECT_DIR$/karma-launcher/src/java" />
       </root>
     </sourcePath>
     <classPath>
@@ -42,16 +43,6 @@
     <option name="SYNCHRONIZE_OUTPUT_DIRECTORY" value="false" />
     <option name="DEFAULT_OUTPUT_PATH" value="$PROJECT_DIR$/build" />
     <option name="OUTPUT_MODE" value="single" />
-    <excludeFromCompile>
-      <file url="file://$PROJECT_DIR$/karma-core/src/java/nl/toolforge/karma/core/cmd/manifest-example.xml" />
-      <file url="file://$PROJECT_DIR$/karma-cli/src/java/nl/toolforge/karma/cli/package.html" />
-      <file url="file://$PROJECT_DIR$/karma-core/src/java/nl/toolforge/karma/core/package.html" />
-      <file url="file://$PROJECT_DIR$/karma-core/src/java/nl/toolforge/karma/core/vc/package.html" />
-      <file url="file://$PROJECT_DIR$/karma-core/src/java/nl/toolforge/karma/core/vc/subversion/package.html" />
-      <file url="file://$PROJECT_DIR$/karma-core/src/java/nl/toolforge/karma/core/vc/cvs/package.html" />
-      <file url="file://$PROJECT_DIR$/karma-core/src/java/nl/toolforge/karma/core/expr/package.html" />
-      <file url="file://$PROJECT_DIR$/toolforge-core/src/java/nl/toolforge/core/package.html" />
-    </excludeFromCompile>
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html)" />
       <entry name=".+\.(gif|png|jpeg|jpg)" />
@@ -100,7 +91,7 @@
   <component name="WebRootContainer" />
   <component name="EjbManager" enabled="false" />
   <component name="JUnitProjectSettings">
-    <option name="TEST_RUNNER" value="UI" />
+    <option name="TEST_RUNNER" value="Text" />
   </component>
   <component name="EntryPointsManager">
     <entry_points />

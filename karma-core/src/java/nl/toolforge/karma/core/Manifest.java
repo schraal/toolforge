@@ -30,6 +30,8 @@ public interface Manifest {
      */
     public ModuleList getModules();
 
+	public void addModule(Module module);
+
     /**
      * <p>Creates a module and includes the module in the manifest instance. If the module
      * does not yet exist in the version control system provided, this method will try and

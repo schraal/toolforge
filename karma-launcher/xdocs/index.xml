@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+
+<document>
+
+ <properties>
+  <title>Karma Launcher Overview</title>
+  <author email="oosterom@wisdom.nl">Martin Oosterom</author>
+ </properties>
+
+ <body>
+
+ <section name="What is the Karma Launcher?">
+
+ <p>
+	The Karma Launcher is a tool that can launch an application. The classes needed by
+	the application are loaded through a KarmaClassLoader called <code>karma.root</code>.
+	This ClassLoader is available through the KarmaClassLoaderRepository. The 
+	KarmaClassLoaderRepository can contain several classloaders. These classloaders are independent
+	of eachother. The Karma Launcher gives an application the opportunity to execute/invoke
+	other java applications inside a single virtual machine, without clashes between versions 
+	of jars used by these applications. The jars needed by the application are automatically
+	downloaded from a remote repository and stored locally.
+ </p>
+</section>
+<section name="Karma Launcher Configuration">
+ <p>
+	The Karma Launcher needs/allows several configuration items.
+	<ul>
+		<li>
+			KarmaClassLoaderRepository configuration
+		</li>
+		<li>
+			The configuration of the remote repositories.
+		</li>
+		<li>
+			The configuration of the local repositories.
+		</li> 
+	
+	</ul>
+ </p>
+ <subsection name="KarmaClassLoaderRepository configuration.">
+	The configuration of the <code>KarmaClassLoaderRepository</code> is done 
+	through a file. The name and location of the configuration file is defined 
+	through the system property <code>karma.classloaderrepository.config</code>. The
+	file is first searched on the filesystem, if it is not found there, it
+	is searched on the classpath.
+</subsection>
+ <subsection name="LocalRepository configuration.">
+
+</subsection>
+ <subsection name="RemoteRepository configuration.">
+
+</subsection>
+ </section>
+ </body>
+ </document>

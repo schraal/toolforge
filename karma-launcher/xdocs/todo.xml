@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<document>
+
+ <properties>
+  <title>Todo</title>
+  <author email="asmedes@wisdom.nl">Arjen Smedes</author>
+ </properties>
+
+ <body>
+
+ <section name="List of issues that should be solved with some next release.">
+
+  <ul>
+    <li/>Inclusion of Log4j as the default logging mechanism.
+  </ul>
+
+ </section>
+
+ </body>
+
+</document>

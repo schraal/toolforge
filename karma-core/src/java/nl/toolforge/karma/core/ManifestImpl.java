@@ -31,42 +31,43 @@ public class ManifestImpl implements Manifest {
 			throw new KarmaRuntimeException("Manifest name should not be null or an empty string.");
 		}
 		this.manifestName = manifestName;
+		this.modules = new ModuleList();
     }
 
-    public ModuleList getModules() {
+    public final ModuleList getModules() {
         return modules;
     }
 
 	/**
-	 * Adds a <code>Module</code> instance to the
+	 * Adds a <code>Module</code> instance to this manifest. Not the same as {@link #createModule} !
 	 */
-	public void addModule(Module module) {
+	public final void addModule(Module module) {
 		modules.add(module);
 	}
 
-    public Module createModule(VersionControlSystem vcs, String name) throws KarmaException {
+    public final Module createModule(VersionControlSystem vcs, String name) throws KarmaException {
         return null;
     }
 
-    public Module createModule(VersionControlSystem vcs, String name, boolean b) throws KarmaException {
+    public final Module createModule(VersionControlSystem vcs, String name, boolean b) throws KarmaException {
         return null;
     }
 
-    public File getPath() {
+    public final File getPath() {
 
         return new File("");
     }
 
 	public int countSourceModules() {
-		return 0;
+		return getModules().getSourceModules().size();
 	}
 
 	public int countAllModules() {
-		return 0;
+		return getModules().size();
 	}
 
 	public int countJarModules() {
-		return 0;
+		return getModules().getJarModules().size();
 	}
 
 	public String getName() {
