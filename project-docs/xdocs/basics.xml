@@ -11,7 +11,8 @@
   <section name="Modules, Manifests and Components">
 
   <p>
-    The smallest unit that is managed by Karma is a <b>Module</b>. A module is
+    The smallest unit that is managed by Karma is a
+    <b><a href='reference/modules/index.html'>Module</a></b>. A module is
     a directory structure, containing source code, unit tests, documentation,
     configuration and the like. Nothing new here. Modules are stored in a
     version control repository (like CVS, Subversion, Clearcase and Perforce)
@@ -24,7 +25,7 @@
     Karma uses the concept of a <b>Manifest</b> to group software modules. A
     group of software modules can be called a component, but we have chosen to
     refrain from the academic discussion about the definition of a software
-    component. Karma doesn't care ! A manifest is an XML definition for
+    component. Karma doesn't care! A manifest is an XML definition for
     modules and other manifests (the so-called manifest-includes). Manifests
     are covered in much more detail in the <a
     href="reference/manifests/index.html">Reference Documentation</a>, but

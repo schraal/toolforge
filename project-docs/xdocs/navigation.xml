@@ -18,6 +18,7 @@
         <item name="Administration Guide" href="administration-guide.html"/>
       </item>
       <item name="News and Status"        href="news.html"/>
+      <item name="DOWNLOAD"               href="http://sourceforge.net/project/showfiles.php?group_id=98766"/>
     </menu>
 
     <menu name="Questions and Concerns">
@@ -51,11 +52,15 @@
       <item name="Manifests" href="/reference/manifests/index.html"/>
 
       <item name="Modules" href="/reference/modules/index.html" collapse="false">
+        <item name="Module versions" href="/reference/modules/module-versions.html" />
+        <item name="Module versions" href="/reference/modules/module-history.html" />
         <item name="Layout" href="/reference/modules/layout.html" />
-        <item name="Library Module" href="/reference/modules/index.html" />
-        <item name="Java Source Module" href="/reference/modules/index.html" />
-        <item name="Java Web Application" href="/reference/modules/index.html" />
-        <item name="Java Enterprise Application" href="/reference/modules/index.html" />
+        <item name="Library module" href="/reference/modules/lib-module.html" />
+        <item name="Java source module" href="/reference/modules/src-module.html" />
+        <item name="Java application" href="/reference/modules/app-module.html" />
+        <item name="Java web application" href="/reference/modules/webapp-module.html" />
+        <item name="Java enterprise application" href="/reference/modules/eapp-module.html" />
+        <item name="Other" href="/reference/modules/other-module.html" />
       </item>
 
       <item name="Configuration Management" href="/reference/configuration-management/index.html" collapse="true">
