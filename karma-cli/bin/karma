@@ -37,10 +37,8 @@ for JAR in $JARS ; do
   CLASSPATH=$CLASSPATH:$JAR
 done
 
-echo "Loading plugins ..."
 PLUGINS=`ls $KARMA_HOME/lib/plugins/*.jar 2>/dev/null`
 for PLUGIN in $PLUGINS ; do
-  echo "  plugin ${PLUGIN} found."	
   CLASSPATH=$CLASSPATH:$PLUGIN
 done
 
@@ -53,7 +51,7 @@ KARMA_LAUNCHER_JAR=`ls $KARMA_HOME/lib/karma-launcher*.jar`
 
 # Now finally we are able to run karma
 #
-$JAVACMD -cp $KARMA_LAUNCHER_JAR -DKARMA_CLASSPATH=$CLASSPATH -Dkarma.home=$KARMA_HOME -Dloglevel=DEBUG nl.toolforge.karma.launcher.KarmaLauncher nl.toolforge.karma.cli.FireAway $@
+$JAVACMD -cp $KARMA_LAUNCHER_JAR -DKARMA_CLASSPATH=$CLASSPATH -Dkarma.home=$KARMA_HOME -Dloglevel=DEBUG -Dantloglevel=ERROR nl.toolforge.karma.launcher.KarmaLauncher nl.toolforge.karma.cli.FireAway $@
 
 
 
