@@ -4,12 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.commons.io.FileUtils;
-
 import junit.framework.TestCase;
 import nl.toolforge.core.util.file.MyFileUtils;
 
-public class TestLocalEnvironment extends TestCase {
+public final class TestLocalEnvironment extends TestCase {
 
   private static File f1;
   private static File f2;
@@ -34,7 +32,7 @@ public class TestLocalEnvironment extends TestCase {
   }
 
 
-  public void testConstructor() {
+  public static final void testConstructor() {
     try {
       localEnvironment = LocalEnvironment.getInstance(p);
       assertNotNull(localEnvironment);
@@ -43,7 +41,7 @@ public class TestLocalEnvironment extends TestCase {
     }
   }
 
-  public void testGetDevelopmentHome() {
+  public static final void testGetDevelopmentHome() {
     try {
       assertEquals(f1, localEnvironment.getDevelopmentHome());
 
@@ -60,7 +58,7 @@ public class TestLocalEnvironment extends TestCase {
 
   }
 
-  public void testGetManifestStore() {
+  public static final void testGetManifestStore() {
     try {
       assertEquals(f2, localEnvironment.getManifestStore());
 
@@ -77,7 +75,7 @@ public class TestLocalEnvironment extends TestCase {
 
   }
 
-  public void testGetLocationStore() {
+  public static final void testGetLocationStore() {
     try {
       assertEquals(f3, localEnvironment.getLocationStore());
 

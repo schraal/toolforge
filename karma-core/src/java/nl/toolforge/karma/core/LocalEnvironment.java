@@ -1,15 +1,14 @@
 package nl.toolforge.karma.core;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import nl.toolforge.karma.core.location.LocationException;
-
-import java.io.InputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import nl.toolforge.karma.core.location.LocationException;
 
 /**
  * This class maintains a users' local environment. The local environment is required to properly run Karma tools. It
@@ -31,9 +30,9 @@ import java.util.Properties;
  *
  * @version $Id$
  */
-public class LocalEnvironment {
+public final class LocalEnvironment {
 
-  private static Log logger = LogFactory.getLog(LocalEnvironment.class);
+  private static final Log logger = LogFactory.getLog(LocalEnvironment.class);
 
 
   /** Property that identifies the user's development home directory. */
@@ -56,8 +55,10 @@ public class LocalEnvironment {
   /**
    * Return the one-and-only instance of this class. It will be initialized from file
    * when it does not yet exist.
+   *
+   * @return The one-and-only instance of this class.
    */
-  public static LocalEnvironment getInstance() {
+  public static final LocalEnvironment getInstance() {
     return getInstance(null);
   }
 
@@ -66,8 +67,9 @@ public class LocalEnvironment {
    * Properties object when it does not yet exist.
    *
    * @param properties  Properties object used to initialize the instance.
+   * @return The one-and-only instance of the class.
    */
-  public static LocalEnvironment getInstance(Properties properties) {
+  public static final LocalEnvironment getInstance(Properties properties) {
     if (localEnvironment == null) {
       localEnvironment = new LocalEnvironment(properties);
     } else {
@@ -107,6 +109,7 @@ public class LocalEnvironment {
         configuration = properties;
       }
 
+      //create the directories, if necessary
       try {
         getDevelopmentHome().mkdir();
         getManifestStore().mkdir();
@@ -133,7 +136,7 @@ public class LocalEnvironment {
    * @param configFile  The config file to write.
    * @throws IOException  When the config file could not be created.
    */
-  private void createDefaultProperties(File configFile) throws IOException {
+  private final void createDefaultProperties(File configFile) throws IOException {
     String karmaBase = System.getProperty("user.home")+File.separator+"karma"+File.separator;
     configuration.put(DEVELOPMENT_HOME_DIRECTORY, karmaBase+"projects");
     configuration.put(MANIFEST_STORE_DIRECTORY, karmaBase+"manifests");
