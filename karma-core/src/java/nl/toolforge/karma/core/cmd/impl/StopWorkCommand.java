@@ -18,28 +18,31 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.Version;
+import java.io.IOException;
+import java.util.Map;
+
+import org.apache.commons.io.FileUtils;
+
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
+import nl.toolforge.karma.core.cmd.event.ErrorEvent;
 import nl.toolforge.karma.core.cmd.event.MessageEvent;
 import nl.toolforge.karma.core.cmd.event.SimpleMessage;
-import nl.toolforge.karma.core.cmd.event.ErrorEvent;
 import nl.toolforge.karma.core.manifest.BaseModule;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ReleaseManifest;
+import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.AuthenticationException;
+import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.cvsimpl.AdminHandler;
-import nl.toolforge.karma.core.vc.cvsimpl.Utils;
-import org.apache.commons.io.FileUtils;
-
-import java.io.IOException;
+import nl.toolforge.karma.core.vc.cvsimpl.CVSModuleStatus;
+import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
 
 /**
  *
@@ -128,7 +131,8 @@ public class StopWorkCommand extends DefaultCommand {
         // Update to the latest available version (in a DevelopmentLine).
         //
         Runner runner = RunnerFactory.getRunner(module.getLocation());
-        runner.checkout(module, module.getVersion());
+        ModuleStatus status = new CVSModuleStatus(module, ((CVSRunner) runner).log(module));
+        runner.checkout(module, status.getLastVersion());
 
         if (m instanceof ReleaseManifest) {
           m.setState(module, Module.STATIC);
