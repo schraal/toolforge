@@ -120,9 +120,6 @@ public class Version implements Cloneable, Comparable {
   }
 
   private void createVersionNumber() {
-
-    // For the time being, let it go ... if a runtime occurs, fine, then I know I have to do something.
-    //
     this.versionNumber = "" + versionDigits[0];
     for (int i = 1; i < versionDigits.length; i++) {
       this.versionNumber += VERSION_SEPARATOR_CHAR + versionDigits[i];
@@ -220,6 +217,15 @@ public class Version implements Cloneable, Comparable {
     setDigit(getLastDigitIndex(), getLastDigit() + 1);
   }
 
+  /**
+   * Increases this Version to the next major version by increasing
+   * the first digit of the version and setting the second digit to "0".
+   */
+  public void increaseMajor() {
+    setDigit(FIRST_DIGIT, versionDigits[0] + 1);
+    setDigit(SECOND_DIGIT, 0);
+  }
+  
   public Object clone() throws CloneNotSupportedException {
     return super.clone();
   }

@@ -49,4 +49,12 @@ public class Patch extends Version {
     return VERSION_PATTERN_STRING;
   }
 
+  /**
+   * Overridden to throw an IllegalStateException because you cannot increase the major
+   * version number of a patch version. 
+   * @see nl.toolforge.karma.core.Version#increaseMajor()
+   */
+  public void increaseMajor() {
+    throw new IllegalStateException("IncreaseMajor() is not supported for patch versions.");
+  }
 }

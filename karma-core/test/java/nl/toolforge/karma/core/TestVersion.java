@@ -175,4 +175,44 @@ public class TestVersion extends TestCase {
     assertEquals(v1.createPatch(1), new Patch("0-2-1"));
   }
 
+  public void testIncrease() {
+    Version v1 = new Version("0-1");
+    Version v2 = new Version("0-99");
+    
+    v1.increase();
+    v2.increase();
+    
+    assertEquals("0-2",   v1.getVersionNumber());
+    assertEquals("0-100", v2.getVersionNumber());
+    
+    Version p1 = new Patch("0-1-1");
+    Version p2 = new Patch("0-1-99");
+    
+    p1.increase();
+    p2.increase();
+    
+    assertEquals("0-1-2",   p1.getVersionNumber());
+    assertEquals("0-1-100", p2.getVersionNumber());
+  }
+  
+  public void testIncreaseMajor() {
+    Version v1 = new Version("0-1");
+    Version v2 = new Patch("0-1-1");
+    
+    v1.increaseMajor();
+    
+    assertEquals("1-0", v1.getVersionNumber());
+    
+    v1.increaseMajor();
+    
+    assertEquals("2-0", v1.getVersionNumber());
+    
+    try {
+      v2.increaseMajor();
+      
+      fail("Increasing the major version of a Patch should have thrown an exception.");
+    } catch (Exception e) {
+      assertTrue(e instanceof IllegalStateException);
+    }
+  }
 }
