@@ -69,6 +69,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import net.sf.sillyexceptions.OutOfTheBlueException;
+
 /**
  * <p>Runner class for CVS. Executes stuff on a CVS repository.
  * <p/>
@@ -242,7 +244,7 @@ public final class CVSRunner implements Runner {
 
     //todo: proper exception handling
     try {
-      MyFileUtils.makeWriteable(module.getBaseDir());
+      MyFileUtils.makeWriteable(module.getBaseDir(), true);
     } catch (Exception e) {
       logger.error("Exception when making module writeable just before checking it out.", e);
     }
@@ -273,6 +275,7 @@ public final class CVSRunner implements Runner {
     // The checkout directory for a module has to be relative to
 
     executeOnCVS(checkoutCommand, module.getBaseDir().getParentFile(), arguments);
+    updateModuleHistoryXml(module);
 
     if (readonly) {
       MyFileUtils.makeReadOnly(module.getBaseDir());
@@ -288,6 +291,21 @@ public final class CVSRunner implements Runner {
    */
   public void update(Module module) throws CVSException {
     update(module, null);
+  }
+
+  private void updateModuleHistoryXml(Module module) throws CVSException {
+    logger.debug("Updating history.xml to HEAD.");
+    UpdateCommand command = new UpdateCommand();
+    try {
+      ModuleHistoryFactory factory = ModuleHistoryFactory.getInstance(module.getBaseDir());
+      File historyLocation = factory.getModuleHistory(module).getHistoryLocation();
+      command.setFiles(new File[]{historyLocation});
+      command.setResetStickyOnes(true);
+      executeOnCVS(command, module.getBaseDir(), null);
+      logger.debug("Done updating history.xml to HEAD.");
+    } catch (ModuleHistoryException mhe) {
+      logger.error("ModuleHistoryException when updating module history to HEAD", mhe);
+    }
   }
 
   /**
@@ -321,6 +339,7 @@ public final class CVSRunner implements Runner {
     // todo add data to the exception. this sort of business logic should be here, not in CVSResponseAdapter.
     //
     executeOnCVS(updateCommand, module.getBaseDir(), arguments);
+    updateModuleHistoryXml(module);
 
     if (readonly) {
       MyFileUtils.makeReadOnly(module.getBaseDir());
@@ -441,7 +460,7 @@ public final class CVSRunner implements Runner {
     try {
       //Add an event to the module history.
       String author = ((CVSRepository) module.getLocation()).getUsername();
-      addModuleHistoryEvent(null, module, ModuleHistoryEvent.PROMOTE_MODULE_EVENT, version, new Date(), author, comment);
+      addModuleHistoryEvent(module, ModuleHistoryEvent.PROMOTE_MODULE_EVENT, version, new Date(), author, comment);
 
       tag(module, version);
     } catch (ModuleHistoryException mhe) {
@@ -523,7 +542,7 @@ public final class CVSRunner implements Runner {
       String author = ((CVSRepository) module.getLocation()).getUsername();
       tag(module, new CVSTag(module.getPatchLine().getName()), true);
 
-      addModuleHistoryEvent(module.getPatchLine(), module, ModuleHistoryEvent.CREATE_PATCH_LINE_EVENT, module.getVersion(), new Date(), author, "Patch line created by Karma");
+      addModuleHistoryEvent(module, ModuleHistoryEvent.CREATE_PATCH_LINE_EVENT, module.getVersion(), new Date(), author, "Patch line created by Karma");
 
     } catch (ModuleHistoryException mhe) {
       logger.error("Writing the history.xml failed", mhe);
@@ -640,7 +659,6 @@ public final class CVSRunner implements Runner {
    * exist yet (in case of a new module) it is newly created. When the history does exist
    * the event is added to the history.
    *
-   * @param developmentLine  The location on disk where the module has been checked out.
    * @param module                  The module involved.
    * @param eventType               The type of {@link ModuleHistoryEvent}.
    * @param version                 The version that the module is promoted to.
@@ -650,7 +668,6 @@ public final class CVSRunner implements Runner {
    * @throws CVSException           Thrown in case something goes wrong with CVS
    */
   private void addModuleHistoryEvent(
-      DevelopmentLine developmentLine,
       Module module,
       String eventType,
       Version version,
@@ -668,15 +685,30 @@ public final class CVSRunner implements Runner {
       event.setAuthor(author);
       event.setComment(comment);
       history.addEvent(event);
-      if (history.getHistoryLocation().exists()) {
-        //history already exists. commit changes.
-        history.save();
-        commit(developmentLine, module, new File(module.getBaseDir(), ModuleHistory.MODULE_HISTORY_FILE_NAME), "History updated by Karma");
-      } else {
-        //history did not exist yet. add to CVS and commit it.
-        history.save();
-        add(module, new String[]{history.getHistoryLocation().getName()}, null);
+
+      try {
+        MyFileUtils.makeWriteable(new File(module.getBaseDir(), "CVS"), true);
+        if (history.getHistoryLocation().exists()) {
+           //history already exists. commit changes.
+          MyFileUtils.makeWriteable(history.getHistoryLocation(), false);
+          history.save();
+
+          //development line is null, since the history.xml is always committed in the HEAD.
+          commit(null, module, new File(module.getBaseDir(), ModuleHistory.MODULE_HISTORY_FILE_NAME), "History updated by Karma");
+        } else {
+          //history did not exist yet. add to CVS and commit it.
+          history.save();
+          add(module, new String[]{history.getHistoryLocation().getName()}, null);
+        }
+        MyFileUtils.makeReadOnly(module.getBaseDir());
+      } catch (IOException ioe) {
+        logger.error("Error when making history.xml readonly/writeable", ioe);
+      } catch (InterruptedException ie) {
+        logger.error("Error when making history.xml readonly/writeable", ie);
       }
+    } else {
+      //history wel null. EN NU?! todo
+      throw new OutOfTheBlueException("If this happens something rrreally went wrong with the history");
     }
   }
 
