@@ -1,6 +1,6 @@
 package nl.toolforge.karma.core.vc.cvs;
 
-import nl.toolforge.karma.core.cmd.DefaultCommandMessage;
+import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
 
 import java.util.Collection;
 
@@ -11,7 +11,7 @@ import java.util.Collection;
  * 
  * @version $Id:
  */
-public final class CVSCommandMessage extends DefaultCommandMessage {
+public final class CVSCommandMessage extends SimpleCommandMessage {
 
   //public Collection events = null;
 

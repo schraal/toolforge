@@ -19,53 +19,54 @@ import java.util.HashSet;
  */
 public abstract class CommandResponse {
 
-	private List commandMessages = null;
+  private List commandMessages = null;
 
   private Set statusUpdates = null;
 
-	// Contains the exception that was thrown during execution of the command
-	//
-	private Exception commandException = null;
+  // Contains the exception that was thrown during execution of the command
+  //
+  private Exception commandException = null;
 
-	public CommandResponse() {
-		commandMessages = new ArrayList();
+  public CommandResponse() {
+    commandMessages = new ArrayList();
     statusUpdates = new HashSet();
-	}
+  }
 
-	/**
-	 * When a command is run, the command response will catch <code>KarmaException</code>s. This method returns the
-	 * exception as it was thrown. Interface applications are recommended to handle command errors nicely by quering
-	 * the <code>CommandResponse</code> and not by requesting <code>getException().getMessage()</code>.
-	 *
-	 * @return The exception that was thrown during execution of the command.
-	 */
-	public KarmaException getException() {
-		return (KarmaException) commandException;
-	}
+  /**
+   * When a command is run, the command response will catch <code>KarmaException</code>s. This method returns the
+   * exception as it was thrown. Interface applications are recommended to handle command errors nicely by quering
+   * the <code>CommandResponse</code> and not by requesting <code>getException().getMessage()</code>.
+   *
+   * @return The exception that was thrown during execution of the command.
+   */
+  public KarmaException getException() {
+    return (KarmaException) commandException;
+  }
 
-	/**
-	 * Checks if the command execution resulted in a response that is worth querying.
-	 *
-	 * @return <code>true</code> When this command response has something to tell.
-	 */
-	public final boolean hasResponse() {
-		return true;
-	}
+  /**
+   * Checks if the command execution resulted in a response that is worth querying.
+   *
+   * @return <code>true</code> When this command response has something to tell.
+   */
+  public final boolean hasResponse() {
+    return true;
+  }
 
-	/**
-	 * Gets all command messages in an array.
-	 *
-	 * @return An array of <code>CommandMessage</code> objects.
-	 */
-	public final CommandMessage[] getMessages() {
-     return (CommandMessage[]) commandMessages.toArray();
-	}
+  /**
+   * Gets all command messages in an array.
+   *
+   * @return An array of <code>CommandMessage</code> objects.
+   */
+  public final CommandMessage[] getMessages() {
 
-	public abstract void addMessage(CommandMessage message);
+    return (CommandMessage[]) commandMessages.toArray(new SimpleCommandMessage[commandMessages.size()]);
+  }
 
-	protected void add(CommandMessage message) {
-		commandMessages.add(message);
-	}
+  public abstract void addMessage(CommandMessage message);
+
+  protected void add(CommandMessage message) {
+    commandMessages.add(message);
+  }
 
   /**
    * The response maintains an list of status updates that have been set by commands. For instance, a CVS repository

@@ -40,4 +40,5 @@ public abstract class ListManifests extends DefaultCommand {
 		}
 		return manifests;
 	}
+
 }

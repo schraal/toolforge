@@ -2,7 +2,6 @@ package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
 import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -44,7 +43,7 @@ public final class CommandLoader {
    * located in the directory that is set with the {@link nl.toolforge.karma.core.prefs.Preferences#CONFIGURATION_DIRECTORY_PROPERTY}. The
    * default command descriptor <code>XML</code> file is designated with {@link Command#DEFAULT_COMMAND_FILE}.
    *
-   * @return A <code>Set</code> of {@link nl.toolforge.karma.core.cmd.DefaultCommand} instances.
+   * @return A <code>Set</code> of {@link nl.toolforge.karma.core.cmd.CommandDescriptor} instances.
    */
   Set load() throws KarmaException {
 
@@ -104,7 +103,7 @@ public final class CommandLoader {
               Element optionElement = (Element) optionsElement.item(j);
 
               String opt = optionElement.getAttribute("opt");
-              String longOpt = optionElement.getAttribute("longOpts");
+              String longOpt = optionElement.getAttribute("longOpt");
 
               // Add an options' arguments
               //
@@ -113,33 +112,16 @@ public final class CommandLoader {
 
               NodeList argElements = optionElement.getElementsByTagName("arg");
 
+              option = new Option(opt, longOpt, hasArgs, optionElement.getAttribute("description"));
+              option.setRequired(required);
+
               if (hasArgs) {
 
                 for (int k = 0; k < argElements.getLength(); k++) {
 
                   Element argElement = (Element) argElements.item(k);
-
-                  option = new Option(opt, longOpt, required, optionElement.getAttribute("description"));
                   option.setArgName(argElement.getAttribute("name"));
-                  option.setArgs(1);
-
-
-//                  option =
-//                    OptionBuilder.withArgName(argElement.getAttribute("name"))
-//                    .hasArg()
-//                    .isRequired(required)
-//                    .withDescription(optionElement.getAttribute("description"))
-//                    .create(opt);
                 }
-              } else {
-                // Simple boolean option
-                //
-                option = new Option(
-                  opt,
-                  longOpt,
-                  required,
-                  optionElement.getAttribute("description")
-                );
               }
 
               // We have an option for this command and add it to the Options container

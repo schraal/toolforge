@@ -131,4 +131,7 @@ public final class CommandDescriptor {
     //
     return name.hashCode();
   }
+
 }
+
+

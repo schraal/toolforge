@@ -4,17 +4,17 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- *
+ * Simple implementation of a command message.
  *
  * @author D.A. Smedes 
  * 
  * @version $Id:
  */
-public abstract class DefaultCommandMessage implements CommandMessage {
+public class SimpleCommandMessage implements CommandMessage {
 
   private String message = null;
 
-  public DefaultCommandMessage(String message) {
+  public SimpleCommandMessage(String message) {
     this.message = message;
   }
 

@@ -86,9 +86,9 @@ public final class CommandContext {
    * Changes the current manifest for this context.
    *
    * @param manifestName
-   * @throws KarmaException
+   * @throws ManifestException When the manifest could not be changed. See {@link ManifestException#MANIFEST_LOAD_ERROR}.
    */
-  public void changeCurrent(String manifestName) throws KarmaException {
+  public void changeCurrent(String manifestName) throws ManifestException {
     currentManifest = manifestLoader.load(manifestName);
   }
 
@@ -165,6 +165,10 @@ public final class CommandContext {
       return new SubversionRunner(module.getLocation());
     }
     throw new KarmaRuntimeException("Location instance invalid.");
+  }
+
+  public boolean isManifestLoaded() {
+    return (currentManifest != null);
   }
 
 }

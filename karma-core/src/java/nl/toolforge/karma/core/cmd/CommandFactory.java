@@ -1,12 +1,6 @@
 package nl.toolforge.karma.core.cmd;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
@@ -28,11 +22,14 @@ public final class CommandFactory {
 
   // Reference to all loaded commands
   //
-  private static Map commands = null;
+//  private static Map commands = null;
 
   // Reference ro all command names
   //
   private static Set commandNames = null;
+
+  private static Map commandsByName = null;
+  private static Map commandsByAlias = null;
 
   /**
    * Only static methods
@@ -40,14 +37,17 @@ public final class CommandFactory {
   private CommandFactory() throws KarmaException {
 
     Set descriptors = CommandLoader.getInstance().load();
-    commands = new Hashtable();
+    //commands = new Hashtable();
+    commandsByName = new TreeMap();
+    commandsByAlias = new TreeMap();
 
     // Store all commands by name in a hash
     //
     for (Iterator i = descriptors.iterator(); i.hasNext();) {
       CommandDescriptor descriptor = (CommandDescriptor) i.next();
-      commands.put(descriptor.getName(), descriptor);
-      commands.put(descriptor.getAlias(), descriptor);
+
+      commandsByName.put(descriptor.getName(), descriptor);
+      commandsByAlias.put(descriptor.getAlias(), descriptor);
     }
 
     // Create a set of all command names.
@@ -105,33 +105,21 @@ public final class CommandFactory {
     if (isCommand(commandName)) {
 
       try {
-        CommandDescriptor descriptor = (CommandDescriptor) commands.get(commandName);
-
-        HelpFormatter f = new HelpFormatter();
-        f.printHelp(descriptor.getName(), descriptor.getOptions());
+        CommandDescriptor descriptor = getCommandDescriptor(commandName);
 
         // Construct the command implementation, with the default constructor
         //
-        Constructor defaultConstructor = descriptor.getImplementation().getConstructor(new Class[]{CommandDescriptor.class});
+        Constructor defaultConstructor =
+          descriptor.getImplementation().getConstructor(new Class[]{CommandDescriptor.class});
+
         cmd = (Command) defaultConstructor.newInstance(new Object[]{descriptor});
 
         // Parse the command line options.
         //
         CommandLineParser parser = new PosixParser();
-        CommandLine commandLine = parser.parse(cmd.getOptions(), commandOptions);
+//        CommandLine commandLine = parser.parse(cmd.getOptions(), commandOptions);
+        parser.parse(cmd.getOptions(), commandOptions);
 
-        // Based on the parsed commandline and the Options we have created in the descriptor, we can
-        // really validate.
-        //
-        for (Iterator i = descriptor.getOptions().getRequiredOptions().iterator(); i.hasNext();) {
-
-          Option requiredOption = (Option) i.next();
-
-          if (commandLine.hasOption(requiredOption.getArgName())) {
-
-          }
-
-        }
       } catch (NoSuchMethodException e) {
         throw new CommandException(CommandException.INVALID_COMMAND, e);
       } catch (SecurityException e) {
@@ -172,17 +160,23 @@ public final class CommandFactory {
   }
 
   public Collection getCommands() {
-    return commands.values();
+    return commandsByName.values();
   }
-//
-//  public String getRenderedCommands(String commandName) {
-//
-//    CommandDescriptor descriptor = (CommandDescriptor) commands.get(commandName);
-//
-//    HelpFormatter formatter = new HelpFormatter();
-//
-//    return null;
-//  }
 
+  /**
+   * Retrieves the correct command descriptor either by name or by alias (whichever is passed as a
+   * parameter).
+   */
+  private CommandDescriptor getCommandDescriptor(String commandId) {
+
+    if (commandsByName.containsKey(commandId)) {
+      return (CommandDescriptor) commandsByName.get(commandId);
+    } else {
+      if (commandsByAlias.containsKey(commandId)) {
+        return (CommandDescriptor) commandsByAlias.get(commandId);
+      }
+    }
+    return null;
+  }
 
 }

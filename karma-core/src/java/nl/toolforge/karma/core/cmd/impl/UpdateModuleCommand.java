@@ -2,6 +2,7 @@ package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.Module;
+import nl.toolforge.karma.core.Manifest;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
@@ -31,15 +32,19 @@ public class UpdateModuleCommand extends DefaultCommand {
   }
 
   /**
-   * Creates an UpdateModuleCommand.
+   * Executes this command. The command will update the module from the version control system. An update is done when
+   * the module is already present, otherwise a fresh checkout will be done.
    *
-   * @param descriptor See {@link DefaultCommand}.
+   * @throws KarmaException When no manifest is loaded, a {@link CommandException#NO_MANIFEST_SELECTED} is thrown. For
+   *   other errors, a more generic {@link KarmaException} is thrown.
    */
-//	public UpdateModuleCommand(CommandDescriptor descriptor) throws KarmaException {
-//		super(descriptor);
-//	}
-
   public CommandResponse execute() throws KarmaException {
+
+    // A manifest must be present for this command
+    //
+    if (!getContext().isManifestLoaded()) {
+      throw new CommandException(CommandException.NO_MANIFEST_SELECTED);
+    }
 
     String moduleName = getOptions().getOption("m").getValue();
 
@@ -48,7 +53,6 @@ public class UpdateModuleCommand extends DefaultCommand {
     } catch (KarmaException e) {
       throw (CommandException) e;
     }
-
 
     Runner runner = getContext().getRunner(module);
 

@@ -2,8 +2,6 @@ package nl.toolforge.karma.core;
 
 import nl.toolforge.karma.core.exception.ErrorCode;
 import nl.toolforge.karma.core.prefs.Preferences;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Root exception for <code>nl.toolforge.karma</code> classes. A <code>KarmaException</code> can be initialized with a
