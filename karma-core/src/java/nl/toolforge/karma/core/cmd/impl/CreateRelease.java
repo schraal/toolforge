@@ -27,8 +27,8 @@ import nl.toolforge.karma.core.cmd.CommandLoadException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.CompositeCommand;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.ErrorMessage;
+import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.manifest.Manifest;
@@ -36,14 +36,13 @@ import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.ManifestFactory;
 import nl.toolforge.karma.core.manifest.ManifestLoader;
 import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.Runner;
-import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.ModuleStatus;
-import nl.toolforge.karma.core.vc.threads.ParallelRunner;
+import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvsimpl.Utils;
-import nl.toolforge.karma.core.vc.cvsimpl.CVSException;
 import nl.toolforge.karma.core.vc.cvsimpl.threads.CVSLogThread;
+import nl.toolforge.karma.core.vc.threads.ParallelRunner;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -60,6 +59,8 @@ import java.util.Map;
  */
 public class CreateRelease extends CompositeCommand {
 
+  private static final Log logger = LogFactory.getLog(CreateRelease.class);
+
   private CommandResponse commandResponse = new ActionCommandResponse();
 
   public CreateRelease(CommandDescriptor descriptor) {
@@ -74,7 +75,7 @@ public class CreateRelease extends CompositeCommand {
 
     if (manifestName == null) {
 
-      // The option '-m' is optional, so we use the current manifest
+      // The option '-d' is optional, so we use the current manifest
       //
       if (!getContext().isManifestLoaded()) {
         throw new CommandException(ManifestException.NO_ACTIVE_MANIFEST);
@@ -150,10 +151,6 @@ public class CreateRelease extends CompositeCommand {
     }
 
 
-
-
-
-
     // Ok, ww're ready to go now. Let's collect the latest versions of modules.
     //
 
@@ -190,9 +187,12 @@ public class CreateRelease extends CompositeCommand {
       try {
         writer.close();
       } catch (IOException e) {
-        e.printStackTrace();
+        logger.error(e);
       }
     }
+
+    message = new SuccessMessage(getFrontendMessages().getString("message.CREATE_RELEASE_FINISHED"), new Object[]{releaseName});
+    commandResponse.addMessage(message);
 
     boolean loadManifest = getCommandLine().hasOption("l");
 
@@ -206,7 +206,6 @@ public class CreateRelease extends CompositeCommand {
       }
       command.registerCommandResponseListener(this);
       getContext().execute(command);
-
     }
 
     // todo The included manifests of type 'development' should be release as well.
@@ -224,7 +223,6 @@ public class CreateRelease extends CompositeCommand {
     String l;
 
     n = "\"" + module.getName() + "\"";
-//    t = module.getSourceType().getSourceType();
     l = module.getLocation().getId();
 
     if (module.hasVersion()) {
@@ -244,7 +242,6 @@ public class CreateRelease extends CompositeCommand {
       }
     }
 
-//    return "    <module name=" + n + " type=\"" + t + "\" version=\"" + v + "\" location=\"" + l + "\"/>\n";
     return "    <module name=" + n + " version=\"" + v + "\" location=\"" + l + "\"/>\n";
 
   }
