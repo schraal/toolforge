@@ -42,6 +42,7 @@
       <item name="Manifests" href="/reference/manifests/index.html"/>
 
       <item name="Modules" href="/reference/modules/index.html" collapse="false">
+        <item name="Layout" href="/reference/modules/layout.html" />
         <item name="Library Module" href="/reference/modules/index.html" />
         <item name="Java Source Module" href="/reference/modules/index.html" />
         <item name="Java Web Application" href="/reference/modules/index.html" />
