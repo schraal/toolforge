@@ -105,7 +105,7 @@ public final class KarmaConsole {
     writeln(
         "\n" +
         "      _________________________________\n" +
-        "      Welcome to Karma (R1.0 BETA5) !!!\n" +
+        "      Welcome to Karma (R1.0 BETA6) !!!\n" +
         "\n" +
         "      K     A     R        M        A\n" +
         "      .     .     .        .        .\n" +
