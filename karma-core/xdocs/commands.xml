@@ -4,65 +4,21 @@
 
   <properties>
     <title>Toolforge</title>
-    <author email="asmedes@home.nl">Arjen Smedes</author>
+    <author email="d.a.smedes@toolforge.net">Arjen Smedes</author>
   </properties>
 
   <body>
 
-  <section name="Manifest commands">
+  <section name="Supported commands in version 1.0">
 
-  <p>
-  Manifest commands are not the only commands for which an <code>active</code>
-  manifest is required, but the commands in this section are certainly closely
-  linked to the manifest.
-  </p>
-
-
-  <table>
-    <tr>
-      <th>Command Name</th>
-      <th>Alias</th>
-      <th>Options</th>
-    </tr>
-
-    <tr>
-      <td><code>select-manifest</code></td>
-      <td><code>sm</code></td>
-      <td><code>-m, --manifest-name &lt;manifest-name&gt;</code> (the name of the manifest to activate)</td>
-    </tr>
-    <tr>
-      <td colspan="3">Activates a manifest. During startup, Karma will try and
-      locate the last used manifest. Changing to another manifest can be done
-      using <code>select-manifest</code>. Example : <code>sm -m
-      test-1.0</code> activates the <code>test-1.0</code> manifest from the
-      local manifest repository.</td>
-    </tr>
-
-    <tr>
-      <td><code>view-manifest</code></td>
-      <td><code>vm</code></td>
-      <td></td>
-    </tr>
-    <tr>
-      <td colspan="3">Shows the current status of all modules in the active
-      manifest. The command checks online on a modules' respective location,
-      if a patch (newer version) is available.</td>
-    </tr>
+  <ul>
+    <li/>
+    <li/>
+    <li/>
+    <li/>
 
 
-  </table>
-    
-
-  </section>
-
-  <section name="Module commands">
-
-    
-
-  </section>
-
-  <section name="Other commands">
-
+  </ul>
     
 
   </section>

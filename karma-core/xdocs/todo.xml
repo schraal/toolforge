@@ -7,30 +7,121 @@
 
 <body>
 
-<section name="Outstanding work for the current release">
+<section name="Outstanding work for version 1.0">
 
-<subsection name="Work to do for the current release">
-<p>
-  <ul>
-    <li>finish the karma-core-2.0 release so it can be used in production
-        environments; it is anticipated that the production release is ready
-        early April. Beta-releases will be tested extensively by Wisdom
-        Information Consultants, based in Assen, The Netherlands.</li>
-    <li>make sure that the documentation is up to the standard; developers
-        should</li>
-  </ul>
-</p>
-</subsection>
+<ul>
 
-<subsection name="Current release or next release)">
-<p>
-  <ul>
-    <li>although some base code for Subversion support is included, the
-        implementation will be finished in karma-core_3-0;</li>
-  </ul>
-</p>
-</subsection>
+  <li/><code>list-manifests</code>; shows all manifests that can be used
+  (based on the local contents of the manifest-store.
+
+  <li/><code>select-manifest</code>; makes (another) manifest the current
+  manifest for a karma runtime environment. The current manifest is stored as
+  a java preference (java.util.prefs). The current manifest is maintained in
+  the CommandContext.
+
+  <li/><code>view-manifest</code>; shows the status of a manifest. All modules
+  will be checked against their status in the VCS. Discrepancies between local
+  and remote versions are reported. It is a 'simple' overview.
+
+  <li/><code>update-all</code>; given a manifest, this command should be
+  capable of updating a module, given its location (CVS only for this
+  version). This applies to source-modules only. An update takes a modules'
+  state into account. STATIC modules are updated to the version-attribute that
+  is supplied in the manifest; DYNAMIC modules are matched against the latest
+  promoted version for the branch (development-line) that applies and WORKING
+  modules are updated to the head of the current branch. For each state: when
+  local changes have been made, a notification is given that local changes
+  have been made. The user has the chance (manually !) to check the current
+  status. If state is STATIC or DYNAMIC, the warning is actually an ERROR !
+
+  <li/><code>update-module</code>; see <code>update-all</code>. This command
+  applies to the module supplied.
+
+  <li/><code>create-module</code>; creates a module in the VCS that is
+  supplied in the command as an argument. The basic layout of a module is
+  created in the VCS as well (directory structure, standard files such as
+  module.info). When a module already exists, an error is thrown.
+
+  <li/><code>build-module</code>; the command should be capable of building a
+  module into a jar-file taking into account its dependencies. The jar-file
+  can be taken as an item for other modules as a dependency. Two types of
+  modules are available: source-modules and lib-modules. Only the first should
+  be built as such; lib-modules are merely used as a dependency for other
+  modules. The implementation is based on ANT (and nothing else).
+
+  <li/><code>build-all</code>; builds all modules (the manifest itself).
+
+  <li/><code>promote-module</code>; adds a tag to the module in the VCS on a
+  branch-level. The latest version of a module within a branch is determined
+  and the version is incremented by 1. No fancy schemes are supported.
+
+  <li/><code>module-status</code>; shows the latest status of a module (latest
+  promoted version in the VCS etc.).
+
+  <li/><code>start-work</code>; state transition for a module from DYNAMIC to
+  WORKING. See 'state-management.html'. This implies that a developer can
+  change a module (note that this can never be enforced other than checking
+  out the module as read-only).
+
+  <li/><code>stop-work</code>; state transition for a module from WORKING to
+  DYNAMIC. This transition can only be done when no local changes have been
+  performed. In the latter case, a warning is shown (with a confirmation or
+  manual action required).
+
+  <li/>Other stuff:<br/> 
+
+       <ul> 
+   
+         <li/>Locations as well as manifests should be version managed in a
+              VCS.
+
+         <li/>Windows as well as Linux is supported.
+
+	 <li/>Documentation available : User Guide; *** including the concepts
+	      / development process we perceive ***, proper Javadoc (if only
+	      for ourselves), website (generated with nightly build
+	      mechanism). Very important is a 'management-type'
+	      presentation. Also describe soft issues !!!!
+       
+         <li/>Webstart enabled deployment of the application including all
+              dependencies. The 'KISS' principle.
+
+         <li/>Branching is implicitly part of Karma. Commands are
+              'branch-aware'; e.g. <code>start-work</code> will create a
+              branch if the module is STATIC (this is done after
+              confirmation).
+
+         <li/>See list on Arjen's machine (TODO's in Kontact).
+
+       </ul>
+
+</ul>
 
 </section>
+
+<section name="NOT supported in version 1.0">
+
+<ul>
+
+  <li/>Deployment commands will not be implemented. Local implementations will
+  have to cater for it (such as an ANT build script). This includes properties
+  and resources. It is very important, but not in this release.
+
+  <li/>No graphical user interface will be available.
+
+  <li/>No plugins will be available for IDE's
+
+  <li/>Generating release notes, not even recording the items for the release
+  notes. In later versions, release notes can be generated.
+
+  <li/>No commands for generating documentation is provided.
+
+  <li/>Module history. Older versions etc. 'Tag'-based maybe.
+
+</ul>
+
+</section>
+
 </body>
+
 </document>
