@@ -105,7 +105,7 @@ public final class DependencyHelper {
         }
 
         if (!dependencyJar.exists()) {
-          throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dependencyJar.getPath()});
+          throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getModule()});
         }
 
         s.add(dependencyJar.getPath());
