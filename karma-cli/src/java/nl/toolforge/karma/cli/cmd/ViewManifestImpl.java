@@ -76,9 +76,9 @@ public class ViewManifestImpl extends ViewManifest {
       buffer.append(h3 + StringUtils.repeat(" ",  8 - h3.length()) + "| ");
       buffer.append(h4 + StringUtils.repeat(" ",  8 - h4.length()) + "| ");
       buffer.append(h5 + StringUtils.repeat(" ", 20 - h5.length()) + "| ");
-      buffer.append(h6 + StringUtils.repeat(" ", 20 - h6.length()) + "| ");
+      buffer.append(h6 + StringUtils.repeat(" ", 10 - h6.length()) + "| ");
       buffer.append(h7 + StringUtils.repeat(" ", 20 - h7.length()) + "|\n");
-      buffer.append(StringUtils.repeat("_", 114+13));
+      buffer.append(StringUtils.repeat("_", 104+13));
       buffer.append("\n");
 
       for (Iterator i = renderedData.iterator(); i.hasNext();) {
@@ -95,7 +95,7 @@ public class ViewManifestImpl extends ViewManifest {
         buffer.append(data[2] + StringUtils.repeat(" ",  8 - data[2].length()) + "| ");
         buffer.append(data[3] + StringUtils.repeat(" ",  8 - data[3].length()) + "| ");
         buffer.append(data[4] + StringUtils.repeat(" ", 20 - data[4].length()) + "| ");
-        buffer.append(data[5] + StringUtils.repeat(" ", 20 - data[5].length()) + "| ");
+        buffer.append(data[5] + StringUtils.repeat(" ", 10 - data[5].length()) + "| ");
         buffer.append(data[6] + StringUtils.repeat(" ", 20 - data[6].length()) + "|\n");
       }
 
