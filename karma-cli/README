@@ -67,7 +67,7 @@ Karma can be usefull to you.
 
    <manifest name="helloworld" type="development" version="1-0">
 
-     <modules name="helloworld" type="src" location="local"/>
+     <modules name="helloworld" location="local"/>
 
    </manifest>
 
@@ -110,6 +110,9 @@ Karma can be usefull to you.
 
    The mapping between the manifest and the location is made via 'id="local"'.
 
+   The module 'helloworld', that was configured in step 2 can now be created
+   in the cvs repository configured above. But wait a bit, as this can be done
+   with the create-module command, once Karma is started. Much easier.
 
 3. Version control repositories, such as CVS, can be behind an authentication
    layer. If so, you will need a username and password. Karma maps each location
