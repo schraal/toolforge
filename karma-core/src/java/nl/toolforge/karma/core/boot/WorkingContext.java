@@ -392,13 +392,11 @@ public final class WorkingContext {
     if (module == null) {
       return null;
     }
-    if (module.lastIndexOf("/") > 0) {
-      return module.substring(0, module.lastIndexOf("/"));
-    } else if (module.lastIndexOf("/") > 0) {
-      return module.substring(0, module.lastIndexOf("\\"));
-    } else {
-      return module;
+
+    while (module.endsWith("/")) {
+      module.substring(0, module.length());
     }
+    return module;
   }
 
   /**
@@ -414,13 +412,11 @@ public final class WorkingContext {
     if (module == null) {
       return null;
     }
-    if (module.lastIndexOf("/") > 0) {
-      return module.substring(0, module.lastIndexOf("/"));
-    } else if (module.lastIndexOf("/") > 0) {
-      return module.substring(0, module.lastIndexOf("\\"));
-    } else {
-      return module;
+
+    while (module.endsWith("/")) {
+      module.substring(0, module.length());
     }
+    return module;
   }
 
 
