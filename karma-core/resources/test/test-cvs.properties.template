@@ -2,7 +2,7 @@
 #
 #
 
-# Apply a directory path to the CVS test repository on your local harddisk, e.g. '/tmp/test-CVSROOT/'
-#
-cvs.local.path=/tmp/test-CVSROOT/
+# Apply a directory path to the CVS test repository on your local harddisk, e.g. '/tmp/test-CVSROOT'
+# DO NOT ADD A '/' AT THE END OF THIS PATH.
+cvs.local.path=/tmp/test-CVSROOT
 
