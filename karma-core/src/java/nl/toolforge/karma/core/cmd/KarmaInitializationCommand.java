@@ -45,8 +45,6 @@ public final class KarmaInitializationCommand implements Command {
   private CommandContext commandContext = null;
   private boolean updateStores = false;
 
-  private CommandResponseListener responseListener = null;
-
   /**
    * Constructs a <code>KarmaInitializationCommand</code>.
    */
@@ -152,17 +150,18 @@ public final class KarmaInitializationCommand implements Command {
 
       // Try reloading the last manifest that was used.
       //
-      Manifest currentManifest = commandContext.getWorkingContext().getManifestCollector().loadFromHistory();
-
-      SimpleMessage message =
-          new SimpleMessage(getFrontendMessages().getString("message.MANIFEST_ACTIVATED"), new Object[]{currentManifest});
-      commandResponse.addEvent(new MessageEvent(this, message));
-
-      // Register the command context with the listener to allow automaic updates of the manifest.
-      //
+      Manifest currentManifest = commandContext.getWorkingContext().getManifestCollector().loadManifestFromHistory();
       if (currentManifest != null) {
+        SimpleMessage message =
+            new SimpleMessage(getFrontendMessages().getString("message.MANIFEST_ACTIVATED"), new Object[]{currentManifest});
+        commandResponse.addEvent(new MessageEvent(this, message));
+
+        // Register the command context with the listener to allow automaic updates of the manifest.
+        //
         commandContext.changeCurrentManifest(currentManifest);
         commandContext.register();
+      } else {
+        commandResponse.addEvent(new MessageEvent(this, new SimpleMessage(getFrontendMessages().getString("message.NO_MANIFEST_IN_HISTORY"))));
       }
 
       try {
@@ -241,7 +240,6 @@ public final class KarmaInitializationCommand implements Command {
   }
 
   public final void registerCommandResponseListener(CommandResponseListener responseListener) {
-    this.responseListener = responseListener;
     getCommandResponse().addCommandResponseListener(responseListener);
   }
 

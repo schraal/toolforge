@@ -1,8 +1,7 @@
 package nl.toolforge.karma.core.cmd.event;
 
-import nl.toolforge.karma.core.cmd.Command;
-import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.ErrorCode;
+import nl.toolforge.karma.core.cmd.Command;
 
 /**
  * Indicates some error. This event takes an ErrorCode as its constructor argument, to allow for handling of those
@@ -14,7 +13,6 @@ import nl.toolforge.karma.core.ErrorCode;
 public final class ErrorEvent extends CommandResponseEvent {
 
   private ErrorCode code = null;
-  private Object[] messageArguments = null;
 
   /**
    * Creates the event for <code>command</code>.

@@ -79,7 +79,7 @@ public class ManifestCollector {
    * @return The last used manifest.
    * @throws ManifestException When the manifest referred to by {@link Manifest.HISTORY_KEY} could not be loaded.
    */
-  public Manifest loadFromHistory() throws LocationException, ManifestException {
+  public Manifest loadManifestFromHistory() throws LocationException, ManifestException {
 
     String contextManifest = workingContext.getContextManifestPreference();
 
