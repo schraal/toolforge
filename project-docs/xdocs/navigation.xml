@@ -42,10 +42,17 @@
       <item name="Console" href="/ui/console.html"/>
       <item name="Screenshots" href="/ui/screenshots.xml"/>
 
+<!--
       <item name="IDE Plugins" href="/ui/plugins/index.html">
         <item name="Intelli-J" href="/ui/plugins/intelli-j.html"/>
         <item name="Eclipse"   href="/ui/plugins/eclipse.html"/>
       </item>
+-->
+
+      <item name="IDE Integration" href="/ui/plugins/index.html">
+        <item name="Intelli-J" href="/ide/intelli-j.html"/>
+      </item>
+
     </menu>
 
     <menu name="Reference Manual">
@@ -56,8 +63,6 @@
       <item name="Manifests" href="/reference/manifests/index.html"/>
 
       <item name="Modules" href="/reference/modules/index.html" collapse="false">
-        <item name="Module versions" href="/reference/modules/module-versions.html" />
-        <item name="Module history" href="/reference/modules/module-history.html" />
         <item name="Module types" href="/reference/modules/module-types.html" collapse="true">
           <item name="Library module" href="/reference/modules/lib-module.html" />
           <item name="Java source module" href="/reference/modules/src-module.html" />
@@ -66,7 +71,9 @@
           <item name="Java enterprise application" href="/reference/modules/eapp-module.html" />
           <item name="Other module" href="/reference/modules/other-module.html" />
         </item>
-        <item name="Module dependencies" href="/reference/modules/module-dependencies.html" />
+        <item name="Dependencies" href="/reference/modules/module-dependencies.html" />
+        <item name="Versioning" href="/reference/modules/module-versions.html" />
+        <item name="History" href="/reference/modules/module-history.html" />
       </item>
 
       <item name="Configuration Management" href="/reference/configuration-management/index.html" collapse="true">

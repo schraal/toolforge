@@ -4,7 +4,7 @@
 DO NOT CHANGE THE CONTENTS OF THIS FILE. IT IS USED BY JUnit TEST CLASSES
 -->
 
-<manifest name="included-test-manifest-1" type="release" version="1-0">
+<manifest name="included-test-manifest-1" type="development" version="1-0">
 
   <description>This manifest is an example of another manifest.</description>
 

@@ -4,20 +4,19 @@
 
 	<!-- The 'id'-attribute maps on a 'location'-attribute in a module -->
 
-	<location type="cvs" id="test-id-1">
+  <location type="cvs" id="test-id-1">
     <protocol>local</protocol>
-		<host>localhost</host>
-		<port>2401</port>
-		<repository>/home/cvs</repository>
+    <host>localhost</host>
+    <port>2401</port>
+    <repository>/home/cvs</repository>
     <module-offset>modules</module-offset>
-	</location>
+  </location>
 
 	<location type="cvs" id="test-id-2">
-    <protocol>local</protocol>
+    <protocol>ext</protocol>
 		<host>cvs.sourceforge.net</host>
-		<port>2401</port>
-		<repository>/cvsroot/</repository>
-    <module-offset></module-offset>
+		<repository>/cvsroot/toolforge</repository>
+    <module-offset>toolforge</module-offset>
 	</location>
 
 	<location type="svn" id="test-id-3">

@@ -19,12 +19,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.boot;
 
 import junit.framework.TestCase;
+import nl.toolforge.core.util.file.MyFileUtils;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-
-import nl.toolforge.core.util.file.MyFileUtils;
-import org.apache.commons.io.FileUtils;
 
 /**
  * @author D.A. Smedes
@@ -33,51 +32,68 @@ import org.apache.commons.io.FileUtils;
 public class TestWorkingContextConfiguration extends TestCase {
 
   public void testConstructor() {
-    assertNotNull(new WorkingContextConfiguration(new WorkingContext("arjen")));
+
+    try {
+      WorkingContextConfiguration w = new WorkingContextConfiguration(null);
+      fail("Should have thrown an `IllegalArgumentException`");
+    } catch (Exception e) { }
+
+    File tmp = null;
+
+    try {
+      tmp = MyFileUtils.createTempDirectory();
+      MyFileUtils.writeFile(tmp, new File("test/test-working-context.xml"), "working-context.xml", this.getClass().getClassLoader());
+
+      assertNotNull(new WorkingContextConfiguration(new File(tmp, "working-context.xml")));
+
+      FileUtils.deleteDirectory(tmp);
+
+    } catch (IOException e) {
+      fail(e.getMessage());
+    }
   }
 
+  /**
+   * Tests the following methods implicitly:
+   *
+   * <ul>
+   *   <li>{@link WorkingContextConfiguration#getProperty(String)}</li>
+   *   <li>{@link WorkingContextConfiguration#getLocationStoreLocation()}</li>
+   *   <li>{@link WorkingContextConfiguration#getManifestStoreLocation()}</li>
+   * </ul>
+   */
   public void testLoad() {
 
     File tmp = null;
     try {
       tmp = MyFileUtils.createTempDirectory();
-    } catch (IOException e) {
-      fail(e.getMessage());
-    }
 
-    WorkingContext ctx = new WorkingContext("test", tmp);
-    WorkingContextConfiguration config = new WorkingContextConfiguration(ctx);
-
-    try {
+      WorkingContextConfiguration config = new WorkingContextConfiguration(new File(tmp, "working-context.xml"));
 
       MyFileUtils.writeFile(
-          WorkingContext.getConfigurationBaseDir(),
+          tmp,
           new File("test/authenticators.xml"),
           this.getClass().getClassLoader());
 
       MyFileUtils.writeFile(
-          ctx.getWorkingContextConfigurationBaseDir(),
+          tmp,
           new File("test/test-working-context.xml"),
           "working-context.xml",
           this.getClass().getClassLoader());
-      ctx.init();
 
-    } catch (IOException e) {
-      fail(e.getMessage());
-    }
+      boolean b = config.load();
+      assertTrue(b);
 
-    boolean b = config.load();
-    assertTrue(b);
+      assertEquals(config.getProperty(WorkingContext.PROJECT_BASE_DIRECTORY_PROPERTY), "/tmp/");
+      assertEquals(config.getProperty(WorkingContext.PROJECT_LOCAL_REPOSITORY_PROPERTY), "/home/asmedes/.repository");
 
-    assertEquals(config.getProperty(WorkingContext.PROJECT_BASE_DIRECTORY_PROPERTY), "/tmp/");
-    assertEquals(config.getProperty(WorkingContext.PROJECT_LOCAL_REPOSITORY_PROPERTY), "/home/asmedes/.repository");
+      assertNotNull(config.getLocationStoreLocation());
+      assertNotNull(config.getManifestStoreLocation());
 
-    assertNotNull(config.getLocationStore());
-    assertNotNull(config.getManifestStore());
-
-    try {
       FileUtils.deleteDirectory(tmp);
     } catch (IOException e) {
+      fail(e.getMessage());
+    } catch (WorkingContextException e) {
       fail(e.getMessage());
     }
   }

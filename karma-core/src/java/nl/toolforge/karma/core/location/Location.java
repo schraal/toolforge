@@ -20,6 +20,7 @@ package nl.toolforge.karma.core.location;
 
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.vc.AuthenticatorKey;
+import nl.toolforge.karma.core.vc.AuthenticationException;
 
 /**
  * <p>A <code>Location</code> describes a location aspect of a module. Source modules are kept in a version control
@@ -66,7 +67,7 @@ public interface Location {
    *
    * @throws LocationException When connection failed. The ErrorCode will tell the reason.
    */
-  public void connect() throws LocationException;
+  public void connect() throws AuthenticationException, LocationException;
 
   public void setWorkingContext(WorkingContext workingContext);
 

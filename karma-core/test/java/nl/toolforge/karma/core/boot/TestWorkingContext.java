@@ -56,40 +56,50 @@ public final class TestWorkingContext extends TestCase {
     assertTrue(WorkingContext.DEFAULT.equals(ctx.getName()));
   }
 
-  public void testDirectories() {
+  public void testStaticStuff() {
+    System.setProperty("karma.home", "/tmp");
+    assertEquals(new File("/tmp"), WorkingContext.getKarmaHome());
+  }
+
+  public void testDefaultDirectories() {
+
+    WorkingContext ctx = new WorkingContext("aaa", dotKarma);
+    assertEquals(new File(dotKarma, "working-contexts" + File.separator + "aaa"), ctx.getWorkingContextConfigurationBaseDir());
+    assertTrue(ctx.getWorkingContextConfigurationBaseDir().exists());
+  }
+
+  public void testConfigure() {
 
     File tmp = null;
     try {
       tmp = MyFileUtils.createTempDirectory();
-
     } catch (IOException e) {
       fail(e.getMessage());
     }
 
-    WorkingContext ctx = new WorkingContext("arjen", dotKarma);
+    WorkingContext workingContext = new WorkingContext("bbb", dotKarma);
 
     try {
       MyFileUtils.writeFile(
-          ctx.getWorkingContextConfigurationBaseDir(),
+          tmp,
           new File("test/test-working-context.xml"),
           "working-context.xml",
           this.getClass().getClassLoader());
-      ctx.init();
     } catch (IOException e) {
       fail(e.getMessage());
     }
 
+    WorkingContextConfiguration config = new WorkingContextConfiguration(new File(tmp, "working-context.xml"));
+    workingContext.configure(config);
+
     // Retrieve the configuration and change it a bit for testing purposes.
     //
-    WorkingContextConfiguration config = ctx.getConfiguration();
     config.setProperty(WorkingContext.PROJECT_BASE_DIRECTORY_PROPERTY, tmp.getPath());
 
     assertEquals(config.getProperty(WorkingContext.PROJECT_BASE_DIRECTORY_PROPERTY), tmp.getPath());
-    assertEquals(tmp, ctx.getProjectBaseDirectory());
-    assertEquals(new File(tmp, ".admin"), ctx.getAdminDir());
-
-    assertEquals(dotKarma, WorkingContext.getConfigurationBaseDir());
-    assertEquals(new File(dotKarma, "working-contexts/arjen"), ctx.getWorkingContextConfigurationBaseDir());
+    assertEquals(tmp, workingContext.getProjectBaseDirectory());
+    assertEquals(new File(tmp, ".admin"), workingContext.getAdminDir());
+    assertEquals(new File(dotKarma, "working-contexts" + File.separator + "bbb"), workingContext.getWorkingContextConfigurationBaseDir());
 
     try {
       FileUtils.deleteDirectory(tmp);

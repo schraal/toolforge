@@ -20,7 +20,6 @@ package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.location.BaseLocation;
 import nl.toolforge.karma.core.location.LocationType;
-import nl.toolforge.karma.core.vc.cvsimpl.CVSRepository;
 
 /**
  * <p>A reference for a VCS (Version Control System). Everybody knows what a version

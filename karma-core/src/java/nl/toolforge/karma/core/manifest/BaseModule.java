@@ -197,13 +197,13 @@ public abstract class BaseModule implements Module {
     return baseDir;
   }
 
-  public final void setCheckoutDir(File checkoutDir) {
-
-    if (checkoutDir == null) {
-      throw new IllegalArgumentException("If you use it, initialize it with a valid 'File' instance ...");
-    }
-    this.checkoutDir = checkoutDir;
-  }
+//  public final void setCheckoutDir(File checkoutDir) {
+//
+//    if (checkoutDir == null) {
+//      throw new IllegalArgumentException("If you use it, initialize it with a valid 'File' instance ...");
+//    }
+//    this.checkoutDir = checkoutDir;
+//  }
 
   /**
    * Warning, as for {@link #getBaseDir}, this method will throw a KarmaRuntimeException when the checkoutdir has not
@@ -211,12 +211,12 @@ public abstract class BaseModule implements Module {
    *
    * @return The directory where a version control system should check out the module.
    */
-  public final File getCheckoutDir() {
-    if (checkoutDir == null) {
-      throw new KarmaRuntimeException("CheckoutDir not set.");
-    }
-    return checkoutDir;
-  }
+//  public final File getCheckoutDir() {
+//    if (checkoutDir == null) {
+//      throw new KarmaRuntimeException("CheckoutDir not set.");
+//    }
+//    return checkoutDir;
+//  }
 
   public abstract ModuleLayoutTemplate getLayoutTemplate();
 
@@ -253,7 +253,7 @@ public abstract class BaseModule implements Module {
 
     // Add the module to the version control system
     //
-    setCheckoutDir(tmpDir);
+//    setCheckoutDir(tmpDir);
     setBaseDir(moduleDir);
 
     ModuleDescriptor descriptor = new ModuleDescriptor(this);

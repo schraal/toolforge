@@ -23,6 +23,7 @@ import nl.toolforge.karma.core.Patch;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
 import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.PatchLine;
@@ -30,11 +31,9 @@ import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.SymbolicName;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.model.MainLine;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.netbeans.lib.cvsclient.commandLine.command.status;
 
 public final class Utils {
 
@@ -120,28 +119,21 @@ public final class Utils {
 
     logger.debug("Getting local version for module : " + module.getName());
 
-//    CVSModuleStatus.getLocalVersion(module);
-
-//    Runner runner = RunnerFactory.getRunner(module.getLocation());
-//
     ModuleStatus status = new CVSModuleStatus(module);
     return status.getLocalVersion();
   }
 
-  public static boolean existsInRepository(Module module) throws VersionControlException {
+  public static boolean existsInRepository(Module module) {
 
     Runner runner = null;
     try {
       runner = RunnerFactory.getRunner(module.getLocation());
+      return runner.existsInRepository(module);
+
     } catch (AuthenticationException e) {
-      throw new CVSException(e.getErrorCode(), e.getMessageArguments());
+      return false;
+    } catch (VersionControlException c) {
+      return false;
     }
-
-    //todo refactor this logic.
-    //the idea now is that the retrieval of status would have given an exception when
-    //the module was not in the repo.
-    ModuleStatus status = new CVSModuleStatus(module, ((CVSRunner) runner).log(module));
-
-    return true;
   }
 }

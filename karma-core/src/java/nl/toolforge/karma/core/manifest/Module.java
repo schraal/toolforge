@@ -115,9 +115,9 @@ public interface Module {
    */
   public File getBaseDir();
 
-  public void setCheckoutDir(File checkoutDir);
+//  public void setCheckoutDir(File checkoutDir);
 
-  public File getCheckoutDir();
+//  public File getCheckoutDir();
   
   /**
    * Returns the <code>PatchLine</code> for this module, if the module matches the correct criteria as specified in

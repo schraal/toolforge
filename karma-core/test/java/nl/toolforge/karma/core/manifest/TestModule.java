@@ -18,32 +18,31 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest;
 
+import com.mockobjects.dynamic.Mock;
+import junit.framework.TestCase;
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.manifest.util.SourceModuleLayoutTemplate;
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.location.LocationLoader;
-import nl.toolforge.karma.core.test.BaseTest;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.io.IOException;
+import java.io.File;
 
 /**
+ * Tests the {@link Module} interface and the {@link SourceModule} implementation.
+ *
  * @author D.A. Smedes
  * @version $Id$
  */
-public class TestModule extends BaseTest {
+public class TestModule extends TestCase {
 
-  private LocationLoader locationFactory = null;
+  private Location location = null;
 
   public void setUp() {
-    super.setUp();
-    try {
-      locationFactory = getWorkingContext().getLocationLoader();
-    } catch (LocationException e) {
-      fail(e.getMessage());
-    }
+
+    Mock mock = new Mock(Location.class);
+    location = (Location) mock.proxy();
   }
 
   public void testTypes() {
@@ -55,42 +54,39 @@ public class TestModule extends BaseTest {
 
   public void testConstructor() {
 
-    try {
-      Location l = locationFactory.get("test-id-1");
+    SourceModule s = null;
 
-      SourceModule s = null;
+    s = new SourceModule("a", location);
+    assertNotNull(s);
+    assertEquals("a", s.getName());
+    assertNull(s.getVersion());
+    assertEquals("N/A", s.getVersionAsString());
 
-      s = new SourceModule("a", l);
-      assertNotNull(s);
-      assertEquals("a", s.getName());
-      assertNull(s.getVersion());
-      assertEquals("N/A", s.getVersionAsString());
+    s = new SourceModule("a", location, new Version("0-1"));
+    assertNotNull(s);
+    assertTrue(s.hasVersion());
+    assertFalse(s.hasPatchLine());
+    assertEquals(new Version("0-1"), s.getVersion());
+    assertEquals("0-1", s.getVersionAsString());
+  }
 
-      s = new SourceModule("a", l, new Version("0-1"));
-      assertNotNull(s);
-      assertTrue(s.hasVersion());
-      assertFalse(s.hasPatchLine());
-      assertEquals(new Version("0-1"), s.getVersion());
-      assertEquals("0-1", s.getVersionAsString());
+  public void testGetLocation() {
+    SourceModule s1 = new SourceModule("A", location);
+    assertEquals(location, s1.getLocation());
+  }
 
-    } catch (LocationException e) {
-      fail();
-    }
+
+  public void testGetLayoutTemplate() {
+    SourceModule s1 = new SourceModule("A", location);
+    assertTrue(s1.getLayoutTemplate() instanceof SourceModuleLayoutTemplate);
   }
 
   public void testComparator() {
 
-    Location l = null;
-    try {
-      l = locationFactory.get("test-id-2");
-    } catch (LocationException e) {
-      fail(e.getMessage() + "; test initialization failed most probably.");
-    }
-
-    SourceModule s1 = new SourceModule("A", l);
-    SourceModule s2 = new SourceModule("B", l);
-    SourceModule s3 = new SourceModule("C", l);
-    SourceModule s4 = new SourceModule("D", l);
+    SourceModule s1 = new SourceModule("A", location);
+    SourceModule s2 = new SourceModule("B", location);
+    SourceModule s3 = new SourceModule("C", location);
+    SourceModule s4 = new SourceModule("D", location);
 
     List c = new ArrayList();
     c.add(s2);

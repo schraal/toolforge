@@ -113,9 +113,11 @@ public final class ManifestLoader {
       }
       fileName = fileName.substring(fileName.lastIndexOf(File.separator) + 1);
 
-      logger.debug("Loading manifest " + fileName + " from " + workingContext.getManifestStore().getPath() + File.separator + fileName);
+      String mStorePath = workingContext.getManifestStore().getModule().getBaseDir().getPath();
 
-      return new FileInputStream(workingContext.getManifestStore().getPath() + File.separator + fileName);
+      logger.debug("Loading manifest `" + fileName + "` from `" + mStorePath + File.separator + fileName + "`.");
+
+      return new FileInputStream(mStorePath + File.separator + fileName);
 
     } catch (FileNotFoundException f) {
       throw new ManifestException(f, ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[]{id});

@@ -18,17 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.vc;
 
-import nl.toolforge.karma.core.boot.WorkingContext;
-import nl.toolforge.karma.core.location.PasswordScrambler;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import org.apache.commons.digester.Digester;
-import org.xml.sax.SAXException;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.MessageFormat;
-import java.util.*;
 
 /**
  * @author D.A. Smedes

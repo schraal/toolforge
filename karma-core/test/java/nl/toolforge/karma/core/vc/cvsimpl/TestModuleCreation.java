@@ -26,15 +26,14 @@ import nl.toolforge.karma.core.module.JavaEnterpriseApplicationModule;
 import nl.toolforge.karma.core.module.JavaWebApplicationModule;
 import nl.toolforge.karma.core.test.LocalCVSInitializer;
 import nl.toolforge.karma.core.vc.AuthenticationException;
-import nl.toolforge.karma.core.vc.RunnerFactory;
-import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.AuthenticatorKey;
 import nl.toolforge.karma.core.vc.Authenticators;
+import nl.toolforge.karma.core.vc.RunnerFactory;
+import nl.toolforge.karma.core.vc.VersionControlException;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-
-import org.apache.commons.io.FileUtils;
 
 /**
  * @author D.A. Smedes
@@ -45,7 +44,7 @@ public class TestModuleCreation extends LocalCVSInitializer {
   public void testCreateRemote() {
 
     Module module = null;
-    File tmp = null;
+//    File tmp = null;
     try {
 
       AuthenticatorKey key = getTestLocation().getAuthenticatorKey();
@@ -57,11 +56,11 @@ public class TestModuleCreation extends LocalCVSInitializer {
       RunnerFactory.getRunner(getTestLocation()).checkout(module);
       assertEquals(module.getType(), Module.JAVA_SOURCE_MODULE);
 
-      try {
-        FileUtils.deleteDirectory(module.getCheckoutDir());
-      } catch (IOException e) {
-        fail();
-      }
+//      try {
+//        FileUtils.deleteDirectory(module.getCheckoutDir());
+//      } catch (IOException e) {
+//        fail();
+//      }
 
       module = new JavaEnterpriseApplicationModule("B", getTestLocation());
       module.createRemote(Authenticators.getAuthenticator(key), "Unit testing ...");
@@ -70,11 +69,11 @@ public class TestModuleCreation extends LocalCVSInitializer {
       RunnerFactory.getRunner(getTestLocation()).checkout(module);
       assertEquals(module.getType(), Module.JAVA_ENTERPRISE_APPLICATION);
 
-      try {
-        FileUtils.deleteDirectory(module.getCheckoutDir());
-      } catch (IOException e) {
-        fail();
-      }
+//      try {
+//        FileUtils.deleteDirectory(module.getCheckoutDir());
+//      } catch (IOException e) {
+//        fail();
+//      }
 
       module = new JavaWebApplicationModule("C", getTestLocation());
       module.createRemote(Authenticators.getAuthenticator(key), "Unit testing ...");
@@ -83,11 +82,11 @@ public class TestModuleCreation extends LocalCVSInitializer {
       RunnerFactory.getRunner(getTestLocation()).checkout(module);
       assertEquals(module.getType(), Module.JAVA_WEB_APPLICATION);
 
-      try {
-        FileUtils.deleteDirectory(module.getCheckoutDir());
-      } catch (IOException e) {
-        fail();
-      }
+//      try {
+//        FileUtils.deleteDirectory(module.getCheckoutDir());
+//      } catch (IOException e) {
+//        fail();
+//      }
 
       module = new LibModule("D", getTestLocation());
       module.createRemote(Authenticators.getAuthenticator(key), "Unit testing ...");
@@ -96,11 +95,11 @@ public class TestModuleCreation extends LocalCVSInitializer {
       RunnerFactory.getRunner(getTestLocation()).checkout(module);
       assertEquals(module.getType(), Module.LIBRARY_MODULE);
 
-      try {
-        FileUtils.deleteDirectory(module.getCheckoutDir());
-      } catch (IOException e) {
-        fail(e.getMessage());
-      }
+//      try {
+//        FileUtils.deleteDirectory(module.getCheckoutDir());
+//      } catch (IOException e) {
+//        fail(e.getMessage());
+//      }
 
     } catch (VersionControlException e) {
       fail(e.getMessage());

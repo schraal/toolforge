@@ -30,7 +30,6 @@ import nl.toolforge.karma.core.history.ModuleHistoryException;
 import nl.toolforge.karma.core.history.ModuleHistoryFactory;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.vc.Authenticator;
 import nl.toolforge.karma.core.vc.Authenticators;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
@@ -57,6 +56,7 @@ import org.netbeans.lib.cvsclient.connection.AuthenticationException;
 import org.netbeans.lib.cvsclient.connection.Connection;
 import org.netbeans.lib.cvsclient.connection.ConnectionFactory;
 import org.netbeans.lib.cvsclient.connection.PServerConnection;
+import org.netbeans.lib.cvsclient.event.CVSListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -86,12 +86,16 @@ public final class CVSRunner implements Runner {
     System.setProperty("javacvs.multiple_commands_warning", "false");
   }
 
-  private CVSResponseAdapter listener = null; // The listener that receives events from this runner.
+  private CVSListener listener = null; // The listener that receives events from this runner.
 
   private static Log logger = LogFactory.getLog(CVSRunner.class);
 
   private GlobalOptions globalOptions = new GlobalOptions();
   private Connection connection = null;
+
+  private CVSRepository location = null;
+
+  private boolean isExt = false;
 
   /**
    * Constructs a runner to fire commands on a CVS repository. A typical client for a <code>CVSRunner</code> instance is
@@ -108,9 +112,14 @@ public final class CVSRunner implements Runner {
    */
   public CVSRunner(Location location) throws CVSException, nl.toolforge.karma.core.vc.AuthenticationException {
 
+    if (location == null) {
+      throw new CVSException(VersionControlException.MISSING_LOCATION);
+    }
+
     CVSRepository cvsLocation = null;
     try {
       cvsLocation = ((CVSRepository) location);
+      setLocation(cvsLocation);
     } catch (ClassCastException e) {
       logger.error("Wrong type for location. Should be CVSRepository.", e);
       throw new KarmaRuntimeException("Wrong type for location. Should be CVSRepository.", e);
@@ -121,16 +130,35 @@ public final class CVSRunner implements Runner {
     Authenticator a = Authenticators.getAuthenticator(cvsLocation.getAuthenticatorKey());
     cvsLocation.setUsername(a.getUsername());
 
-    connection = ConnectionFactory.getConnection(cvsLocation.getCVSRoot());
-    if (connection instanceof PServerConnection) {
-      ((PServerConnection) connection).setEncodedPassword(a.getPassword());
+    if (cvsLocation.getProtocol().equals(CVSRepository.EXT)) {
+
+      isExt = true;
+
+      this.listener = new LogParser();
+
+    } else {
+
+      this.listener = new CVSResponseAdapter();
+
+      connection = ConnectionFactory.getConnection(cvsLocation.getCVSRoot());
+      if (connection instanceof PServerConnection) {
+        ((PServerConnection) connection).setEncodedPassword(a.getPassword());
+      }
+
+      logger.debug("CVSRunner using CVSROOT : " + cvsLocation.getCVSRoot());
+      globalOptions.setCVSRoot(cvsLocation.getCVSRoot());
     }
+
     // The default ...
     //
-    this.listener = new CVSResponseAdapter();
+  }
 
-    logger.debug("CVSRunner using CVSROOT : " + cvsLocation.getCVSRoot());
-    globalOptions.setCVSRoot(cvsLocation.getCVSRoot());
+  private void setLocation(CVSRepository location) {
+    this.location = location;
+  }
+
+  private CVSRepository getLocation() {
+    return location;
   }
 
   private Connection getConnection() {
@@ -146,7 +174,19 @@ public final class CVSRunner implements Runner {
     listener = new CVSResponseAdapter(response);
   }
 
-  private String getOffSetLocation(Module module) {
+  /**
+   * Checks if the module is located in CVS within a subdirectory (or subdirs, any amount is possible). If so, the
+   * module-name is prefixed with that offset.
+   *
+   * @param module
+   * @return        The module-name, or - when applicable - the module-name prefixed with the value of
+   *                {@link VersionControlSystem#getModuleOffset()}.
+   */
+  private String getModuleOffset(Module module) {
+
+    // todo when modules from different locations have the same name, they should be given a namespace in front
+    // of the module.
+
     if (((VersionControlSystem) module.getLocation()).getModuleOffset() == null) {
       return module.getName();
     } else {
@@ -165,7 +205,7 @@ public final class CVSRunner implements Runner {
     // Step 2 : import the module, including its full structure.
     //
     ImportCommand importCommand = new ImportCommand();
-    importCommand.setModule(getOffSetLocation(module));
+    importCommand.setModule(getModuleOffset(module));
     importCommand.setLogMessage("Module " + module.getName() + " created automatically by Karma on " + new Date().toString());
     importCommand.setVendorTag("Karma");
     importCommand.setReleaseTag("MAINLINE_0-0");
@@ -214,7 +254,8 @@ public final class CVSRunner implements Runner {
     arguments.put("REPOSITORY", module.getLocation().getId());
 
     CheckoutCommand checkoutCommand = new CheckoutCommand();
-    checkoutCommand.setModule(getOffSetLocation(module));
+    checkoutCommand.setModule(getModuleOffset(module));
+    checkoutCommand.setCheckoutDirectory(module.getName()); // Flatten to module name as the checkoutdir.
 
     if ((version != null) || (developmentLine != null)) {
       checkoutCommand.setCheckoutByRevision(Utils.createSymbolicName(module, developmentLine, version).getSymbolicName());
@@ -231,7 +272,7 @@ public final class CVSRunner implements Runner {
 
     // The checkout directory for a module has to be relative to
 
-    executeOnCVS(checkoutCommand, module.getCheckoutDir(), arguments);
+    executeOnCVS(checkoutCommand, module.getBaseDir().getParentFile(), arguments);
 
     if (readonly) {
       MyFileUtils.makeReadOnly(module.getBaseDir());
@@ -267,7 +308,7 @@ public final class CVSRunner implements Runner {
     updateCommand.setRecursive(true);
     updateCommand.setPruneDirectories(true);
 
-    if (version != null || ((SourceModule) module).hasPatchLine()) {
+    if (version != null || module.hasPatchLine()) {
       updateCommand.setUpdateByRevision(Utils.createSymbolicName(module, version).getSymbolicName());
       if (version != null) {
         arguments.put("VERSION", version.toString());
@@ -277,8 +318,8 @@ public final class CVSRunner implements Runner {
       updateCommand.setResetStickyOnes(true);
     }
 
-// todo add data to the exception. this sort of business logic should be here, not in CVSResponseAdapter.
-//
+    // todo add data to the exception. this sort of business logic should be here, not in CVSResponseAdapter.
+    //
     executeOnCVS(updateCommand, module.getBaseDir(), arguments);
 
     if (readonly) {
@@ -309,15 +350,15 @@ public final class CVSRunner implements Runner {
     Map arguments = new Hashtable();
     arguments.put("MODULE", module.getName());
 
-// Step 1 : Add the file to the CVS repository
-//
+    // Step 1 : Add the file to the CVS repository
+    //
     AddCommand addCommand = new AddCommand();
     addCommand.setMessage("Initial checkin in repository by Karma.");
 
     File modulePath = module.getBaseDir();
 
-// Create temp files
-//
+    // Create temp files
+    //
     Collection cvsFilesCollection = new ArrayList();
     int i = 0;
     for (i=0; i < files.length; i++) {
@@ -341,8 +382,8 @@ public final class CVSRunner implements Runner {
       cvsFilesCollection.add(fileToAdd);
     }
 
-// Create temp directories
-//
+    // Create temp directories
+    //
     for (i=0; i < dirs.length; i++) {
       File dirToAdd = new File(modulePath, dirs[i]);
 
@@ -353,8 +394,8 @@ public final class CVSRunner implements Runner {
       }
       logger.debug("Created directory " + dirs[i] + " for module " + module.getName() + ".");
 
-// Ensure that all directories are added correctly
-//
+      // Ensure that all directories are added correctly
+      //
       StringTokenizer tokenizer = new StringTokenizer(dirs[i], "/");
       String base = "";
       while (tokenizer.hasMoreTokens()) {
@@ -368,13 +409,13 @@ public final class CVSRunner implements Runner {
     File[] cvsFiles = (File[]) cvsFilesCollection.toArray(new File[cvsFilesCollection.size()]);
     addCommand.setFiles(cvsFiles);
 
-// A file is added against a module, thus the contextDirectory is constructed based on the basePoint and the
-// modules' name.
-//
+    // A file is added against a module, thus the contextDirectory is constructed based on the basePoint and the
+    // modules' name.
+    //
     executeOnCVS(addCommand, module.getBaseDir(), arguments);
 
-// Step 2 : Commit the file to the CVS repository
-//
+    // Step 2 : Commit the file to the CVS repository
+    //
     CommitCommand commitCommand = new CommitCommand();
     commitCommand.setFiles(cvsFiles);
     commitCommand.setMessage("File added automatically by Karma.");
@@ -436,24 +477,74 @@ public final class CVSRunner implements Runner {
    */
   public LogInformation log(Module module) throws CVSException {
 
-    if (!(this.listener instanceof CVSResponseAdapter)) {
-      throw new KarmaRuntimeException(
-          "Due to the way the Netbeans API works, the CVSRunner must be initialized with a 'CommandResponse' object.");
-    }
-
     Map arguments = new Hashtable();
     arguments.put("MODULE", module.getName());
     arguments.put("REPOSITORY", module.getLocation().getId());
 
     RlogCommand logCommand = new RlogCommand();
-    logCommand.setModule(getOffSetLocation(module) + "/" + Module.MODULE_DESCRIPTOR);
+    logCommand.setModule(getModuleOffset(module) + "/" + Module.MODULE_DESCRIPTOR);
 
-//    long start = System.currentTimeMillis();
-    executeOnCVS(logCommand, module.getCheckoutDir(), arguments);
-//    System.out.println("Thread " + this.hashCode() + " took " + (System.currentTimeMillis() - start) + " ms.");
+    executeOnCVS(logCommand, module.getBaseDir(), arguments);
 
-    return ((CVSResponseAdapter) this.listener).getLogInformation();
+    // Another hook into ext support.
+    //
+    if (isExt) {
+      return ((LogParser) this.listener).getLogInformation();
+    } else {
+      return ((CVSResponseAdapter) this.listener).getLogInformation();
+    }
+
+//    return log(module, false);
   }
+
+//  public boolean exists(Module module) {
+//
+//    RannotateCommand r = new RannotateCommand();
+//    r.setModule(getModuleOffset(module));
+//
+//    try {
+//      executeOnCVS(r, module.getBaseDir(), null);
+//      return true;
+//    } catch (CVSException e) {
+//      return false;
+//    }
+//  }
+//
+//  /**
+//   *
+//   * @param module
+//   * @param moduleNameOnly Defaults to <code>true</code> if {@link #log(nl.toolforge.karma.core.manifest.Module)} is
+//   *                       used.
+//   * @return
+//   * @throws CVSException
+//   */
+//  public LogInformation log(Module module, boolean moduleNameOnly) throws CVSException {
+//
+//    Map arguments = new Hashtable();
+//    arguments.put("MODULE", module.getName());
+//    arguments.put("REPOSITORY", module.getLocation().getId());
+//
+//    RlogCommand logCommand = new RlogCommand();
+//
+//    if (moduleNameOnly) {
+//      logCommand.setModule(getModuleOffset(module));
+//      logCommand.setRecursive(false);
+////      logCommand.setHeaderAndDescOnly(true);
+////      logCommand.setCVSCommand('l', "");
+//    } else {
+//      logCommand.setModule(getModuleOffset(module) + "/" + Module.MODULE_DESCRIPTOR);
+//    }
+//
+//    executeOnCVS(logCommand, module.getBaseDir(), arguments);
+//
+//    // Another hook into ext support.
+//    //
+//    if (isExt) {
+//      return ((LogParser) this.listener).getLogInformation();
+//    } else {
+//      return ((CVSResponseAdapter) this.listener).getLogInformation();
+//    }
+//  }
 
   /**
    * Checks if the module has a CVS branch tag <code>module.getPatchLine().getName()</code> attached.
@@ -504,7 +595,7 @@ public final class CVSRunner implements Runner {
 
     try {
       RlogCommand logCommand = new RlogCommand();
-      logCommand.setModule(getOffSetLocation(module));
+      logCommand.setModule(getModuleOffset(module));
       executeOnCVS(logCommand, new File("."), null);
 
     } catch (CVSException e) {
@@ -544,43 +635,53 @@ public final class CVSRunner implements Runner {
    */
   private void executeOnCVS(org.netbeans.lib.cvsclient.command.Command command,
                             File contextDirectory, Map args) throws CVSException {
+    // Switch ...
+    //
+    if (isExt) {
 
-    if (contextDirectory == null) {
-      throw new NullPointerException("Context directory cannot be null.");
-    }
+      ExtClient client = new ExtClient();
+      client.addCVSListener((LogParser) listener);
+      client.runCommand(command, contextDirectory, getLocation());
 
-    Client client = new Client(getConnection(), new StandardAdminHandler());
-    client.setLocalPath(contextDirectory.getPath());
+    } else {
 
-    logger.debug("Running CVS command : '" + command.getCVSCommand() + "' in " + client.getLocalPath());
-
-    try {
-      // A CVSResponseAdapter is registered as a listener for the response from CVS. This one adapts to Karma
-      // specific stuff.
-      //
-      listener.setArguments(args);
-      client.getEventManager().addCVSListener(listener);
-      client.executeCommand(command, globalOptions);
-
-    } catch (CommandException e) {
-      logger.error(e.getMessage(), e);
-      if (e.getUnderlyingException() instanceof CVSRuntimeException) {
-        ErrorCode code = ((CVSRuntimeException) e.getUnderlyingException()).getErrorCode();
-        Object[] messageArgs = ((CVSRuntimeException) e.getUnderlyingException()).getMessageArguments();
-        throw new CVSException(code, messageArgs);
-      } else {
-        throw new CVSException(CVSException.INTERNAL_ERROR, new Object[]{globalOptions.getCVSRoot()});
+      if (contextDirectory == null) {
+        throw new NullPointerException("Context directory cannot be null.");
       }
-    } catch (AuthenticationException e) {
-      logger.error(e.getMessage(), e);
-      throw new CVSException(CVSException.AUTHENTICATION_ERROR, new Object[]{client.getGlobalOptions().getCVSRoot()});
-    } finally {
-      // See the static block in this class and corresponding documentation.
-      //
+
+      Client client = new Client(getConnection(), new StandardAdminHandler());
+      client.setLocalPath(contextDirectory.getPath());
+
+      logger.debug("Running CVS command : '" + command.getCVSCommand() + "' in " + client.getLocalPath());
+
       try {
-        client.getConnection().close();
-      } catch (IOException e) {
-        throw new CVSException(CVSException.INTERNAL_ERROR, new Object[]{globalOptions.getCVSRoot()});
+        // A CVSResponseAdapter is registered as a listener for the response from CVS. This one adapts to Karma
+        // specific stuff.
+        //
+        ((CVSResponseAdapter) listener).setArguments(args);
+        client.getEventManager().addCVSListener(listener);
+        client.executeCommand(command, globalOptions);
+
+      } catch (CommandException e) {
+        logger.error(e.getMessage(), e);
+        if (e.getUnderlyingException() instanceof CVSRuntimeException) {
+          ErrorCode code = ((CVSRuntimeException) e.getUnderlyingException()).getErrorCode();
+          Object[] messageArgs = ((CVSRuntimeException) e.getUnderlyingException()).getMessageArguments();
+          throw new CVSException(code, messageArgs);
+        } else {
+          throw new CVSException(CVSException.INTERNAL_ERROR, new Object[]{globalOptions.getCVSRoot()});
+        }
+      } catch (AuthenticationException e) {
+        logger.error(e.getMessage(), e);
+        throw new CVSException(CVSException.AUTHENTICATION_ERROR, new Object[]{client.getGlobalOptions().getCVSRoot()});
+      } finally {
+        // See the static block in this class and corresponding documentation.
+        //
+        try {
+          client.getConnection().close();
+        } catch (IOException e) {
+          throw new CVSException(CVSException.INTERNAL_ERROR, new Object[]{globalOptions.getCVSRoot()});
+        }
       }
     }
   }
@@ -619,7 +720,7 @@ public final class CVSRunner implements Runner {
       event.setComment(comment);
       history.addEvent(event);
       if (history.getHistoryLocation().exists()) {
-         //history already exists. commit changes.
+        //history already exists. commit changes.
         history.save();
         commit(developmentLine, module, new File(module.getBaseDir(), ModuleHistory.MODULE_HISTORY_FILE_NAME), "History updated by Karma");
       } else {

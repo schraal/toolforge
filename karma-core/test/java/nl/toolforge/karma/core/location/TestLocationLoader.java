@@ -61,6 +61,13 @@ public class TestLocationLoader extends BaseTest {
     } catch (LocationException e) {
       assertTrue(true);
     }
+
+    try {
+      CVSRepository repos = (CVSRepository) loader.get("test-id-2");
+      assertEquals(CVSRepository.EXT, repos.getProtocol());
+    } catch (LocationException e) {
+      fail(e.getMessage());
+    }
   }
 
 }

@@ -1,0 +1,14 @@
+<project name="ext-support" default="run">
+
+
+  <target name="run">
+
+    <cvs cvsRoot="${cvsroot}"
+      command="${command}"
+      dest="${dest}"
+      />
+
+  </target>
+
+</project>
+

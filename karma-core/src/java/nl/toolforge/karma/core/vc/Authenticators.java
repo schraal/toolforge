@@ -20,6 +20,7 @@ package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.boot.WorkingContext;
+import nl.toolforge.karma.core.boot.Karma;
 import nl.toolforge.karma.core.location.PasswordScrambler;
 import org.apache.commons.digester.Digester;
 import org.xml.sax.SAXException;
@@ -105,7 +106,7 @@ public final class Authenticators {
 
     Map authenticators = new Hashtable();
 
-    File authenticatorsFile = new File(WorkingContext.getConfigurationBaseDir(), "authenticators.xml");
+    File authenticatorsFile = new File(Karma.getConfigurationBaseDir(), "authenticators.xml");
 
     if (!authenticatorsFile.exists()) {
       createNew();
@@ -130,7 +131,7 @@ public final class Authenticators {
       if (authenticators.containsKey(key)) {
         throw new AuthenticationException(
             AuthenticationException.DUPLICATE_AUTHENTICATOR_KEY,
-            new Object[] {key, WorkingContext.getConfigurationBaseDir().getPath()}
+            new Object[] {key, Karma.getConfigurationBaseDir().getPath()}
         );
       }
       authenticators.put(key, authDescriptor);
@@ -143,22 +144,22 @@ public final class Authenticators {
    *
    * @param authenticator
    */
-  public static synchronized void addAuthenticator(Authenticator authenticator) {
+  public static synchronized void addAuthenticator(Authenticator authenticator) throws AuthenticationException {
 
     if (authenticator == null) {
       throw new IllegalArgumentException("Authenticator cannot be null.");
     }
 
     Map authenticators = null;
-    try {
+//    try {
 
       // todo hmm, this bit of code COULD be used to detect duplicates as well .
 
       authenticators = getAuthenticators();
 
-    } catch (AuthenticationException e) {
-      throw new KarmaRuntimeException(e);
-    }
+//    } catch (AuthenticationException e) {
+//      throw new KarmaRuntimeException(e);
+//    }
 
     // Add the authenticator.
     //
@@ -243,7 +244,7 @@ public final class Authenticators {
     FileWriter writer = null;
     // Write the manifest to the manifest store.
     //
-    writer = new FileWriter(new File(WorkingContext.getConfigurationBaseDir(), "authenticators.xml"));
+    writer = new FileWriter(new File(Karma.getConfigurationBaseDir(), "authenticators.xml"));
     try {
 
       writer.write(buffer.toString());

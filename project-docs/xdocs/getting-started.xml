@@ -60,11 +60,10 @@
   <subsection name="Administrative Requirements">
 
   <p>
-    The power of Karma is in managing manifests and modules. Part of the
-    management task is the storage of those manifests and modules. Storing
-    modules in a version control system is common practice in development
-    organizations. Karma uses a 'manifest store' to store manifest files. A
-    manifest store can (not mandatory) to be
+    Karma manages manifests and modules. Part of the management task is the
+    storage of those manifests and modules. Storing modules in a version
+    control system is common practice in development organizations. Karma uses
+    a 'manifest store' to store manifest files as well.
   </p>
 
   <p>

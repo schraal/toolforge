@@ -68,8 +68,10 @@ public class ListManifests extends DefaultCommand {
    */
   public void execute() throws CommandException {
 
+    File baseDir = getWorkingContext().getManifestStore().getModule().getBaseDir();
+
     DirectoryScanner scanner = new DirectoryScanner();
-    scanner.setBasedir(getWorkingContext().getManifestStore());
+    scanner.setBasedir(baseDir);
     scanner.setIncludes(new String[] {"**/*.xml"});
     scanner.scan();
 
@@ -77,7 +79,7 @@ public class ListManifests extends DefaultCommand {
 
     for (int i = 0; i < manifestFiles.length; i++) {
       try {
-        headers.add((ManifestHeader) getDigester().parse(new File(getWorkingContext().getManifestStore(), manifestFiles[i])));
+        headers.add((ManifestHeader) getDigester().parse(new File(baseDir, manifestFiles[i])));
       } catch (IOException e) {
         throw new CommandException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{manifestFiles[i]});
       } catch (SAXException e) {

@@ -19,17 +19,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.console;
 
 import nl.toolforge.karma.cli.cmd.ConsoleCommandResponseHandler;
+import nl.toolforge.karma.core.ErrorCode;
+import nl.toolforge.karma.core.boot.Karma;
 import nl.toolforge.karma.core.boot.WorkingContext;
+import nl.toolforge.karma.core.boot.WorkingContextConfiguration;
+import nl.toolforge.karma.core.boot.WorkingContextException;
+import nl.toolforge.karma.core.boot.ManifestStore;
+import nl.toolforge.karma.core.boot.LocationStore;
 import nl.toolforge.karma.core.bundle.BundleCache;
 import nl.toolforge.karma.core.cmd.CommandContext;
 import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.location.PasswordScrambler;
-import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.vc.cvsimpl.CVSRepository;
-import nl.toolforge.karma.core.vc.Authenticator;
-import nl.toolforge.karma.core.vc.Authenticators;
-import nl.toolforge.karma.core.vc.AuthenticationException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -94,7 +93,7 @@ public final class KarmaConsole {
           int length = text.length();
 
           writeln("\n");
-          
+
           writeln(FRONTEND_MESSAGES.getString("message.EXIT"));
 
           StringBuffer g = new StringBuffer();
@@ -132,11 +131,54 @@ public final class KarmaConsole {
       writeln("[ console ] Logging will be written to " + System.getProperty("karma.home") + File.separator + "logs.");
     }
 
-    writeln("[ console ] Loading working context `" + workingContext.getName() + "` ...");
+    writeln("[ console ] Checking working context configuration.");
+
+    WorkingContextConfiguration configuration = null;
 
     try {
 
-      while (!workingContext.init()) {
+      File configurationFile = Karma.getConfigurationFile(workingContext);
+      configuration = new WorkingContextConfiguration(configurationFile);
+
+      //
+      // todo : moet nog anders, alhoewel het inmiddels beter is.
+      //
+      ManifestStore manifestStore = null;
+      LocationStore locationStore  = null;
+      try {
+        configuration.load();
+        //
+        manifestStore = new ManifestStore(workingContext);
+        configuration.getManifestStoreLocation().setWorkingContext(workingContext);
+        manifestStore.setLocation(configuration.getManifestStoreLocation());
+        manifestStore.setModuleName("manifests");
+        workingContext.setManifestStore(manifestStore);
+        //
+        locationStore = new LocationStore(workingContext);
+        configuration.getLocationStoreLocation().setWorkingContext(workingContext);
+        locationStore.setLocation(configuration.getLocationStoreLocation());
+        locationStore.setModuleName("locations");
+        workingContext.setLocationStore(locationStore);
+
+      } catch (WorkingContextException e) {
+        //
+      } catch (RuntimeException r) {
+        //
+      }
+
+      // todo het feit dat dit eerst moet sucked.
+      //
+      workingContext.configure(configuration);
+
+
+
+
+      // Check the validity state of the configuration.
+      //
+
+      ErrorCode error = configuration.check();
+
+      while (error != null || manifestStore.checkConfiguration() != null || locationStore.checkConfiguration() != null ) {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -158,10 +200,14 @@ public final class KarmaConsole {
           System.exit(1);
 
         } else {
-          Configurator configurator = new Configurator();
-          configurator.checkConfiguration(workingContext);
+          Configurator configurator = new Configurator(workingContext, configuration);
+          configurator.checkConfiguration();
+
+          manifestStore = workingContext.getManifestStore();
+          locationStore = workingContext.getLocationStore();
         }
       }
+
     } catch (RuntimeException r) {
       writeln("\n");
       if (logger.isDebugEnabled()) {
@@ -170,7 +216,12 @@ public final class KarmaConsole {
       System.exit(1);
     }
 
-    writeln("[ console ] Complete ...");
+    writeln("[ console ] Configuration complete. Loading working context `" + workingContext.getName() + "` ...");
+
+    // Right now, we have a valid configuration and continue to load the working context.
+    //
+    workingContext.configure(configuration);
+
     writeln("[ console ] Configuration can be manually updated in `" + workingContext.getWorkingContextConfigurationBaseDir() + "`");
 
     writeln("\n[ console ] Starting up console ...\n");
@@ -215,7 +266,7 @@ public final class KarmaConsole {
         try {
           commandContext.execute(line);
         } catch (CommandException e) {
-          logger.error(e.getMessage());
+          logger.error(e.getMessage(), e);
         }
       }
     } catch (RuntimeException r) {

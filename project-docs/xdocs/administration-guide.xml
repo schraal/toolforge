@@ -14,8 +14,9 @@
     Karma works with manifests and modules. Manifests are defined in xml
     files, modules are defined within manifest files. Modules are stored in a
     version control system, and identified by a <code>location</code>
-    attribute in the manifest file (see below). This attribute is looked up in
-    xml files with location configuration.
+    attribute in the manifest file (see below). This attribute is used by
+    Karma to locate the correct version control system (its location) by
+    matching the location-id with a location-id in the 'location store'.
   </p>
 
   <p>

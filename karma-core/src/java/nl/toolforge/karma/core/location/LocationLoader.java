@@ -65,7 +65,7 @@ public final class LocationLoader {
   /**
    * Loads all location xml files from the path specified by the {@link WorkingContext#getLocationStore()}
    * property. Location objects are matched against authenticator objects, which should be available in the Karma
-   * configuration directory {@link WorkingContext#getConfigurationBaseDir()} and should be named
+   * configuration directory {@link nl.toolforge.karma.core.boot.Karma#getConfigurationBaseDir()} and should be named
    * '<code>authenticators.xml</code>'.
    *
    * @throws LocationException
@@ -79,7 +79,7 @@ public final class LocationLoader {
     // Recurse over all xml files in the locations directory.
     //
     DirectoryScanner scanner = new DirectoryScanner();
-    scanner.setBasedir(workingContext.getLocationStore());
+    scanner.setBasedir(workingContext.getLocationStoreBasedir());
     scanner.setIncludes(new String[]{"**/*.xml"});
     scanner.scan();
 
@@ -95,7 +95,7 @@ public final class LocationLoader {
 
       List subList = null;
       try {
-        subList = (List) digester.parse(new File(workingContext.getLocationStore(), files[i]).getPath());
+        subList = (List) digester.parse(new File(workingContext.getLocationStoreBasedir(), files[i]).getPath());
       } catch (IOException e) {
         throw new LocationException(e, LocationException.LOCATION_LOAD_ERROR);
       } catch (SAXException e) {
@@ -112,7 +112,7 @@ public final class LocationLoader {
             locations.remove(d.getId());
             throw new LocationException(
                 LocationException.DUPLICATE_LOCATION_KEY,
-                new Object[] {d.getId(), workingContext.getLocationStore().getPath()}
+                new Object[] {d.getId(), workingContext.getLocationStoreBasedir().getPath()}
             );
           }
 

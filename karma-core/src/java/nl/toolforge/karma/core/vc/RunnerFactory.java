@@ -25,6 +25,7 @@ import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
 import nl.toolforge.karma.core.vc.svnimpl.SubversionLocationImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import com.mockobjects.dynamic.Mock;
 
 /**
  * Factory producing {@link Runner} instances.
@@ -50,19 +51,16 @@ public final class RunnerFactory {
    */
   public static Runner getRunner(Location location) throws VersionControlException, AuthenticationException {
 
+    if (location == null) {
+      throw new IllegalArgumentException("Location cannot be null.");
+    }
+
     if (location instanceof CVSRepository) {
-      logger.debug("Getting new CVSRunner instance.");
-
-      CVSRunner runner = new CVSRunner(location);
-
-      return runner;
+      return new CVSRunner(location);
     }
-
     if (location instanceof SubversionLocationImpl) {
-      logger.debug("Getting new CVSRunner instance.");
-      return null;
+      throw new KarmaRuntimeException("Subversion is not possible in Karma 1.0.");
     }
-    throw new KarmaRuntimeException("Location instance invalid.");
+    throw new KarmaRuntimeException("Unsupported `Location` type.");
   }
-
 }

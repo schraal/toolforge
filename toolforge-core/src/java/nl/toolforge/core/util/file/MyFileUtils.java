@@ -134,6 +134,9 @@ public final class MyFileUtils {
 
     BufferedReader in =
         new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream(fileRef.getPath())));
+
+    dir.mkdirs();
+
     BufferedWriter out =
         new BufferedWriter(new FileWriter(new File(dir, newFileName)));
 

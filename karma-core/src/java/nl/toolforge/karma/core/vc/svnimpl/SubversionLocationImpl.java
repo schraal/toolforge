@@ -19,9 +19,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.vc.svnimpl;
 
 import nl.toolforge.karma.core.location.BaseLocation;
-import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.location.LocationType;
 import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.karma.core.location.LocationType;
 
 /**
  * @author D.A. Smedes

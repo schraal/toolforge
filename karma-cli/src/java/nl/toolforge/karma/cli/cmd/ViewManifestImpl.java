@@ -72,7 +72,7 @@ public class ViewManifestImpl extends ViewManifest {
       String h7 = "STATE";
       String h8 = "LOCATION";
 
-      buffer.append(h1 + StringUtils.repeat(" ", 30 - h1.length()) + "| ");
+      buffer.append(h1 + StringUtils.repeat(" ", 45 - h1.length()) + "| ");
       buffer.append(h2 + StringUtils.repeat(" ",  8 - h2.length()) + "| ");
       buffer.append(h3 + StringUtils.repeat(" ",  7 - h3.length()) + "| ");
       buffer.append(h4 + StringUtils.repeat(" ",  9 - h4.length()) + "| ");
@@ -80,19 +80,14 @@ public class ViewManifestImpl extends ViewManifest {
       buffer.append(h6 + StringUtils.repeat(" ", 15 - h6.length()) + "| ");
       buffer.append(h7 + StringUtils.repeat(" ", 10 - h7.length()) + "| ");
       buffer.append(h8 + "\n");
-      buffer.append(StringUtils.repeat("_", 100));
+      buffer.append(StringUtils.repeat("_", 115));
       buffer.append("\n");
 
       for (Iterator i = renderedData.iterator(); i.hasNext();) {
 
         String[] data = (String[]) i.next();
 
-        // Column 1
-        //
-        buffer.append(data[0] + StringUtils.repeat(" ", 30 - data[0].length()) + "| ");
-
-        // Cols 2-7
-        //
+        buffer.append(data[0] + StringUtils.repeat(" ", 45 - data[0].length()) + "| ");
         buffer.append(data[1] + StringUtils.repeat(" ",  8 - data[1].length()) + "| ");
         buffer.append(data[2] + StringUtils.repeat(" ",  7 - data[2].length()) + "| ");
         buffer.append(data[3] + StringUtils.repeat(" ",  9 - data[3].length()) + "| ");

@@ -19,6 +19,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.boot.WorkingContext;
+import nl.toolforge.karma.core.boot.ManifestStore;
+import nl.toolforge.karma.core.boot.WorkingContextException;
+import nl.toolforge.karma.core.boot.LocationStore;
 import nl.toolforge.karma.core.bundle.BundleCache;
 import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
 import nl.toolforge.karma.core.cmd.event.ErrorEvent;
@@ -81,86 +84,32 @@ public final class KarmaInitializationCommand implements Command {
 
       if (updateStores) {
 
-        // The location is read from property files.
-        //
-        Location location = commandContext.getWorkingContext().getManifestStoreLocation();
-        ManifestModule manifestModule = new ManifestModule(commandContext.getWorkingContext().getManifestStoreModule(), location);
+        try {
+          
+          ManifestStore mStore = commandContext.getWorkingContext().getManifestStore();
 
-        // Relative the location, which is handy for the future when more than one ManifestModule can be checked
-        // out.
-        manifestModule.setBaseDir(new File(commandContext.getWorkingContext().getAdminDir(), location.getId()));
-        manifestModule.setCheckoutDir(new File(commandContext.getWorkingContext().getAdminDir(), location.getId()));
-
-        if (location.isAvailable()) {
-
-          commandResponse.addEvent(new MessageEvent(this, new SimpleMessage(("Updating manifests ..."))));
-
-          // Check if the locally existing manifest module has the same location (cvsroot e.g.) as the
-          // requested update.
-          //
-          AdminHandler adminHandler = new AdminHandler(manifestModule);
-          if (!adminHandler.isEqualLocation()) {
-            throw new LocationException(LocationException.LOCATION_MISMATCH, new Object[]{manifestModule.getName()});
+          if (!mStore.getLocation().isAvailable()) {
+            commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Manifest store location unreachable!")));
+          } else {
+            commandResponse.addEvent(new MessageEvent(this, new SimpleMessage(("Updating manifests ..."))));
+            mStore.update();
           }
 
-          try {
-            Runner runner = RunnerFactory.getRunner(manifestModule.getLocation());
-            runner.checkout(manifestModule);
-          } catch (VersionControlException e) {
-            // todo some sort of notification would be nice ...
-            //
-            logger.warn(e.getMessage());
-            // Nothing serious ...
-            //
-            commandResponse.addEvent(new ErrorEvent(this, e.getErrorCode(), e.getMessageArguments()));
-          } catch (AuthenticationException e) {
-            // todo moet anders.
-            //
-            commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Authentication failed.")));
-          }
-        } else {
-          commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Manifest store location unreachable!")));
-        }
+          LocationStore lStore = commandContext.getWorkingContext().getLocationStore();
 
-        // The location is read from property files.
-        //
-        location = commandContext.getWorkingContext().getLocationStoreLocation();
-        LocationModule locationModule = new LocationModule(commandContext.getWorkingContext().getLocationStoreModule(), location);
-
-        // Relative the location, which is handy for the future when more than one ManifestModule can be checked
-        // out.
-        locationModule.setBaseDir(new File(commandContext.getWorkingContext().getAdminDir(), location.getId()));
-        locationModule.setCheckoutDir(new File(commandContext.getWorkingContext().getAdminDir(), location.getId()));
-
-        if (location.isAvailable()) {
-
-          commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Updating locations ...")));
-
-          // Check if the locally existing manifest module has the same location (cvsroot e.g.) as the
-          // requested update.
-          //
-          AdminHandler adminHandler = new AdminHandler(locationModule);
-          if (!adminHandler.isEqualLocation()) {
-            throw new LocationException(LocationException.LOCATION_MISMATCH, new Object[]{locationModule.getName()});
+          if (!lStore.getLocation().isAvailable()) {
+            commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Location store location unreachable!")));
+          } else {
+            commandResponse.addEvent(new MessageEvent(this, new SimpleMessage(("Updating locations ..."))));
+            lStore.update();
           }
 
-          try {
-            Runner runner = RunnerFactory.getRunner(locationModule.getLocation());
-            runner.checkout(locationModule);
-          } catch (VersionControlException e) {
-            // todo some sort of notification would be nice ...
-            //
-            logger.warn(e.getMessage());
-            // Nothing serious ...
-            //
-            commandResponse.addEvent(new ErrorEvent(this, e.getErrorCode(), e.getMessageArguments()));
-          } catch (AuthenticationException e) {
-            // todo moet anders.
-            //
-            commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Authentication failed.")));
-          }
-        } else {
-          commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Location store location unreachable!")));
+        } catch (VersionControlException e) {
+          logger.warn(new ErrorEvent(this, e.getErrorCode(), e.getMessageArguments()));
+          commandResponse.addEvent(new ErrorEvent(this, e.getErrorCode(), e.getMessageArguments()));
+        } catch (AuthenticationException e) {
+          logger.warn(new ErrorEvent(this, e.getErrorCode(), e.getMessageArguments()));
+          commandResponse.addEvent(new ErrorEvent(this, e.getErrorCode(), e.getMessageArguments()));
         }
       }
 

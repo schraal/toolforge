@@ -54,7 +54,7 @@ public class ManifestCollector {
    * @return
    */
   public Collection getAllManifests() {
-    File manifestStore = workingContext.getManifestStore();
+    File manifestStore = workingContext.getManifestStore().getModule().getBaseDir();
 
     Object[] mList = manifestStore.list(new XMLFilenameFilter());
 

@@ -25,7 +25,6 @@ import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.Authenticator;
 import nl.toolforge.karma.core.vc.Authenticators;
 import nl.toolforge.karma.core.vc.VersionControlSystem;
-import nl.toolforge.karma.core.vc.AuthenticatorKey;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.command.CommandAbortedException;
@@ -76,14 +75,10 @@ public class CVSRepository extends VersionControlSystem {
     }
   }
 
-  public void connect() throws LocationException {
+  public void connect() throws AuthenticationException, LocationException {
 
     Authenticator authenticator = null;
-    try {
-      authenticator = Authenticators.getAuthenticator(this.getAuthenticatorKey());
-    } catch (AuthenticationException e) {
-      throw new LocationException(e.getErrorCode());
-    }
+    authenticator = Authenticators.getAuthenticator(this.getAuthenticatorKey());
 
     Connection connection = null;
     try {
@@ -126,7 +121,7 @@ public class CVSRepository extends VersionControlSystem {
    *                 strings are converted to lowercase.
    */
   public void setProtocol(String protocol) {
-    String p = LOCAL + "|" + PSERVER;
+    String p = LOCAL + "|" + PSERVER + "|" + EXT;
     if (protocol == null || !protocol.toLowerCase().matches(p)) {
       throw new IllegalArgumentException("Protocol is invalid; should be " + p);
     }
@@ -193,30 +188,6 @@ public class CVSRepository extends VersionControlSystem {
    * @throws CVSException
    */
   public final String getCVSRoot() throws CVSException {
-
-//    StringBuffer buffer = new StringBuffer(":" + getProtocol() + ":");
-//
-//    if (buffer.toString().equals(":".concat(LOCAL).concat(":"))) {
-//
-//      // Returns ':local:<repositoru>'
-//      //
-//      if (getRepository() == null) {
-//        throw new CVSException(CVSException.INVALID_CVSROOT);
-//      }
-//
-//      buffer.append(getRepository());
-//
-//    } else {
-//
-//      if ((getUsername() == null) || (getHost() == null) || (getPort() == -1)) {
-//        throw new CVSException(CVSException.INVALID_CVSROOT);
-//      }
-//
-//      buffer.append(getUsername()).append("@");
-//      buffer.append(getHost()).append(":");
-//      buffer.append(getPort()).append(getRepository().startsWith("/") ? "" : "/");
-//      buffer.append(getRepository());
-//    }
     return getCVSRoot(null);
   }
 
@@ -235,7 +206,24 @@ public class CVSRepository extends VersionControlSystem {
 
       buffer.append(getRepository());
 
+    } else if (buffer.toString().equals(":".concat(EXT).concat(":"))) {
+
+      // EXT
+
+      String user = (userName == null ? getUsername() : userName);
+
+      if ((user == null) || (getHost() == null)) {
+        throw new CVSException(CVSException.INVALID_CVSROOT);
+      }
+
+      buffer.append(user).append("@");
+      buffer.append(getHost()).append(":");
+      buffer.append(getRepository().startsWith("/") ? "" : "/");
+      buffer.append(getRepository());
+
     } else {
+
+      // PSERVER
 
       String user = (userName == null ? getUsername() : userName);
 

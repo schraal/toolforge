@@ -107,7 +107,11 @@ public class CreatePassword extends DefaultCommand {
       authenticator.setUsername(username);
       authenticator.setPassword(PasswordScrambler.scramble(password));
 
-      Authenticators.addAuthenticator(authenticator);
+      try {
+        Authenticators.addAuthenticator(authenticator);
+      } catch (AuthenticationException e) {
+        throw new CommandException(e, e.getErrorCode(), e.getMessageArguments());
+      }
     }
 
     if (changed) {

@@ -82,14 +82,14 @@ public abstract class AdminModule implements Module {
   public File getBaseDir() {
     return baseDir;
   }
-
-  public void setCheckoutDir(File checkoutDir) {
-    this.checkoutDir = checkoutDir;
-  }
-
-  public File getCheckoutDir() {
-    return checkoutDir;
-  }
+//
+//  public void setCheckoutDir(File checkoutDir) {
+//    this.checkoutDir = checkoutDir;
+//  }
+//
+//  public File getCheckoutDir() {
+//    return checkoutDir;
+//  }
 
   /**
    * Returns the location for this

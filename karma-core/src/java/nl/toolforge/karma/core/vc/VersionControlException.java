@@ -20,8 +20,6 @@ package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.ErrorCode;
 
-import java.text.MessageFormat;
-
 /**
  * Root exception for stuff relating to version control system functionality.
  *
@@ -34,14 +32,12 @@ public abstract class VersionControlException extends Exception {
   private Object[] messageArguments = null;
 
   public static String EXCEPTION_PREFIX = "VER-";
-  /**
-   * Version already exists for this module.
-   */
+  /** Version already exists for this module. */
   public static final ErrorCode DUPLICATE_VERSION = new ErrorCode(EXCEPTION_PREFIX + "00001");
-  /**
-   * The requested module does not exist in the repository
-   */
+  /** The requested module does not exist in the repository */
   public static final ErrorCode MODULE_NOT_IN_REPOSITORY = new ErrorCode(EXCEPTION_PREFIX + "00002");
+  /** A <code>Location</code> instance was required, but missing. */
+  public static final ErrorCode MISSING_LOCATION = new ErrorCode(EXCEPTION_PREFIX + "00003");;
 
 
   public VersionControlException(ErrorCode errorCode) {

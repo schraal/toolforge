@@ -22,7 +22,6 @@ import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.VersionControlException;

@@ -96,13 +96,13 @@ public class CreateRelease extends CompositeCommand {
 
     String releaseName = getCommandLine().getOptionValue("r");
 
-    File releaseManifestFile = new File(getWorkingContext().getManifestStore(), releaseName + ".xml");
+    File releaseManifestFile = new File(getWorkingContext().getManifestStore().getModule().getBaseDir(), releaseName + ".xml");
 
     if (releaseManifestFile.exists()) {
       if (!getCommandLine().hasOption("o")) {
         throw new CommandException(
             ManifestException.DUPLICATE_MANIFEST_FILE,
-            new Object[] {releaseName, getWorkingContext().getManifestStore().getPath()}
+            new Object[] {releaseName, getWorkingContext().getManifestStore().getModule().getBaseDir().getPath()}
         );
       }
     }
