@@ -57,6 +57,7 @@ public class AntLogger extends DefaultLogger {
 
     taskNames = new HashSet();
     taskNames.add("javadoc"); // <javadoc>
+    taskNames.add("javac"); // <javac>
   }
 
   public AntLogger(Command command) {
