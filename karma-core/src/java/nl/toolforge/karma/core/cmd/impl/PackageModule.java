@@ -519,9 +519,9 @@ public class PackageModule extends AbstractBuildCommand {
       try {
         reader.parse(new File(getCurrentModule().getBaseDir(), "src/META-INF"));
       } catch (IOException e) {
-        throw new CommandException(CommandException.PACKAGE_FAILED_NO_APPLICATION_XML, new Object[]{module.getName()});
+        throw new CommandException(e, CommandException.PACKAGE_FAILED_NO_APPLICATION_XML, new Object[]{module.getName()});
       } catch (SAXException e) {
-        throw new CommandException(CommandException.PACKAGE_FAILED_INVALID_APPLICATION_XML, new Object[]{module.getName()});
+        throw new CommandException(e, CommandException.PACKAGE_FAILED_INVALID_APPLICATION_XML, new Object[]{module.getName()});
       }
 
       //the application.xml is parsed for included modules.
