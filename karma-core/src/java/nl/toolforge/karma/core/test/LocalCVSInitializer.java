@@ -169,6 +169,6 @@ public class LocalCVSInitializer extends BaseTest {
       }
     };
 
-    return new CVSRunner(getTestLocation(), getDevelopmentHome(), listener);
+    return new CVSRunner(getTestLocation(), getDevelopmentHome());
   }
 }

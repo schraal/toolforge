@@ -113,13 +113,14 @@ public final class CVSVersionExtractor implements VersionExtractor {
     try {
       // todo what is the effect of passing a the following instance of CommandResponseListener ??
       //
-      CommandResponseListener listener = new CommandResponseListener() {
-        public void commandHeartBeat() {}
-        public void commandResponseChanged(CommandResponseEvent event) { }
-        public void commandResponseFinished(CommandResponseEvent event) { }
-      };
+//      CommandResponseListener listener = new CommandResponseListener() {
+//        public void commandHeartBeat() {}
+//        public void commandResponseChanged(CommandResponseEvent event) { }
+//        public void commandResponseFinished(CommandResponseEvent event) { }
+//      };
 
-      runner = new CVSRunner(module.getLocation(), new File(""), listener); // baseLocation doesn't matter ...
+//      runner = new CVSRunner(module.getLocation(), new File(""), listener); // baseLocation doesn't matter ...
+      runner = new CVSRunner(module.getLocation(), new File("")); // baseLocation doesn't matter ...
     } catch (KarmaException e) {
       throw new CVSException(null); // TODO to be defined (errorcode).
     }

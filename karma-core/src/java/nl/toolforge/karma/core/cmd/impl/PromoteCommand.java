@@ -9,6 +9,7 @@ import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.VersionExtractor;
+import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
 
 /**
@@ -53,7 +54,7 @@ public class PromoteCommand extends DefaultCommand {
 
       Version nextVersion = extractor.getNextVersion(module);
 
-      Runner runner = getContext().getRunner(module);
+      Runner runner = RunnerFactory.getRunner(module, getContext().getCurrent().getDirectory());
       runner.tag(module, nextVersion);
 
       this.newVersion = nextVersion;

@@ -56,7 +56,7 @@ public final class CVSRunner implements Runner {
 	}
 
   private CVSResponseAdapter listener = null; // The listener that receives events from this runner.
-  private CommandResponse commandResponse = null;
+//  private CommandResponse commandResponse = null;
 
 	private static Log logger = LogFactory.getLog(CVSRunner.class);
 
@@ -118,9 +118,7 @@ public final class CVSRunner implements Runner {
    * @param response A - possibly <code>null</code> response instance.
    */
   public void setCommandResponse(CommandResponse response) {
-    this.commandResponse = response;
-
-    this.listener = new CVSResponseAdapter(listener);
+    listener = (CVSResponseAdapter) response;
   }
 
   /**
@@ -576,7 +574,6 @@ public final class CVSRunner implements Runner {
 			// specific stuff.
 			//
 			client.getEventManager().addCVSListener(listener);
-			//client.getEventManager().addCVSListener(adapter);
 			client.executeCommand(command, globalOptions);
 
 			// See the static block in this class and corresponding documentation.

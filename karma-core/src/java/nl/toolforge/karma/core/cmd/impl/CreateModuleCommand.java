@@ -14,6 +14,7 @@ import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponseHandler;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.vc.RunnerFactory;
 
 /**
  * Creates a module in a repository. The command provides the option to create the module in the current manifest as
@@ -66,7 +67,7 @@ public class CreateModuleCommand extends DefaultCommand {
 
 		// Part 2 of the transaction is the creation in a version control system.
 		//
-		Runner runner = getContext().getRunner(module);
+		Runner runner = RunnerFactory.getRunner(module, getContext().getCurrent().getDirectory());
 
 		runner.create(module);
 
