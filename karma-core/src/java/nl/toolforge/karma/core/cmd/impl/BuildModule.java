@@ -18,6 +18,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.Project;
+
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
@@ -32,11 +38,6 @@ import nl.toolforge.karma.core.cmd.util.DependencyHelper;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ModuleTypeException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.DirectoryScanner;
-import org.apache.tools.ant.Project;
 
 /**
  * Builds a module in a manifest. Building a module means that all java sources will be compiled into the
@@ -48,8 +49,6 @@ import org.apache.tools.ant.Project;
 public class BuildModule extends AbstractBuildCommand {
 
   private static final Log logger = LogFactory.getLog(BuildModule.class);
-
-  private static final String DEFAULT_SRC_PATH = "src/java";
 
   private CommandResponse commandResponse = new CommandResponse();
 
