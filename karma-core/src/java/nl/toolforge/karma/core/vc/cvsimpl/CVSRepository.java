@@ -56,8 +56,6 @@ public class CVSRepository extends VersionControlSystem {
   public static final String PSERVER = "pserver";
   private String password = null;
 
-//  private String password = null;
-
   public CVSRepository(String id) {
     super(id, LocationType.CVS);
   }
