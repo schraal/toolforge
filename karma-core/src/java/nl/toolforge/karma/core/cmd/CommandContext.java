@@ -30,7 +30,7 @@ public final class CommandContext {
 
 	private Manifest currentManifest = null;
 	private LocalEnvironment env = null;
-  private CommandResponseHandler responseHandler = null;
+  public CommandResponseHandler responseHandler = null;
 
 	private boolean initialized = false;
 
@@ -110,7 +110,7 @@ public final class CommandContext {
 	 * @throws KarmaException A whole lot. Interface applications should <b>*** NOT ***</b> quit program execution as a
 	 *                        result of this exception. It should be handled nicely.
 	 */
-	public void execute(String commandLine, CommandResponseHandler responseHandler) throws KarmaException {
+	public void execute(String commandLine) throws KarmaException {
 
 		if (!isInitialized()) {
 			throw new KarmaException(KarmaException.COMMAND_CONTEXT_NOT_INITIALIZED);
@@ -144,42 +144,6 @@ public final class CommandContext {
 		command.execute();
     command.deregisterCommandResponseHandler();
 	}
-
-//	/**
-//	 * A <code>Runner</code> might be required for a command to execute something on a version control system. A module
-//	 * can determine which implementation of a runner it requires through the
-//	 * {@link nl.toolforge.karma.core.Module#getLocation} method.
-//	 *
-//	 * @param module The module for which a runner is required.
-//	 * @return A version control system specific runner.
-//	 */
-//	public Runner getRunner(Module module) throws VersionControlException {
-//
-//		Location location = module.getLocation();
-//
-//		try {
-//			if (location instanceof CVSLocationImpl) {
-//				logger.debug("Getting new CVSRunner instance.");
-//
-//        CVSRunner runner = new CVSRunner(location, getCurrent().getDirectory());
-//        runner.setCommandResponse(this.responseHandler);
-//
-//        return runner;
-//			}
-//		} catch (ManifestException m) {
-//			throw new CVSException(VersionControlException.RUNNER_ERROR);
-//		}
-//
-//		try {
-//			if (location instanceof SubversionLocationImpl) {
-//				logger.debug("Getting new CVSRunner instance.");
-//				return new SubversionRunner(module.getLocation());
-//			}
-//		} catch (KarmaException k) {
-//			throw new SVNException(VersionControlException.RUNNER_ERROR);
-//		}
-//		throw new KarmaRuntimeException("Location instance invalid.");
-//	}
 
 	/**
 	 * Checks if a manifest is active for this context.

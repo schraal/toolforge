@@ -3,6 +3,7 @@ package nl.toolforge.karma.core.cmd.impl;
 import nl.toolforge.karma.core.ManifestException;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
@@ -10,6 +11,7 @@ import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.ErrorMessage;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 
@@ -82,13 +84,12 @@ public class UpdateModuleCommand extends DefaultCommand {
       //
       response.addMessage(new SuccessMessage("Module " + module.getName() + " updated ..."));
 
-    } catch (Exception e) {
-      //todo proper exception handling
-      e.printStackTrace();
+    } catch (KarmaException e) {
+      response.addMessage(new ErrorMessage(e));
     }
   }
 
   public CommandResponse getCommandResponse() {
-    return this.response;
+    return response;
   }
 }

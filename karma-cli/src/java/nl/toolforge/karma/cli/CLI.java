@@ -115,7 +115,8 @@ public class CLI {
 
 					} else {
 
-						ctx.execute(line, new CLICommandResponseHandler(writer));
+//						ctx.execute(line, new CLICommandResponseHandler(writer));
+						ctx.execute(line);
 
 //						if (response == null) {
 //							throw new NullPointerException("Command response has not been generated correctly; should not be null");
