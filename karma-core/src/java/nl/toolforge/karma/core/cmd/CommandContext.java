@@ -131,7 +131,7 @@ public final class CommandContext implements ChangeListener {
       } catch (VersionControlException e) {
         // todo some sort of notification would be nice ...
         //
-        logger.warn(e.getErrorMessage());
+        logger.warn(e.getMessage());
         // Nothing serious ...
         //
         commandResponse.addMessage(new ErrorMessage(KarmaException.MANIFEST_STORE_UPDATE_FAILED));
@@ -169,7 +169,7 @@ public final class CommandContext implements ChangeListener {
       } catch (VersionControlException e) {
         // todo some sort of notification would be nice ...
         //
-        logger.warn(e.getErrorMessage());
+        logger.warn(e.getMessage());
         // Nothing serious ...
         //
         commandResponse.addMessage(new ErrorMessage(KarmaException.LOCATION_STORE_UPDATE_FAILED));

@@ -43,7 +43,7 @@ public class TestCommandLoader extends BaseTest {
       assertEquals("There should be two commands loaded from the descriptor file", 2, l.size());
 
     } catch (CommandLoadException e) {
-      fail(e.getErrorMessage());
+      fail(e.getMessage());
     }
 	}
 
