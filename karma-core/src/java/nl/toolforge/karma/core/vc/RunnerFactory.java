@@ -25,7 +25,6 @@ import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
 import nl.toolforge.karma.core.vc.svnimpl.SubversionLocationImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.mockobjects.dynamic.Mock;
 
 /**
  * Factory producing {@link Runner} instances.
