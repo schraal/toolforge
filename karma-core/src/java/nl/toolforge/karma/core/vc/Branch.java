@@ -3,8 +3,7 @@ package nl.toolforge.karma.core.vc;
 /**
  * Class representing a branch in a version control system.
  *
- * @author D.A. Smedes 
- * 
+ * @author D.A. Smedes
  * @version $Id:
  */
 public interface Branch extends SymbolicName {

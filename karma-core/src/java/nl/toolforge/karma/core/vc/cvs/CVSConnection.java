@@ -9,10 +9,8 @@ import org.apache.commons.logging.LogFactory;
  * Class representing a connection to a CVS repository. The current implementation can only deliver
  * <code>org.netbeans.lib.cvsclient.connection.PServerConnection</code>s.
  *
- * @author D.A. Smedes 
- * 
+ * @author D.A. Smedes
  * @version $Id:
- *
  */
 public final class CVSConnection {
 
@@ -28,10 +26,9 @@ public final class CVSConnection {
 	public CVSConnection(Location location) {
 
 		try {
-      this.location = (CVSLocationImpl) location;
+			this.location = (CVSLocationImpl) location;
 		} catch (ClassCastException c) {
-			throw new KarmaRuntimeException(
-				"Wrong implementation of Location interface. Must be a CVSLocationImpl instance.", c);
+			throw new KarmaRuntimeException("Wrong implementation of Location interface. Must be a CVSLocationImpl instance.", c);
 		}
 	}
 }

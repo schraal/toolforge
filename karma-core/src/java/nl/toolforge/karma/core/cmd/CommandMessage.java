@@ -6,12 +6,11 @@ package nl.toolforge.karma.core.cmd;
  * formatted string.
  *
  * @author D.A. Smedes
- *
  * @version $Id$
  */
 public interface CommandMessage {
 
-  /**
+	/**
 	 * Returns the message in a human readable form. This string should be formatted without
 	 * newline characters, to enable any interface application to process them easily.
 	 *

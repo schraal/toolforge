@@ -9,8 +9,7 @@ import java.io.File;
 /**
  * Simple extension to <code>BaseModule</code>, specifically usefull for unit testing.
  *
- * @author D.A. Smedes 
- * 
+ * @author D.A. Smedes
  * @version $Id:
  */
 public class FakeModule extends BaseModule {

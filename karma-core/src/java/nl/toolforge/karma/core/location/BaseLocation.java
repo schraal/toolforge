@@ -1,12 +1,10 @@
 package nl.toolforge.karma.core.location;
 
 
-
 /**
  * <code>BaseLocation</code> implements some generic <code>Location</code> functionality.
  *
  * @author D.A. Smedes
- *
  * @version $Id$
  */
 public abstract class BaseLocation implements Location {
@@ -17,7 +15,7 @@ public abstract class BaseLocation implements Location {
 	/**
 	 * Constructs a <code>Location</code> skeleton.
 	 *
-	 * @param id The unique identifier for the location. Cannot be null.
+	 * @param id   The unique identifier for the location. Cannot be null.
 	 * @param type The type of the location. Cannot be null.
 	 */
 	public BaseLocation(String id, Location.Type type) {
@@ -37,6 +35,6 @@ public abstract class BaseLocation implements Location {
 	}
 
 	public final String getId() {
-        return id;
+		return id;
 	}
 }

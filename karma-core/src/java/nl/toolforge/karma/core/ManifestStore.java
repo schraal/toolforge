@@ -10,30 +10,29 @@ import java.io.FileNotFoundException;
  * disk if need be) where manifest's are stored.
  *
  * @author D.A. Smedes
- *
  * @version $Id$
  */
 public final class ManifestStore {
 
-    private File directory = null;
+	private File directory = null;
 
-    /**
-     * Initializes the <code>ManifestStore</code>.
-     *
-     * @param directory A <code>File</code>
-     * @throws FileNotFoundException When the directory does not exist.     *
-     */
-    public ManifestStore(File directory) throws FileNotFoundException {
+	/**
+	 * Initializes the <code>ManifestStore</code>.
+	 *
+	 * @param directory A <code>File</code>
+	 * @throws FileNotFoundException When the directory does not exist.     *
+	 */
+	public ManifestStore(File directory) throws FileNotFoundException {
 
-    }
+	}
 
-    /**
-     * Updates the manifest store on disk.
-     *
-     * @param vcs A version control system instance.
-     * @throws KarmaException
-     */
-    public static void update(VersionControlSystem vcs) throws KarmaException {
+	/**
+	 * Updates the manifest store on disk.
+	 *
+	 * @param vcs A version control system instance.
+	 * @throws KarmaException
+	 */
+	public static void update(VersionControlSystem vcs) throws KarmaException {
 
-    }
+	}
 }

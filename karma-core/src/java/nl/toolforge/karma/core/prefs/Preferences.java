@@ -13,30 +13,29 @@ import java.util.*;
  * <p>This class is used to store configuration settings. If Karma is used from the command line, then settings will be
  * stored in a file, otherwise the preferences will not be persisted, to enable multiple longer running instances to run
  * in parallel, for instance from a GUI.
- *
+ * <p/>
  * <p>This class is the reference class for the user's local environment. It shows the full configuration that must be
  * present for Karma to run properly as well as provides for methods to setup a default environment on a user's
  * development machine. Note that <emp>default</emp> settings as implemented by this class can <b>always</b> be
  * overridden by providing the preferred settings in the <code>karma.properties</karma> file.
- *
+ * <p/>
  * <p>A user's environment consists of the following :</p>
- *
+ * <p/>
  * <ul>
- *   <li/>A project home directory, where Karma enabled projects are stored. All project source code is checked out
- *        using this directory as the root. The environment variable identified by {@link #DEVELOPMENT_HOME_DIRECTORY_PROPERTY}
- *        is used to assign a directory.
- *   <li/>A configuration directory, where Karma gets its configuration. The configuration (property file) is loaded
- *        by the Karma runtime as a <code>bootstrap.configuration</code> system property.
+ * <li/>A project home directory, where Karma enabled projects are stored. All project source code is checked out
+ * using this directory as the root. The environment variable identified by {@link #DEVELOPMENT_HOME_DIRECTORY_PROPERTY}
+ * is used to assign a directory.
+ * <li/>A configuration directory, where Karma gets its configuration. The configuration (property file) is loaded
+ * by the Karma runtime as a <code>bootstrap.configuration</code> system property.
  * </ul>
- *
+ * <p/>
  * <p>This class is a <b>BOOTSTRAP</b> class, not dependent on any other Karma classes.
- *
+ * <p/>
  * <p>Configuration that is changed when using Karma, is written in a <code>preferences</code> file in the directory
  * indicated by {@link #CONFIGURATION_DIRECTORY_PROPERTY}.
  *
  * @author W.M.Oosterom
  * @author D.A. Smedes
- *
  * @version $Id$
  */
 public final class Preferences {
@@ -71,10 +70,14 @@ public final class Preferences {
 	//
 	private static final boolean RUNTIME_MODE = System.getProperty("runtime.mode", "UNKNOWN").equals("COMMAND_LINE");
 
-	/** Determines testmodes and disables file access */
+	/**
+	 * Determines testmodes and disables file access
+	 */
 	private static final boolean TESTMODE = (System.getProperty("TESTMODE") == null ? false : System.getProperty("TESTMODE").equals("true"));
 
-	/** The property that contains the configuration directory for Karma. */
+	/**
+	 * The property that contains the configuration directory for Karma.
+	 */
 	//public static final String CONFIGURATION_DIRECTORY_PROPERTY = "karma.configuration.directory";
 
 	public static final String LOCALE_PROPERTY = "locale";
@@ -84,7 +87,7 @@ public final class Preferences {
 	 * can be found. Karma will assume that this directory contains two subdirectories: <code>manifests</code>
 	 * (containing the manifest xml files), and <code>repositories</code> (containing version control repository
 	 * configuration files).
-	 *
+	 * <p/>
 	 * <p>The <code>update-manifests<code>-command assumes a number of other properties (the
 	 * <code>karma.manifest-store.vc</code> namespace, to be able to update these directories from a version controlled
 	 * repository.
@@ -97,8 +100,10 @@ public final class Preferences {
 	public static final String MANIFEST_STORE_USERNAME_PROPERTY = "manifest-store.vc.username";
 	public static final String MANIFEST_STORE_PASSWORD_PROPERTY = "manifest-store.vc.password";
 
-	/** The property that identifies the manifest that was last used by Karma. */
-	public static final  String MANIFEST_HISTORY_PROPERTY = "manifest.history";
+	/**
+	 * The property that identifies the manifest that was last used by Karma.
+	 */
+	public static final String MANIFEST_HISTORY_PROPERTY = "manifest.history";
 
 	public static final String LOCATION_STORE_DIRECTORY_PROPERTY = "location-store.directory";
 
@@ -144,17 +149,15 @@ public final class Preferences {
 	/**
 	 * <p>The constructor will check the user's environment and create whatever needs to be created as per
 	 * the documentation on http://toolforge.sourceforge.net/karma/core.
-	 *
+	 * <p/>
 	 * <p>The following actions are performed:</p>
-	 *
+	 * <p/>
 	 * <ul>
-	 *   <li/><code>${user.home}.karma</code> will be created as the user's configuration directory when
-	 *        no system property <code>karma.configuration.directory</code> can be found.
+	 * <li/><code>${user.home}.karma</code> will be created as the user's configuration directory when
+	 * no system property <code>karma.configuration.directory</code> can be found.
 	 * </ul>
 	 *
-	 *
 	 * @return A <code>Preferences<code> instance, ready to rock 'n roll !
-	 *
 	 */
 	public synchronized static Preferences getInstance() {
 
@@ -180,8 +183,7 @@ public final class Preferences {
 			bootstrapConfigurationFile = (bootstrapConfigurationFile == null ? null : bootstrapConfigurationFile.trim());
 
 			if (bootstrapConfigurationFile == null) {
-				throw new KarmaRuntimeException(
-					"Bootstrap PANIC. Property 'bootstrap.configuration' should be provided as system property.");
+				throw new KarmaRuntimeException("Bootstrap PANIC. Property 'bootstrap.configuration' should be provided as system property.");
 			}
 
 			InputStream f = null;
@@ -198,8 +200,7 @@ public final class Preferences {
 			bootstrapConfiguration.load(f);
 
 		} catch (Exception e) {
-			throw new KarmaRuntimeException(
-				"Bootstrap PANIC. Karma could not be started, bootstrap configuration could not be found.");
+			throw new KarmaRuntimeException("Bootstrap PANIC. Karma could not be started, bootstrap configuration could not be found.");
 		}
 
 		// We first try to load the preferences that might be there on disk
@@ -266,7 +267,6 @@ public final class Preferences {
 	 *
 	 * @param key
 	 * @param defaultValue
-	 *
 	 * @return The value for <code>key</code>, or <code>defaultValue</code> if no value was found for key
 	 *         <code>key</code>.
 	 */
@@ -294,8 +294,7 @@ public final class Preferences {
 	public int getInt(String key, int defaultValue) {
 		try {
 			return Integer.parseInt(get(key, Integer.toString(defaultValue)));
-		}
-		catch (NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			return defaultValue;
 		}
 	}
@@ -333,13 +332,11 @@ public final class Preferences {
 
 				} catch (IOException e) {
 					logger.error("Could not write preferences to " + getConfigurationDirectoryAsString());
-				}
-				finally {
+				} finally {
 					if (out != null) {
 						try {
 							out.close();
-						}
-						catch (IOException e) {
+						} catch (IOException e) {
 							// ignore
 						}
 					}
@@ -361,16 +358,13 @@ public final class Preferences {
 			try {
 				in = new FileInputStream(new File(configDir, "preferences"));
 				values.load(in);
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				logger.info("No preferences could be found. Ignoring ...");
-			}
-			finally {
+			} finally {
 				if (in != null) {
 					try {
 						in.close();
-					}
-					catch (IOException e) {
+					} catch (IOException e) {
 						logger.info("No preferences could be found. Ignoring ...");
 					}
 				}
@@ -418,7 +412,7 @@ public final class Preferences {
 		try {
 			if (developmentHome == null) {
 				home = new File(defaultDevelopmentHome);
-			}  else {
+			} else {
 				home = new File(developmentHome);
 			}
 		} catch (NullPointerException n) {
@@ -437,7 +431,7 @@ public final class Preferences {
 
 		if (developmentHome == null) {
 			return defaultDevelopmentHome;
-		}  else {
+		} else {
 			return developmentHome;
 		}
 	}
@@ -456,7 +450,7 @@ public final class Preferences {
 		try {
 			if (karmaConfigurationDirectory == null) {
 				home = new File(defaultKarmaConfigurationDirectory);
-			}  else {
+			} else {
 				home = new File(karmaConfigurationDirectory);
 			}
 		} catch (NullPointerException n) {
@@ -475,10 +469,11 @@ public final class Preferences {
 
 		if (karmaConfigurationDirectory == null) {
 			return defaultKarmaConfigurationDirectory;
-		}  else {
+		} else {
 			return karmaConfigurationDirectory;
 		}
 	}
+
 	/**
 	 * Gets the operating system (family)name (WINDOWS, UNIX) for the environment the user works on..
 	 *

@@ -5,8 +5,7 @@ import nl.toolforge.karma.core.test.BaseTest;
 /**
  * Test <code>CVSLocationImpl</code> instances.
  *
- * @author D.A. Smedes 
- * 
+ * @author D.A. Smedes
  * @version $Id:
  */
 public class TestCVSLocationImpl extends BaseTest {

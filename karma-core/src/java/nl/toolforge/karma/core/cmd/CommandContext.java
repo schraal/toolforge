@@ -2,21 +2,20 @@ package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.*;
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.location.LocationFactory;
 import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.karma.core.location.LocationFactory;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
-import nl.toolforge.karma.core.vc.cvs.CVSException;
+import nl.toolforge.karma.core.vc.subversion.SVNException;
 import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
 import nl.toolforge.karma.core.vc.subversion.SubversionRunner;
-import nl.toolforge.karma.core.vc.subversion.SVNException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Set;
-import java.io.File;
 
 /**
  * <p>The command context is the class that provides a runtime for commands to run in. The command context maintains
@@ -25,7 +24,6 @@ import java.io.File;
  * <code>init</code> method can only be run once.
  *
  * @author D.A. Smedes
- *
  * @version $Id$
  */
 public final class CommandContext {

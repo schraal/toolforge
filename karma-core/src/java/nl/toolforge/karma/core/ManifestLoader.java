@@ -2,8 +2,8 @@ package nl.toolforge.karma.core;
 
 import nl.toolforge.core.util.file.XMLFilenameFilter;
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.location.LocationFactory;
 import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.karma.core.location.LocationFactory;
 import nl.toolforge.karma.core.prefs.Preferences;
 import nl.toolforge.karma.core.prefs.UnavailableValueException;
 import org.apache.commons.logging.Log;
@@ -25,7 +25,6 @@ import java.util.Set;
  * a directory identified by the property <code>manifest.dir</code>.
  *
  * @author D.A. Smedes
- *
  * @version $Id$
  */
 public final class ManifestLoader {
@@ -51,7 +50,6 @@ public final class ManifestLoader {
 	 * Returns a set with all manifest names, as they could be located in the manifest store directory.
 	 *
 	 * @return All manifests in the manifest store directory.
-	 *
 	 * @throws ManifestException
 	 */
 	public final Set getAll() throws ManifestException {
@@ -74,7 +72,6 @@ public final class ManifestLoader {
 	 *
 	 * @return The <code>Manifest</code> that was restored based on the {@link Preferences#MANIFEST_HISTORY_PROPERTY} or
 	 *         <code>null</code> when no history was defined.
-	 *
 	 * @throws ManifestException See {@link ManifestException#MANIFEST_LOAD_ERROR}
 	 */
 	public final Manifest loadFromHistory() throws ManifestException, LocationException {
@@ -96,14 +93,12 @@ public final class ManifestLoader {
 	/**
 	 * Loads a manifest and all included manifests using the <code>loader</code> classloader.
 	 *
-	 * @param id The id of the manifest, represented as a a filename with or without the <code>xml</code> extension.
+	 * @param id     The id of the manifest, represented as a a filename with or without the <code>xml</code> extension.
 	 * @param loader A classloader where manifest-files are available as resources.
-	 * @param dir The location path (directory, relative to the <code>resources</code> directory in the classpath, e.g.
-	 *            <code>/test</code>) where resources can be found. This property is used by <code>loader</code> to
-	 *            retrieve manifest files.
-	 *
+	 * @param dir    The location path (directory, relative to the <code>resources</code> directory in the classpath, e.g.
+	 *               <code>/test</code>) where resources can be found. This property is used by <code>loader</code> to
+	 *               retrieve manifest files.
 	 * @return A <code>Manifest</code> implementation. See {@link ManifestImpl}.
-	 *
 	 * @throws ManifestException See {@link ManifestException#MANIFEST_LOAD_ERROR}
 	 */
 	public final Manifest load(String id, ClassLoader loader, String dir) throws ManifestException, LocationException {
@@ -120,9 +115,7 @@ public final class ManifestLoader {
 	 * is retrieved by providing this method with the <code>id</code> 'karma-2.0'.
 	 *
 	 * @param id See method description.
-	 *
 	 * @return A <code>Manifest</code> instance.
-	 *
 	 * @throws ManifestException See {@link ManifestException#MANIFEST_LOAD_ERROR}.
 	 */
 	public final Manifest load(String id) throws ManifestException, LocationException {

@@ -1,22 +1,18 @@
 package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.SourceModule;
-import nl.toolforge.karma.core.exception.ErrorCode;
+import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.test.FakeModule;
 import nl.toolforge.karma.core.test.LocalCVSInitializer;
 import nl.toolforge.karma.core.vc.Runner;
 
-import java.io.File;
-
 /**
  * <p>This class tests all stuff in the <code>cvs</code> package. For this to work properly, you should unpack the
  * test cvs repository and install on your local system.
  *
- * @author D.A. Smedes 
- * 
+ * @author D.A. Smedes
  * @version $Id:
  */
 public class TestCVSRunner extends LocalCVSInitializer {
@@ -126,7 +122,7 @@ public class TestCVSRunner extends LocalCVSInitializer {
 			assertTrue(response.hasStatus(CVSResponseAdapter.MODULE_UPDATED_OK));
 
 		} catch (CVSException c) {
-      fail(c.getMessage());
+			fail(c.getMessage());
 		} catch (KarmaException e) {
 			fail(e.getMessage());
 		}

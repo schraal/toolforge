@@ -11,13 +11,10 @@ import nl.toolforge.karma.core.vc.SymbolicName;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.CVSException;
 
-import java.io.File;
-
 /**
  * // TODO Lots of todo's, subversion implementation
  *
- * @author D.A. Smedes 
- * 
+ * @author D.A. Smedes
  * @version $Id:
  */
 public final class SubversionRunner implements Runner {
@@ -26,9 +23,9 @@ public final class SubversionRunner implements Runner {
 
 	}
 
-  public CommandResponse create(Module module) {
-    return null;
-  }
+	public CommandResponse create(Module module) {
+		return null;
+	}
 
 	public CommandResponse add(Module module, String fileName) throws SVNException {
 		return null;

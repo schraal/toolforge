@@ -4,27 +4,16 @@ import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.SourceModule;
 import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.cmd.CommandContext;
 import nl.toolforge.karma.core.vc.VersionExtractor;
 import org.netbeans.lib.cvsclient.command.log.LogInformation;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Collections;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 import java.io.File;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- *
  * @author D.A. Smedes
- *
  * @version $Id:
  */
 public final class CVSVersionExtractor implements VersionExtractor {
@@ -39,16 +28,16 @@ public final class CVSVersionExtractor implements VersionExtractor {
 		return instance;
 	}
 
-	private CVSVersionExtractor() {}
+	private CVSVersionExtractor() {
+	}
 
 	/**
 	 * <p>See {@link VersionExtractor#getNextVersion}.
-	 *
+	 * <p/>
 	 * <p>Connects to the correct CVS repository and determines the next version in the branch (if applicable, otherwise
 	 * it is the trunk) for the module. This is done by quering <code>module.info</code>.
 	 *
 	 * @param module The next version number <code>module</code>.
-	 *
 	 * @return The next version for <code>module</code>.
 	 * @throws KarmaException TODO complete when implementation is ready.
 	 */
@@ -68,12 +57,11 @@ public final class CVSVersionExtractor implements VersionExtractor {
 
 	/**
 	 * <p>See {@link VersionExtractor#getLastVersion}.
-	 *
+	 * <p/>
 	 * <p>Connects to the correct CVS repository and determines the last version in the branch (if applicable, otherwise
 	 * it is the trunk) for the module. This is done by quering <code>module.info</code>.
 	 *
 	 * @param module The next version number <code>module</code>.
-	 *
 	 * @return The next version for <code>module</code>.
 	 * @throws KarmaException TODO complete when implementation is ready.
 	 */

@@ -3,18 +3,18 @@ package nl.toolforge.karma.core.cmd;
 import nl.toolforge.karma.core.KarmaException;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.DOMException;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,17 +22,17 @@ import java.util.Set;
  * <p>Loads command-descriptors from an <code>XML</code>-file. The default filename
  * is <code>commands.xml</code>, which should be available in the classpath. It should have been shipped with
  * the Karma Core release jar-file.
- *
+ * <p/>
  * <p>TODO the xml instance should be checked by a DTD or XML Schema document.
  *
  * @author W.M. Oosterom
  * @author D.A. Smedes
- *
  * @version $Id$
  */
 public final class CommandLoader {
 
-	private CommandLoader() {}
+	private CommandLoader() {
+	}
 
 	private static CommandLoader instance = null;
 
@@ -65,7 +65,6 @@ public final class CommandLoader {
 	 *
 	 * @param resource The resource filename (relative to the classpath) to the <code>XML</code> file. Use
 	 *                 {@link #load} to use the default settings.
-	 *
 	 * @return A <code>Set</code> of {@link nl.toolforge.karma.core.cmd.DefaultCommand} instances.
 	 */
 

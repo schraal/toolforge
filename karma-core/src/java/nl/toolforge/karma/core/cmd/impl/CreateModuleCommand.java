@@ -11,10 +11,8 @@ import org.apache.commons.cli.CommandLine;
  * Creates a module in a repository. The command provides the option to create the module in the current manifest as
  * well.
  *
- * @author D.A. Smedes 
- * 
+ * @author D.A. Smedes
  * @version $Id:
- *
  * @since 2.0
  */
 public class CreateModuleCommand extends DefaultCommand {
@@ -63,11 +61,11 @@ public class CreateModuleCommand extends DefaultCommand {
 		// If we get to this point, creation of the module was succesfull.
 		//
 		CommandMessage message =
-			new SimpleCommandMessage(getFrontendMessages().getString("message.MODULE_CREATED"), new Object[]{moduleName, locationAlias});
+				new SimpleCommandMessage(getFrontendMessages().getString("message.MODULE_CREATED"), new Object[]{moduleName, locationAlias});
 
-   	// Ensure that only this message is passed back to the client
+		// Ensure that only this message is passed back to the client
 		//
-    CommandResponse response = new SimpleCommandResponse();
+		CommandResponse response = new SimpleCommandResponse();
 		response.addMessage(message);
 
 		return response;

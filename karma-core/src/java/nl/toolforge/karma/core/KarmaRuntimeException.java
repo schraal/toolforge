@@ -1,13 +1,10 @@
 package nl.toolforge.karma.core;
 
 
-
 /**
  * Root runtime exception for <code>nl.toolforge.karma</code> classes.
  *
  * @author D.A. Smedes
- *
- * @version
  */
 public class KarmaRuntimeException extends RuntimeException {
 

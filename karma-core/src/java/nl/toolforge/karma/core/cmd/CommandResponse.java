@@ -14,7 +14,6 @@ import java.util.Set;
  *
  * @author W.M. Oosterom
  * @author D.A. Smedes
- *
  * @version $Id$
  */
 public abstract class CommandResponse {
@@ -74,10 +73,8 @@ public abstract class CommandResponse {
 	 * implement constant values for these statusses and add them here. This class can then be queried for these
 	 * statusses and do something with it.
 	 *
-	 * @see #hasStatus
-	 *
 	 * @param statusIdentifier A status identifier. Should be unique.
-	 *
+	 * @see #hasStatus
 	 */
 	public synchronized final void addStatusUpdate(Integer statusIdentifier) throws CommandException {
 
@@ -92,7 +89,6 @@ public abstract class CommandResponse {
 	 * Checks if this response has a status update <code>statusIdentifier</code> attached.
 	 *
 	 * @param statusIdentifier A status identifier.
-	 *
 	 * @return <code>true</code> when this response has the status update attached, <code>false</code> if it hasn't.
 	 */
 	public final boolean hasStatus(Integer statusIdentifier) {

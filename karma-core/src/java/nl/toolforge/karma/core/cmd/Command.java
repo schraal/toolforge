@@ -5,31 +5,40 @@ import org.apache.commons.cli.CommandLine;
 
 /**
  * <p>A <code>Command</code> is an executable operation in Karma. Commands perform actions as per user requests.
- *
+ * <p/>
  * <p>Karma commands are based on the <code>Option</code> class in the
  * <a href="http://jakarta.apache.org/commons/cli/apidocs/org/apache/commons/cli/Option.html">Apache</code> package.
  * Karma wraps an <code>Option</code> and features to it.
  *
  * @author D.A. Smedes
  * @author W.M. Oosterom
- *
  * @version $Id$
  */
 public interface Command {
 
-	/** Dependency type for a CVS version control system */
+	/**
+	 * Dependency type for a CVS version control system
+	 */
 	public static final String DEPENDENCY_CVS = "cvs";
 
-	/** Dependency type for a Subversion version control system */
+	/**
+	 * Dependency type for a Subversion version control system
+	 */
 	public static final String DEPENDENCY_SUBVERSION = "subversion";
 
-	/** Dependency type for a library module (mainly a Java jar-file) */
+	/**
+	 * Dependency type for a library module (mainly a Java jar-file)
+	 */
 	public static final String DEPENDENCY_MODULE_TYPE_LIB = "lib";
 
-	/** Dependency type for a source module */
+	/**
+	 * Dependency type for a source module
+	 */
 	public static final String DEPENDENCY_MODULE_TYPE_SOURCE = "source";
 
-	/** Default filename for the command descriptor file */
+	/**
+	 * Default filename for the command descriptor file
+	 */
 	public static final String DEFAULT_COMMAND_FILE = "commands.xml";
 
 	/**
@@ -91,13 +100,13 @@ public interface Command {
 	 */
 	public void setContext(CommandContext context);
 
-  public void setCommandLine(CommandLine commandLine);
+	public void setCommandLine(CommandLine commandLine);
 
-  /**
-   * Gets the parsed command line for this command. This command line can be queried by commands to check if options
-   * had been set, or to retrieve application data.
-   *
-   * @return A command line instance.
-   */
-  public CommandLine getCommandLine();
+	/**
+	 * Gets the parsed command line for this command. This command line can be queried by commands to check if options
+	 * had been set, or to retrieve application data.
+	 *
+	 * @return A command line instance.
+	 */
+	public CommandLine getCommandLine();
 }

@@ -7,11 +7,9 @@ import java.util.Iterator;
  * <code>List</code> implementation containing <code>Module</coide> instances.
  *
  * @author D.A. Smedes
- *
  * @version $Id$
  */
-public final class ModuleMap extends HashMap
-{
+public final class ModuleMap extends HashMap {
 	/**
 	 * Javadoc inherited.
 	 */
@@ -30,7 +28,7 @@ public final class ModuleMap extends HashMap
 	/**
 	 * Javadoc inherited.
 	 */
-	public final void put (Module module) {
+	public final void put(Module module) {
 		super.put(module.getName(), module);
 	}
 
@@ -50,7 +48,7 @@ public final class ModuleMap extends HashMap
 
 		ModuleMap list = new ModuleMap();
 
-		for (Iterator i= super.values().iterator(); i.hasNext();) {
+		for (Iterator i = super.values().iterator(); i.hasNext();) {
 			Object o = i.next();
 			if (o instanceof SourceModule) {
 				list.put(((Module) o).getName(), o);
@@ -68,7 +66,7 @@ public final class ModuleMap extends HashMap
 
 		ModuleMap list = new ModuleMap();
 
-		for (Iterator i= super.values().iterator(); i.hasNext();) {
+		for (Iterator i = super.values().iterator(); i.hasNext();) {
 			Object o = i.next();
 			if (o instanceof JarModule) {
 				list.put(((Module) o).getName(), o);

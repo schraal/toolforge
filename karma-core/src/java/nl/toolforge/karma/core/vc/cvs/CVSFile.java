@@ -7,7 +7,6 @@ import nl.toolforge.karma.core.vc.ManagedFile;
  * can be found in a directory's <code>CVS/Entries</code> file.
  *
  * @author D.A. Smedes
- *
  * @version $Id$
  */
 public class CVSFile implements ManagedFile {

@@ -3,9 +3,7 @@ package nl.toolforge.karma.core;
 import nl.toolforge.karma.core.test.BaseTest;
 
 /**
- *
  * @author D.A. Smedes
- *
  * @version $Id$
  */
 public class TestManifestLoader extends BaseTest {
@@ -16,7 +14,7 @@ public class TestManifestLoader extends BaseTest {
 
 		try {
 			Manifest m =
-				ml.load("test/test-manifest-1.xml", this.getClass().getClassLoader(), "");
+					ml.load("test/test-manifest-1.xml", this.getClass().getClassLoader(), "");
 
 			assertEquals(2, m.countSourceModules());
 			assertEquals(2, m.countJarModules());

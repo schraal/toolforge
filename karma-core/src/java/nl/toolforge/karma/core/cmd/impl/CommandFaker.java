@@ -9,13 +9,12 @@ import nl.toolforge.karma.core.cmd.DefaultCommand;
  * <p>Bogus implementation of {@link nl.toolforge.karma.core.cmd.DefaultCommand}. Used in testcases.
  *
  * @author D.A. Smedes
- *
  * @version $Id$
  */
 public final class CommandFaker extends DefaultCommand {
 
-  public CommandFaker(CommandDescriptor descriptor) throws KarmaException {
-    super(null);
+	public CommandFaker(CommandDescriptor descriptor) throws KarmaException {
+		super(null);
 
 		throw new RuntimeException("Implementation " + CommandFaker.class.getName() + " is fake ...");
 	}

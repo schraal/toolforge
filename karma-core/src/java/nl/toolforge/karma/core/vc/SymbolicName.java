@@ -1,10 +1,7 @@
 package nl.toolforge.karma.core.vc;
 
 /**
- *
- *
- * @author D.A. Smedes 
- * 
+ * @author D.A. Smedes
  * @version $Id:
  */
 public interface SymbolicName {
@@ -20,6 +17,7 @@ public interface SymbolicName {
 
 	/**
 	 * Returns a <code>String</code> representation of this symbolic name.
+	 *
 	 * @return
 	 */
 	public String getSymbolicName();

@@ -1,16 +1,16 @@
 package nl.toolforge.karma.core;
 
-import nl.toolforge.core.regexp.Pattern;
 import nl.toolforge.karma.core.expr.ModuleNameExpression;
 import nl.toolforge.karma.core.location.Location;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.regex.Pattern;
+
 /**
  * The name says it all. This class is the base (template) for a module.
  *
  * @author D.A. Smedes
- *
  * @version $Id:
  */
 public abstract class BaseModule implements Module {
@@ -26,8 +26,7 @@ public abstract class BaseModule implements Module {
 	 *
 	 * @param moduleName The name of the module. Module names are matched against
 	 *                   a {@link nl.toolforge.karma.core.expr.ModuleNameExpression} instance.
-	 * @param location The location descriptor for the module.
-	 *
+	 * @param location   The location descriptor for the module.
 	 * @throws KarmaException When input parameters don't match their respective patterns
 	 */
 	public BaseModule(String moduleName, Location location) throws KarmaException {

@@ -11,7 +11,6 @@ import java.util.*;
  * This factory is the single resource of Command objects.
  *
  * @author W.H. Schraal
- *
  * @version $Id$
  */
 public final class CommandFactory {
@@ -83,7 +82,7 @@ public final class CommandFactory {
 	 * @param commandLineString Command line string (e.g. <code>select-manifest -m karma-1.0</code>).
 	 * @return The implementation of a <code>Command</code> object.
 	 * @throws CommandException When a correct command could not be constructed. See
-	 *         {@link CommandException#INVALID_COMMAND}.
+	 *                          {@link CommandException#INVALID_COMMAND}.
 	 */
 	public Command getCommand(String commandLineString) throws CommandException {
 
@@ -120,7 +119,7 @@ public final class CommandFactory {
 				// Construct the command implementation, with the default constructor
 				//
 				Constructor defaultConstructor =
-					descriptor.getImplementation().getConstructor(new Class[]{CommandDescriptor.class});
+						descriptor.getImplementation().getConstructor(new Class[]{CommandDescriptor.class});
 
 				cmd = (Command) defaultConstructor.newInstance(new Object[]{descriptor});
 

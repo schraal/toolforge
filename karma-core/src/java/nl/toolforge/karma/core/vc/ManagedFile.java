@@ -8,7 +8,6 @@ package nl.toolforge.karma.core.vc;
  * <code>ManagedFile</code>s can be committed to a version control system.
  *
  * @author D.A. Smedes
- *
  * @version $Id$
  */
 public interface ManagedFile {

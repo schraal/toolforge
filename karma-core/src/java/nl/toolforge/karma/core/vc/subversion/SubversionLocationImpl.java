@@ -1,13 +1,10 @@
 package nl.toolforge.karma.core.vc.subversion;
 
-import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.location.BaseLocation;
 import nl.toolforge.karma.core.location.Location;
 
 /**
- *
  * @author D.A. Smedes
- *
  * @version $Id$
  */
 public final class SubversionLocationImpl extends BaseLocation {

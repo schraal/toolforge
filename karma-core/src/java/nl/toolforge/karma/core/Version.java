@@ -109,7 +109,6 @@ public final class Version implements Comparable {
 	 * Compares two <code>Version</code> instances.
 	 *
 	 * @param o The other <code>Version</code> instance to match against.
-	 *
 	 * @return Returns <code>-1</code> when <code>this < o</code>, <code>0</code> when
 	 *         <code>this == o</code> or <code>1</code> when <code>this > o</code>.
 	 */

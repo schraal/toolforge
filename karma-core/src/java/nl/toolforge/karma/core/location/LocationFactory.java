@@ -23,7 +23,6 @@ import java.util.Map;
  *
  * @author D.A. Smedes
  * @author W.M. Oosterom
- *
  * @version $Id$
  */
 public final class LocationFactory {
@@ -34,7 +33,8 @@ public final class LocationFactory {
 
 	private static Map locations = null;
 
-	private LocationFactory() {}
+	private LocationFactory() {
+	}
 
 	/**
 	 * Gets the singleton instance of the location factory. This instance can be used to get access to all location
@@ -147,7 +147,7 @@ public final class LocationFactory {
 	/**
 	 * Parses the <code>root</code>-element and builds <code>Location</code> objects.
 	 *
-	 * @param locationRoot The DOM for all location data.
+	 * @param locationRoot      The DOM for all location data.
 	 * @param authenticatorRoot The DOM for all authentication data.
 	 */
 	private synchronized void load(Document locationRoot, Document authenticatorRoot) throws LocationException {

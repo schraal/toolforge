@@ -11,7 +11,6 @@ import java.util.Iterator;
  * This command updates all modules in the active manifest on a developers' local system.
  *
  * @author D.A. Smedes
- *
  * @version $Id$
  */
 public class UpdateAllModulesCommand extends DefaultCommand {
@@ -31,7 +30,7 @@ public class UpdateAllModulesCommand extends DefaultCommand {
 	 * is relative to the root directory of the <code>active</code> manifest.
 	 *
 	 * @throws KarmaException When no manifest is loaded, a {@link nl.toolforge.karma.core.cmd.CommandException#NO_MANIFEST_SELECTED} is thrown. For
-	 *   other errors, a more generic {@link KarmaException} is thrown.
+	 *                        other errors, a more generic {@link KarmaException} is thrown.
 	 */
 	public CommandResponse execute() throws KarmaException {
 

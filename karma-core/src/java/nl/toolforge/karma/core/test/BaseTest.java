@@ -11,35 +11,32 @@ import nl.toolforge.karma.core.prefs.Preferences;
  * that affects classes like {@link Preferences} etc.
  *
  * @author D.A. Smedes
- *
  * @version $Id$
  */
 public class BaseTest extends TestCase {
 
-  public void setUp() {
+	public void setUp() {
 
-    // Fake some parameters that would have been passed to the JVM
-    //
+		// Fake some parameters that would have been passed to the JVM
+		//
 
-    // The following is required to allow the Preferences class to use the test-classpath
-    //
-    System.setProperty("TESTMODE", "true");
+		// The following is required to allow the Preferences class to use the test-classpath
+		//
+		System.setProperty("TESTMODE", "true");
 
-    // Overrides karma.properties for Junit testing.
-    //
-    System.setProperty(Preferences.BOOTSTRAP_CONFIGURATION_FILE_PROPERTY, "test/test-karma.properties");
+		// Overrides karma.properties for Junit testing.
+		//
+		System.setProperty(Preferences.BOOTSTRAP_CONFIGURATION_FILE_PROPERTY, "test/test-karma.properties");
 
-    // Initialize the LocationFactory
-    //
-    try {
-      LocationFactory locationFactory = LocationFactory.getInstance();
-      locationFactory.load(
-        getClass().getClassLoader().getResourceAsStream("test/locations.xml"),
-        getClass().getClassLoader().getResourceAsStream("test/location-authentication.xml")
-      );
+		// Initialize the LocationFactory
+		//
+		try {
+			LocationFactory locationFactory = LocationFactory.getInstance();
+			locationFactory.load(getClass().getClassLoader().getResourceAsStream("test/locations.xml"),
+					getClass().getClassLoader().getResourceAsStream("test/location-authentication.xml"));
 
-    } catch (KarmaException e) {
-      throw new KarmaRuntimeException("BaseTest setup error", e);
-    }
-  }
+		} catch (KarmaException e) {
+			throw new KarmaRuntimeException("BaseTest setup error", e);
+		}
+	}
 }

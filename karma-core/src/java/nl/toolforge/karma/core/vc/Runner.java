@@ -2,14 +2,12 @@ package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 
 /**
  * This interface defines methods for runner classes that perform actions on a physical version control system.
  *
- * @author D.A. Smedes 
- * 
+ * @author D.A. Smedes
  * @version $Id:
  */
 public interface Runner {
@@ -19,12 +17,12 @@ public interface Runner {
 	/**
 	 * Creates a module in a version control repository.
 	 */
-	public CommandResponse create(Module module) throws VersionControlException ;
+	public CommandResponse create(Module module) throws VersionControlException;
 
 	/**
 	 * Adds a file to the version control system. If the file does not exists, the file will be created.
 	 *
-	 * @param module The module that contains the file (or will contain the file).
+	 * @param module   The module that contains the file (or will contain the file).
 	 * @param fileName The filename of the file that should be added to the version control system repository.
 	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>.
 	 */
@@ -46,7 +44,7 @@ public interface Runner {
 	 * @param version
 	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>.
 	 * @throws VersionControlException When the module does not exist in the repository or when the symbolic name is
-	 *         not attached to the module in the repository.
+	 *                                 not attached to the module in the repository.
 	 */
 	public CommandResponse checkout(Module module, Version version) throws VersionControlException;
 
@@ -66,14 +64,14 @@ public interface Runner {
 	 * @param version
 	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>.
 	 * @throws VersionControlException When the module does not exist in the repository or when the symbolic name is
-	 *         not attached to the module in the repository.
+	 *                                 not attached to the module in the repository.
 	 */
 	public CommandResponse update(Module module, Version version) throws VersionControlException;
 
 	/**
 	 * Commits a change to <code>file</code> to the version control system.
 	 *
-	 * @param file The file that should be committed.
+	 * @param file    The file that should be committed.
 	 * @param message The commit message for the file.
 	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>.
 	 */
@@ -83,7 +81,7 @@ public interface Runner {
 	 * Commits all changes on <code>ManagedFile</code> instances for this
 	 * <code>module</code>.
 	 *
-	 * @param module The module for which all changes should be committed.
+	 * @param module  The module for which all changes should be committed.
 	 * @param message The commit message for the module..
 	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>.
 	 */
@@ -94,7 +92,6 @@ public interface Runner {
 	 *
 	 * @param module
 	 * @param branch A symbolic name, representing the branch name.
-	 *
 	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>
 	 */
 	public CommandResponse branch(Module module, SymbolicName branch) throws VersionControlException;
@@ -109,5 +106,5 @@ public interface Runner {
 	public CommandResponse tag(Module module, SymbolicName tag) throws VersionControlException;
 
 	public CommandResponse tag(Module module, Version version) throws VersionControlException;
-	
+
 }

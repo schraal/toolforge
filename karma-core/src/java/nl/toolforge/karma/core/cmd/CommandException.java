@@ -6,8 +6,7 @@ import nl.toolforge.karma.core.exception.ErrorCode;
 /**
  * Exceptions thrown during the execution of a command.
  *
- * @author D.A. Smedes 
- * 
+ * @author D.A. Smedes
  * @version $Id:
  */
 public class CommandException extends KarmaException {
@@ -42,8 +41,10 @@ public class CommandException extends KarmaException {
 	 * Argument for a command option is missing.
 	 */
 	public static ErrorCode MISSING_ARGUMENT = new ErrorCode("CMD-00032");
-	/** No manifest has been assigned to the <code>CommandContext</code>  */
-  public static final ErrorCode NO_MANIFEST_SELECTED = new ErrorCode("CORE-00031");
+	/**
+	 * No manifest has been assigned to the <code>CommandContext</code>
+	 */
+	public static final ErrorCode NO_MANIFEST_SELECTED = new ErrorCode("CORE-00031");
 
 //  public static ErrorCode
 
@@ -62,9 +63,9 @@ public class CommandException extends KarmaException {
 	/**
 	 * Create a new KarmaException, with the specific errorCode and Throwable that caused the exception.
 	 *
-	 * @param errorCode         The errorCode that identifies the specific error that has occurred.
-	 * @param messageArguments  These arguments are filled in into the error codes' message.
-	 * @param t                 The Throwable that caused this specific exception.
+	 * @param errorCode        The errorCode that identifies the specific error that has occurred.
+	 * @param messageArguments These arguments are filled in into the error codes' message.
+	 * @param t                The Throwable that caused this specific exception.
 	 */
 	public CommandException(ErrorCode errorCode, Object[] messageArguments, Throwable t) {
 		super(errorCode, messageArguments, t);

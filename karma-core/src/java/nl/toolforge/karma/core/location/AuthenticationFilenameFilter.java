@@ -8,7 +8,6 @@ import java.io.FilenameFilter;
  * <code>repository-authenticators</code> and with an <code>xml</code>-extension, will be accepted.
  *
  * @author D.A. Smedes
- *
  * @version $Id$
  */
 public class AuthenticationFilenameFilter implements FilenameFilter {

@@ -14,6 +14,7 @@
         id=toolforge, jar=toolforge-core-1.0-dev.jar
 	id=commons-logging, jar=commons-logging-1.0.3.jar
 	id=commons-cli, jar=commons-cli-1.0.jar
+	id=commons-io, jar=commons-io-20030203.000550.jar
 	dir=target/classes
 	dir=resources
 	

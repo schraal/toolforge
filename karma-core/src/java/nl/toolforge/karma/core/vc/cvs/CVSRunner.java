@@ -1,12 +1,7 @@
 package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.core.util.file.MyFileUtils;
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.Manifest;
-import nl.toolforge.karma.core.Module;
-import nl.toolforge.karma.core.SourceModule;
-import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.*;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.location.Location;
@@ -39,11 +34,10 @@ import java.util.List;
 
 /**
  * <p>Runner class for CVS. Executes stuff on a CVS repository.
- *
+ * <p/>
  * <p>TODO : the CVSRunner could be made multi-threaded, to use bandwidth to a remote repository much better ...
  *
  * @author D.A. Smedes
- *
  * @version $Id:
  */
 public final class CVSRunner implements Runner {
@@ -70,12 +64,10 @@ public final class CVSRunner implements Runner {
 	 * reprenting a CVS repository. The manifest is required because it determines the base point from where CVS commands
 	 * will be run; modules are checked out in a directory structure, relative to {@link Manifest#getLocalPath()}.
 	 *
-	 * @param location
-	 *   A <code>Location</code> instance (typically a <code>CVSLocationImpl</code> instance), containing
-	 *   the location and connection details of the CVS repository.
-	 * @param basePoint
-	 *   The basePoint determines the base point where cvs commands should be run. If not used by commands and extended,
-	 *   this <code>basePoint.getPath()</code> will be used by the CVS client as the
+	 * @param location  A <code>Location</code> instance (typically a <code>CVSLocationImpl</code> instance), containing
+	 *                  the location and connection details of the CVS repository.
+	 * @param basePoint The basePoint determines the base point where cvs commands should be run. If not used by commands and extended,
+	 *                  this <code>basePoint.getPath()</code> will be used by the CVS client as the
 	 */
 	public CVSRunner(Location location, File basePoint) throws CVSException {
 
@@ -111,20 +103,18 @@ public final class CVSRunner implements Runner {
 	 * <p>Creates a module in a CVS repository. This is done through the CVS <code>import</code> command. The basic structure
 	 * of the module directory is defined by the file <code>module-structure.model</code>, which should be available from
 	 * the classpath. If the file cannot be located, a basic structure is created:
-	 *
+	 * <p/>
 	 * <ul>
-	 *   <li/>A directory based on <code>module.getName()</code>.
-	 *   <li/>A file in that directory, called <code>module.info</code>.
+	 * <li/>A directory based on <code>module.getName()</code>.
+	 * <li/>A file in that directory, called <code>module.info</code>.
 	 * </ul>
-	 *
+	 * <p/>
 	 * <p>After creation, the module is available with the initial version <code>0-0</code>.
 	 *
 	 * @param module The module to be created.
-	 *
 	 * @return The result of the create command, wrapped in a <code>CommandResponse</code> object.
-	 *
 	 * @throws CVSException Errorcode <code>MODULE_EXISTS_IN_REPOSITORY</code>, when the module already exists on the
-	 *         location as specified by the module.
+	 *                      location as specified by the module.
 	 */
 	public CommandResponse create(Module module) throws CVSException {
 
@@ -160,7 +150,11 @@ public final class CVSRunner implements Runner {
 
 		// Remove the temporary structure.
 		//
-		try { FileUtils.deleteDirectory(tmp); } catch (IOException e) { e.printStackTrace(); }
+		try {
+			FileUtils.deleteDirectory(tmp);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		// Step 2 : checkout the module to be able to create module.info
 		//
@@ -184,7 +178,11 @@ public final class CVSRunner implements Runner {
 
 		// Remove the temporary structure.
 		//
-		try { FileUtils.deleteDirectory(tmp); } catch (IOException e) { e.printStackTrace(); }
+		try {
+			FileUtils.deleteDirectory(tmp);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		return adapter;
 	}
@@ -193,13 +191,11 @@ public final class CVSRunner implements Runner {
 	 * Performs the <code>cvs checkout [-r &lt;symbolic-name&gt;] &lt;module&gt;</code>command for a module.
 	 * <code>version</code> is used when not <code>null</code> to checkout a module with a symbolic name.
 	 *
-	 * @param module The module to check out.
+	 * @param module  The module to check out.
 	 * @param version The version number for the module to check out.
-	 *
 	 * @return The CVS response wrapped in a <code>CommandResponse</code>.
-	 *
 	 * @throws CVSException With errorcodes <code>NO_SUCH_MODULE_IN_REPOSITORY</code> when the module does not exist
-	 *         in the repository and <code>INVALID_SYMBOLIC_NAME</code>, when the version does not exists for the module.
+	 *                      in the repository and <code>INVALID_SYMBOLIC_NAME</code>, when the version does not exists for the module.
 	 */
 	public CommandResponse checkout(Module module, Version version) throws CVSException {
 
@@ -211,11 +207,9 @@ public final class CVSRunner implements Runner {
 	 * to the HEAD of the development branch at hand.
 	 *
 	 * @param module The module to check out.
-	 *
 	 * @return The CVS response wrapped in a <code>CommandResponse</code>.
-	 *
 	 * @throws CVSException With errorcodes <code>NO_SUCH_MODULE_IN_REPOSITORY</code> when the module does not exist
-	 *         in the repository and <code>INVALID_SYMBOLIC_NAME</code>, when the version does not exists for the module.
+	 *                      in the repository and <code>INVALID_SYMBOLIC_NAME</code>, when the version does not exists for the module.
 	 */
 	public CommandResponse checkout(Module module) throws CVSException {
 		return checkout(module, null, getBasePoint());
@@ -255,9 +249,8 @@ public final class CVSRunner implements Runner {
 	/**
 	 * For a module, the <code>cvs -q update -Pd -r &lt;symbolic-name&gt;</code> command is executed.
 	 *
-	 * @param module The module that should be updated.
+	 * @param module  The module that should be updated.
 	 * @param version The version of the module or <code>null</code> when no specific version applies.
-	 *
 	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
 	 */
 	public CommandResponse update(Module module, Version version) throws CVSException {
@@ -302,10 +295,9 @@ public final class CVSRunner implements Runner {
 	/**
 	 * Adds a file to the CVS repository and implicitely commits the file (well, it tries to do so).
 	 *
-	 * @param module The module that contains the file.
+	 * @param module   The module that contains the file.
 	 * @param fileName The fileName to add, relative to <code>contextDirectory</code>, which was set when instantiating
-	 *   this runner.
-	 *
+	 *                 this runner.
 	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
 	 */
 	public CommandResponse add(Module module, String fileName) throws CVSException {
@@ -356,10 +348,8 @@ public final class CVSRunner implements Runner {
 	/**
 	 * For a module, the <code>cvs commit -m "&lt;some-message&gt;"</code>command is executed.
 	 *
-	 * @param module The module. Will be committed recursively.
+	 * @param module  The module. Will be committed recursively.
 	 * @param message A commit message.
-	 *
-	 *
 	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
 	 */
 	public CommandResponse commit(Module module, String message) throws CVSException {
@@ -448,11 +438,15 @@ public final class CVSRunner implements Runner {
 				//
 				// Todo a reference to SourceModule is used here. Verify ...
 				File moduleInfo = new File(new File(tmp, module.getName()), SourceModule.MODULE_INFO);
-				logCommand.setFiles(new File[] {moduleInfo});
+				logCommand.setFiles(new File[]{moduleInfo});
 
 				adapter = executeOnCVS(logCommand, new File(tmp, module.getName()));
 
-				try { FileUtils.deleteDirectory(tmp); } catch (IOException e) { e.printStackTrace(); }
+				try {
+					FileUtils.deleteDirectory(tmp);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 
 				return adapter.getLogInformation();
 
@@ -488,10 +482,18 @@ public final class CVSRunner implements Runner {
 
 		File moduleDirectory = new File(tmp, module.getName());
 		if (moduleDirectory.exists()) {
-			try { FileUtils.deleteDirectory(tmp); } catch (IOException e) { e.printStackTrace(); }
+			try {
+				FileUtils.deleteDirectory(tmp);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			return true;
 		} else {
-			try { FileUtils.deleteDirectory(tmp); } catch (IOException e) { e.printStackTrace(); }
+			try {
+				FileUtils.deleteDirectory(tmp);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			return false;
 		}
 	}
@@ -515,14 +517,12 @@ public final class CVSRunner implements Runner {
 	/**
 	 * Runs a CVS command on the repository (through the Netbeans API). contextDirectory is assigned to client.setLocalPath()
 	 *
-	 * @param command A command object, representing the CVS command.
+	 * @param command          A command object, representing the CVS command.
 	 * @param contextDirectory The directory from where the command should be run.
-	 *
 	 * @return The response from the CVS command, wrapped in a nice little object, which can be queried for results.
 	 */
-	private CVSResponseAdapter executeOnCVS(
-		org.netbeans.lib.cvsclient.command.Command command,
-		File contextDirectory) throws CVSException {
+	private CVSResponseAdapter executeOnCVS(org.netbeans.lib.cvsclient.command.Command command,
+																					File contextDirectory) throws CVSException {
 
 		Client client = new Client(getConnection(), new StandardAdminHandler());
 		client.setLocalPath(contextDirectory.getPath());

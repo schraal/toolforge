@@ -10,7 +10,6 @@ import java.util.ResourceBundle;
  * Test class for {@link BundleCache}.
  *
  * @author D.A. Smedes
- *
  * @version $Id$
  */
 public class TestBundleCache extends BaseTest {
@@ -57,7 +56,7 @@ public class TestBundleCache extends BaseTest {
 	public void testRegister2() {
 
 		try {
-      cache.flush();
+			cache.flush();
 			cache.register("BUNDLE", null);
 			fail("A NullPointerException should have been thrown.");
 
@@ -92,7 +91,7 @@ public class TestBundleCache extends BaseTest {
 	public void testRegister5() {
 
 		try {
-      cache.flush();
+			cache.flush();
 			ResourceBundle bundle = ResourceBundle.getBundle("error-messages", Locale.ENGLISH);
 			cache.register("bundle_1", bundle);
 

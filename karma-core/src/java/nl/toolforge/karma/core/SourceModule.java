@@ -1,43 +1,48 @@
 package nl.toolforge.karma.core;
 
-import nl.toolforge.core.regexp.Pattern;
 import nl.toolforge.karma.core.expr.VersionExpression;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.prefs.Preferences;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
 
 import java.io.File;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**
  * <p>A <code>SourceModule</code> represents a module for which the developer wants to have the sources available to
  * on the local harddisk.
- *
+ * <p/>
  * <p>TODO Validation checks on setVersion and setDevelopmentLine
  *
- * @see nl.toolforge.karma.core.Module
- *
  * @author D.A. Smedes
- *
  * @version $Id$
+ * @see nl.toolforge.karma.core.Module
  */
 public class SourceModule extends BaseModule {
 
 	private static Preferences prefs = Preferences.getInstance();
 
-	/** Element name for a source module in a manifest XML file */
+	/**
+	 * Element name for a source module in a manifest XML file
+	 */
 	public static final String ELEMENT_NAME = "sourcemodule";
 
-	/** The <code>version</code>-attribute for a module. */
+	/**
+	 * The <code>version</code>-attribute for a module.
+	 */
 	public static final String VERSION_ATTRIBUTE = "version";
 
-	/** The <code>branch</code>-attribute for a module. */
+	/**
+	 * The <code>branch</code>-attribute for a module.
+	 */
 	public static final String BRANCH_ATTRIBUTE = "branch";
 
-  /**
-   * The name of the mandatory file in a source module. A file with this name is created by Karma or should be created
-   * manually and contain all data (symbolic names) that should be available for existing manifests.
-   */
-  public static final String MODULE_INFO = "module.info";
+	/**
+	 * The name of the mandatory file in a source module. A file with this name is created by Karma or should be created
+	 * manually and contain all data (symbolic names) that should be available for existing manifests.
+	 */
+	public static final String MODULE_INFO = "module.info";
 
 	private Version version = null; // TODO replace by a Version object ?
 	private DevelopmentLine developmentLine = null; // TODO replace by a Branch object ?
@@ -47,7 +52,6 @@ public class SourceModule extends BaseModule {
 	 *
 	 * @param moduleName
 	 * @param location
-	 *
 	 * @throws KarmaException When input parameters don't match their respective patterns
 	 */
 	protected SourceModule(String moduleName, Location location) throws KarmaException {
@@ -61,16 +65,16 @@ public class SourceModule extends BaseModule {
 	 *                   a {@link nl.toolforge.karma.core.expr.ModuleNameExpression} instance.
 	 * @param location
 	 * @param version    The version of the module. Versionnumbers are matched against a {@link VersionExpression}.
-	 *
 	 * @throws KarmaException When input parameters don't match their patterns.
 	 */
-	protected SourceModule (String moduleName, Location location, Version version) throws KarmaException {
+	protected SourceModule(String moduleName, Location location, Version version) throws KarmaException {
 
 		super(moduleName, location);
 
 		Pattern pattern = Pattern.compile(new VersionExpression().getPatternString());
+		Matcher matcher = pattern.matcher(version.getVersionNumber());
 
-		if (pattern.matcher(version.getVersionNumber()).matches()) {
+		if (matcher.matches()) {
 			this.version = version;
 		} else {
 			throw new KarmaException(KarmaException.DATAFORMAT_ERROR);
@@ -116,7 +120,6 @@ public class SourceModule extends BaseModule {
 	 * value of that attribute.
 	 *
 	 * @return The module version, or N/A, when no version number exists.
-	 *
 	 * @throws KarmaException When a <code>version</code> attribute is not available for the module.
 	 */
 	public final Version getVersion() throws KarmaException {
@@ -138,7 +141,7 @@ public class SourceModule extends BaseModule {
 	 */
 	public File getLocalPath() {
 
-    String localPath = null;
+		String localPath = null;
 		try {
 			localPath = prefs.getDevelopmentHome().getPath().concat(File.separator).concat(this.getName());
 			logger.debug("getLocalPath() = " + localPath);
@@ -149,21 +152,21 @@ public class SourceModule extends BaseModule {
 		return new File(localPath);
 	}
 
-  /**
-   * Checks if this module has a <code>module.info</code> file (to be more exact, a file by the name identified by
-   * {@link #MODULE_INFO}.
-   *
-   * @return <code>true</code> if that file is present, false if it isn't.
-   */
-  public boolean hasModuleInfo() {
+	/**
+	 * Checks if this module has a <code>module.info</code> file (to be more exact, a file by the name identified by
+	 * {@link #MODULE_INFO}.
+	 *
+	 * @return <code>true</code> if that file is present, false if it isn't.
+	 */
+	public boolean hasModuleInfo() {
 
-    try {
-        new File(getLocalPath(), MODULE_INFO);
-        return true;
-    } catch (Exception e) {
-      return false;
-    }
-  }
+		try {
+			new File(getLocalPath(), MODULE_INFO);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
 
 //  /**
 //   * Gets a file reference to the <code>module.info</code> file for this module.

@@ -2,15 +2,13 @@ package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.Module;
-import nl.toolforge.karma.core.SourceModule;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.SimpleCommandResponse;
-import nl.toolforge.karma.core.vc.VersionExtractor;
 import nl.toolforge.karma.core.vc.Runner;
-import nl.toolforge.karma.core.vc.model.MainLine;
+import nl.toolforge.karma.core.vc.VersionExtractor;
 import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
 
 /**
@@ -19,7 +17,6 @@ import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
  * is not a freeze, just a tiny hick-up in the development process, as modules are generally small in nature.
  *
  * @author D.A. Smedes
- *
  * @version $Id:
  */
 public class PromoteCommand extends DefaultCommand {
@@ -55,6 +52,7 @@ public class PromoteCommand extends DefaultCommand {
 
 	/**
 	 * Returns the new version number for the module, or null when no version number could be set.
+	 *
 	 * @return
 	 */
 	protected final Version getNewVersion() {

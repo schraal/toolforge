@@ -4,27 +4,22 @@ import junit.framework.TestCase;
 import nl.toolforge.karma.core.KarmaException;
 
 /**
- *
- *
- * @author D.A. Smedes 
- * 
+ * @author D.A. Smedes
  * @version $Id:
  */
 public class TestLocationFactory extends TestCase {
 
-  public void testLoad() {
+	public void testLoad() {
 
-		LocationFactory factory =  LocationFactory.getInstance();
+		LocationFactory factory = LocationFactory.getInstance();
 
 		try {
- 			factory.load(
-        getClass().getClassLoader().getResourceAsStream("test/locations.xml"),
-        getClass().getClassLoader().getResourceAsStream("test/location-authentication.xml")
-      );
+			factory.load(getClass().getClassLoader().getResourceAsStream("test/locations.xml"),
+					getClass().getClassLoader().getResourceAsStream("test/location-authentication.xml"));
 
 			assertNotNull(factory.get("local-test"));
 			assertNotNull(factory.get("subversion-test"));
-      assertEquals(factory.getLocations().keySet().size(), 3);
+			assertEquals(factory.getLocations().keySet().size(), 3);
 
 		} catch (KarmaException e) {
 			fail(e.getMessage());

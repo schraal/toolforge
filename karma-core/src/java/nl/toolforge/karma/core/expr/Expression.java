@@ -1,9 +1,7 @@
 package nl.toolforge.karma.core.expr;
 
 /**
- *
  * @author D.A. Smedes
- *
  * @version $Id$
  */
 public interface Expression {

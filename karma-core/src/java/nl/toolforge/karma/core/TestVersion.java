@@ -2,10 +2,8 @@ package nl.toolforge.karma.core;
 
 import junit.framework.TestCase;
 
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.Collections;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TestVersion extends TestCase {
@@ -33,7 +31,7 @@ public class TestVersion extends TestCase {
 		s.add(v2);
 		s.add(v3);
 
-    Collections.sort(s);
+		Collections.sort(s);
 
 		assertEquals(v1, (Version) s.get(0));
 		assertEquals(v2, (Version) s.get(2));

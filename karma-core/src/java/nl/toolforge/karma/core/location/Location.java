@@ -4,12 +4,11 @@ package nl.toolforge.karma.core.location;
  * <p>A <code>Location</code> describes a location aspect of a module. Source modules are kept in a version control
  * system, binary (third party) modules are kept in libraries. These locations are maintained in
  * <code>locations.xml</code>.
- *
+ * <p/>
  * <p>A developer should maintain a <code>location-authentication.xml</code> file in the Karma configuration directory.
  * This file contains
  *
  * @author D.A. Smedes
- *
  * @version $Id$
  */
 public interface Location {
@@ -30,21 +29,27 @@ public interface Location {
 	 */
 	public String getId();
 
-    /**
+	/**
 	 * Enumeration for the location type.
 	 *
 	 * @author D.A. Smedes
 	 */
 	public final class Type {
 
-		/** A CVS repository location */
-        public static final Type CVS_REPOSITORY = new Type("CVS-REPOSITORY");
+		/**
+		 * A CVS repository location
+		 */
+		public static final Type CVS_REPOSITORY = new Type("CVS-REPOSITORY");
 
-		/** A Subversion repository location */
-        public static final Type SUBVERSION_REPOSITORY = new Type("SUBVERSION-REPOSITORY");
+		/**
+		 * A Subversion repository location
+		 */
+		public static final Type SUBVERSION_REPOSITORY = new Type("SUBVERSION-REPOSITORY");
 
-		/** A Subversion repository location */
-        public static final Type MAVEN_REPOSITORY = new Type("MAVEN-REPOSITORY");
+		/**
+		 * A Subversion repository location
+		 */
+		public static final Type MAVEN_REPOSITORY = new Type("MAVEN-REPOSITORY");
 
 		String type = null;
 
@@ -52,7 +57,7 @@ public interface Location {
 			this.type = type;
 		}
 
-        /**
+		/**
 		 * Shows which type we're talking about.
 		 *
 		 * @return A lowercase string for the specific type of location.

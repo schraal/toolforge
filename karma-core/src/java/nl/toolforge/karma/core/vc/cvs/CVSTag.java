@@ -1,19 +1,16 @@
 package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.vc.SymbolicName;
-import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.Module;
 
 /**
  * Symbolic names in CVS are implemented in two ways: 'sticky-tag' and 'branch'.
  *
- * @author D.A. Smedes 
- * 
+ * @author D.A. Smedes
  * @version $Id:
  */
 public class CVSTag implements SymbolicName {
 
-  private String symbolicName = null;
+	private String symbolicName = null;
 
 	/**
 	 * Creates a CVS tag with <code>symbolicName</code>.

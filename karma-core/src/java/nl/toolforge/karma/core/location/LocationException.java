@@ -1,21 +1,22 @@
 package nl.toolforge.karma.core.location;
 
-import nl.toolforge.karma.core.exception.ErrorCode;
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.exception.ErrorCode;
 
 /**
  * <p>Exceptions relating to locations.
- *
+ * <p/>
  * <p>As with all other <code>KarmaExceptions</code>, exceptions can only be thrown with a certain
  * <code>ErrorCode</code>
  *
  * @author D.A. Smedes
- *
  * @version $Id$
  */
 public final class LocationException extends KarmaException {
 
-	/** General error. */
+	/**
+	 * General error.
+	 */
 	public static final ErrorCode GENERAL_LOCATION_ERROR = new ErrorCode("LOC-00001");
 
 	/**
@@ -25,10 +26,14 @@ public final class LocationException extends KarmaException {
 	 */
 	public static final ErrorCode LOCATION_NOT_FOUND = new ErrorCode("LOC-00005");
 
-	/** No location files were found. A developer should have a directory configured in karma.properties. */
-  public static final ErrorCode NO_LOCATION_DATA_FOUND = new ErrorCode("LOC-00006");
+	/**
+	 * No location files were found. A developer should have a directory configured in karma.properties.
+	 */
+	public static final ErrorCode NO_LOCATION_DATA_FOUND = new ErrorCode("LOC-00006");
 
-	/** The location was configured incorrectly */
+	/**
+	 * The location was configured incorrectly
+	 */
 	public static final ErrorCode LOCATION_CONFIGURATION_ERROR = new ErrorCode("LOC-00007");
 
 	public LocationException(ErrorCode errorCode) {

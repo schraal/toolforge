@@ -13,18 +13,23 @@ import java.util.Locale;
  * by other classes in the sequence, yet it is a helper around the <code>org.netbeans.lib.cvsclient.CVSRoot</code>.
  *
  * @author D.A. Smedes
- *
  * @version $Id$
  */
 public final class CVSLocationImpl extends BaseLocation {
 
-	/** Default port number : <code>2401</code> */
+	/**
+	 * Default port number : <code>2401</code>
+	 */
 	public static final int DEFAULT_PORT = 2401;
 
-	/** Default protocol : <code>pserver</code> */
+	/**
+	 * Default protocol : <code>pserver</code>
+	 */
 	public static final String DEFAULT_PROTOCOL = "pserver";
 
-	/** Protocol for local CVS access */
+	/**
+	 * Protocol for local CVS access
+	 */
 	public static final String LOCAL = "local";
 
 	private String host = null;
@@ -61,6 +66,7 @@ public final class CVSLocationImpl extends BaseLocation {
 	public void setUsername(String username) {
 		this.username = username;
 	}
+
 	public String getUsername() {
 		return username;
 	}
@@ -77,6 +83,7 @@ public final class CVSLocationImpl extends BaseLocation {
 		//
 		this.password = encodedPassword;
 	}
+
 	String getPassword() {
 		return password;
 	}
@@ -92,7 +99,7 @@ public final class CVSLocationImpl extends BaseLocation {
 	 * The CVS repository protocol (<code>ext</code>, <code>pserver</code>, etc).
 	 *
 	 * @param protocol The CVS protocol (<code>:<b>pserver</b>:asmedes@localhost:2401/home/cvsroot</code>. Protocol
-	 *   strings are converted to lowercase.
+	 *                 strings are converted to lowercase.
 	 */
 	public void setProtocol(String protocol) {
 		if (protocol == null) {
@@ -100,6 +107,7 @@ public final class CVSLocationImpl extends BaseLocation {
 		}
 		this.protocol = protocol.toLowerCase();
 	}
+
 	public String getProtocol() {
 		return protocol;
 	}
@@ -112,6 +120,7 @@ public final class CVSLocationImpl extends BaseLocation {
 	public void setPort(int port) {
 		this.port = port;
 	}
+
 	void setPort(String port) {
 
 		try {
@@ -120,6 +129,7 @@ public final class CVSLocationImpl extends BaseLocation {
 			this.port = DEFAULT_PORT;
 		}
 	}
+
 	int getPort() {
 		return port;
 	}
@@ -136,12 +146,12 @@ public final class CVSLocationImpl extends BaseLocation {
 		}
 		this.repository = repository;
 	}
+
 	String getRepository() {
 		return repository;
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	public String toString() {
