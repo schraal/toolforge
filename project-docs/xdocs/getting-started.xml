@@ -41,15 +41,15 @@
 
   <ul>
 
-    <li/>Download the latest version from <a
-    href="http://sourceforge.net/projects/toolforge">Sourceforge</a>
+    <li>Download the latest version from <a
+    href="http://sourceforge.net/projects/toolforge">Sourceforge</a></li>
 
-    <li/>Ensure you have a JDK 1.4.2+ installed and your
-    <code>JAVA_HOME</code> environment variable is set the correct JDK.
+    <li>Ensure you have a JDK 1.4.2+ installed and your
+    <code>JAVA_HOME</code> environment variable is set the correct JDK.</li>
 
-    <li/>Run <code>java -jar
+    <li>Run <code>java -jar
     karma-&lt;version&gt;-INSTALLER.jar</code>. This will start a GUI
-    installer. Just follow the instructions.
+    installer. Just follow the instructions.</li>
 
   </ul>
 
@@ -81,13 +81,13 @@
 
     <ul>
 
-    <li/>Karma requires a <code>KARMA_HOME</code> environment variable, which
+    <li>Karma requires a <code>KARMA_HOME</code> environment variable, which
     should point to the same location you used during the installation process
     (yep, we owe you this one as a default from the installation process
-    itself, but haven't implemented this as yet in the installation script).
+    itself, but haven't implemented this as yet in the installation script).</li>
 
-    <li/>Add <code>$KARMA_HOME/bin</code> (Windows- or Unix-style) to your
-    <code>PATH</code> environment variable.
+    <li>Add <code>$KARMA_HOME/bin</code> (Windows- or Unix-style) to your
+    <code>PATH</code> environment variable.</li>
 
     </ul>
   </p>

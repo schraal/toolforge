@@ -62,6 +62,11 @@ public interface Module {
    */
   public static final Type JAVA_WEB_APPLICATION = new Type("JAVA-WEB-APPLICATION");
   /**
+   * Represents <code>&lt;type&gt;OTHER-MODULE&lt;/type&gt;</code>.
+   */
+  public static final Type OTHER_MODULE = new Type("OTHER-MODULE");
+
+  /**
    * Represents <code>&lt;type&gt;JAVA_ENTERPRISE_APPLICATION&lt;/type&gt;</code>.
    */
   public static final Type JAVA_ENTERPRISE_APPLICATION = new Type("JAVA-ENTERPRISE-APPLICATION");
@@ -219,8 +224,11 @@ public interface Module {
       } else if ("eapp".equals(type) || JAVA_ENTERPRISE_APPLICATION.getType().equals(type)) {
         this.type = JAVA_ENTERPRISE_APPLICATION.getType();
         shortType = "eapp";
+      } else if ("other".equals(type) || OTHER_MODULE.getType().equals(type)) {
+        this.type = OTHER_MODULE.getType();
+        shortType = "other";
       } else {
-        throw new IllegalArgumentException("Type must be 'src', 'lib', 'webapp' or 'eapp'.");
+        throw new IllegalArgumentException("Type must be 'src', 'lib', 'webapp', 'eapp' or 'other'.");
       }
     }
 

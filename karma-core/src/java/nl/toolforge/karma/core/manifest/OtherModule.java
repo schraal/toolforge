@@ -21,41 +21,41 @@ package nl.toolforge.karma.core.manifest;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
-import nl.toolforge.karma.core.manifest.util.SourceModuleLayoutTemplate;
+import nl.toolforge.karma.core.manifest.util.OtherModuleLayoutTemplate;
 
 /**
  * <p>A <code>SourceModule</code> represents a module for which the developer wants to have the sources available to
  * on the local harddisk.
  *
- * @author D.A. Smedes
+ * @author W.H. Schraal
  * @version $Id$
  * @see Module
  */
-public class SourceModule extends BaseModule {
+public class OtherModule extends BaseModule {
 
   /**
-   * Constructs a <code>SourceModule</code> with a <code>name</code> and <code>location</code>.
+   * Constructs an <code>OtherModule</code> with a <code>name</code> and <code>location</code>.
    *
    * @param name Mandatory parameter; name of the module.
    * @param location Mandatory parameter; location of the module.
    */
-  public SourceModule(String name, Location location) {
+  public OtherModule(String name, Location location) {
     this(name, location, null);
   }
 
+  /**
+   * Constructs an <code>OtherModule</code> with a <code>name</code>, <code>location</code> and <code>version</code>.
+   */
+  public OtherModule(String name, Location location, Version version) {
+    super(name, location, version);
+  }
+
   public Type getInstanceType() {
-    return Module.JAVA_SOURCE_MODULE;
+    return Module.OTHER_MODULE;
   }
 
   public ModuleLayoutTemplate getLayoutTemplate() {
-    return new SourceModuleLayoutTemplate();
-  }
-
-  /**
-   * Constructs a <code>SourceModule</code> with a <code>name</code>, <code>location</code> and <code>version</code>.
-   */
-  public SourceModule(String name, Location location, Version version) {
-    super(name, location, version);
+    return new OtherModuleLayoutTemplate();
   }
 
 }

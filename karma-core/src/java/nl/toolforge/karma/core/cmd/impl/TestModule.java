@@ -100,7 +100,6 @@ public class TestModule extends AbstractBuildCommand {
     if (!getBuildEnvironment().getModuleTestSourceDirectory().exists()) {
       // No point in building a module, if no test/java is available.
       //
-      commandResponse.addEvent(new ErrorEvent(this, CommandException.NO_TEST_DIR, new Object[] {getCurrentModule().getName()}));
       throw new CommandException(CommandException.NO_TEST_DIR, new Object[] {getCurrentModule().getName()});
     }
     DirectoryScanner scanner = new DirectoryScanner();
@@ -110,7 +109,6 @@ public class TestModule extends AbstractBuildCommand {
     if (scanner.getIncludedFiles().length == 0) {
       // No point in building a module, if no sources available.
       //
-      commandResponse.addEvent(new ErrorEvent(this, CommandException.NO_TEST_DIR, new Object[] {getCurrentModule().getName()}));
       throw new CommandException(CommandException.NO_TEST_DIR, new Object[] {getCurrentModule().getName(), "test/java"});
     }
 

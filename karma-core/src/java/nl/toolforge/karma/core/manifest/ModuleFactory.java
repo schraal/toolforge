@@ -65,6 +65,8 @@ public final class ModuleFactory {
       return new JavaWebApplicationModule(digester.getName(), location, version);
     } else if (moduleType.equals(Module.LIBRARY_MODULE)) {
       return new LibModule(digester.getName(), location, version);
+    } else if (moduleType.equals(Module.OTHER_MODULE)) {
+      return new OtherModule(digester.getName(), location, version);
     } else if (moduleType.equals(Module.UNKNOWN)) {
       return new UntypedModule(digester.getName(), location, version);
     }

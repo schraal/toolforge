@@ -38,6 +38,7 @@ import org.apache.tools.ant.taskdefs.Ear;
 import org.apache.tools.ant.taskdefs.Jar;
 import org.apache.tools.ant.taskdefs.War;
 import org.apache.tools.ant.taskdefs.Mkdir;
+import org.apache.tools.ant.taskdefs.Zip;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.FilterSet;
 import org.xml.sax.SAXException;
@@ -215,8 +216,12 @@ public class PackageModule extends AbstractBuildCommand {
         packageWar(packageName);
       } else if (getCurrentModule().getType().equals(Module.JAVA_ENTERPRISE_APPLICATION)) {
         packageEar(packageName);
-      } else {
+      } else if (getCurrentModule().getType().equals(Module.JAVA_SOURCE_MODULE)) {
         packageJar(packageName);
+      } else if (getCurrentModule().getType().equals(Module.OTHER_MODULE)) {
+        packageOther(packageName);
+      } else {
+        throw new CommandException(CommandException.PACKAGE_FAILED_WRONG_MODULE_TYPE, new Object[]{getCurrentModule()});
       }
 
       SimpleMessage message =
@@ -232,11 +237,60 @@ public class PackageModule extends AbstractBuildCommand {
     }
   }
 
+  private void packageOther(File packageName) throws CommandException {
+    Project project = getProjectInstance();
+
+    Target target = new Target();
+    target.setName("run");
+    target.setProject(project);
+
+    project.addTarget(target);
+
+    executeDelete(getBuildEnvironment().getModuleBuildDirectory(), "*.zip");
+
+    Copy copy = null;
+    FileSet fileSet = null;
+
+    //copy everything as-is
+    if (getCurrentModule().getBaseDir().exists()) {
+      copy = (Copy) project.createTask("copy");
+      copy.setProject(getProjectInstance());
+      copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
+      copy.setOverwrite(true);
+      copy.setIncludeEmptyDirs(false);
+
+      fileSet = new FileSet();
+      fileSet.setDir(getCurrentModule().getBaseDir());
+      fileSet.setIncludes("**/*");
+      fileSet.setExcludes("history.xml,module-descriptor.xml,.*");
+
+      copy.addFileset(fileSet);
+      target.addTask(copy);
+    } else {
+      commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("No resources available.")));
+    }
+    project.executeTarget("run");
+
+    if (getBuildEnvironment().getModulePackageDirectory().exists()) {
+      Target target2 = new Target();
+      target2.setName("zip");
+      target2.setProject(project);
+
+      project.addTarget(target2);
+      Zip zip = (Zip) project.createTask("zip");
+      zip.setProject(getProjectInstance());
+      zip.setDestFile(packageName);
+      zip.setBasedir(getBuildEnvironment().getModulePackageDirectory());
+      target2.addTask(zip);
+      project.executeTarget("zip");
+    } else {
+      throw new CommandException(CommandException.PACKAGE_FAILED_NOTHING_TO_PACKAGE, new Object[]{getCurrentModule()});
+    }
+  }
+
   private void packageJar(File packageName) throws CommandException {
 
     try {
-
-
       Project project = getProjectInstance();
 
       Target target = new Target();

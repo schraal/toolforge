@@ -54,13 +54,8 @@
 
     <tr>
       <td><code>${user.home}/karma</code></td>
-      <td>
-      </td>
-    </tr>
-
-    <tr>
-      <td><code>${user.home}/karma/&lt;working-context&gt;</code></td>
-      <td>
+      <td><strong>IMPORTANT:</strong>due to a bug in the NetBeans Libraries the
+        full path to this directory must not contain any links.
       </td>
     </tr>
 

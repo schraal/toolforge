@@ -1,18 +1,18 @@
 package nl.toolforge.karma.core.module;
 
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.BaseModule;
-import nl.toolforge.karma.core.manifest.LibModule;
-import nl.toolforge.karma.core.manifest.SourceModule;
-
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.io.BufferedWriter;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import nl.toolforge.karma.core.manifest.LibModule;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.OtherModule;
+import nl.toolforge.karma.core.manifest.SourceModule;
 
 /**
  * @author D.A. Smedes
@@ -40,6 +40,8 @@ public class ModuleDescriptor {
       this.moduleType = Module.JAVA_ENTERPRISE_APPLICATION;
     } else if (module instanceof JavaWebApplicationModule) {
       this.moduleType = Module.JAVA_WEB_APPLICATION;
+    } else if (module instanceof OtherModule) {
+      this.moduleType = Module.OTHER_MODULE;
     }
   }
 

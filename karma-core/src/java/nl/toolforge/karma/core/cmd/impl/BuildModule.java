@@ -67,7 +67,6 @@ public class BuildModule extends AbstractBuildCommand {
     if (!getBuildEnvironment().getModuleSourceDirectory().exists()) {
       // No point in building a module, if no src/java is available or no .java files are present in that dir.
       //
-      commandResponse.addEvent(new ErrorEvent(this, CommandException.NO_SRC_DIR, new Object[] {getCurrentModule().getName()}));
       throw new CommandException(CommandException.NO_SRC_DIR, new Object[] {getCurrentModule().getName()});
     }
     DirectoryScanner scanner = new DirectoryScanner();
@@ -77,7 +76,6 @@ public class BuildModule extends AbstractBuildCommand {
     if (scanner.getIncludedFiles().length == 0) {
       // No point in building a module, if no src/java is available or no .java files are present in that dir.
       //
-      commandResponse.addEvent(new ErrorEvent(this, CommandException.NO_SRC_DIR, new Object[] {getCurrentModule().getName()}));
       throw new CommandException(CommandException.NO_SRC_DIR, new Object[] {getCurrentModule().getName()});
     }
     

@@ -322,8 +322,12 @@ public final class DependencyHelper {
       extension = ".war";
     } else if (module.getType().equals(Module.JAVA_ENTERPRISE_APPLICATION)) {
       extension = ".ear";
-    } else {
+    } else if (module.getType().equals(Module.JAVA_SOURCE_MODULE)) {
       extension = ".jar";
+    } else if (module.getType().equals(Module.OTHER_MODULE)) {
+      extension = ".zip";
+    } else {
+      extension = "";
     }
     return resolveArtifactName(module) + extension;
   }

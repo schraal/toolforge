@@ -20,8 +20,6 @@ package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.ErrorCode;
 
-import java.text.MessageFormat;
-
 /**
  * Exceptions thrown during the execution of a command.
  *
@@ -66,9 +64,13 @@ public class CommandException extends Exception {
   /** The packaging of a module failed. */
   public static final ErrorCode PACKAGE_FAILED = new ErrorCode(EXCEPTION_PREFIX + "00070");
   /** The packaging of a module failed. */
+  public static final ErrorCode PACKAGE_FAILED_NOTHING_TO_PACKAGE = new ErrorCode(EXCEPTION_PREFIX + "00074");
+  /** The packaging of a module failed. */
   public static final ErrorCode PACKAGE_FAILED_NO_APPLICATION_XML = new ErrorCode(EXCEPTION_PREFIX + "00071");
   /** The packaging of a module failed. */
   public static final ErrorCode PACKAGE_FAILED_INVALID_APPLICATION_XML = new ErrorCode(EXCEPTION_PREFIX + "00072");
+  /** The packaging of a module failed. */
+  public static final ErrorCode PACKAGE_FAILED_WRONG_MODULE_TYPE = new ErrorCode(EXCEPTION_PREFIX + "00073");
   /** When the manifest is a development manifest and the module is STATIC. Not allowed to start work on this module. */
   public static final ErrorCode START_WORK_NOT_ALLOWED_ON_STATIC_MODULE = new ErrorCode(EXCEPTION_PREFIX + "00041");
   /** When the module is not (a descendant of) <code>BaseModule</code>. Not allowed to start work on this module. */
