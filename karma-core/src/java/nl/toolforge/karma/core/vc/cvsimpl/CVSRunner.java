@@ -258,6 +258,7 @@ public final class CVSRunner implements Runner {
     CheckoutCommand checkoutCommand = new CheckoutCommand();
     checkoutCommand.setModule(getModuleOffset(module));
     checkoutCommand.setCheckoutDirectory(module.getName()); // Flatten to module name as the checkoutdir.
+    checkoutCommand.setPruneDirectories(true); //-P
 
     if ((version != null) || (developmentLine != null)) {
       checkoutCommand.setCheckoutByRevision(Utils.createSymbolicName(module, developmentLine, version).getSymbolicName());
@@ -268,9 +269,6 @@ public final class CVSRunner implements Runner {
     } else {
       checkoutCommand.setResetStickyOnes(true);
     }
-    // NOTE : the following may not be included. My theory is there is a bug in the netbeans api.
-    // todo to be investigated further.
-//    checkoutCommand.setPruneDirectories(true);
 
     // The checkout directory for a module has to be relative to
 
