@@ -38,6 +38,7 @@ public interface Runner {
      * @param module   The module that contains the file (or will contain the file).
      * @param fileName The filename of the file that should be added to the version control system repository.
      * @param basePoint Location to write the file to.
+     * @deprecated deze moet er weer uit. te specifiek.
      */
     public void add(Module module, String fileName, File basePoint) throws VersionControlException;
 
@@ -67,6 +68,7 @@ public interface Runner {
      * @param basePoint
      * @throws VersionControlException When the module does not exist in the repository or when the symbolic name is
      *                                 not attached to the module in the repository.
+     * @deprecated te specifiek. optiefuh.
      */
     public void checkout(Module module, File basePoint) throws VersionControlException;
 

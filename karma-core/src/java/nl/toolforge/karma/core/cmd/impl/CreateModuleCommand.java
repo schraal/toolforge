@@ -77,6 +77,7 @@ public class CreateModuleCommand extends DefaultCommand {
       runner.create(module);
 
       //module has been created. Now, create the module history.
+      //todo: mave this whole lot to runner.create();
 //      try {
           File tmp;
           try {
