@@ -249,7 +249,6 @@ public final class CVSLocationImpl extends BaseLocation {
    * @return String representation of the CVSROOT, or the message from the {@link CVSException#INVALID_CVSROOT} exception.
    */
   public String toString() {
-
     try {
       return getCVSRootAsString();
     } catch (CVSException c) {
@@ -262,12 +261,15 @@ public final class CVSLocationImpl extends BaseLocation {
    *
    * @return A CVS Connection object.
    * @throws CVSException <code>INVALID_CVSROOT</code>; <code>CONNECTION_EXCEPTION</code> is thrown when
-   *   <code>location</code> cannot be reached (remote locations).
+   *   <code>location</code> cannot be reached (remote locations) or is not present (local locations).
    */
   public Connection getConnection() throws CVSException {
-
-    //todo: for local protocal you can check whether the cvsroot is present.
-    if (!getProtocol().equals(LOCAL) && !ping()) {
+    if ( getProtocol().equals(LOCAL) ) {
+      if ( !new File(getRepository()).exists() ) {
+        //for local protocol check whether the cvsroot is present.
+        throw new CVSException(LocationException.CONNECTION_EXCEPTION, new Object[]{getId()});
+      }
+    } else if ( !ping() ) {
       throw new CVSException(LocationException.CONNECTION_EXCEPTION, new Object[]{getId()});
     }
 
