@@ -43,7 +43,7 @@ import nl.toolforge.karma.core.manifest.ManifestException;
  */
 public class TestModule extends AbstractBuildCommand {
 
-  private final static String DEFAULT_TEST_SRC_DIRECTORY="test/java";
+  private final static String DEFAULT_TEST_SRC_DIRECTORY = "test/java";
 
   private CommandResponse commandResponse = new ActionCommandResponse();
 
@@ -67,7 +67,7 @@ public class TestModule extends AbstractBuildCommand {
       if (!srcBase.exists()) {
         // No point in building a module, if no test/java is available.
         //
-        throw new CommandException(CommandException.NO_TEST_DIR, new Object[] {getCurrentModule().getName(), getSourceDirectory()});
+        throw new CommandException(CommandException.NO_TEST_DIR, new Object[] {getCurrentModule().getName(), DEFAULT_TEST_SRC_DIRECTORY});
       }
 
       // Configure the Ant project
