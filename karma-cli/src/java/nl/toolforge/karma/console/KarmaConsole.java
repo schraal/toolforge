@@ -18,21 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.console;
 
-import nl.toolforge.karma.cli.cmd.ConsoleCommandResponseHandler;
-import nl.toolforge.karma.core.ErrorCode;
-import nl.toolforge.karma.core.boot.Karma;
-import nl.toolforge.karma.core.boot.LocationStore;
-import nl.toolforge.karma.core.boot.ManifestStore;
-import nl.toolforge.karma.core.boot.WorkingContext;
-import nl.toolforge.karma.core.boot.WorkingContextConfiguration;
-import nl.toolforge.karma.core.boot.WorkingContextException;
-import nl.toolforge.karma.core.bundle.BundleCache;
-import nl.toolforge.karma.core.cmd.CommandContext;
-import nl.toolforge.karma.core.cmd.CommandException;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +25,19 @@ import java.io.InputStreamReader;
 import java.util.Calendar;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import nl.toolforge.karma.cli.cmd.ConsoleCommandResponseHandler;
+import nl.toolforge.karma.core.ErrorCode;
+import nl.toolforge.karma.core.boot.WorkingContext;
+import nl.toolforge.karma.core.boot.WorkingContextConfiguration;
+import nl.toolforge.karma.core.boot.WorkingContextException;
+import nl.toolforge.karma.core.bundle.BundleCache;
+import nl.toolforge.karma.core.cmd.CommandContext;
+import nl.toolforge.karma.core.cmd.CommandException;
 
 /**
  * <p>The <code>KarmaConsole</code> is the command-line interface for Karma. The class presents a simple-to-use command-line
@@ -274,13 +272,11 @@ public final class KarmaConsole {
       }
     } catch (RuntimeException r) {
       writeln("\n");
-      if (logger.isDebugEnabled()) {
-        r.printStackTrace();
-      }
+      logger.fatal(r.getMessage(), r);
       System.exit(1);
     } catch (Exception e) {
       writeln("\n");
-      logger.error(e.getMessage(), e);
+      logger.fatal(e.getMessage(), e);
       System.exit(1);
     }
   }
