@@ -131,6 +131,9 @@
       <option opt="l" longOpt="location" required="true" description="The location alias">
         <arg name="location-alias"/>
       </option>
+      <option opt="c" longOpt="comment" required="true" description="The developer's comment">
+        <arg name="comment"/>
+      </option>
 <!--      <option opt="i" longOpt="include" required="false" description="Include the module in the manifest"/>-->
     </options>
 

@@ -20,7 +20,7 @@ public interface Runner {
 	/**
 	 * Creates a module in a version control repository.
 	 */
-	public void create(Module module, ModuleLayoutTemplate template) throws VersionControlException;
+	public void create(Module module, String comment, ModuleLayoutTemplate template) throws VersionControlException;
 
 	/**
 	 * Adds a file to the version control system. If the file does not exist, the file will be created.

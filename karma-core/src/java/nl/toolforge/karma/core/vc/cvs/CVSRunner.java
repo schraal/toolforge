@@ -1,22 +1,15 @@
 package nl.toolforge.karma.core.vc.cvs;
 
-import nl.toolforge.core.util.file.MyFileUtils;
-import nl.toolforge.karma.core.ErrorCode;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.cmd.Command;
-import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.history.ModuleHistory;
-import nl.toolforge.karma.core.history.ModuleHistoryEvent;
-import nl.toolforge.karma.core.history.ModuleHistoryFactory;
-import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.SourceModule;
-import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
-import nl.toolforge.karma.core.vc.ManagedFile;
-import nl.toolforge.karma.core.vc.Runner;
-import nl.toolforge.karma.core.vc.SymbolicName;
-import nl.toolforge.karma.core.vc.VersionControlException;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,19 +28,23 @@ import org.netbeans.lib.cvsclient.command.update.UpdateCommand;
 import org.netbeans.lib.cvsclient.connection.AuthenticationException;
 import org.netbeans.lib.cvsclient.connection.Connection;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-
-//import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.StringTokenizer;
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.Arrays;
+import nl.toolforge.core.util.file.MyFileUtils;
+import nl.toolforge.karma.core.ErrorCode;
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.cmd.Command;
+import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.history.ModuleHistory;
+import nl.toolforge.karma.core.history.ModuleHistoryEvent;
+import nl.toolforge.karma.core.history.ModuleHistoryFactory;
+import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
+import nl.toolforge.karma.core.vc.ManagedFile;
+import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.vc.SymbolicName;
+import nl.toolforge.karma.core.vc.VersionControlException;
 
 /**
  * <p>Runner class for CVS. Executes stuff on a CVS repository.
@@ -146,7 +143,7 @@ public final class CVSRunner implements Runner {
    * @throws CVSException Errorcode <code>MODULE_EXISTS_IN_REPOSITORY</code>, when the module already exists on the
    *                      location as specified by the module.
    */
-  public void create(Module module, ModuleLayoutTemplate template) throws CVSException {
+  public void create(Module module, String comment, ModuleLayoutTemplate template) throws CVSException {
 
     // TODO the initial version should also be made configurable, together with the patterns for modulenames et al.
 
@@ -206,8 +203,7 @@ public final class CVSRunner implements Runner {
 
     //module has been created. Now, create the module history.
     //todo: add author
-    //todo: add comment
-    addModuleHistoryEvent(tmp, module, ModuleHistoryEvent.CREATE_MODULE_EVENT, Version.INITIAL_VERSION, new Date(), "", "");
+    addModuleHistoryEvent(tmp, module, ModuleHistoryEvent.CREATE_MODULE_EVENT, Version.INITIAL_VERSION, new Date(), "", comment);
 
     tag(module, Version.INITIAL_VERSION, new File(tmp, module.getName()));
 
@@ -686,14 +682,15 @@ public final class CVSRunner implements Runner {
       event.setAuthor(author);
       event.setComment(comment);
       history.addEvent(event);
-      history.save();
       if (history.getHistoryLocation().exists()) {
         //history already exists. commit changes.
         //todo: add comment
+        history.save();
         commit(module, "");
       } else {
         //history did not exist yet. add to CVS and commit it.
         //todo: add comment
+        history.save();
         add(module, new String[]{history.getHistoryLocation().getName()}, null, moduleCheckoutLocation);
       }
     }

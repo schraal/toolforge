@@ -14,7 +14,6 @@ import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ModuleDescriptor;
 import nl.toolforge.karma.core.manifest.ModuleFactory;
 import nl.toolforge.karma.core.manifest.util.SourceModuleLayoutTemplate;
-import nl.toolforge.karma.core.manifest.util.WebappModuleLayoutTemplate;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
@@ -45,6 +44,7 @@ public class CreateModuleCommand extends DefaultCommand {
 
     String locationAlias = commandLine.getOptionValue("l");
     String moduleName = commandLine.getOptionValue("m");
+    String comment = commandLine.getOptionValue("c");
 
     // Part 1 of the transaction is the creation of a Module instance.
     //
@@ -61,8 +61,7 @@ public class CreateModuleCommand extends DefaultCommand {
       //
       Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getLocalEnvironment().getDevelopmentHome());
       runner.setCommandResponse(getCommandResponse());
-//      runner.create(module, new ModuleLayoutTemplate());
-      runner.create(module, new WebappModuleLayoutTemplate());
+      runner.create(module, comment, new SourceModuleLayoutTemplate());
 
       // If we get to this point, creation of the module was succesfull.
       //

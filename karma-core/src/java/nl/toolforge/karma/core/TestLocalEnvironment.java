@@ -2,8 +2,6 @@ package nl.toolforge.karma.core;
 
 import junit.framework.TestCase;
 import nl.toolforge.core.util.file.MyFileUtils;
-import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.location.LocationException;
 
 import java.io.File;
 import java.io.IOException;

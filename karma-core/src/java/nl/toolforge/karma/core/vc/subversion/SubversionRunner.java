@@ -34,7 +34,7 @@ public final class SubversionRunner implements Runner {
     
   }
 
-  public void create(Module module, ModuleLayoutTemplate template) {
+  public void create(Module module, String comment, ModuleLayoutTemplate template) {
 //		return null;
 	}
 
