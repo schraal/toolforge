@@ -15,9 +15,6 @@ public class TestPing extends TestCase {
 
     // Return results within 1000 ms.
     //
-    //todo: make this test work always. E.g. by starting a socket listener
-    //before starting the test. This way we can garantee that te test will work.
-    //pinging to www.sourceforge.net:80 does not work when you're behind a proxy.
 
     int port = 55575;
 
@@ -38,7 +35,6 @@ public class TestPing extends TestCase {
       }
     }
 
-
-    assertFalse(Ping.ping("blaat", 80, 1000));
+    assertFalse(Ping.ping("127.0.0.1", port, 1000));
   }
 }
