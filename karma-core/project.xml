@@ -127,8 +127,8 @@
 
 		<dependency>
 			<groupId>netbeans</groupId>
-			<artifactId>netbeans-cvs</artifactId>
-			<version>beta3.6</version>
+			<artifactId>cvslib</artifactId>
+			<version>3.6</version>
 		</dependency>
 
 		<dependency>
