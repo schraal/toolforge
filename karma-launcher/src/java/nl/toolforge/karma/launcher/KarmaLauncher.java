@@ -73,10 +73,16 @@ public class KarmaLauncher {
                 classLoader.addClassPathEntry(classPathEntries[i]);
             }
         }
-
         Class clazz = Class.forName(className, true, classLoader);
+        
+        
+        Class[] argTypes = new Class[args.length];
+        for (int i = 0; i < argTypes.length; i++) {
+            argTypes[i] = args[i].getClass();
+        }
         Method main = clazz.getDeclaredMethod(methodName,
-                new Class[] { String[].class });
+                argTypes);
+
         main.invoke(null, args);
     }
 
