@@ -4,10 +4,15 @@ import junit.framework.TestCase;
 import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.location.LocationFactory;
+import nl.toolforge.karma.core.location.LocationLoader;
+import org.apache.commons.io.FileUtils;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Properties;
 
 /**
@@ -25,6 +30,8 @@ public class BaseTest extends TestCase {
   private File f2 = null;
   private File f3 = null;
 
+  private File tmp = null;
+
   public void setUp() {
 
     // Fake some parameters that would have been passed to the JVM
@@ -32,7 +39,7 @@ public class BaseTest extends TestCase {
 
     // The following is required to allow the Preferences class to use the test-classpath
     //
-    System.setProperty("TESTMODE", "true");
+    System.setProperty("TESTMODE", "true"); //??
     System.setProperty("locale", "en");
 
     try {
@@ -48,12 +55,23 @@ public class BaseTest extends TestCase {
     p.put(LocalEnvironment.MANIFEST_STORE_DIRECTORY, f2.getPath());
     p.put(LocalEnvironment.LOCATION_STORE_DIRECTORY, f3.getPath());
 
+    try {
+      tmp = MyFileUtils.createTempDirectory();
+
+      writeFile("test-locations.xml");
+      writeFile("test-locations-2.xml");
+      writeFile("authenticators.xml");
+
+    } catch (IOException e) {
+      fail(e.getMessage());
+    }
+
+
     // Initialize the LocationFactory
     //
     try {
-      LocationFactory locationFactory = LocationFactory.getInstance();
-      locationFactory.load(getClassLoader().getResourceAsStream("test-locations.xml"),
-          getClass().getClassLoader().getResourceAsStream("test-location-authentication.xml"));
+      LocationLoader loader = LocationLoader.getInstance();
+      loader.load(tmp);
 
     } catch (LocationException e) {
       fail("INITIALIZATION ERROR : " + e.getErrorMessage());
@@ -68,6 +86,13 @@ public class BaseTest extends TestCase {
     } catch (IOException e) {
       e.printStackTrace();
     }
+
+    try {
+      FileUtils.deleteDirectory(tmp);
+    } catch (IOException e) {
+      fail(e.getMessage());
+    }
+
   }
 
   public final Properties getProperties() {
@@ -79,5 +104,20 @@ public class BaseTest extends TestCase {
    */
   public ClassLoader getClassLoader() {
     return this.getClass().getClassLoader();
+  }
+
+  private synchronized void writeFile(String fileRef) throws IOException {
+
+    BufferedReader in =
+        new BufferedReader(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(fileRef)));
+    BufferedWriter out =
+        new BufferedWriter(new FileWriter(new File(tmp, fileRef)));
+
+    String str;
+    while ((str = in.readLine()) != null) {
+      out.write(str);
+    }
+    out.close();
+    in.close();
   }
 }

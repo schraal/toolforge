@@ -3,7 +3,7 @@ package nl.toolforge.karma.core.manifest;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.location.LocationFactory;
+import nl.toolforge.karma.core.location.LocationLoader;
 import nl.toolforge.karma.core.test.BaseTest;
 
 import java.util.ArrayList;
@@ -16,11 +16,15 @@ import java.util.List;
  */
 public class TestModule extends BaseTest {
 
-  private LocationFactory locationFactory = null;
+  private LocationLoader locationFactory = null;
 
   public void setUp() {
     super.setUp();
-    locationFactory = LocationFactory.getInstance();
+    try {
+      locationFactory = LocationLoader.getInstance();
+    } catch (LocationException e) {
+     fail(e.getMessage());
+    }
   }
 
   public void testTypes() {
@@ -78,7 +82,7 @@ public class TestModule extends BaseTest {
 
     Location l = null;
     try {
-      l = locationFactory.get("local-test");
+      l = locationFactory.get("test-id-2");
     } catch (LocationException e) {
       fail(e.getMessage() + "; test initialization failed most probably.");
     }

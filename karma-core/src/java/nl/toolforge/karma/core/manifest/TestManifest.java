@@ -1,7 +1,7 @@
 package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.location.LocationFactory;
+import nl.toolforge.karma.core.location.LocationLoader;
 import nl.toolforge.karma.core.test.BaseTest;
 
 /**
@@ -27,7 +27,7 @@ public class TestManifest extends BaseTest {
       assertEquals(3, m.size());
 
     } catch (Exception e) {
-      e.printStackTrace();
+//      e.printStackTrace();
       fail(e.getMessage());
     }
   }
@@ -59,7 +59,7 @@ public class TestManifest extends BaseTest {
     try {
       m.addModule(new ModuleDescriptor("a", "src", "local-test"));
 
-      Location l = LocationFactory.getInstance().get("local-test");
+      Location l = LocationLoader.getInstance().get("local-test");
       Module module = new SourceModule("a", l);
 
       assertEquals(m.getModule("a"), module);

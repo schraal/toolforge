@@ -18,15 +18,15 @@ public class TestModuleFactory extends BaseTest {
 
     ModuleFactory f = ModuleFactory.getInstance();
 
-    ModuleDescriptor d1 = new ModuleDescriptor("module-1", "src", "local-test");
+    ModuleDescriptor d1 = new ModuleDescriptor("module-1", "src", "test-id-1");
     d1.setVersion("0-1");
 
-    ModuleDescriptor d2 = new ModuleDescriptor("module-1", "src", "local-test");
+    ModuleDescriptor d2 = new ModuleDescriptor("module-1", "src", "test-id-1");
 
-    ModuleDescriptor d3 = new ModuleDescriptor("module-1", "src", "local-test");
+    ModuleDescriptor d3 = new ModuleDescriptor("module-1", "src", "test-id-1");
     d3.setVersion("0-1");
 
-    ModuleDescriptor d4 = new ModuleDescriptor("module-1", "maven", "local-test");
+    ModuleDescriptor d4 = new ModuleDescriptor("module-1", "maven", "test-id-1");
     Module m = null;
 
     try {

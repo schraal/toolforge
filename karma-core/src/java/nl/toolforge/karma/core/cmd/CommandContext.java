@@ -5,7 +5,7 @@ import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.location.LocationFactory;
+import nl.toolforge.karma.core.location.LocationLoader;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestCollector;
 import nl.toolforge.karma.core.manifest.ManifestException;
@@ -97,7 +97,8 @@ public final class CommandContext {
 
     // Read in all location data
     //
-    LocationFactory.getInstance(env).load();
+//    LocationFactory.getInstance(env).load();
+    LocationLoader.getInstance(env).load();
 
     // Try reloading the last manifest that was used.
     //

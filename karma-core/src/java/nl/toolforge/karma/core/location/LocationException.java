@@ -54,6 +54,8 @@ public final class LocationException extends Exception {
 
   public static final ErrorCode DUPLICATE_AUTHENTICATOR_KEY = new ErrorCode(EXCEPTION_PREFIX + "00014");
 
+  public static final ErrorCode AUTHENTICATOR_LOAD_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00015");;
+
   public LocationException(ErrorCode errorCode) {
     this(errorCode, null);
   }

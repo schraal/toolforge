@@ -185,7 +185,7 @@ public abstract class AbstractManifest implements Manifest {
         throw new ManifestException(m.getErrorCode(), m.getMessageArguments());
       } else if (e.getException() instanceof LocationException) {
         LocationException m = (LocationException) e.getException();
-        throw new ManifestException(m.getErrorCode(), m.getMessageArguments());
+        throw new ManifestException(m, m.getErrorCode(), m.getMessageArguments());
       } else {
         throw new ManifestException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{this.getName()});
       }

@@ -1,0 +1,45 @@
+<?xml version="1.0" ?>
+
+<authenticators>
+
+  <authenticator id="test-id-1" username="asmedes" password="_9GHHij"/>
+  <authenticator id="test-id-2" username="asmedes" password="_9GHHij"/>
+  <authenticator id="test-id-3" username="asmedes" password="_9GHHij"/>
+  <authenticator id="test-id-4" username="asmedes" password="_9GHHij"/>
+  <authenticator id="test-id-5" username="asmedes" password="_9GHHij"/>
+  <authenticator id="test-id-6" username="asmedes" password="_9GHHij"/>
+
+  <!--
+  <location type="cvs-repository" id="test-id-1">
+    <username>asmedes</username>
+    <password>_9GHHij</password>
+  </location>
+
+  <location type="cvs-repository" id="test-id-2">
+    <username>asmedes</username>
+    <password>_9GHHij</password>
+  </location>
+
+  <location type="svn-repository" id="test-id-3">
+    <username>asmedes</username>
+    <password>_9GHHij</password>
+  </location>
+
+  <location type="cvs-repository" id="test-id-4">
+    <username>asmedes</username>
+    <password>_9GHHij</password>
+  </location>
+
+  <location type="cvs-repository" id="test-id-5">
+    <username>asmedes</username>
+    <password>_9GHHij</password>
+  </location>
+
+  <location type="svn-repository" id="test-id-6">
+    <username>asmedes</username>
+    <password>_9GHHij</password>
+  </location>
+
+  -->
+  
+</authenticators>

@@ -3,7 +3,7 @@ package nl.toolforge.karma.core.manifest;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.location.LocationFactory;
+import nl.toolforge.karma.core.location.LocationLoader;
 
 /**
  * <p>Factory class to create modules based on a {@link ModuleDescriptor}.</p>
@@ -37,7 +37,7 @@ public class ModuleFactory {
 
     Module module = null;
 
-    Location location = LocationFactory.getInstance().get(descriptor.getLocation());
+    Location location = LocationLoader.getInstance().get(descriptor.getLocation());
 
     Version version = null;
     if (descriptor.getVersion() != null) {
