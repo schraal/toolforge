@@ -25,7 +25,7 @@
   <?xml version="1.0" ?>
 
   <locations>
-    <location type="cvs-repository" id="cvs-local">
+    <location type="cvs" id="cvs-local">
       <protocol>[ local | ext | pserver ]</protocol>
       <host>localhost</host>
       <port>2401</port>
@@ -43,7 +43,7 @@
           <tr>
             <td>type</td>
             <td>Type of the location. Currently only CVS repositories are supported</td>
-            <td>cvs-repository</td>
+            <td>cvs</td>
           </tr>
           <tr>
             <td>id</td>
@@ -53,7 +53,7 @@
         </table>
       </p>
       <p>
-        In case of a <code>cvs-repository</code> type location the following elements are
+        In case of a <code>cvs</code> type location the following elements are
         valid:
         <table>
           <tr>
