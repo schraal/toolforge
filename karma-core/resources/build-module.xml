@@ -8,11 +8,17 @@
 
   </target>
 
+  <target name="jar" depends="compile" >
+
+    <jar jarfile="${jar-file}" basedir="${destination-dir}"/>
+
+  </target>
+
   <target name="compile">
 
-    <mkdir dir="${destdir}"/> 
+    <mkdir dir="${destination-dir}"/>
 
-    <javac destdir="${destdir}" srcdir="${srcdir}"/>
+    <javac destdir="${destination-dir}" srcdir="${source-dir}"/>
 
   </target>
 

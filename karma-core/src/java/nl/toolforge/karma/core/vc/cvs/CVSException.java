@@ -59,6 +59,11 @@ public class CVSException extends VersionControlException {
    */
   public static final ErrorCode LOCAL_MODULE_ERROR =  new ErrorCode(EXCEPTION_PREFIX + "00021");
 
+  /**
+   * When the cvs reports a security violation. Generally caused by the fact that the user has to write access to the
+   */ 
+  public static final ErrorCode SECURITY_VIOLATION =  new ErrorCode(EXCEPTION_PREFIX + "00022");
+
   public CVSException(ErrorCode errorCode) {
     super(errorCode);
   }

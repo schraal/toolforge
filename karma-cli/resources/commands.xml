@@ -40,6 +40,18 @@
 
   </command>
 
+  <command name="build-all-modules" alias="ba">
+
+    <description lang="en">
+			Something.
+    </description>
+
+    <classname>nl.toolforge.karma.core.cmd.impl.BuildAllModules</classname>
+
+    <help/>
+
+  </command>
+
   <command name="build-module" alias="bm">
 
     <description lang="en">

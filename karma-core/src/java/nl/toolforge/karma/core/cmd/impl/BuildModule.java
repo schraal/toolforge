@@ -47,9 +47,11 @@ public class BuildModule extends DefaultCommand {
 
   private static final String DEFAULT_SRC_PATH = "src/java";
 
-  private static final String JAVAC_SRC_DIR_PROPERTY = "srcdir";
-  private static final String JAVAC_DEST_DIR_PROPERTY = "destdir";
+  private static final String JAVAC_SRC_DIR_PROPERTY = "source-dir";
+  private static final String JAVAC_DEST_DIR_PROPERTY = "destination-dir";
   private static final String JAVAC_CLASSPATH_PROPERTY = "classpath";
+
+  private static final String JAR_JAR_FILE_PROPERTY = "jar-file";
 
   private CommandResponse commandResponse = new ActionCommandResponse();
 
@@ -114,12 +116,15 @@ public class BuildModule extends DefaultCommand {
       project.setProperty(JAVAC_DEST_DIR_PROPERTY, buildDir.getPath());
       project.setProperty(JAVAC_CLASSPATH_PROPERTY, ((SourceModule) module).getDependencies());
 
+      project.setProperty(JAR_JAR_FILE_PROPERTY, module.getDependencyName());
+
     } catch (ManifestException e) {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
 
     try {
-      project.executeTarget("compile");
+//      project.executeTarget("compile");
+      project.executeTarget("jar");
     } catch (BuildException e) {
 //      e.printStackTrace();
       throw new CommandException(CommandException.BUILD_FAILED, new Object[] {moduleName});

@@ -27,7 +27,6 @@ import org.netbeans.lib.cvsclient.command.log.LogCommand;
 import org.netbeans.lib.cvsclient.command.log.LogInformation;
 import org.netbeans.lib.cvsclient.command.tag.TagCommand;
 import org.netbeans.lib.cvsclient.command.update.UpdateCommand;
-import org.netbeans.lib.cvsclient.commandLine.BasicListener;
 import org.netbeans.lib.cvsclient.connection.AuthenticationException;
 import org.netbeans.lib.cvsclient.connection.Connection;
 import org.netbeans.lib.cvsclient.event.CVSListener;
@@ -273,6 +272,8 @@ public final class CVSRunner implements Runner {
 
     if (version != null || ((SourceModule) module).hasDevelopmentLine()) {
       updateCommand.setUpdateByRevision(Utils.createSymbolicName(module, version).getSymbolicName());
+    } else {
+      updateCommand.setResetStickyOnes(true);
     }
 
     // todo add data to the exception. this sort of business logic should be here, not in CVSResponseAdapter.

@@ -137,7 +137,7 @@ public final class CommandContext {
    * @return See <code>ManifestLoader.getAllManifests()</code>.
    */
   public Collection getAllManifests() {
-    return ManifestCollector.getInstance().getAllManifests();
+    return ManifestCollector.getInstance(getLocalEnvironment()).getAllManifests();
   }
 
   /**

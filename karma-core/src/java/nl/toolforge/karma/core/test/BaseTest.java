@@ -2,11 +2,9 @@ package nl.toolforge.karma.core.test;
 
 import junit.framework.TestCase;
 import nl.toolforge.core.util.file.MyFileUtils;
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
-import nl.toolforge.karma.core.location.LocationFactory;
 import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.karma.core.location.LocationFactory;
 
 import java.io.File;
 import java.io.IOException;

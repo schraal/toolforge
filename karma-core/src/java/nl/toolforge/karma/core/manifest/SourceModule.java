@@ -118,7 +118,7 @@ public class SourceModule extends BaseModule {
     if (getVersion() != null) {
       return getName() + "_" + getVersionAsString() + ".jar";
     } else
-      return getName() + "_" + WORKING;
+      return getName() + "_" + WORKING + ".jar";
   }
 
   /**

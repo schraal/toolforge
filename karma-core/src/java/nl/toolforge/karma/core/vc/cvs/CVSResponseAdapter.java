@@ -170,6 +170,10 @@ public final class CVSResponseAdapter implements CVSListener {
 
       throw new CVSRuntimeException(CVSException.INVALID_SYMBOLIC_NAME);
 
+    } else if (message.indexOf("permission denied") >= 0) {
+
+      throw new CVSRuntimeException(CVSException.SECURITY_VIOLATION);
+
     }
 
     if (!"".equals(message)) {
