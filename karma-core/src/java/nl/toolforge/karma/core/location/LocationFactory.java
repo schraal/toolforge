@@ -244,7 +244,7 @@ public final class LocationFactory {
 	 */
 	public final Location get(String locationAlias) throws KarmaException {
 
-		if (locations.containsKey((locationAlias))) {
+		if (locations.containsKey(locationAlias)) {
 			return (Location) locations.get(locationAlias);
 		}
 		throw new KarmaException(KarmaException.LOCATION_NOT_FOUND);
