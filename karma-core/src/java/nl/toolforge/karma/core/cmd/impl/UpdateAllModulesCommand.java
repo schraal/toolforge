@@ -29,6 +29,7 @@ import nl.toolforge.karma.core.cmd.CommandFactory;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.CompositeCommand;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.CommandLoadException;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.cmd.threads.ParallelCommandWrapper;
 import nl.toolforge.karma.core.manifest.ManifestException;
@@ -105,7 +106,12 @@ public class UpdateAllModulesCommand extends CompositeCommand {
       Module module = (Module) i.next();
 
       String commandLineString = "um -m " + module.getName();
-      Command clone = CommandFactory.getInstance().getCommand(commandLineString);
+      Command clone = null;
+      try {
+        clone = CommandFactory.getInstance().getCommand(commandLineString);
+      } catch (CommandLoadException e) {
+        throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+      }
       clone.setContext(getContext());
 
       threads[j] = new ParallelCommandWrapper(clone, getResponseListener());

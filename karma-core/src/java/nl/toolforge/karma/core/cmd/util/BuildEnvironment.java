@@ -24,7 +24,7 @@ public class BuildEnvironment {
   }
 
   private File getBuildRootDirectory() {
-    return new File(manifest.getDirectory(), "build");
+    return new File(manifest.getBaseDirectory(), "build");
   }
 
   /**
@@ -78,6 +78,6 @@ public class BuildEnvironment {
   }
 
   public File getManifestBuildDirectory() {
-    return new File(manifest.getDirectory(), "build");
+    return new File(manifest.getBaseDirectory(), "build");
   }
 }

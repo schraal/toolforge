@@ -64,7 +64,9 @@ public abstract class AbstractManifest implements Manifest {
 
   private WorkingContext workingContext = null;
   private ManifestStructure manifestStructure = null;
-  private File manifestDirectory = null;
+
+  private File manifestBaseDirectory = null;
+  private File manifestTempDirectory = null;
   private Map moduleCache = null;
 
   /**
@@ -153,7 +155,8 @@ public abstract class AbstractManifest implements Manifest {
   //
   private void applyWorkingContext() {
 
-    manifestDirectory = new File(workingContext.getDevelopmentHome(), getName());
+    manifestBaseDirectory = new File(workingContext.getDevelopmentHome(), getName());
+    manifestTempDirectory = new File(getBaseDirectory(), "tmp");
 
     for (Iterator i = moduleCache.values().iterator(); i.hasNext();) {
       applyWorkingContext(workingContext, (Module) i.next());
@@ -161,15 +164,28 @@ public abstract class AbstractManifest implements Manifest {
   }
 
   /**
-   * A specific Manifest implementation may have to apply specific actions to modules. Each implementation should
-   * therefor
+   * A specific <code>Manifest</code> implementation may have to apply specific actions to modules per working context.
+   * Each implementation should therefor implement this method and do what it has to do.
    *
-   * @param module
+   * @param context The current {@link WorkingContext}.
+   * @param module The module to which <code>context</code> should be applied.
    */
   protected abstract void applyWorkingContext(WorkingContext context, Module module);
 
-  public final File getDirectory() {
-    return manifestDirectory;
+  public final File getBaseDirectory() {
+
+    if (!manifestBaseDirectory.exists()) {
+      manifestBaseDirectory.mkdir();
+    }
+    return manifestBaseDirectory;
+  }
+
+  public final File getTempDirectory() {
+
+    if (!manifestTempDirectory.exists()) {
+      manifestTempDirectory.mkdir();
+    }
+    return manifestTempDirectory;
   }
 
   /**
@@ -196,7 +212,7 @@ public abstract class AbstractManifest implements Manifest {
    * Sets the manifests' version. This method is called by
    * <a href="http://jakarta.apache.org/commons/digester">Digester</a> while parsing the manifest XML file.
    *
-   * @param version The manifests' version (&lt;version&gt;-attribute); may be <code>null</code>.
+   * @param version The manifests' version (<code>&lt;version&gt;</code>-attribute); may be <code>null</code>.
    */
   public final void setVersion(String version) {
     this.version = version;
@@ -283,7 +299,7 @@ public abstract class AbstractManifest implements Manifest {
   }
 
   public final boolean isLocal(Module module) {
-    return new File(getDirectory(), module.getName()).exists();
+    return new File(getBaseDirectory(), module.getName()).exists();
   }
 
   /**

@@ -116,6 +116,9 @@ public final class ErrorCode {
     try {
       message = bundle.getString("message." + getErrorCodeString());
 
+      // NOTE ! the following block remains as-is !!! There's a bug in this code.
+      //
+
 //      if (getMessageArguments().length != 0) {
 //        MessageFormat messageFormat = new MessageFormat(message);
 //        message = messageFormat.format(getMessageArguments());

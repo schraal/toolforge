@@ -32,10 +32,11 @@ import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.ErrorMessage;
 import nl.toolforge.karma.core.cmd.StatusMessage;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.CommandLoadException;
 import nl.toolforge.karma.core.cmd.util.BuildEnvironment;
+import nl.toolforge.karma.core.cmd.util.DependencyException;
 import nl.toolforge.karma.core.cmd.util.DependencyHelper;
 import nl.toolforge.karma.core.cmd.util.DescriptorReader;
-import nl.toolforge.karma.core.cmd.util.KarmaBuildException;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ModuleDescriptor;
@@ -111,6 +112,8 @@ public class PackageModule extends AbstractBuildCommand {
             message = new ErrorMessage(CommandException.TEST_WARNING);
             commandResponse.addMessage(message);
           }
+        } catch (CommandLoadException e) {
+          throw new CommandException(e.getErrorCode(), e.getMessageArguments());
         } finally {
           if ( command != null ) {
             command.deregisterCommandResponseListener(getResponseListener());
@@ -147,8 +150,8 @@ public class PackageModule extends AbstractBuildCommand {
               new Object[] {getCurrentModule().getName(), packageName});
       commandResponse.addMessage(message);
 
-    } catch (KarmaBuildException m) {
-      throw new CommandException(m, CommandException.PACKAGE_FAILED);
+    } catch (DependencyException d) {
+      throw new CommandException(d.getErrorCode(), d.getMessageArguments());
     }
   }
 
@@ -276,7 +279,7 @@ public class PackageModule extends AbstractBuildCommand {
 
         // Module dependencies
         //
-        if (moduleDeps != null && !"".equals(moduleDeps)) {
+        if (moduleDeps.size() > 0) {
           fileSet = new FileSet();
           fileSet.setDir(env.getModuleBuildDirectory());
           fileSet.setIncludes(CollectionUtil.concat(moduleDeps, ','));
@@ -315,8 +318,8 @@ public class PackageModule extends AbstractBuildCommand {
         commandResponse.addMessage(new AntErrorMessage(e));
       }
       throw new CommandException(e, CommandException.PACKAGE_FAILED, new Object[] {getCurrentModule().getName()});
-    } catch (KarmaBuildException e) {
-      throw new CommandException(e, CommandException.PACKAGE_FAILED, new Object[] {getCurrentModule().getName()});
+    } catch (DependencyException d) {
+      throw new CommandException(d.getErrorCode(), d.getMessageArguments());
     }
 
   }
@@ -455,8 +458,8 @@ e.printStackTrace();
         commandResponse.addMessage(new AntErrorMessage(e));
       }
       throw new CommandException(e, CommandException.PACKAGE_FAILED, new Object[] {getCurrentModule().getName()});
-    } catch (KarmaBuildException e) {
-      throw new CommandException(e, CommandException.PACKAGE_FAILED);
+    } catch (DependencyException d) {
+      throw new CommandException(d.getErrorCode(), d.getMessageArguments());
     } catch (IOException e) {
       throw new CommandException(e, CommandException.PACKAGE_FAILED);
     }

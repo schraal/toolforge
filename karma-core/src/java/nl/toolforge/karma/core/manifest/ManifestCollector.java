@@ -103,24 +103,6 @@ public class ManifestCollector {
       ManifestLoader loader = new ManifestLoader(workingContext);
       Manifest manifest = manifestFactory.create(workingContext, loader.load(manifestId));
 
-
-
-//      try {
-//        manifest = manifestFactory.createManifest(manifestId);
-//      } catch (ManifestException m) {
-//        if (m.getErrorCode().equals(ManifestException.MANIFEST_FILE_NOT_FOUND)) {
-//          Preferences.userRoot().remove(KarmaRuntime.getWorkingContext().getContextManifestPreference());
-//          try {
-//            Preferences.userRoot().flush();
-//          } catch (BackingStoreException e) {
-//            logger.warn("Could not write user preferences due to java.util.prefs.BackingStoreException.");
-//          }
-//        }
-//        // Rethrow, the removal from userPrefs has been performed
-//        //
-//        throw m;
-//      }
-
       return manifest;
     }
 

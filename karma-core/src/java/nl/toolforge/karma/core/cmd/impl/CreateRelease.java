@@ -27,6 +27,7 @@ import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.CompositeCommand;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.CommandLoadException;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
@@ -153,7 +154,12 @@ public class CreateRelease extends CompositeCommand {
 
     if (loadManifest) {
 
-      Command command = CommandFactory.getInstance().getCommand(CommandDescriptor.SELECT_MANIFEST_COMMAND + " -m ".concat(releaseName));
+      Command command = null;
+      try {
+        command = CommandFactory.getInstance().getCommand("select-manifest -m ".concat(releaseName));
+      } catch (CommandLoadException e) {
+        throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+      }
       command.registerCommandResponseListener(this);
       getContext().execute(command);
 

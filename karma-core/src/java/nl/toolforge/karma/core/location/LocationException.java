@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.location;
 
 import nl.toolforge.karma.core.ErrorCode;
+import nl.toolforge.karma.core.vc.VersionControlException;
 
 /**
  * <p>Exceptions relating to <code>Location</code>s. As with all other <code>KarmaExceptions</code>, exceptions can
@@ -56,7 +57,7 @@ public final class LocationException extends Exception {
   public static final ErrorCode LOCATION_NOT_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00005");
   /**
    * No location files were found. Karma filters all <code>*.xml</code>-files from
-   * {@link nl.toolforge.karma.core.LocalEnvironment#getLocationStore()}.
+   * {@link nl.toolforge.karma.core.boot.WorkingContext#getLocationStore()}.
    */
   public static final ErrorCode NO_LOCATION_DATA_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00006");
   /** The location was configured incorrectly. */
@@ -96,6 +97,11 @@ public final class LocationException extends Exception {
    * another location. A version control system generally gives an error for this.
    */
   public static final ErrorCode LOCATION_MISMATCH = new ErrorCode(EXCEPTION_PREFIX + "00018");
+
+  /**
+   * A connection to the location could not be made.
+   */
+  public static final ErrorCode CONNECTION_EXCEPTION = new ErrorCode(VersionControlException.EXCEPTION_PREFIX + "00019");
 
   public LocationException(ErrorCode errorCode) {
     this(errorCode, null);

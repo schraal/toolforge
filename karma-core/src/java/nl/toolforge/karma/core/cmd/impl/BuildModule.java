@@ -26,8 +26,8 @@ import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.util.BuildEnvironment;
+import nl.toolforge.karma.core.cmd.util.DependencyException;
 import nl.toolforge.karma.core.cmd.util.DependencyHelper;
-import nl.toolforge.karma.core.cmd.util.KarmaBuildException;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 
@@ -71,9 +71,8 @@ public class BuildModule extends AbstractBuildCommand {
 
       project.executeTarget("run");
 
-    } catch (KarmaBuildException e) {
-      e.printStackTrace();
-      throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
+    } catch (DependencyException e) {
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     } catch (BuildException e) {
       commandResponse.addMessage(new AntErrorMessage(e));
       throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});

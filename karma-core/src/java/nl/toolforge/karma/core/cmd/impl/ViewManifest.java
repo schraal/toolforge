@@ -133,7 +133,11 @@ public class ViewManifest extends DefaultCommand {
         moduleData[6] = module.getLocation().getId();
       } else {
         moduleData[5] = "";
-        moduleData[6] = "** Not in repository **";
+        if (moduleStatus.connectionFailure()) {
+          moduleData[6] = "Connection failed.";
+        } else {
+          moduleData[6] = "** Not in repository **";
+        }
       }
       renderedList.add(moduleData);
     }

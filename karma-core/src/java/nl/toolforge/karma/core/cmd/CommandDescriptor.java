@@ -18,12 +18,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd;
 
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.KarmaRuntimeException;
 import org.apache.commons.cli.Options;
 
-import java.util.Hashtable;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
  * @author D.A. Smedes
@@ -31,133 +30,112 @@ import java.util.Map;
  */
 public final class CommandDescriptor {
 
-  // todo ideally we want an approach like Options in here; each method we call delivers an even better Command.
-  // call it a CommandBuilder.
-  //
+  private String name = null;
+  private String description = null;
+  private String helpText = null;
+  private String className = null;
+  private String aliasString = null;
 
+  private Set aliasList = null;
+  private Options options = null;
 
-  /** Maps to the &lt;command name="update-module"&gt; */
-  public static final String UPDATE_MODULE_COMMAND = "update-module";
-  /** Maps to the &lt;command name="select-manifest"&gt; */
-  public static final String SELECT_MANIFEST_COMMAND = "select-manifest";
+  public CommandDescriptor(String name, String aliasString) {
+    this.name = name;
+    this.aliasString = aliasString;
+    aliasList = new HashSet();
+    createAliasList(aliasString);
+  }
 
-	private String name = null;
-	private String alias = null;
-	private String description = null;
-	private String helpText = null;
+  public String getName() {
+    return this.name;
+  }
 
-	private Options options = null;
+  public Set getAliasList() {
+    return aliasList;
+  }
 
-	private Class commandImpl = null;
+  private void createAliasList(String aliasString) {
 
-	private Map deps = new Hashtable();
+    if (aliasString.indexOf(" ") != -1) {
+      StringTokenizer tokenizer = new StringTokenizer(aliasString, " ");
+      while (tokenizer.hasMoreTokens()) {
+        aliasList.add(tokenizer.nextToken());
+      }
+    } else {
+      aliasList.add(aliasString);
+    }
+  }
 
-	/**
-	 * Creates a command using its mandatory fields.
-	 *
-	 * @param name        The name of the command (the <code>name</code> attribute of the &lt;command&gt;-element).
-	 * @param alias       The alias of the command (the <code>alias</code> attribute of the &lt;command&gt;-element).
-	 * @param commandImpl The <code>Class</code> implementing the command's behavior.
-	 */
-	public CommandDescriptor(String name, String alias, String commandImpl) throws KarmaException {
+  public String getAlias() {
+    return aliasString;
+  }
 
-		this.name = name;
-		this.alias = alias;
+  public String getDescription() {
+    return description;
+  }
 
-		try {
-			this.commandImpl = Class.forName(commandImpl);
-		} catch (ClassNotFoundException c) {
-			throw new KarmaRuntimeException("Implementation class for " + name + " not found.");
-		}
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	public String getName() {
-		return this.name;
-	}
+//  public void setDescription(String description) {
+//    this.description = description;
+//  }
+//
+//  public String getDescription() {
+//    return this.description;
+//  }
 
-	public String getAlias() {
-		return this.alias;
-	}
+  /**
+   * @param options The name of the command (the lt;options&gt;-child-element attribute of the &lt;command&gt;-element).
+   */
+  public void addOptions(Options options) {
+    this.options = options;
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public Options getOptions() {
+    return this.options;
+  }
 
-	public String getDescription() {
-		return this.description;
-	}
+  public String getClassName() {
+    return className;
+  }
 
-	/**
-	 * @param options The name of the command (the lt;options&gt;-child-element attribute of the &lt;command&gt;-element).
-	 */
-	public void setOptions(Options options) {
+  public void setClassName(String className) {
+    this.className = className;
+  }
 
-		if (options == null) {
-			throw new IllegalArgumentException("When using this setter, provide a non-null Options object.");
-		}
+  public void setHelp(String helpText) {
+    this.helpText = helpText;
+  }
 
-		this.options = options;
-	}
+  public String getHelp() {
+    return this.helpText;
+  }
 
-	public Options getOptions() {
-		return this.options;
-	}
+  /**
+   * Commands are equal when their names are equal.
+   *
+   * @param o The object instance that should be compared with <code>this</code>.
+   * @return <code>true</code> if this command descriptor is equal to <code>o</code> or <code>null</code> when
+   *   <code>o</code> is not a <code>CommandDescriptor</code> instance or when it is not the same object.
+   */
+  public boolean equals(Object o) {
 
-	public Class getImplementation() {
-		return this.commandImpl;
-	}
+    if (o instanceof CommandDescriptor) {
+      if (name.equals(((CommandDescriptor) o).name) && aliasList.equals(((CommandDescriptor) o).aliasList)) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
 
-	public void setDependencies(Map dependencies) {
-		this.deps = dependencies;
-	}
-
-	public Map getDependencies() {
-		return this.deps;
-	}
-
-	/**
-	 * Checks if this command has a certain dependency. Merely a helper method to get to the bottom of it more quickly.
-	 *
-	 * @param key The dependency key. Check the public fields in {@link nl.toolforge.karma.core.cmd.Command} for a list of 'valid' dependencies.
-	 * @return <code>true</code> If the command has a dependency, or <code>false</code> if it hasn't.
-	 */
-	public boolean hasDependency(String key) {
-		return deps.containsKey(key);
-	}
-
-	public void setHelp(String helpText) {
-		this.helpText = helpText;
-	}
-
-	public String getHelp() {
-		return this.helpText;
-	}
-
-	/**
-	 * Commands are equal when their names are equal.
-	 *
-	 * @param o The object instance that should be compared with <code>this</code>.
-	 * @return <code>true</code> if this command descriptor is equal to <code>o</code> or <code>null</code> when
-	 *   <code>o</code> is not a <code>CommandDescriptor</code> instance or when it is not the same object.
-	 */
-	public boolean equals(Object o) {
-
-		if (o instanceof CommandDescriptor) {
-			if (this.getName().equals(((CommandDescriptor) o).getName())) {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
-
-	public int hashCode() {
-		// Volgens mij gaat het volgende hartstikke fout !
-		//
-		return name.hashCode();
-	}
+  public int hashCode() {
+    return name.hashCode();
+  }
 
 }
 

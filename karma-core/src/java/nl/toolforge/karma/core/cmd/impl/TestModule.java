@@ -27,9 +27,10 @@ import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.ErrorMessage;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.CommandLoadException;
 import nl.toolforge.karma.core.cmd.util.BuildEnvironment;
+import nl.toolforge.karma.core.cmd.util.DependencyException;
 import nl.toolforge.karma.core.cmd.util.DependencyHelper;
-import nl.toolforge.karma.core.cmd.util.KarmaBuildException;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 
@@ -79,6 +80,8 @@ public class TestModule extends AbstractBuildCommand {
         message = new ErrorMessage(CommandException.BUILD_WARNING);
         commandResponse.addMessage(message);
       }
+    } catch (CommandLoadException e) {
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     } finally {
       if ( command != null ) {
         command.deregisterCommandResponseListener(getResponseListener());
@@ -117,7 +120,7 @@ public class TestModule extends AbstractBuildCommand {
         deps = helper.getClassPath(getCurrentModule()) + ";";
       }
 
-      File f = new File(getCurrentManifest().getDirectory(), "build");
+      File f = new File(getCurrentManifest().getBaseDirectory(), "build");
       f = new File(f, getCurrentModule().getName());
       f = new File(f, "build");
 
@@ -125,8 +128,8 @@ public class TestModule extends AbstractBuildCommand {
 
       project.setProperty("module-classpath", deps);
 
-    } catch (KarmaBuildException me) {
-      throw new CommandException(CommandException.DEPENDENCY_FILE_INVALID);
+    } catch (DependencyException d) {
+      throw new CommandException(d.getErrorCode(), d.getMessageArguments());
     }
 
     try {

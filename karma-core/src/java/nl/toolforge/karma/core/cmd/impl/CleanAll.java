@@ -55,7 +55,7 @@ public class CleanAll extends AbstractBuildCommand {
     try {
 
       Project project = getAntProject("clean-all.xml");
-      project.setProperty("manifest-build-dir", new File(getCurrentManifest().getDirectory(), "build").getPath());
+      project.setProperty("manifest-build-dir", new File(getCurrentManifest().getBaseDirectory(), "build").getPath());
       project.executeTarget("run");
 
       // todo: localize message

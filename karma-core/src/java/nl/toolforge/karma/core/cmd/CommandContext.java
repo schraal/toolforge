@@ -92,7 +92,7 @@ public final class CommandContext implements ChangeListener {
       throws ManifestException, LocationException {
 
     if (handler == null) {
-      throw new IllegalArgumentException("CommandResponseHandler may not be null, you lazy bitch.");
+      throw new IllegalArgumentException("CommandResponseHandler may not be null.");
     }
 
     // todo dit response mechanisme moet wel op de kop in R2.0
@@ -112,7 +112,7 @@ public final class CommandContext implements ChangeListener {
 
       manifestModule.setBaseDir(workingContext.getManifestStore());
 
-      handler.commandResponseChanged(new CommandResponseEvent(new SuccessMessage("Updating manifests from CVS location `" + manifestModule.getLocation().toString() + "`")));
+      commandResponse.addMessage(new SuccessMessage("Updating manifests from CVS location `" + manifestModule.getLocation().toString() + "`"));
 
       if (workingContext.getManifestStore().exists()) {
 
@@ -133,8 +133,8 @@ public final class CommandContext implements ChangeListener {
           logger.warn(e.getErrorMessage());
           // Nothing serious ...
           //
-          handler.commandResponseChanged(new CommandResponseEvent(new ErrorMessage(KarmaException.MANIFEST_STORE_UPDATE_FAILED)));
-          handler.commandResponseChanged(new CommandResponseEvent(new ErrorMessage(e.getErrorCode())));
+          commandResponse.addMessage(new ErrorMessage(KarmaException.MANIFEST_STORE_UPDATE_FAILED));
+          commandResponse.addMessage(new ErrorMessage(e.getErrorCode()));
         }
       } else {
         throw new KarmaRuntimeException("Pietje puk exception");
@@ -153,7 +153,7 @@ public final class CommandContext implements ChangeListener {
       Module locationModule = new SourceModule("locations", location);
       locationModule.setBaseDir(workingContext.getLocationStore());
 
-      handler.commandResponseChanged(new CommandResponseEvent(new SuccessMessage("Updating locations from CVS location `" + locationModule.getLocation().toString() + "`")));
+      commandResponse.addMessage(new SuccessMessage("Updating locations from CVS location `" + locationModule.getLocation().toString() + "`"));
 
       if (workingContext.getLocationStore().exists()) {
 
@@ -172,16 +172,18 @@ public final class CommandContext implements ChangeListener {
           // Nothing serious ...
           //
 
-          handler.commandResponseChanged(new CommandResponseEvent(new ErrorMessage(KarmaException.LOCATION_STORE_UPDATE_FAILED)));
-          handler.commandResponseChanged(new CommandResponseEvent(new ErrorMessage(e.getErrorCode())));
+          commandResponse.addMessage(new ErrorMessage(KarmaException.LOCATION_STORE_UPDATE_FAILED));
+          commandResponse.addMessage(new ErrorMessage(e.getErrorCode()));
         }
       } else {
         throw new KarmaRuntimeException("Pietje puk exception");
       }
 
     } else {
-      handler.commandResponseChanged(new CommandResponseEvent(new ErrorMessage("Location store location unreachable!")));
+      commandResponse.addMessage(new ErrorMessage("Location store location unreachable!"));
     }
+
+    commandResponse.addMessage(new SuccessMessage("Loading manifest from history ..."));
 
     // Try reloading the last manifest that was used.
     //
@@ -352,11 +354,16 @@ public final class CommandContext implements ChangeListener {
    *
    * @param commandLine The command to execute. A full command line is passed as a parameter.
    * @throws CommandException A whole lot. Interface applications should <b>*** NOT ***</b> quit program execution as a
-   *                        result of this exception. It should be handled nicely.
+   *   result of this exception. It should be handled nicely.
    */
   public void execute(String commandLine) throws CommandException {
 
-    Command command = CommandFactory.getInstance().getCommand(commandLine);
+    Command command = null;
+    try {
+      command = CommandFactory.getInstance().getCommand(commandLine);
+    } catch (CommandLoadException e) {
+      throw new CommandException(e.getErrorCode(),  e.getMessageArguments());
+    }
     execute(command);
   }
 

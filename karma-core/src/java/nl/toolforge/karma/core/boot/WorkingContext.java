@@ -33,7 +33,9 @@ import java.util.Properties;
  */
 public final class WorkingContext {
 
-  private  static final String DEFAULT_CONVERSION_PATTERN = "%d{HH:mm:ss} [%5p] - %m%n";
+  public final static String WORKING_CONTEXT = "karma.working-context";
+
+  private final static String DEFAULT_CONVERSION_PATTERN = "%d{HH:mm:ss} [%5p] - %m%n";
 
   static {
 
@@ -582,15 +584,28 @@ public final class WorkingContext {
   public static File getLocalRepository() throws IOException {
 
     if (localRepositoryBaseDir == null) {
-      localRepositoryBaseDir = new File(getConfigurationBaseDir(), ".karma" + File.separator + "repository");
+      localRepositoryBaseDir = new File(getConfigurationBaseDir(), ".repository");
     }
     localRepositoryBaseDir.mkdir();
 
     return localRepositoryBaseDir;
   }
 
+  public static File getKarmaHome() {
+
+    if (System.getProperty("karma.home") == null) {
+      throw new KarmaRuntimeException("KARMA_HOME (karma.home) environment variable has not been set.");
+    }
+
+    return new File(System.getProperty("karma.home"));
+  }
+
   /**
-   * Determines the last used manifest for this working context.
+   * <p>Determines the last used manifest for this working context. This fact is maintained in the <code>.java</code> file
+   * on a users' harddisk, as per the specification for <code>java.util.prefs</code>, included in the JDK since
+   * <code>1.4</code>.
+   *
+   * <p>A <code>String</code> made up of the working context name and <code>karma.manifest.last</code>.
    */
   public String getContextManifestPreference() {
 

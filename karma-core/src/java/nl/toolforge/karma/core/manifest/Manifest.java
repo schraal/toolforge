@@ -57,11 +57,21 @@ public interface Manifest {
   public Map getAllModules();
 
   /**
-   * @see AbstractManifest for the time being
+   * The base location of the manifest within the current working context. This location is used extensively by Karma
+   * as the base directory to checkout projects and build modules.
    *
-   * @return
+   * @return A <code>File</code> reference to the manifest base directory.
    */
-  public File getDirectory();
+  public File getBaseDirectory();
+
+  /**
+   * The base location of a temp directory the manifest within the current working context. This location is used
+   * extensively by Karma as a temporary location and should not be removed for as long as the manifest has a presence
+   * on disk.
+   *
+   * @return A <code>File</code> reference to the <code>{@link #getBaseDirectory()} + "/tmp"</code>
+   */
+  public File getTempDirectory();
 
   public void setState(Module module, Module.State state);
 

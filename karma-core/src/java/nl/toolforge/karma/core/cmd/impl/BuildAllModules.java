@@ -18,36 +18,28 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
+import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.cmd.CommandFactory;
+import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.CommandFactory;
-import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.ErrorMessage;
-import nl.toolforge.karma.core.cmd.CommandMessage;
-import nl.toolforge.karma.core.cmd.util.DependencyHelper;
+import nl.toolforge.karma.core.cmd.CommandLoadException;
 import nl.toolforge.karma.core.cmd.util.KarmaBuildException;
 import nl.toolforge.karma.core.manifest.Manifest;
-import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Collection;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Set;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Builds all modules in a manifest.
@@ -57,14 +49,7 @@ import java.util.HashSet;
  */
 public class BuildAllModules extends DefaultCommand {
 
-  private static final String DEFAULT_SRC_PATH = "src/java";
-
-  private static final String JAVAC_SRC_DIR_PROPERTY = "srcdir";
-  private static final String JAVAC_DEST_DIR_PROPERTY = "destdir";
-  private static final String JAVAC_CLASSPATH_PROPERTY = "classpath";
-
   private CommandResponse commandResponse = new ActionCommandResponse();
-  private DependencyHelper helper = null;
   private List orderedCollection = null;
   private Manifest currentManifest = null;
 
@@ -77,7 +62,6 @@ public class BuildAllModules extends DefaultCommand {
     currentManifest = getContext().getCurrentManifest();
 
     try {
-      helper = new DependencyHelper(currentManifest);
       orderedCollection = new ArrayList();
 
       createBuildList(currentManifest.getAllModules().values());
@@ -94,7 +78,7 @@ public class BuildAllModules extends DefaultCommand {
 
       Command command = null;
       try {
-        String commandLineString = "bm -m " + module.getName();
+        String commandLineString = "pm -m " + module.getName() + " -n";
         command = CommandFactory.getInstance().getCommand(commandLineString);
         command.setContext(getContext());
         command.registerCommandResponseListener(getResponseListener());
@@ -110,6 +94,8 @@ public class BuildAllModules extends DefaultCommand {
           message = new ErrorMessage(CommandException.BUILD_WARNING);
           commandResponse.addMessage(message);
         }
+      } catch (CommandLoadException e) {
+        throw new CommandException(e.getErrorCode(), e.getMessageArguments());
       } finally {
         if ( command != null ) {
           command.deregisterCommandResponseListener(getResponseListener());
@@ -148,19 +134,6 @@ public class BuildAllModules extends DefaultCommand {
       }
     }
   }
-//
-//  private Set getModuleDependencies(Set deps) {
-//
-//    Set set = new HashSet();
-//    for (Iterator i = deps.iterator(); i.hasNext();) {
-//
-//      ModuleDependency dep = (ModuleDependency) i.next();
-//      if (dep.isModuleDependency()) {
-//        set.add(dep);
-//      }
-//    }
-//    return set;
-//  }
 
   public CommandResponse getCommandResponse() {
     return this.commandResponse;

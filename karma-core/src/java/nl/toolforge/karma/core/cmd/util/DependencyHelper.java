@@ -1,7 +1,7 @@
 package nl.toolforge.karma.core.cmd.util;
 
+import nl.toolforge.core.util.collection.CollectionUtil;
 import nl.toolforge.karma.core.boot.WorkingContext;
-import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
@@ -9,10 +9,10 @@ import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.Utils;
-import nl.toolforge.core.util.collection.CollectionUtil;
 import org.apache.tools.ant.BuildException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -43,7 +43,7 @@ public final class DependencyHelper {
    * @param module The module for which a classpath should be determined.
    * @return See method description.
    */
-  public String getClassPath(Module module) throws KarmaBuildException {
+  public String getClassPath(Module module) throws DependencyException {
 
     Set moduleDeps = getModuleDependencies(module);
     Set jarDeps = getModuleDependencies(module);
@@ -80,9 +80,9 @@ public final class DependencyHelper {
    *
    * @param module The module for which a dependency-path should be determined.
    * @return See method description.
-   * @throws KarmaBuildException When a dependency for a module is not available.
+   * @throws DependencyException When a dependency for a module is not available.
    */
-  public Set getModuleDependencies(Module module) throws KarmaBuildException {
+  public Set getModuleDependencies(Module module) throws DependencyException {
 
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
@@ -101,11 +101,11 @@ public final class DependencyHelper {
         try {
           dependencyJar = new File(env.getModuleBuildDirectory() + File.separator + resolveArchiveName(manifest.getModule(dep.getModule())));
         } catch (ManifestException e) {
-          throw new KarmaBuildException(e);
+          throw new DependencyException(e.getErrorCode(), e.getMessageArguments());
         }
 
         if (!dependencyJar.exists()) {
-          throw new KarmaBuildException(CommandException.DEPENDENCY_DOES_NOT_EXIST);
+          throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dependencyJar.getPath()});
         }
 
         s.add(dependencyJar.getPath());
@@ -114,15 +114,24 @@ public final class DependencyHelper {
     return s;
   }
 
+
   /**
-   * Gets a <code>Set</code> of <code>String</code>s, each one identifying the path to the
-   * <code>jar</code>-file relative to {@link WorkingContext#getLocalRepository()}.
+   * <p>Gets a <code>Set</code> of <code>String</code>s, each one identifying a <code>jar</code>-file. Jar files are looked
+   * up Maven-style (see {@link ModuleDependency}. The result set contains strings like ;
+   * <code>&lt;groupId&gt;/jars/&lt;artifactId&gt;-&lt;version&gt;.jar</code>.
    *
-   * @param module
-   * @return
-   * @throws BuildException
+   * <p>The <code>relative</code> parameters
+   *
+   * @param module The module for which jar dependencies should be determined.
+   *
+   * @return A <code>Set</code> containing <code>String</code>s, each one representing the relative path (Maven-style)
+   *   to the jar dependency.
+   *
+   * @throws DependencyException When a jar dependency is not phsyically available on disk. A check is performed on the
+   *   existence of the jar file in either the local jar repository ({@link WorkingContext#getLocalRepository()}) or in
+   *   the lib module that is specified as being part of the manifest.
    */
-  public Set getJarDependencies(Module module) throws KarmaBuildException {
+  public Set getJarDependencies(Module module, boolean relative) throws DependencyException {
 
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
@@ -135,24 +144,38 @@ public final class DependencyHelper {
       ModuleDependency dep = (ModuleDependency) iterator.next();
 
       if (!dep.isModuleDependency()) {
-        if (!new File(dep.getJarDependency()).exists()) {
-          // todo has to be localized.
-          //
-          // todo this bit could have to download the dependency, like maven does.
-          throw new KarmaBuildException("Dependency " + dep.getJarDependency() + " does not exist.");
+        try {
+          if (!new File(WorkingContext.getLocalRepository(), dep.getJarDependency()).exists()) {
+            // todo has to be localized.
+            //
+            // todo this bit could have to download the dependency, like maven does.
+            throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getJarDependency()});
+          }
+
+          if (relative) {
+            s.add(dep.getJarDependency());
+          } else {
+            s.add(WorkingContext.getLocalRepository().getPath() + File.separator +dep.getJarDependency());
+          }
+
+        } catch (IOException e) {
+          throw new DependencyException(e, DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getJarDependency()});
         }
 
-        s.add(dep.getJarDependency());
       } else {
-
         // todo Implement stuff for lib modules ...
-
-
-
       }
     }
     return s;
   }
+
+  /**
+   * See {@link #getJarDependencies(Module, boolean)}. This method returns a set with the absolute pathnames.
+   */
+  public Set getJarDependencies(Module module) throws DependencyException {
+    return getJarDependencies(module, false);
+  }
+
 
   /**
    * <p>Determines the correct artifact name for <code>module</code>. The artifact-name is determined as follows:
@@ -171,7 +194,7 @@ public final class DependencyHelper {
    * @param module A <code>SourceModule</code> instance.
    * @return The artifact-name as determined the way as described above.
    */
-  public String resolveArchiveName(Module module) throws KarmaBuildException {
+  public String resolveArchiveName(Module module) throws DependencyException {
 
     String jar = module.getName() + "_";
 
@@ -196,9 +219,7 @@ public final class DependencyHelper {
       }
       jar += extension;
     } catch (VersionControlException v) {
-      throw new KarmaBuildException(v.getErrorCode());
-//      throw new KarmaBuildException(Exception(v.getErrorCode(), v.getMessageArguments());
-//      throw new KarmaBuildException(v);
+      throw new DependencyException(v.getErrorCode(), v.getMessageArguments());
     }
 
     return jar;
@@ -234,7 +255,8 @@ public final class DependencyHelper {
       ModuleDependency dep = (ModuleDependency) i.next();
 
       if (!currentSet.add(dep)) {
-        throw new DependencyException();
+//        ???????????????????????????????????????????????
+//        throw new DependencyException(DependencyException.DUPLICATE_ARTIFACT_VERSION);
       } else {
         if (dep.isModuleDependency()) {
           Module moduleDep = manifest.getModule(dep.getModule());

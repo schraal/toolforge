@@ -18,10 +18,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.cli.cmd;
 
-import nl.toolforge.karma.cli.CommandRenderer;
-import nl.toolforge.karma.core.cmd.*;
-import nl.toolforge.karma.core.cmd.impl.HelpCommand;
+import nl.toolforge.karma.console.CommandRenderer;
 import nl.toolforge.karma.core.bundle.BundleCache;
+import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.cmd.CommandFactory;
+import nl.toolforge.karma.core.cmd.CommandMessage;
+import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.CommandLoadException;
+import nl.toolforge.karma.core.cmd.impl.HelpCommand;
 
 import java.util.ResourceBundle;
 
@@ -39,8 +44,13 @@ public class HelpImpl extends HelpCommand {
 
 	public void execute() throws CommandException {
 
-		CommandMessage message = new SuccessMessage("\n\n" + FRONTEND_MESSAGES.getString("message.VALID_COMMANDS") + "\n" + CommandRenderer.renderedCommands(CommandFactory.getInstance().getCommands()));
-		response.addMessage(message);
+    CommandMessage message = null;
+    try {
+      message = new SuccessMessage("\n\n" + FRONTEND_MESSAGES.getString("message.VALID_COMMANDS") + "\n" + CommandRenderer.renderedCommands(CommandFactory.getInstance().getCommands()));
+    } catch (CommandLoadException e) {
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+    }
+    response.addMessage(message);
 		super.execute();
 	}
 

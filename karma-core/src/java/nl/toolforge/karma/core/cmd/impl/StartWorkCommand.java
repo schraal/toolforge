@@ -145,7 +145,7 @@ public class StartWorkCommand extends DefaultCommand {
 
         // Step 2 : clean up any 'old' build directories for this module.
         //
-        File buildDir = new File(new File(currentManifest.getDirectory(), "build"), moduleName);
+        File buildDir = new File(new File(currentManifest.getBaseDirectory(), "build"), moduleName);
         try {
           FileUtils.deleteDirectory(buildDir);
         } catch (IOException e) {

@@ -40,8 +40,6 @@ public abstract class DefaultCommand implements Command {
 	private String alias = null;
 	private String description = null;
 	private String helpText = null;
-	private Class implementation = null;
-//  protected CommandDescriptor descriptor;
 
   /**
 	 * Creates a command by initializing the command through its <code>CommandDescriptor</code>.
@@ -57,7 +55,6 @@ public abstract class DefaultCommand implements Command {
 		alias = descriptor.getAlias();
 		description = descriptor.getDescription();
 		helpText = descriptor.getHelp();
-		implementation = descriptor.getImplementation();
 	}
 
 	/**
@@ -137,10 +134,6 @@ public abstract class DefaultCommand implements Command {
   public final CommandResponseListener getResponseListener() {
     return responseListener;
   }
-
-	public final Class getImplementation() {
-		return implementation;
-	}
 
 	/**
 	 * Accessor method for the commands' {@link CommandContext}.

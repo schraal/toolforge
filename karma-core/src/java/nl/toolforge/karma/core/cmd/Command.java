@@ -34,12 +34,7 @@ import org.apache.commons.cli.CommandLine;
  */
 public interface Command {
 
-	/**
-	 * Default filename for the command descriptor file
-	 */
-	public static final String DEFAULT_COMMAND_FILE = "commands.xml";
-
-	/**
+  /**
 	 * Gets the normal name of this command (its full name).
 	 *
 	 * @return The normal name of this command.
