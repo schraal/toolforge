@@ -14,14 +14,14 @@ public class TestLocationFactory extends TestCase {
 		LocationFactory factory = LocationFactory.getInstance();
 
 		try {
-			factory.load(getClass().getClassLoader().getResourceAsStream("test/locations.xml"),
-				getClass().getClassLoader().getResourceAsStream("test/location-authentication.xml"));
+			factory.load(getClass().getClassLoader().getResourceAsStream("test-locations.xml"),
+				getClass().getClassLoader().getResourceAsStream("test-location-authentication.xml"));
 
 			assertNotNull(factory.get("local-test"));
 			assertNotNull(factory.get("subversion-test"));
 			assertEquals(factory.getLocations().keySet().size(), 3);
 
-		} catch (KarmaException e) {
+		} catch (LocationException e) {
 			fail(e.getMessage());
 		}
 	}

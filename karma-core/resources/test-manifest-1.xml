@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+
+<!--
+DO NOT CHANGE THE CONTENTS OF THIS FILE. IT IS USED BY JUnit TEST CLASSES
+-->
+
+<manifest name="test-manifest-1" version="1-0">
+  
+  <description>This manifest is an example of the manifest definition.</description>
+  
+  <modules>
+    
+    <module name="test-module-1" type="src" location="local-test" version="0-1" developmentLine="DEV"/>
+    <module name="test-module-2" type="src" location="local-test" version="0-1"/>
+    <module name="test-module-3" type="src" location="local-test" developmentLine="DEV"/>
+    <module name="test-module-4" type="src" location="local-test"/>
+    
+  </modules>
+  
+  <!-- The following element defines another manifest that is included in this one (runtime). -->
+  
+  <include-manifest name="included-test-manifest-1"/>
+
+</manifest>

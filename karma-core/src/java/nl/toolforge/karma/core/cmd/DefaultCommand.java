@@ -1,8 +1,7 @@
 package nl.toolforge.karma.core.cmd;
 
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
 import nl.toolforge.karma.core.bundle.BundleCache;
+import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
 import org.apache.commons.cli.CommandLine;
 
 import java.util.ResourceBundle;
@@ -17,19 +16,12 @@ public abstract class DefaultCommand implements Command {
 
 	private CommandContext contextRef = null;
 
-	// Data fields
-	//
-
 	private CommandLine commandLine = null;
 	private String name = null;
 	private String alias = null;
 	private String description = null;
 	private String helpText = null;
 	private Class implementation = null;
-
-//  public final CommandDescriptor getDescriptor() {
-//    return this.descriptor;
-//  }
 
 	/**
 	 * Creates a command by initializing the command through its <code>CommandDescriptor</code>.
@@ -107,23 +99,9 @@ public abstract class DefaultCommand implements Command {
     getCommandResponse().removeCommandReponseListener(responseListener);
   }
 
-//  public final Options getOptions() {
-//    return descriptor.getOptions();
-//  }
-
 	public final Class getImplementation() {
 		return implementation;
 	}
-
-	/**
-	 * Gets all dependencies for this command. This implementation calls its internal <code>CommandDescriptor</code>s'
-	 * {@link CommandDescriptor#getDependencies} method.
-	 *
-	 * @return A <code>Map</code> containing all dependencies as name-value pairs (both are <code>String</code>s).
-	 */
-//  public final Map getDependencies() {
-//    return dependencies;
-//  }
 
 	/**
 	 * Accessor method for the commands' {@link CommandContext}.
@@ -143,15 +121,6 @@ public abstract class DefaultCommand implements Command {
 	public String getHelp() {
 		return helpText;
 	}
-
-
-	/**
-	 * See {@link Command#execute}. Implementations must implement this method to get something out of the command.
-	 *
-	 * @throws CommandException When executing of the command failed.
-	 */
-//	public abstract void execute() throws CommandException;
-
 
 	/**
 	 * Helper method to get a resource bundle for frontend messages for commands.

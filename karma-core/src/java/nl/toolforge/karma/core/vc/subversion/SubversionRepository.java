@@ -1,6 +1,6 @@
 package nl.toolforge.karma.core.vc.subversion;
 
-import nl.toolforge.karma.core.Module;
+import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.vc.ManagedFile;
 import nl.toolforge.karma.core.vc.VersionControlSystem;
 

@@ -1,8 +1,9 @@
-package nl.toolforge.karma.core;
+package nl.toolforge.karma.core.manifest;
 
+import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ import java.util.List;
  *
  * @author D.A. Smedes
  * @version $Id$
- * @see nl.toolforge.karma.core.Module
+ * @see Module
  */
 public class SourceModule extends BaseModule {
 
@@ -28,16 +29,33 @@ public class SourceModule extends BaseModule {
   protected static List dependencies = null; // Lazy loading, the first time it is initialized and cached.
 
   /**
-   * Constructs a <code>SourceModule</code> instance.
+   * Constructs a SourceModule; this module variant has not <code>&lt;version&gt;</code>- or
+   * <code>&lt;development-line&gt;</code>-attribute assigned.
    *
-   * @throws ManifestException
+   * @param name Mandatory parameter; name of the module.
+   * @param location Mandatory parameter; location of the module.
    */
-  public SourceModule(SourceModuleDescriptor descriptor, File manifestDirectory) throws ManifestException {
+  public SourceModule(String name, Location location) {
+    super(name, location);
+  }
 
-    super(descriptor, manifestDirectory);
+  /**
+   *
+   */
+  public SourceModule(String name, Location location, Version version) {
+    this(name, location, version, null);
+  }
 
-    this.version = descriptor.getVersion();
-    this.developmentLine = descriptor.getDevelopmentLine();
+  public SourceModule(String name, Location location, DevelopmentLine line) {
+    this(name, location, null, line);
+  }
+
+  public SourceModule(String name, Location location, Version version, DevelopmentLine line) {
+    
+    this(name, location);
+
+    this.version = version;
+    this.developmentLine = line;
   }
 
   public final DevelopmentLine getDevelopmentLine() {
@@ -58,7 +76,7 @@ public class SourceModule extends BaseModule {
    * If the module element in the manifest contains a <code>version</code> attribute, this method will return the
    * value of that attribute.
    *
-   * @return The module version, or N/A, when no version number exists.
+   * @return The module version, or <code>N/A</code>, when no version number exists.
    */
   public final String getVersionAsString() {
     return (version == null ? "N/A" : version.getVersionNumber());
@@ -83,7 +101,6 @@ public class SourceModule extends BaseModule {
     return developmentLine != null;
   }
 
-
   public String getDependencyName() {
 
     if (getVersion() != null) {
@@ -92,11 +109,7 @@ public class SourceModule extends BaseModule {
       return getName() + "_" + WORKING;
   }
 
-  public File getModuleDirectory() {
-    return new File(getManifestDirectory(), getName());
-  }
-
-  public String getDependencies() throws KarmaException {
-    return null;
+  public String getDependencies() {
+    throw new RuntimeException("Not implemented yet.");
   }
 }

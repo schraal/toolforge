@@ -1,12 +1,12 @@
 package nl.toolforge.karma.core.scm;
 
 import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.Manifest;
-import nl.toolforge.karma.core.Module;
-import nl.toolforge.karma.core.ModuleMap;
-import nl.toolforge.karma.core.SourceModule;
+import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.SourceModule;
 
 import java.util.Iterator;
+import java.util.Map;
 
 public final class ManifestDependencyBuilder implements DependencyBuilder {
 
@@ -25,14 +25,12 @@ public final class ManifestDependencyBuilder implements DependencyBuilder {
    * Builds a dependency list for all modules contained in the manifest.
    *
    * @return A ':' separated string with all dependencies for this manifest.
-   *
-   * @throws KarmaException
    */
-  public String getDependencies() throws KarmaException {
+  public String getDependencies() {
 
     StringBuffer buf = new StringBuffer();
 
-    ModuleMap modules = manifest.getModules();
+    Map modules = manifest.getAllModules();
 
     for (Iterator i = modules.values().iterator(); i.hasNext();) {
       Module module = (Module) i.next();

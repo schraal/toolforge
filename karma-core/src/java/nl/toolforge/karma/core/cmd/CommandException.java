@@ -1,7 +1,7 @@
 package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.exception.ErrorCode;
+import nl.toolforge.karma.core.ErrorCode;
 
 /**
  * Exceptions thrown during the execution of a command.
@@ -9,13 +9,20 @@ import nl.toolforge.karma.core.exception.ErrorCode;
  * @author D.A. Smedes
  * @version $Id:
  */
-public class CommandException extends KarmaException {
+public class CommandException extends Exception {
+
+  private ErrorCode errorCode = null;
+  private Object[] messageArguments = null;
+
+  public static final String EXCEPTION_PREFIX = "CMD-";
+
+  // todo make all errorcodes according to EXCEPTION_PREFIX
 
 	/**
 	 * Some commands apply to modules in the current manifest. When the command is called with a module that is not
 	 * part of the current manifest, this error code is generated.
 	 */
-	public static final ErrorCode MODULE_NOT_IN_MANIFEST = new ErrorCode("CMD-00010");
+	public static final ErrorCode MODULE_NOT_IN_MANIFEST = new ErrorCode(EXCEPTION_PREFIX + "00010");
 
   /** The module has no version attribute. */
   public static final ErrorCode MODULE_WITHOUT_VERSION = new ErrorCode("CMD-00011");
@@ -46,30 +53,51 @@ public class CommandException extends KarmaException {
 	public static ErrorCode MISSING_ARGUMENT = new ErrorCode("CMD-00032");
 
   /** The build of a module failed. */
-	public static final ErrorCode BUILD_FAILED = new ErrorCode("CORE-00040");
+	public static final ErrorCode BUILD_FAILED = new ErrorCode("CMD-00040");
 
 //  public static ErrorCode
 
-	public CommandException(ErrorCode errorCode) {
-		super(errorCode);
-	}
 
-	public CommandException(ErrorCode errorCode, Throwable t) {
-		super(errorCode, t);
-	}
+  public CommandException(ErrorCode errorCode) {
+    this(errorCode, null);
+  }
 
-	public CommandException(ErrorCode errorCode, Object[] messageArguments) {
-		super(errorCode, messageArguments);
-	}
+  public CommandException(Throwable t, ErrorCode errorCode) {
+    this(t, errorCode, null);
+  }
 
-	/**
-	 * Create a new KarmaException, with the specific errorCode and Throwable that caused the exception.
-	 *
-	 * @param errorCode        The errorCode that identifies the specific error that has occurred.
-	 * @param messageArguments These arguments are filled in into the error codes' message.
-	 * @param t                The Throwable that caused this specific exception.
-	 */
-	public CommandException(ErrorCode errorCode, Object[] messageArguments, Throwable t) {
-		super(errorCode, messageArguments, t);
-	}
+  public CommandException(ErrorCode errorCode, Object[] messageArguments) {
+    super();
+    this.errorCode = errorCode;
+    this.messageArguments = messageArguments;
+  }
+
+  public CommandException(Throwable t, ErrorCode errorCode, Object[] messageArguments) {
+    super(t);
+    this.errorCode = errorCode;
+    this.messageArguments = messageArguments;
+  }
+
+    /**
+   * Helper method to get the localized error message based on the {@link nl.toolforge.karma.core.ErrorCode}.
+   *
+   * @return
+   */
+  public final String getErrorMessage() {
+    return getErrorCode().getErrorMessage();
+  }
+
+  /**
+   * Gets the exceptions' {@link nl.toolforge.karma.core.ErrorCode}.
+   * @return
+   */
+  public final ErrorCode getErrorCode() {
+    return errorCode;
+  }
+
+  public final Object[] getMessageArguments() {
+    return messageArguments;
+  }
+
+
 }

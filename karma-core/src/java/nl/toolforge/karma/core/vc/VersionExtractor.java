@@ -1,7 +1,7 @@
 package nl.toolforge.karma.core.vc;
 
-import nl.toolforge.karma.core.SourceModule;
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.vc.cvs.CVSException;
 
 /**

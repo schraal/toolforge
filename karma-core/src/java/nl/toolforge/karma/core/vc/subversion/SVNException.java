@@ -1,7 +1,7 @@
 package nl.toolforge.karma.core.vc.subversion;
 
-import nl.toolforge.karma.core.exception.ErrorCode;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.ErrorCode;
 
 /**
  * Exceptions related to CVS stuff.
@@ -23,16 +23,19 @@ public class SVNException extends VersionControlException {
 	 */
 	public static final ErrorCode MODULE_EXISTS_IN_REPOSITORY = new ErrorCode("CVS-00015");
 
-	public SVNException(ErrorCode errorCode) {
-		super(errorCode);
-	}
+  public SVNException(ErrorCode errorCode) {
+    super(errorCode);    //To change body of overridden methods use File | Settings | File Templates.
+  }
 
-	public SVNException(ErrorCode errorCode, Object[] messageArguments) {
-		super(errorCode, messageArguments);
-	}
+  public SVNException(Throwable t, ErrorCode errorCode) {
+    super(t, errorCode);    //To change body of overridden methods use File | Settings | File Templates.
+  }
 
-	public SVNException(ErrorCode errorCode, Object[] messageArguments, Throwable t) {
-		super(errorCode, messageArguments, t);
-	}
+  public SVNException(ErrorCode errorCode, Object[] messageArguments) {
+    super(errorCode, messageArguments);    //To change body of overridden methods use File | Settings | File Templates.
+  }
 
+  public SVNException(Throwable t, ErrorCode errorCode, Object[] messageArguments) {
+    super(t, errorCode, messageArguments);    //To change body of overridden methods use File | Settings | File Templates.
+  }
 }

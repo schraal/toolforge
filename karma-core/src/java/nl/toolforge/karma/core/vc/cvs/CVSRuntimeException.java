@@ -1,6 +1,6 @@
 package nl.toolforge.karma.core.vc.cvs;
 
-import nl.toolforge.karma.core.exception.ErrorCode;
+import nl.toolforge.karma.core.ErrorCode;
 
 /**
  * <p>This exception is thrown by the {@link CVSResponseAdapter} when an error message was received from CVS. The listener

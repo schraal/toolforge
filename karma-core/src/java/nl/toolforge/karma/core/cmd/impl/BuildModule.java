@@ -1,19 +1,25 @@
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.Manifest;
-import nl.toolforge.karma.core.Module;
+import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
+import nl.toolforge.karma.core.cmd.ErrorMessage;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.taskdefs.Javac;
 import org.apache.tools.ant.types.FileList;
 import org.apache.tools.ant.types.Path;
+
+import java.io.File;
 
 /**
  * Builds a module in a manifest.
@@ -25,13 +31,23 @@ public class BuildModule extends DefaultCommand {
     super(descriptor);
   }
 
-  public void execute() {
+  public void execute() throws CommandException {
+
+    String moduleName = getCommandLine().getOptionValue("m");
+
+    Module module = null;
     try {
-      String moduleName = getCommandLine().getOptionValue("m");
-
+      // todo move this bit to aspect-code.
+      //
       Manifest currentManifest = getContext().getCurrent();
-      Module module = currentManifest.getModule(moduleName);
+      module = currentManifest.getModule(moduleName);
 
+    } catch (ManifestException m) {
+      throw new CommandException(m.getErrorCode());
+    }
+
+    CommandMessage message = null;
+    try {
 
       // Configure underlying ant to run a command.
       //
@@ -66,7 +82,7 @@ public class BuildModule extends DefaultCommand {
       // </classpath>
 
       Path classPath = new Path(project);
-      
+
       FileList deps = new FileList();
       deps.setFiles(module.getDependencies());
       classPath.addFilelist(deps);
@@ -79,7 +95,7 @@ public class BuildModule extends DefaultCommand {
       //
 
       Path path = new Path(project);
-      path.setPath(getContext().getLocalPath(module).getPath()); // Path settings determined by CommandContext
+      path.setPath(getContext().getLocalPath(module).getPath() + File.separator + "src" + File.separator + "java"); // Path settings determined by CommandContext
 
       task.setSrcdir(path);
       task.setDestdir(getContext().getBuildTarget(module)); // Path settings determined by CommandContext
@@ -99,10 +115,17 @@ public class BuildModule extends DefaultCommand {
 
       //project.executeTarget("compile");
 
-      CommandMessage message = new SimpleCommandMessage("Module " + module.getName() + " built succesfully."); // todo localize message
+      message = new SimpleCommandMessage("Module " + module.getName() + " built succesfully."); // todo localize message
       commandResponse.addMessage(message);
-    } catch (Exception e) {
-      e.printStackTrace();
+
+    } catch (KarmaException e) {
+
+      message = new ErrorMessage(e);
+      commandResponse.addMessage(message);
+
+      // Throw a build-failed ...
+      //
+      throw new CommandException(CommandException.BUILD_FAILED, new Object[] {moduleName});
     }
   }
 

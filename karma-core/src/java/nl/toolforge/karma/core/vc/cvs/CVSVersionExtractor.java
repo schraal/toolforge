@@ -1,9 +1,9 @@
 package nl.toolforge.karma.core.vc.cvs;
 
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.Module;
-import nl.toolforge.karma.core.SourceModule;
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.VersionExtractor;
 import org.netbeans.lib.cvsclient.command.log.LogInformation;
 
@@ -70,9 +70,9 @@ public final class CVSVersionExtractor implements VersionExtractor {
    *
    * @param module The next version number <code>module</code>.
    * @return The next version for <code>module</code> or <code>null</code> when none is found.
-   * @throws KarmaException TODO complete when implementation is ready.
+   * @throws VersionControlException TODO complete when implementation is ready.
    */
-  private static synchronized Version getLast(Module module) throws KarmaException {
+  private static synchronized Version getLast(Module module) throws VersionControlException {
 
     List matchingList = collectVersions(module);
 
@@ -86,7 +86,7 @@ public final class CVSVersionExtractor implements VersionExtractor {
     return lastMatch;
   }
 
-  public Version getLastVersion(Module module) throws KarmaException {
+  public Version getLastVersion(Module module) throws VersionControlException {
     return getLast(module);
   }
 
@@ -108,7 +108,6 @@ public final class CVSVersionExtractor implements VersionExtractor {
     List matchingList = new ArrayList();
 
     CVSRunner runner = null;
-    try {
       // todo what is the effect of passing a the following instance of CommandResponseListener ??
       //
 //      CommandResponseListener listener = new CommandResponseListener() {
@@ -119,9 +118,6 @@ public final class CVSVersionExtractor implements VersionExtractor {
 
 //      runner = new CVSRunner(module.getLocation(), new File(""), listener); // baseLocation doesn't matter ...
       runner = new CVSRunner(module.getLocation(), new File("")); // baseLocation doesn't matter ...
-    } catch (KarmaException e) {
-      throw new CVSException(null); // TODO to be defined (errorcode).
-    }
 
     LogInformation logInformation = runner.log(module);
     Collection currentVersions = logInformation.getAllSymbolicNames();

@@ -1,22 +1,18 @@
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.Module;
-import nl.toolforge.karma.core.ModuleFactory;
-import nl.toolforge.karma.core.ManifestException;
-import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.ErrorMessage;
 import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
-import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.ManifestException;
 import org.apache.commons.cli.CommandLine;
 
 /**
@@ -67,13 +63,13 @@ public class CreateModuleCommand extends DefaultCommand {
 //		}
 
     Module module = null;
-    try {
-      module = ModuleFactory.getInstance().createModule(moduleName, locationAlias);
-    } catch (LocationException l) {
-      throw new CommandException(l.getErrorCode(), l.getMessageArguments());
-    } catch (ManifestException l) {
-      throw new CommandException(l.getErrorCode(), l.getMessageArguments());
-    }
+//    try {
+//      module = ModuleFactory.getInstance().createModule(moduleName, locationAlias);
+//    } catch (LocationException l) {
+//      throw new CommandException(l.getErrorCode(), l.getMessageArguments());
+//    } catch (ManifestException l) {
+//      throw new CommandException(l.getErrorCode(), l.getMessageArguments());
+//    }
 
     try {
       // Part 2 of the transaction is the creation in a version control system.
@@ -94,9 +90,7 @@ public class CreateModuleCommand extends DefaultCommand {
     } catch (VersionControlException ke) {
       throw new CommandException(ke.getErrorCode(), ke.getMessageArguments());
       //commandResponse.addMessage(new ErrorMessage(ke));
-    } catch (ManifestException m) {
-      throw new CommandException(m.getErrorCode(), m.getMessageArguments());
-    }
+    } 
   }
 
   public CommandResponse getCommandResponse() {

@@ -1,6 +1,6 @@
 package nl.toolforge.karma.core;
 
-import nl.toolforge.karma.core.exception.ErrorCode;
+import nl.toolforge.karma.core.ErrorCode;
 
 
 /**

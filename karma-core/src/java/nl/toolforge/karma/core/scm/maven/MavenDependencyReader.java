@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core.scm.maven;
 
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.scm.SourceModuleDependencyReader;
 import org.apache.commons.digester.Digester;
 import org.xml.sax.SAXException;
@@ -67,7 +68,7 @@ public class MavenDependencyReader extends SourceModuleDependencyReader {
     try {
       return parse(new FileInputStream(projectXmlFile));
     } catch (FileNotFoundException e) {
-      throw new KarmaException(KarmaException.LAZY_BASTARD);
+      throw new KarmaException(KarmaException.NO_MAVEN_PROJECT_XML);
     }
   }
 }

@@ -1,12 +1,10 @@
 package nl.toolforge.karma.core.vc;
 
-import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
-import nl.toolforge.karma.core.vc.subversion.SVNException;
 import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
 import nl.toolforge.karma.core.vc.subversion.SubversionRunner;
 import org.apache.commons.logging.Log;
@@ -29,7 +27,7 @@ public final class RunnerFactory {
   /**
    * A <code>Runner</code> might be required for a command to execute something on a version control system. A module
    * can determine which implementation of a runner it requires through the
-   * {@link nl.toolforge.karma.core.Module#getLocation} method.
+   * {@link nl.toolforge.karma.core.manifest.Module#getLocation} method.
    *
    * @param module The module for which a runner is required.
    * @return A version control system specific <code>Runner</code>.
@@ -46,13 +44,9 @@ public final class RunnerFactory {
       return runner;
     }
 
-    try {
-      if (location instanceof SubversionLocationImpl) {
-        logger.debug("Getting new CVSRunner instance.");
-        return new SubversionRunner(module.getLocation());
-      }
-    } catch (KarmaException k) {
-      throw new SVNException(VersionControlException.RUNNER_ERROR);
+    if (location instanceof SubversionLocationImpl) {
+      logger.debug("Getting new CVSRunner instance.");
+      return new SubversionRunner(module.getLocation());
     }
     throw new KarmaRuntimeException("Location instance invalid.");
   }

@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core;
 
 import java.util.StringTokenizer;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * A <code>Version</code> is the container object for the <code>version</code> attribute of a module. The implementation
@@ -10,6 +11,8 @@ import java.util.StringTokenizer;
  * @version $Id$ 
  */
 public final class Version implements Comparable {
+
+  public static final String VERSION_PATTERN_STRING = "\\d{1,4}(?:-{1}\\d{1,4}){1,2}";
 
   /** The initial version for a module. */
   public static final Version INITIAL_VERSION = new Version("0-0");
@@ -29,8 +32,11 @@ public final class Version implements Comparable {
 	 */
 	public Version(String versionIdentifier) {
 
-		// todo validate against the correct pattern
-		//
+    if (!versionIdentifier.matches(VERSION_PATTERN_STRING)) {
+      throw new PatternSyntaxException(
+          "Pattern mismatch for version. Should match " + VERSION_PATTERN_STRING, versionIdentifier, -1);
+    }
+
 		this.versionNumber = versionIdentifier;
 
 		StringTokenizer tokenizer = new StringTokenizer(versionIdentifier, "-");
@@ -51,8 +57,18 @@ public final class Version implements Comparable {
 	 */
 	public Version(int[] versionDigits) {
 
-		// todo validate against the correct pattern
-		//
+    if (versionDigits.length < 2) {
+      throw new IllegalArgumentException(
+          "Pattern mismatch for version. Should match " + VERSION_PATTERN_STRING +
+          "; provide 'int'-array");
+    }
+
+    StringBuffer versionStringBuffer = new StringBuffer();
+    for (int i = 0; i < versionDigits.length; i++) {
+      versionStringBuffer.append(versionDigits[i]);
+      if (i < versionDigits.length - 1);
+    }
+
 		this.versionDigits = versionDigits;
 
 		createVersionNumber();
@@ -141,10 +157,9 @@ public final class Version implements Comparable {
 		}
 	}
 
-	public synchronized void setDigit(int index, int nextDigit) {
+	public void setDigit(int index, int nextDigit) {
 		versionDigits[index] = nextDigit;
 		createVersionNumber();
 	}
-
 
 }

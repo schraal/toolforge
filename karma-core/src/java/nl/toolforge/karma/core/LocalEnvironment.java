@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core;
 
 import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.karma.core.manifest.ManifestException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -187,12 +188,12 @@ public final class LocalEnvironment {
 
 			home = new File(manifestStore);
 			if (!home.exists()) {
-				throw new ManifestException(ManifestException.NO_MANIFEST_STORE_DIRECTORY);
+				throw new ManifestException(ManifestException.MANIFEST_STORE_NOT_FOUND);
 			}
 
 			return home;
 		} catch (NullPointerException n) {
-			throw new ManifestException(ManifestException.NO_MANIFEST_STORE_DIRECTORY);
+			throw new ManifestException(ManifestException.MANIFEST_STORE_NOT_FOUND);
 		}
 	}
 

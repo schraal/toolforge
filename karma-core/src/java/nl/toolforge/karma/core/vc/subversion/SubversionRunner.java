@@ -1,7 +1,7 @@
 package nl.toolforge.karma.core.vc.subversion;
 
-import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.location.Location;
@@ -22,6 +22,10 @@ public final class SubversionRunner implements Runner {
 	public SubversionRunner(Location location) throws CVSException {
 
 	}
+
+  public boolean existsInRepository(Module module) {
+    return false; 
+  }
 
   public void setCommandResponse(CommandResponse response) {
     

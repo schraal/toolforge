@@ -1,0 +1,171 @@
+<body>
+
+<p>
+The <code>manifest</code> package contains all classes that comprise the manifest domain of Karma. The
+{@link nl.toolforge.karma.core.manifest.Manifest} is the entry-point.
+</p>
+
+<h2>Manifest Definition</h2>
+
+<p>The structure of a manifest is as follows:</p>
+
+<pre>
+
+&lt;manifest name="oracle-11i-11.1" version="1-0"&gt;
+
+&nbsp;&nbsp;&lt;modules&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;module name="framework-services" type="src" location="local-cvs"/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;module name="webapp-usermanagement" type="src" location="local-cvs" version="1-0"/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;module name="service-spring" type="maven" location="local-subversion" development-line="BUGS"/&gt;
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;module name="service-clientloader" type="src" location="local-cvs" development-line="MAIN" version="3-9"/&gt;
+
+&nbsp;&nbsp;&lt;/modules&gt;
+
+&nbsp;&nbsp;&lt;include-manifest name="core-logging-4-0"/&gt;
+&nbsp;&nbsp;&lt;include-manifest name="core-utils-4-0"/&gt;
+
+&lt;/manifest&gt;
+
+</pre>
+
+<p>This manifest consists of four modules directly, but also whatever modules (recursively) consist in manifests
+<code>core-logging-4-0</code> and <code>core-utils-4-0</code>. The <code>&lt;module&gt;</code>-attributes define three
+types of characteristics for the module:</p>
+
+<ul>
+  <li/>Location-based attributes (<code>name</code> and <code>location</code>) define the physical location of the
+  module in a version control system (where, obviously, modules are stored). The <code>name</code>-attribute is the
+  technical name whereby it could be located in the version control system, but it has also a logical component by
+  adopting a naming scheme. This aspect will be discussed in a later section. <font color="red">Verder uitwerken</font>
+  <li/>Build-based attributes (<code>type</code>) tell the Karma build-system
+  (<a href="http://ant.apache.org" target="new">Ant</a>- and <a href="http://maven.apache.org" target="new">Maven</a>-
+  based) how a module can be built, where to find dependencies, etc.
+  <li/>Software Configuration Management-based attributes (<code>version</code> and <code>development-line</code>)
+  define which codebase Karma should use for the module in the manifest.
+</ul>
+
+<p>The <code>name</code>, <code>type</code> and <code>location</code>-attributes are mandatory. The <code>version</code>
+and <code>development-line</code> are optional attributes. The <code>version</code>-attribute combined with a
+<code>development-line</code>-attribute means that the module version is relative to a development line. A
+<code>version</code>-attribute alone would mean that the module version is relative to the main development line (the
+<i>MainLine</i>>-pattern, as defined by ... <font color="red">Verder uitwerken</font>).</p>
+
+<h2>Software Configuration Management Aspects</h2>
+
+
+
+
+
+{@link nl.toolforge.karma.core.manifest.Manifest}
+
+
+<h2>Versioning of manifests</h2>
+
+<h3>Naming Conventions</h3>
+
+<p>
+The <code>&lt;manifest&gt;</code>-attribute has a <code>version</code>-attribute. The value of this attribute identifies
+which version of the manifest definition is used. It has nothing (!) to do with the version of the software component or
+application that the manifest represents.
+</p>
+
+<p>
+The <code>&lt;name&gt;</code>-attribute of the manifest is one of the important versioning aspects. It is an identifier
+for the software component or application that it represents. Consider the following example: Oracle Corporation plans
+to release a new version of its database server product. Commercially, they call their product oracle-11i, and their
+release starts with version 11.1. The name of the manifest thus represents what the manifest represents.
+</p>
+
+<p>
+Although an important artifact, the <code>&lt;name&gt;</code>-attribute of the manifest has no mandatory pattern it
+should match. This is to allow companies to implement their own scheme. When a new major release is coming up, a company
+may decide to start with a new manifest for that purpose, e.g. <code>oracle-12i-1.0</code>; the 'only' versioning scheme
+applied on manifests is what is maintained in the version control system where manifest files are stored. But that is
+not something that should be known
+</p>
+
+<h3>The Process</h3>
+
+<h2>Types of Manifests</h2>
+
+<p>
+The software logistics process would require different types of manifests. That is, in the logical sense. We will
+discuss the technical implications later on in this description. When a product is planned, the development
+department would create a development manifest to collect all modules (and included manifests) for that product. During
+development, modules are changed, newer versions released and developers can optionally include.
+</p>
+
+
+<p>
+Scenarios :<br/>
+1. A separate manifest for each 'stage' in the software development cycle. <code>component-1-0-frozen</code>.
+2. Have the process managed by Karma. Karma supports a process whereby the release manager can automatically create a
+stable manifest with the <code>create-release -t [stable|frozen]</code>-command.
+<font color="red">Verder uitwerken</font>.
+</p>
+
+<p>
+Thi
+</p>
+
+<p>
+
+</p>
+
+<h2>Versioning of modules</h2>
+
+
+
+
+<hr size="1"/>
+
+<h3>Module Creation</h3>
+
+<p>
+A modules' product life cycle starts when the module is created. The creation process is supported by Karma (the
+<code>create-module</code> command). Karma creates the module (template-driven, whereby the template defines which
+files and directories will be created) and versions the module <code>0-1</code> on the
+{@link nl.toolforge.karma.core.vc.MainLine}.</p>
+
+<p>
+The module can now be used by developers (or other interested people, why not) and included in a manifest by adding the
+module definition in the manifest. The way the module is configured in the manifest defines how a developer can work
+with the module in that manifest. Effectively, the initial {@link nl.toolforge.karma.core.manifest.Module#State} of the
+module is defined by it. Applying no <code>version</code>-attribute nor a <code>development-line</code>-attribute
+indicates that the module is in <code>DYNAMIC</code> state and that the module can be set to <code>WORKING</code> state
+by the <code>start-work</code>-command to indicate that the developer
+</p>
+
+<p>
+
+</p>
+
+<h3>Promotion Model</h3>
+
+<p>
+Versioning of modules is quite a different ordeal compared to versioning of manifests. Modules are maintained by Karma
+in the sense that Karma manages the promotion of modules (comparable to what version control systems do).
+</p>
+
+<p>
+The following example shows some of the logistics involved in the promotion of a module. Suppose we have the following
+manifest:
+
+<pre>
+</pre>
+
+<p>
+Note that the developer need not know about the intricacies of the version control system that is used as a backend.
+For the developer (and other roles that
+</p>
+
+<h2>Roles and Procedures</h2>
+
+
+<hr size="1"/>
+
+<center><b> *** Have a good Karma ... ***</b></center>
+
+<hr size="1"/>
+
+</body>

@@ -2,7 +2,6 @@ package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
-import nl.toolforge.karma.core.exception.ErrorCode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.command.FileInfoContainer;
@@ -123,7 +122,7 @@ public final class CVSResponseAdapter implements CVSListener {
       // TODO Localize message
       //
       if (response != null) {
-        response.addMessage(new SuccessMessage("File has been added to the CVS repository."));
+        //response.addMessage(new SuccessMessage("File has been added to the CVS repository."));
       } else {
         logger.debug("'SuccessMessage' not routed to CommandResponseHandler : " + event.getMessage());
       }
@@ -141,21 +140,22 @@ public final class CVSResponseAdapter implements CVSListener {
 
       throw new CVSRuntimeException(CVSException.NO_SUCH_MODULE_IN_REPOSITORY);
 
-    } else if (message.startsWith("cvs add:") && message.indexOf("already exists") > 0) {
+    } else if (message.startsWith("cvs add:") && message.indexOf("already exists") >= 0) {
 
       throw new CVSRuntimeException(CVSException.FILE_EXISTS_IN_REPOSITORY);
 
-    } else if (message.startsWith("cvs") && message.indexOf("no such tag") > 0) {
+    } else if (message.startsWith("cvs") && message.indexOf("no such tag") >= 0) {
 
       throw new CVSRuntimeException(CVSException.VERSION_NOT_FOUND);
 
-    } else if (message.indexOf("contains characters other than digits") > 0) {
+    } else if (message.indexOf("contains characters other than digits") >= 0) {
 
       throw new CVSRuntimeException(CVSException.INVALID_SYMBOLIC_NAME);
+
     }
 
-    if (!"".equals(event.getMessage())) {
-      logger.debug("MessageEvent from CVS : " + event.getMessage());
+    if (!"".equals(message)) {
+      logger.debug("MessageEvent from CVS : " + message);
     }
   }
 }

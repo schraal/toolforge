@@ -1,8 +1,8 @@
 package nl.toolforge.karma.core.vc.cvs;
 
-import nl.toolforge.karma.core.Module;
-import nl.toolforge.karma.core.SourceModule;
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.vc.SymbolicName;
 import nl.toolforge.karma.core.vc.model.MainLine;
 

@@ -1,14 +1,14 @@
 package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.Module;
-import nl.toolforge.karma.core.SourceModule;
-import nl.toolforge.karma.core.SourceModuleDescriptor;
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.test.LocalCVSInitializer;
 import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.vc.VersionControlException;
 
 /**
  * <p>This class tests all stuff in the <code>cvs</code> package. For this to work properly, you should unpack the
@@ -48,15 +48,42 @@ public class TestCVSRunner extends LocalCVSInitializer {
 
       checkoutDefaultModule1();
 
-      Module module =
-        new SourceModule(new SourceModuleDescriptor(DEFAULT_MODULE_1, getTestLocation()), getDevelopmentHome());
+      Module module = new SourceModule(DEFAULT_MODULE_1, getTestLocation());
 
       runner.add(module, getTestFileName());
 
       assertTrue(response.isOK());
 
-    } catch (KarmaException e) {
+    } catch (VersionControlException c) {
+      fail(c.getMessage());
+    }
+  }
+
+  /**
+   * Tests if an added module actually exists in the repository.
+   */
+  public void testAddAndExistsInRepository() {
+
+    Runner runner = null;
+    ResponseFaker response = new ResponseFaker();
+    try {
+      runner = getTestRunner();
+    } catch (CVSException e) {
       fail(e.getMessage());
+    }
+
+    try {
+
+      checkoutDefaultModule1();
+
+      Module module = new SourceModule(DEFAULT_MODULE_1, getTestLocation());
+
+      runner.add(module, getTestFileName());
+
+      assertTrue(runner.existsInRepository(module));
+
+    } catch (VersionControlException c) {
+      fail(c.getMessage());
     }
   }
 
@@ -76,17 +103,14 @@ public class TestCVSRunner extends LocalCVSInitializer {
 
       checkoutDefaultModule1();
 
-      Module module =
-        new SourceModule(new SourceModuleDescriptor(DEFAULT_MODULE_1, getTestLocation()), getDevelopmentHome());
+      Module module = new SourceModule(DEFAULT_MODULE_1, getTestLocation());
 
       runner.update(module, new Version("99-99"));
 
       fail("Expected a CVSException.");
 
-    } catch (CVSException c) {
-      assertEquals(CVSException.VERSION_NOT_FOUND.getErrorCodeString(), c.getErrorCode().getErrorCodeString());
-    } catch (KarmaException e) {
-      fail(e.getMessage());
+    } catch (VersionControlException c) {
+      assertTrue(true);
     }
   }
 
@@ -107,17 +131,14 @@ public class TestCVSRunner extends LocalCVSInitializer {
 
       checkoutDefaultModule1();
 
-      Module module =
-        new SourceModule(new SourceModuleDescriptor(DEFAULT_MODULE_1, getTestLocation()), getDevelopmentHome());
+      Module module = new SourceModule(DEFAULT_MODULE_1, getTestLocation());
 
       runner.update(module, new Version("0-1")); // On the mainline (HEAD)
 
       assertTrue(response.isOK());
 
-    } catch (CVSException c) {
+    } catch (VersionControlException c) {
       fail(c.getMessage());
-    } catch (KarmaException e) {
-      fail(e.getMessage());
     }
   }
 

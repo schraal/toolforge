@@ -1,10 +1,9 @@
 package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.Manifest;
-import nl.toolforge.karma.core.ManifestException;
-import nl.toolforge.karma.core.ModuleMap;
-import nl.toolforge.karma.core.SourceModule;
+import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
@@ -18,6 +17,7 @@ import org.apache.commons.logging.LogFactory;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This command gets the active manifest and presents it in the UI. UI implementations are responsible for the rendering
@@ -39,14 +39,14 @@ public class ViewManifest extends DefaultCommand {
   public void execute() throws CommandException {
 
     if (!getContext().isManifestLoaded()) {
-      throw new CommandException(ManifestException.NO_MANIFEST_SELECTED);
+      throw new CommandException(ManifestException.NO_ACTIVE_MANIFEST);
     }
     if (!getContext().getCurrent().isLocal()) {
       throw new CommandException(ManifestException.MANIFEST_NOT_UPDATED);
     }
     Manifest manifest = getContext().getCurrent();
 
-    ModuleMap sourceModules = manifest.getModules().getSourceModules();
+    Map sourceModules = manifest.getAllModules();
 
     for (Iterator i = sourceModules.values().iterator(); i.hasNext();) {
 
@@ -67,10 +67,8 @@ public class ViewManifest extends DefaultCommand {
         }
 
       } catch (VersionControlException v) {
+        // todo should I throw this as a CommandException ??
         logger.error("Version " + module.getVersionAsString() + " is non-existing in repository.");
-      } catch (KarmaException k) {
-        logger.warn("Something failed when trying to extract the latest patch level for module : " + module.getName() +
-            "; " + k.getMessage());
       }
       moduleData[3] = (module.getDevelopmentLine() == null ? "N/A" : module.getDevelopmentLine().getName());
       moduleData[4] = module.getStateAsString();

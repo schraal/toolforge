@@ -1,8 +1,8 @@
 package nl.toolforge.karma.core.vc;
 
-import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.manifest.Module;
 
 /**
  * This interface defines methods for runner classes that perform actions on a physical version control system.
@@ -99,5 +99,12 @@ public interface Runner {
 	public void tag(Module module, SymbolicName tag) throws VersionControlException;
 
 	public void tag(Module module, Version version) throws VersionControlException;
+
+  /**
+   * Checks if a module exists in the repository. The module should contain the <code>module.info</code> file.
+   * @param module
+   * @return <code>true</code> if the module exists, <code>false</code> otherwise.
+   */
+  public boolean existsInRepository(Module module);
 
 }

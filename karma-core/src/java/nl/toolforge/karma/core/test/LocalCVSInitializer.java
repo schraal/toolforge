@@ -1,18 +1,13 @@
 package nl.toolforge.karma.core.test;
 
 import nl.toolforge.core.util.file.MyFileUtils;
-import nl.toolforge.karma.core.Module;
-import nl.toolforge.karma.core.SourceModule;
-import nl.toolforge.karma.core.SourceModuleDescriptor;
-import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
-import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
-import nl.toolforge.karma.core.vc.cvs.CVSResponseAdapter;
+import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.manifest.Module;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -64,11 +59,11 @@ public class LocalCVSInitializer extends BaseTest {
 
     try {
       Properties props = new Properties();
-      InputStream stream = getClass().getClassLoader().getResourceAsStream("test/test-cvs.properties");
+      InputStream stream = getClass().getClassLoader().getResourceAsStream("test-cvs.properties");
       if (stream == null) {
         //properties file does not exist
         //log an error. Nullpointer will follow... ;)
-        logger.error("could not find properties file: test/test-cvs.properties");
+        logger.error("could not find properties file: test-cvs.properties");
       }
       props.load(stream);
       localPath = props.getProperty("cvs.local.path");
@@ -125,7 +120,7 @@ public class LocalCVSInitializer extends BaseTest {
   }
 
   /**
-   * Creates a randomly named test filename in the module directory (<code>testModule</code>) for the test cvs
+   * Creates a randomly named test filename in the module directory (<code>TestModule</code>) for the test cvs
    * repository. Names are of the form <code>test_&lt;random-int&gt;</code>.
    */
   protected String getTestFileName() throws InitializationException {
@@ -156,8 +151,7 @@ public class LocalCVSInitializer extends BaseTest {
     try {
       Runner runner = getTestRunner();
 
-      Module module =
-        new SourceModule(new SourceModuleDescriptor(DEFAULT_MODULE_1, location), getDevelopmentHome());
+      Module module = new SourceModule(DEFAULT_MODULE_1, location);
       runner.checkout(module);
 
     } catch (Exception e) {

@@ -2,6 +2,8 @@ package nl.toolforge.karma.core;
 
 import junit.framework.TestCase;
 import nl.toolforge.core.util.file.MyFileUtils;
+import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.location.LocationException;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,8 +30,8 @@ public final class TestLocalEnvironment extends TestCase {
 			p.put(LocalEnvironment.MANIFEST_STORE_DIRECTORY, f2.getPath());
 			p.put(LocalEnvironment.LOCATION_STORE_DIRECTORY, f3.getPath());
 
-		} catch (IOException ioe) {
-			fail();
+		} catch (IOException e) {
+			fail(e.getMessage());
 		}
 	}
 
@@ -57,7 +59,7 @@ public final class TestLocalEnvironment extends TestCase {
 				assertTrue(true);
 			}
 		} catch (KarmaException e) {
-			fail();
+			fail(e.getMessage());
 		}
 
 	}
@@ -70,11 +72,11 @@ public final class TestLocalEnvironment extends TestCase {
 			try {
 				localEnvironment.getManifestStore();
 				fail("The manifest store should not have been there");
-			} catch (KarmaException ke) {
+			} catch (ManifestException ke) {
 				assertTrue(true);
 			}
-		} catch (KarmaException e) {
-			fail();
+		} catch (ManifestException e) {
+			fail(e.getMessage());
 		}
 
 	}
@@ -87,11 +89,11 @@ public final class TestLocalEnvironment extends TestCase {
 			try {
 				localEnvironment.getLocationStore();
 				fail("The location store should not have been there");
-			} catch (KarmaException ke) {
+			} catch (LocationException ke) {
 				assertTrue(true);
 			}
-		} catch (KarmaException e) {
-			fail();
+		} catch (LocationException e) {
+			fail(e.getMessage());
 		}
 
 	}

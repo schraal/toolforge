@@ -1,6 +1,6 @@
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.SourceModule;
+import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;

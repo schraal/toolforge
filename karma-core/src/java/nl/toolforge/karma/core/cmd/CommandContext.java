@@ -1,17 +1,20 @@
 package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
-import nl.toolforge.karma.core.Manifest;
-import nl.toolforge.karma.core.ManifestException;
-import nl.toolforge.karma.core.ManifestLoader;
-import nl.toolforge.karma.core.Module;
+import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.LocationFactory;
+import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.ManifestCollector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.util.Set;
+import java.util.Collection;
 
 /**
  * <p>The command context is the class that provides a runtime for commands to run in. The command context maintains
@@ -26,7 +29,7 @@ public final class CommandContext {
 
 	private static Log logger = LogFactory.getLog(CommandContext.class);
 
-	private static ManifestLoader manifestLoader = null;
+//	private static ManifestLoader manifestLoader = null;
 
 	private Manifest currentManifest = null;
 	private LocalEnvironment env = null;
@@ -49,9 +52,8 @@ public final class CommandContext {
 	 * Initializes the context to run commands. This method can only be called once.
 	 *
 	 * @param env The users' {@link nl.toolforge.karma.core.LocalEnvironment}.
-	 * @throws KarmaException
 	 */
-	public synchronized void init(LocalEnvironment env, CommandResponseHandler handler) throws KarmaException {
+	public synchronized void init(LocalEnvironment env, CommandResponseHandler handler) {
 
 		if (!initialized) {
 
@@ -61,15 +63,23 @@ public final class CommandContext {
       this.responseHandler = handler;
 			this.env = env;
 
-			// Read in all location data
-			//
-			LocationFactory.getInstance(env).load();
 
-			// Try reloading the last manifest that was used.
-			//
-			manifestLoader = ManifestLoader.getInstance(this.env);
-			currentManifest = manifestLoader.loadFromHistory();
-		}
+      try {
+        // Read in all location data
+        //
+        LocationFactory.getInstance(env).load();
+
+        // Try reloading the last manifest that was used.
+        //
+//        manifestLoader = ManifestLoader.getInstance(this.env);
+
+//        currentManifest = (his == null ? null : new Manifest(his));
+//
+//        currentManifest = manifestLoader.loadFromHistory();
+      } catch (Exception e) {
+        throw new KarmaRuntimeException("");
+      }
+    }
 		initialized = true;
 	}
 
@@ -86,19 +96,21 @@ public final class CommandContext {
 	 * Changes the current manifest for this context.
 	 *
 	 * @param manifestName
-	 * @throws ManifestException When the manifest could not be changed. See {@link ManifestException#MANIFEST_LOAD_ERROR}.
+	 * @throws nl.toolforge.karma.core.manifest.ManifestException When the manifest could not be changed. See {@link nl.toolforge.karma.core.manifest.ManifestException#MANIFEST_LOAD_ERROR}.
 	 */
-	public void changeCurrent(String manifestName) throws ManifestException {
-		currentManifest = manifestLoader.load(manifestName);
+	public void changeCurrent(String manifestName) throws LocationException, ManifestException {
+		currentManifest = new Manifest(manifestName);
+    currentManifest.load(getLocalEnvironment());
 	}
 
+
 	/**
-	 * Gets all manifests. Delegate to {@link ManifestLoader}.
+	 * Gets all manifests.
 	 *
 	 * @return See <code>ManifestLoader.getAllManifests()</code>.
 	 */
-	public Set getAllManifests() throws ManifestException {
-		return manifestLoader.getAllManifests();
+	public Collection getAllManifests() throws ManifestException {
+		return ManifestCollector.getInstance().getAllManifests();
 	}
 
 	/**
@@ -121,10 +133,8 @@ public final class CommandContext {
 	}
 
 	/**
-	 * See {@link #execute(java.lang.String, CommandResponseHandler)}.
-	 *
 	 * @param command The command to execute.
-	 * @throws CommandException See {@link #execute(java.lang.String, CommandResponseHandler)}.
+	 * @throws CommandException
 	 */
 	public void execute(Command command) throws CommandException {
 

@@ -1,6 +1,6 @@
 package nl.toolforge.karma.core.vc.cvs;
 
-import nl.toolforge.karma.core.exception.ErrorCode;
+import nl.toolforge.karma.core.ErrorCode;
 import nl.toolforge.karma.core.vc.VersionControlException;
 
 /**
@@ -53,20 +53,19 @@ public class CVSException extends VersionControlException {
 	 */
 	public static final ErrorCode INTERNAL_ERROR = new ErrorCode("CVS-00020");
 
-	public CVSException(ErrorCode errorCode) {
-		super(errorCode);
-	}
+  public CVSException(ErrorCode errorCode) {
+    super(errorCode);
+  }
 
-	public CVSException(ErrorCode errorCode, Throwable t) {
-		super(errorCode, t);
-	}
+  public CVSException(Throwable t, ErrorCode errorCode) {
+    super(t, errorCode);
+  }
 
-	public CVSException(ErrorCode errorCode, Object[] messageArguments) {
-		super(errorCode, messageArguments);
-	}
+  public CVSException(ErrorCode errorCode, Object[] messageArguments) {
+    super(errorCode, messageArguments);
+  }
 
-	public CVSException(ErrorCode errorCode, Object[] messageArguments, Throwable t) {
-		super(errorCode, messageArguments, t);
-	}
-
+  public CVSException(Throwable t, ErrorCode errorCode, Object[] messageArguments) {
+    super(t, errorCode, messageArguments);
+  }
 }

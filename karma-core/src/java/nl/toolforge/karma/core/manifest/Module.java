@@ -1,43 +1,30 @@
-package nl.toolforge.karma.core;
+package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.location.Location;
 
-import java.io.File;
+import java.util.regex.PatternSyntaxException;
 
 
 /**
  * <p>A module is a collection of files, representing some block of functionality. This definition is probably highly
  * subjective, but for Karma, that's what it is. A module is part of a container, called a
  * <code>Manifest</code>. System's theory tells us that a system is separated into subsystems. Well, that's what we
- * do in the Karma context as well. An application system consists of one or more (generally more) modules.
- * <p/>
+ * do in the Karma context as well. An application system consists of one or more (generally more) modules.</p>
+ *
  * <p>Karma <code>Module</code>s are maintained in a version management system and grouped together in a
- * <code>Manifest</code>. The manifest is managing the modules. New modules can be created in two ways:
- * <p/>
- * <ul>
- * <li/>Manually, in which case their structure should comply to
- * <li/>through {@link nl.toolforge.karma.core.ModuleFactory#createModule}
- * <li/>through {@link nl.toolforge.karma.core.Manifest#createModule}
- * </ul>
+ * <code>Manifest</code>. The manifest is managing the modules.</p>
  *
  * @author D.A. Smedes
  * @version $Id$
  */
 public interface Module {
 
-  //
-  // todo check documentation relating to the creation of modules.
-
-	public static final int SOURCE_MODULE = 0;
-	public static final int JAR_MODULE = 1;
-
 	public static final State WORKING = new State("WORKING");
 	public static final State DYNAMIC = new State("DYNAMIC");
 	public static final State STATIC = new State("STATIC");
 
 	/**
-	 * ;
-	 * Retrieves a modules' name, the <code>artifact-id</code> attribute of the a module.
+	 * Retrieves a modules' name, the <code>name</code> attribute of the module in the manifest XML file.
 	 *
 	 * @return The modules' name.
 	 */
@@ -49,7 +36,7 @@ public interface Module {
 	public Location getLocation();
 
 	/**
-	 * Sets the {@link State} of this module.
+	 * Sets the {@link nl.toolforge.karma.core.manifest.Module.State} of this module.
 	 *
 	 * @param state A <code>State</code> object.
 	 */
@@ -60,15 +47,13 @@ public interface Module {
    * 
    * @return
    */
-  public String getDependencies() throws KarmaException;
+  public String getDependencies();
 
   /**
-   * Access to the modules' local directory. The <code>File</code> reference returns a reference to the directory on
-   * disk within the context of a manifest.
-   *
+   * Iets met artifact-name.
    * @return
    */
-  public File getModuleDirectory();
+  public String getDependencyName();
 
   /**
 	 * <p>Inner class representing the 'state' of a module. Three states exist at the moment : <code>WORKING</code>,
@@ -80,7 +65,9 @@ public interface Module {
 	 * branch. <code>WORKING</code> state also implies that a developer can promote a module so that manifests
 	 * that have the module in a <code>DYNAMIC</code> state, can
 	 */
-	class State {
+	final class State {
+
+    // todo unit test should be written
 
 		private String state = null;
 
@@ -89,11 +76,12 @@ public interface Module {
 		 *
 		 * @param stateString
 		 */
-		State(String stateString) {
+		public State(String stateString) {
 
-			if ((stateString == null) || (stateString.length() == 0)) {
-				throw new KarmaRuntimeException("A State instance should be initialized with a correct string.");
-			}
+      if (!stateString.matches("WORKING|DYNAMIC|STATIC")) {
+        throw new PatternSyntaxException(
+            "Pattern mismatch for 'state'; pattern must match 'WORKING|DYNAMIC|STATIC'", stateString, -1);
+      }
 			this.state = stateString;
 		}
 

@@ -18,26 +18,6 @@ import org.apache.commons.cli.CommandLine;
 public interface Command {
 
 	/**
-	 * Dependency type for a CVS version control system
-	 */
-//	public static final String DEPENDENCY_CVS = "cvs";
-
-	/**
-	 * Dependency type for a Subversion version control system
-	 */
-//	public static final String DEPENDENCY_SUBVERSION = "subversion";
-
-	/**
-	 * Dependency type for a library module (mainly a Java jar-file)
-	 */
-//	public static final String DEPENDENCY_MODULE_TYPE_LIB = "lib";
-
-	/**
-	 * Dependency type for a source module
-	 */
-//	public static final String DEPENDENCY_MODULE_TYPE_SOURCE = "source";
-
-	/**
 	 * Default filename for the command descriptor file
 	 */
 	public static final String DEFAULT_COMMAND_FILE = "commands.xml";
@@ -62,24 +42,6 @@ public interface Command {
 	 * @return The command's descriptive text.
 	 */
 	public String getDescription();
-
-	/**
-	 * The Java class implementing the commands' behavior.
-	 *
-	 * @return The Java class implementing the commands' behavior.
-	 * @throws KarmaException If the implementation class is not found, the error code will be set to :
-	 *                        {@link KarmaException#COMMAND_IMPLEMENTATION_CLASS_NOT_FOUND}
-	 */
-//	public Class getImplementation() throws KarmaException;
-
-	/**
-	 * Gets a <code>Map</code> containing type/name-pairs of dependencies for this module. Dependencies can be
-	 * manifold. There can be a dependency on a version control system, or a specific module type. These dependencies
-	 * affect what commands can and cannot do in some cases.
-	 *
-	 * @return
-	 */
-//	public Map getDependencies();
 
 	/**
 	 * The command's help text. Help text can be unlimited. Use <code>HTML</code> for formatting.

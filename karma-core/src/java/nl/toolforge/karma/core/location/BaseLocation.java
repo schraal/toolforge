@@ -1,5 +1,7 @@
 package nl.toolforge.karma.core.location;
 
+import nl.toolforge.karma.core.manifest.BaseModule;
+
 
 /**
  * <code>BaseLocation</code> implements some generic <code>Location</code> functionality.
@@ -9,32 +11,46 @@ package nl.toolforge.karma.core.location;
  */
 public abstract class BaseLocation implements Location {
 
-	private String id = null;
-	private Location.Type type = null;
+  private String id = null;
+  private Location.Type type = null;
 
-	/**
-	 * Constructs a <code>Location</code> skeleton.
-	 *
-	 * @param id   The unique identifier for the location. Cannot be null.
-	 * @param type The type of the location. Cannot be null.
-	 */
-	public BaseLocation(String id, Location.Type type) {
+  /**
+   * Constructs a <code>Location</code> skeleton.
+   *
+   * @param id   The unique identifier for the location. Cannot be null.
+   * @param type The type of the location. Cannot be null.
+   */
+  public BaseLocation(String id, Location.Type type) {
 
-		if (id == null) {
-			throw new IllegalArgumentException("Location id must be set.");
-		}
-		if (type == null) {
-			throw new IllegalArgumentException("Location must be set.");
-		}
-		this.id = id;
-		this.type = type;
-	}
+    if (id == null) {
+      throw new IllegalArgumentException("Location id must be set.");
+    }
+    if (type == null) {
+      throw new IllegalArgumentException("Location must be set.");
+    }
+    this.id = id;
+    this.type = type;
+  }
 
-	public final Location.Type getType() {
-		return type;
-	}
+  public final Location.Type getType() {
+    return type;
+  }
 
-	public final String getId() {
-		return id;
-	}
+  public final String getId() {
+    return id;
+  }
+
+  public boolean equals(Object obj) {
+
+    if (obj instanceof BaseLocation) {
+      if (((BaseLocation) obj).getId().equals(getId())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public int hashCode() {
+    return getId().hashCode();
+  }
 }

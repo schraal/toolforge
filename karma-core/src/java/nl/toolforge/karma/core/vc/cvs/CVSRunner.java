@@ -1,15 +1,13 @@
 package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.core.util.file.MyFileUtils;
-import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.Manifest;
-import nl.toolforge.karma.core.Module;
-import nl.toolforge.karma.core.SourceModule;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.vc.ManagedFile;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.SymbolicName;
@@ -71,7 +69,8 @@ public final class CVSRunner implements Runner {
    * a {@link Command} implementation, as that one knows what to fire away on CVS. The runner is instantiated with a
    * <code>location</code> and a <code>manifest</code>. The location must be a <code>CVSLocationImpl</code> instance,
    * reprenting a CVS repository. The manifest is required because it determines the base point from where CVS commands
-   * will be run; modules are checked out in a directory structure, relative to {@link Manifest#getDirectory()}.
+   * will be run; modules are checked out in a directory structure, relative to
+   * {@link nl.toolforge.karma.core.manifest.Manifest#getDirectory()}.
    *
    * @param location  A <code>Location</code> instance (typically a <code>CVSLocationImpl</code> instance), containing
    *                  the location and connection details of the CVS repository.
@@ -216,8 +215,7 @@ public final class CVSRunner implements Runner {
   }
 
   /**
-   * See {@link #checkout(nl.toolforge.karma.core.Module, nl.toolforge.karma.core.Version)}. This method defaults
-   * to the HEAD of the development branch at hand.
+   * See {@link #checkout(Module, Version)}. This method defaults to the HEAD of the development branch at hand.
    *
    * @param module The module to check out.
    * @throws CVSException With errorcodes <code>NO_SUCH_MODULE_IN_REPOSITORY</code> when the module does not exist
@@ -400,44 +398,37 @@ public final class CVSRunner implements Runner {
       throw new KarmaRuntimeException("Only instances of type SourceModule can use this method.");
     }
 
+    // Logs are run on a temporary checkout of the module.info of a module.
+    //
+    File tmp = null;
     try {
-
-      // Logs are run on a temporary checkout of the module.info of a module.
-      //
-      File tmp = null;
-      try {
-        tmp = MyFileUtils.createTempDirectory();
-      } catch (IOException e) {
-        throw new KarmaRuntimeException("Panic! Failed to create temporary directory for module " + module.getName());
-      }
-
-      CheckoutCommand checkoutCommand = new CheckoutCommand();
-      checkoutCommand.setModule(module.getName() + "/" + SourceModule.MODULE_INFO);
-
-      executeOnCVS(checkoutCommand, tmp);
-
-      LogCommand logCommand = new LogCommand();
-
-      // Determine the location of module.info, relative to where we are.
-      //
-      // Todo a reference to SourceModule is used here. Verify ...
-      File moduleInfo = new File(new File(tmp, module.getName()), SourceModule.MODULE_INFO);
-      logCommand.setFiles(new File[]{moduleInfo});
-
-      executeOnCVS(logCommand, new File(tmp, module.getName()));
-
-      try {
-        FileUtils.deleteDirectory(tmp);
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-
-      return ((CVSResponseAdapter) this.listener).getLogInformation();
-
-    } catch (KarmaException k) {
-      throw new CVSException(k.getErrorCode());
+      tmp = MyFileUtils.createTempDirectory();
+    } catch (IOException e) {
+      throw new KarmaRuntimeException("Panic! Failed to create temporary directory for module " + module.getName());
     }
 
+    CheckoutCommand checkoutCommand = new CheckoutCommand();
+    checkoutCommand.setModule(module.getName() + "/" + SourceModule.MODULE_INFO);
+
+    executeOnCVS(checkoutCommand, tmp);
+
+    LogCommand logCommand = new LogCommand();
+
+    // Determine the location of module.info, relative to where we are.
+    //
+    // Todo a reference to SourceModule is used here. Verify ...
+    File moduleInfo = new File(new File(tmp, module.getName()), SourceModule.MODULE_INFO);
+    logCommand.setFiles(new File[]{moduleInfo});
+
+    executeOnCVS(logCommand, new File(tmp, module.getName()));
+
+    try {
+      FileUtils.deleteDirectory(tmp);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return ((CVSResponseAdapter) this.listener).getLogInformation();
   }
 
   /**
@@ -445,7 +436,7 @@ public final class CVSRunner implements Runner {
    * location. If that succeeds, apparently the module exists in that location and we have a <code>true</code> to
    * return.
    */
-  private boolean existsInRepository(Module module) {
+  public boolean existsInRepository(Module module) {
 
     if (module == null) {
       return false;
@@ -532,12 +523,6 @@ public final class CVSRunner implements Runner {
       client.getEventManager().addCVSListener(listener);
       client.executeCommand(command, globalOptions);
 
-      // See the static block in this class and corresponding documentation.
-      //
-      client.getConnection().close();
-
-    } catch (IOException e) {
-      throw new CVSException(CVSException.INTERNAL_ERROR);
     } catch (CommandException e) {
       // Trick to get a hold of the exception we threw in the CVSResponseAdapter.
       //
@@ -548,6 +533,14 @@ public final class CVSRunner implements Runner {
       }
     } catch (AuthenticationException e) {
       throw new CVSException(CVSException.AUTHENTICATION_ERROR, new Object[]{client.getConnection()});
+    } finally {
+      // See the static block in this class and corresponding documentation.
+      //
+      try {
+        client.getConnection().close();
+      } catch (IOException e) {
+        throw new CVSException(CVSException.INTERNAL_ERROR);
+      }
     }
   }
 }

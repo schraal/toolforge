@@ -1,7 +1,6 @@
 package nl.toolforge.karma.core.vc;
 
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.exception.ErrorCode;
+import nl.toolforge.karma.core.ErrorCode;
 
 /**
  * Root exception for stuff relating to version control system functionality.
@@ -9,40 +8,70 @@ import nl.toolforge.karma.core.exception.ErrorCode;
  * @author D.A. Smedes
  * @version $Id$
  */
-public abstract class VersionControlException extends KarmaException {
+public abstract class VersionControlException extends Exception {
 
-	/**
-	 * A runner instance cannot be created to execute commands on a repository.
-	 */
-	public static final ErrorCode RUNNER_ERROR = new ErrorCode("VC-00001");
+  private ErrorCode errorCode = null;
+  private Object[] messageArguments = null;
 
-	/**
-	 * Generated when a branch was created on a module which already existed.
-	 */
-	public static final ErrorCode DUPLICATE_BRANCH = new ErrorCode("VC-00010");
-	/**
-	 * Version already exists for this module.
-	 */
-	public static final ErrorCode DUPLICATE_VERSION = new ErrorCode("VC-00011");
+  public static final String EXCEPTION_PREFIX = "VER-";
 
-	/**
-	 * The requested file does not exist in the repository
-	 */
-	public static final ErrorCode FILE_NOT_FOUND = new ErrorCode("VC-00012");
+  /**
+   * A runner instance cannot be created to execute commands on a repository.
+   */
+  public static final ErrorCode RUNNER_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00001");
 
-	public VersionControlException(ErrorCode errorCode) {
-		super(errorCode);
-	}
+  /**
+   * Generated when a branch was created on a module which already existed.
+   */
+  public static final ErrorCode DUPLICATE_BRANCH = new ErrorCode(EXCEPTION_PREFIX + "00010");
+  /**
+   * Version already exists for this module.
+   */
+  public static final ErrorCode DUPLICATE_VERSION = new ErrorCode(EXCEPTION_PREFIX + "00011");
 
-	public VersionControlException(ErrorCode errorCode, Throwable t) {
-		super(errorCode, t);
-	}
+  /**
+   * The requested file does not exist in the repository
+   */
+  public static final ErrorCode FILE_NOT_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00012");
 
-	public VersionControlException(ErrorCode errorCode, Object[] messageArguments) {
-		super(errorCode, messageArguments);
-	}
+  public VersionControlException(ErrorCode errorCode) {
+    this(errorCode, null);
+  }
 
-	public VersionControlException(ErrorCode errorCode, Object[] messageArguments, Throwable t) {
-		super(errorCode, messageArguments, t);
-	}
+  public VersionControlException(Throwable t, ErrorCode errorCode) {
+    this(t, errorCode, null);
+  }
+
+  public VersionControlException(ErrorCode errorCode, Object[] messageArguments) {
+    super();
+    this.errorCode = errorCode;
+    this.messageArguments = messageArguments;
+  }
+
+  public VersionControlException(Throwable t, ErrorCode errorCode, Object[] messageArguments) {
+    super(t);
+    this.errorCode = errorCode;
+    this.messageArguments = messageArguments;
+  }
+
+    /**
+   * Helper method to get the localized error message based on the {@link nl.toolforge.karma.core.ErrorCode}.
+   *
+   * @return
+   */
+  public final String getErrorMessage() {
+    return getErrorCode().getErrorMessage();
+  }
+
+  /**
+   * Gets the exceptions' {@link nl.toolforge.karma.core.ErrorCode}.
+   * @return
+   */
+  public final ErrorCode getErrorCode() {
+    return errorCode;
+  }
+
+  public final Object[] getMessageArguments() {
+    return messageArguments;
+  }
 }

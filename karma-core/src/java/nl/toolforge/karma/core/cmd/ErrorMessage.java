@@ -12,13 +12,13 @@ import nl.toolforge.karma.core.KarmaException;
  */
 public class ErrorMessage extends AbstractCommandMessage {
 
-  private KarmaException exception;
+  private Throwable exception;
 
-  public ErrorMessage(KarmaException ke) {
+  public ErrorMessage(Throwable ke) {
     this(ke, null);
   }
 
-  public ErrorMessage(KarmaException ke, Object[] messageParameters) {
+  public ErrorMessage(Throwable ke, Object[] messageParameters) {
     super(ke.getMessage(), messageParameters);
     this.exception = ke;
   }

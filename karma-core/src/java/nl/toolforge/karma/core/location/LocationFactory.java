@@ -147,7 +147,7 @@ public final class LocationFactory {
 
 		} catch (Exception e) {
       e.printStackTrace();
-			throw new LocationException(LocationException.GENERAL_LOCATION_ERROR, e);
+			throw new LocationException(e, LocationException.GENERAL_LOCATION_ERROR);
 		}
 	}
 

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<digester-rules>
+  <pattern value="manifest">
+    <factory-create-rule classname="nl.toolforge.karma.core.manifest.ManifestCreationFactory"/>
+    <set-properties-rule/>
+<!--    <alias attr-name="description" prop-name="description"/>-->
+<!--    <call-method-rule pattern="manifest/description" methodname="setDescription" paramcount="1"/>-->
+<!--    <call-param-rule pattern="manifest/description" attrname="description" paramnumber="0"/>-->
+  </pattern>
+  <pattern value="*/module">
+    <factory-create-rule classname="nl.toolforge.karma.core.manifest.ModuleDescriptorCreationFactory"/>
+    <set-properties-rule/>
+    <alias attr-name="version" prop-name="version"/>
+    <alias attr-name="development-line" prop-name="developmentLine"/>
+    <set-next-rule methodname="addModule" paramtype="nl.toolforge.karma.core.manifest.ModuleDescriptor"/>
+  </pattern>
+  <pattern value="*/include-manifest">
+    <factory-create-rule classname="nl.toolforge.karma.core.manifest.ManifestCreationFactory"/>
+    <set-properties-rule/>
+<!--    <alias attr-name="name" prop-name="name"/>-->
+    <set-next-rule methodname="includeManifest"/>
+  </pattern>
+</digester-rules>

@@ -1,9 +1,8 @@
 package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.ManifestException;
-import nl.toolforge.karma.core.Module;
-import nl.toolforge.karma.core.ModuleMap;
+import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
@@ -15,6 +14,8 @@ import nl.toolforge.karma.core.cmd.ErrorMessage;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 
 import java.util.Iterator;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * This command updates all modules in the active manifest on a developers' local system.
@@ -44,42 +45,38 @@ public class UpdateAllModulesCommand extends CompositeCommand {
    * is relative to the root directory of the <code>active</code> manifest.
    *
    */
-  public void execute() {
+  public void execute() throws CommandException {
+    
+    // A manifest must be present for this command
+    //
+    if (!getContext().isManifestLoaded()) {
+      throw new CommandException(ManifestException.NO_ACTIVE_MANIFEST);
+    }
 
-    try {
-      // A manifest must be present for this command
+    // todo what to do about jarmodules etc ?
+    //
+    Map modules = getContext().getCurrent().getAllModules();
+
+    // Loop through all modules and use UpdateModuleCommand on each module.
+    //
+    for (Iterator i = modules.keySet().iterator(); i.hasNext() && !errorOccurred;) {
+
+      Module module = (Module) modules.get(i.next());
+
+      // todo hmm, the commandname is hardcoded whilst we have it dynamically in a file ...
       //
-      if (!getContext().isManifestLoaded()) {
-        throw new ManifestException(ManifestException.NO_MANIFEST_SELECTED);
+      //getContext().execute(CommandDescriptor.UPDATE_MODULE_COMMAND + " -m ".concat(module.getName()));
+      //todo cast to updatecommand?
+      Command command = CommandFactory.getInstance().getCommand(CommandDescriptor.UPDATE_MODULE_COMMAND + " -m ".concat(module.getName()));
+      command.registerCommandResponseListener(this);
+      try {
+        getContext().execute(command);
+      } catch (CommandException c) {
+        commandResponse.addMessage(new ErrorMessage(c));
+        break; //break out of the for loop.
+      } finally {
+        command.deregisterCommandResponseListener(this);
       }
-
-      // todo what to do about jarmodules etc ?
-      //
-      ModuleMap modules = getContext().getCurrent().getModules();
-
-      // Loop through all modules and use UpdateModuleCommand on each module.
-      //
-      for (Iterator i = modules.keySet().iterator(); i.hasNext() && !errorOccurred;) {
-
-        Module module = (Module) modules.get(i.next());
-
-        // todo hmm, the commandname is hardcoded whilst we have it dynamically in a file ...
-        //
-        //getContext().execute(CommandDescriptor.UPDATE_MODULE_COMMAND + " -m ".concat(module.getName()));
-        //todo cast to updatecommand?
-        Command command = CommandFactory.getInstance().getCommand(CommandDescriptor.UPDATE_MODULE_COMMAND + " -m ".concat(module.getName()));
-        command.registerCommandResponseListener(this);
-        try {
-          getContext().execute(command);
-        } catch (KarmaException e) {
-          commandResponse.addMessage(new ErrorMessage(e));
-          break; //break out of the for loop.
-        } finally {
-          command.deregisterCommandResponseListener(this);
-        }
-      }
-    } catch (KarmaException ke) {
-      commandResponse.addMessage(new ErrorMessage(ke));
     }
   }
 
