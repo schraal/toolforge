@@ -11,6 +11,8 @@ import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
@@ -33,6 +35,10 @@ import java.util.Set;
  * @version $Id$
  */
 public abstract class AbstractBuildCommand extends DefaultCommand {
+
+  private static final Log logger = LogFactory.getLog(AbstractBuildCommand.class);
+  private static final String DEPENDENCY_SEPARATOR_CHAR = ",";
+
 
   private static final String DEFAULT_BUILD_DIR = "build";
 
@@ -88,8 +94,31 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
    */
   protected static final String MODULE_BASEDIR_PROPERTY = "module-base-dir";
 
+  /**
+   * The modules' 'module'-dependencies, relative from a manifests' build-directory.
+   */
+  protected static final String MODULE_MODULE_DEPENDENCIES_PROPERTY = "module-module-dependencies";
+
+  /**
+   * The modules' 'module'-dependencies, relative from a manifests' build-directory.
+   */
+  protected static final String MODULE_JAR_DEPENDENCIES_PROPERTY = "module-jar-dependencies";
+
+  /**
+   * The base location for jar dependencies; follows the <code>Maven</code>-conventions. Would generally
+   * be equal to <code>maven.repo.local</code>.
+   */
+  protected static final String KARMA_JAR_REPOSITORY_PROPERTY = "karma-jar-repository";
+
+  /**
+   * The manifests' build directory.
+   */
+  protected static final String MANIFEST_BUILD_DIR = "manifest-build-dir";
+
   protected Module module = null;
   private Manifest currentManifest = null;
+
+  private File tempBuildFileLocation = null; // Maintains a hook to a temp location for the Ant build file.
 
   /**
    * Creates a command by initializing the command through its <code>CommandDescriptor</code>.
@@ -173,12 +202,9 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
    */
   protected abstract File getSourceDirectory() throws ManifestException;
 
-  protected String getDependencies(Set dependencies) throws ManifestException, CommandException {
-
-    // todo kan dit manifest niet anders (als parameters ??)
+  protected String getJarDependencies(Set dependencies, boolean relative) throws ManifestException, CommandException {
 
     StringBuffer buffer = new StringBuffer();
-    String userHome = System.getProperty("user.home");
 
     File baseDir = getCurrentManifest().getDirectory();
 
@@ -188,34 +214,73 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
       String jar = null;
 
       if (!dep.isModuleDependency()) {
-        jar = userHome + File.separator + ".maven" + File.separator + "repository" + File.separator;
-        jar += dep.getJarDependency();
 
-      } else {
+        if (relative) {
+          jar = dep.getJarDependency();
+        } else {
+          jar = getContext().getLocalEnvironment().getLocalRepository(false).getPath() + File.separator + dep.getJarDependency();
+        }
+
+        buffer.append(jar);
+        if (iterator.hasNext()) {
+          buffer.append(DEPENDENCY_SEPARATOR_CHAR);
+        }
+      }
+    }
+    return buffer.toString();
+  }
+
+  protected String getModuleDependencies(Set dependencies, boolean relative) throws ManifestException, CommandException {
+
+    StringBuffer buffer = new StringBuffer();
+
+    File baseDir = getCurrentManifest().getDirectory();
+
+    for (Iterator iterator = dependencies.iterator(); iterator.hasNext();) {
+      ModuleDependency dep = (ModuleDependency) iterator.next();
+
+      String jar = null;
+
+      if (dep.isModuleDependency()) {
 
         // The module depends on another SourceModule.
         //
-
-        // todo consider using a reference to the manifest in a module, this implies that a module exists when a manifest is active ..
-
         File moduleBuildDir = new File(new File(baseDir, DEFAULT_BUILD_DIR), dep.getModule());
 
         File dependencyJar =
             new File(moduleBuildDir + File.separator + getCurrentManifest().resolveArchiveName(getCurrentManifest().getModule(dep.getModule())));
 
         if (!dependencyJar.exists()) {
-          throw new CommandException(CommandException.DEPENDENCY_DOES_NOT_EXIST, new Object[] {jar, dep.getModule()});
+          throw new CommandException(CommandException.DEPENDENCY_DOES_NOT_EXIST, new Object[] {dep.getModule(), getCurrentModule().getName()});
         }
-        jar = dependencyJar.getPath();
-      }
 
-      buffer.append(jar);
-      if (iterator.hasNext()) {
-        buffer.append(";");
+        jar = dependencyJar.getPath();
+        if (relative) {
+          // Subtract the first bit.
+          //
+          File relativePart = new File(new File("", DEFAULT_BUILD_DIR), dep.getModule());
+          jar = jar.substring(jar.indexOf(relativePart.getPath()) + DEFAULT_BUILD_DIR.length() + 2);
+        }
+
+        buffer.append(jar);
+        if (iterator.hasNext()) {
+          buffer.append(DEPENDENCY_SEPARATOR_CHAR);
+        }
       }
     }
-
     return buffer.toString();
+  }
+
+  protected String getDependencies(Set dependencies, boolean relative) throws ManifestException, CommandException {
+
+    String moduleDeps = getModuleDependencies(dependencies, relative);
+    String jarDeps = getJarDependencies(dependencies, relative);
+
+    if (!"".equals(jarDeps) && !"".equals(moduleDeps)) {
+      moduleDeps += DEPENDENCY_SEPARATOR_CHAR;
+    }
+
+    return moduleDeps + jarDeps;
   }
 
   /**
@@ -228,7 +293,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
 
     DefaultLogger logger = new DefaultLogger();
-// logger.setMessageOutputLevel(Project.MSG_DEBUG);
+    logger.setMessageOutputLevel(Project.MSG_DEBUG);
     // todo hmm, this mechanism doesn't integrate with the commandresponse mechanism
     //
     logger.setOutputPrintStream(System.out);
@@ -254,13 +319,9 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
     } catch (IOException e) {
       throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {module.getName()});
     }
-//    finally {
-//      try {
-//        FileUtils.deleteDirectory(tmp.getParentFile());
-//      } catch (IOException e) {
-//        throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {module.getName()});
-//      }
-//    }
+
+    setBuildFileLocation(tmp);
+
 
     return project;
   }
@@ -288,7 +349,20 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
     return new File(tmp, buildFile);
   }
 
+  private void setBuildFileLocation(File tmpBuildFileLocation) {
+    this.tempBuildFileLocation = tmpBuildFileLocation;
+  }
 
+  /**
+   * Called by {@link nl.toolforge.karma.core.cmd.CommandContext} after executing a command.
+   */
+  public final void cleanUp() {
 
+    try {
+      FileUtils.deleteDirectory(tempBuildFileLocation.getParentFile());
+    } catch (IOException e) {
+      logger.warn("Could not remove temporary directory for Ant build file.");
+    }
+  }
 
 }

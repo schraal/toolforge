@@ -11,6 +11,7 @@ import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.SymbolicName;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.CVSException;
+import nl.toolforge.karma.core.vc.cvs.UpdateParser;
 
 import java.io.File;
 
@@ -42,7 +43,11 @@ public final class SubversionRunner implements Runner {
 //		return null;
 	}
 
-    public void add(Module module, String fileName, File basePoint) throws VersionControlException {
+  public void add(Module module, File[] files, File[] dirs) throws VersionControlException {
+
+  }
+
+  public void add(Module module, String fileName, File basePoint) throws VersionControlException {
         //To change body of implemented methods use File | Settings | File Templates.
     }
 

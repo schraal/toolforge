@@ -57,7 +57,7 @@ System.out.println("sourcedir: "+srcBase);
       project.setProperty(MODULE_SOURCE_DIR_PROPERTY, srcBase.getPath());
       project.setProperty(MODULE_BUILD_DIR_PROPERTY, getBuildDirectory().getPath());
       project.setProperty(MODULE_COMPILE_DIR_PROPERTY, getCompileDirectory().getPath());
-      project.setProperty(MODULE_CLASSPATH_PROPERTY, getDependencies(getCurrentModule().getDependencies()));
+      project.setProperty(MODULE_CLASSPATH_PROPERTY, getDependencies(getCurrentModule().getDependencies(), false));
 
     } catch (ManifestException e) {
       e.printStackTrace();

@@ -17,6 +17,7 @@ import org.apache.commons.logging.LogFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.File;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
@@ -42,12 +43,36 @@ public class CLI {
 
   private static String lastLine = "";
 
+  private static boolean immediate = true;
+
   /**
    * Startup class for the command line interface.
    *
    * @param args As per the contract; we don't use it.
    */
   public static void main(String[] args) {
+
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+
+      public void run() {
+
+        if (immediate) {
+
+          ConsoleWriter writer = new ConsoleWriter(true);
+          String text = FRONTEND_MESSAGES.getString("message.THANK_YOU");
+          int length = text.length();
+
+          writer.writeln(FRONTEND_MESSAGES.getString("message.EXIT"));
+
+          StringBuffer g = new StringBuffer();
+          g.append("\n\n").append(StringUtils.repeat("*", length));
+          g.append("\n").append(text).append("\n");
+          g.append(StringUtils.repeat("*", length)).append("\n");
+
+          writer.writeln(g.toString());
+        }
+      }
+    });
 
     ConsoleWriter writer = new ConsoleWriter(true);
 
@@ -83,6 +108,17 @@ public class CLI {
 
       writer.writeln(FRONTEND_MESSAGES.getString("message.EXIT"));
       System.exit(1);
+    }
+
+    String karmaHome = System.getProperty("karma.home");
+    File logDirectory = null;
+    if (karmaHome == null) {
+      String userHome = System.getProperty("user.home");
+      logDirectory = new File(userHome, "logs");
+      writer.writeln("Property 'karma.home' not set; logging will be written to " + System.getProperty("user.home") + File.separator + "logs.");
+    } else {
+      logDirectory = new File(karmaHome, "logs");
+      writer.writeln("Logging will be written to " + System.getProperty("karma.home") + File.separator + "logs.");
     }
 
     try {
@@ -121,6 +157,8 @@ public class CLI {
           g.append(StringUtils.repeat("*", length)).append("\n");
 
           writer.writeln(g.toString());
+
+          immediate = false;
 
           break;
         }

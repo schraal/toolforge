@@ -316,6 +316,21 @@ public final class CVSRunner implements Runner {
     add(module, files, dirs, getBasePoint());
   }
 
+  public void add(Module module, File[] files, File[] dirs) throws CVSException {
+
+    String[] f = (files == null ? new String[0] : new String[files.length]);
+    String[] d = (dirs == null ? new String[0] : new String[dirs.length]);
+
+    for (int i = 0; i < f.length; i++) {
+      f[i] = files[i].getPath();
+    }
+    for (int i = 0; i < d.length; i++) {
+      d[i] = dirs[i].getPath();
+    }
+
+    add(module, f, d, getBasePoint());
+  }
+
   private synchronized void add(Module module, String[] files, String[] dirs, File basePoint) throws CVSException {
 
     files = (files == null ? new String[] {} : files);
@@ -573,6 +588,12 @@ public final class CVSRunner implements Runner {
       }
       return false;
     }
+  }
+
+  // todo hmm, do we want his here ??? For the time being ... yes.
+  //
+  public final UpdateParser getUpdateParser() {
+    return listener.getUpdateParser();
   }
 
   private boolean hasVersion(Module module, Version version) throws CVSException {

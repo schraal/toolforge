@@ -1,9 +1,12 @@
 package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.vc.cvs.UpdateParser;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
+
+import java.io.File;
 
 /**
  * This interface defines methods for runner classes that perform actions on a physical version control system.
@@ -30,6 +33,8 @@ public interface Runner {
 	 * @param dirs The directory-paths that should be added to the version control system repository.
 	 */
 	public void add(Module module, String[] files, String[] dirs) throws VersionControlException;
+
+  public void add(Module module, File[] files, File[] dirs) throws VersionControlException;
 
   /**
 	 * Checks out a module from a version control system.

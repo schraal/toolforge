@@ -50,6 +50,10 @@ public final class LocationException extends Exception {
    */
   public static final ErrorCode INVALID_LOCATION_STORE_LOCATION = new ErrorCode(EXCEPTION_PREFIX + "00012");
 
+  public static final ErrorCode DUPLICATE_LOCATION_KEY = new ErrorCode(EXCEPTION_PREFIX + "00013");
+
+  public static final ErrorCode DUPLICATE_AUTHENTICATOR_KEY = new ErrorCode(EXCEPTION_PREFIX + "00014");
+
   public LocationException(ErrorCode errorCode) {
     this(errorCode, null);
   }

@@ -69,6 +69,10 @@ public final class LocalEnvironment {
         String karmaHome = System.getProperty("karma.home");
         karmaHome = (karmaHome == null ? System.getProperty("user.home") : karmaHome);
 
+        // Create the log directory
+        //
+        new File(karmaHome, "logs").mkdirs();
+
         File defaultLogFile = new File(karmaHome, "logs/karma-default.log");
 
         PatternLayout patternLayout = new PatternLayout(DEFAULT_CONVERSION_PATTERN);
@@ -538,6 +542,27 @@ public final class LocalEnvironment {
       return home;
     } catch (NullPointerException n) {
       throw new KarmaException(KarmaException.DEVELOPMENT_HOME_NOT_FOUND);
+    }
+  }
+
+  /**
+   * Defaults to <code>${user.home}/.maven/repository</code> at the moment.
+   */
+  public File getLocalRepository() {
+    return getLocalRepository(false);
+  }
+
+  /**
+   * Relative to <code>${user.home}
+   * @param relative
+   * @return
+   */
+  public File getLocalRepository(boolean relative) {
+
+    if (relative) {
+      return new File(".maven" + File.separator + "repository");
+    } else {
+      return new File(System.getProperty("user.home"), ".maven" + File.separator + "repository");
     }
   }
 }

@@ -57,7 +57,7 @@ public class BuildModule extends AbstractBuildCommand {
       project.setProperty(MODULE_SOURCE_DIR_PROPERTY, srcBase.getPath());
       project.setProperty(MODULE_BUILD_DIR_PROPERTY, getBuildDirectory().getPath());
       project.setProperty(MODULE_COMPILE_DIR_PROPERTY, getCompileDirectory().getPath());
-      project.setProperty(MODULE_CLASSPATH_PROPERTY, getDependencies(getCurrentModule().getDependencies()));
+      project.setProperty(MODULE_CLASSPATH_PROPERTY, getDependencies(getCurrentModule().getDependencies(), false));
 
     } catch (ManifestException e) {
 //      e.printStackTrace();
@@ -69,18 +69,6 @@ public class BuildModule extends AbstractBuildCommand {
     } catch (BuildException e) {
       e.printStackTrace();
       throw new CommandException(CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
-    }
-    finally {
-      try {
-        // Remove temporary directory.
-        //
-
-        // todo Should be moved to AbstractBuildCommand.
-        //
-        FileUtils.deleteDirectory(project.getBaseDir());
-      } catch (IOException e) {
-        throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
-      }
     }
 
     message = new SuccessMessage(getFrontendMessages().getString("message.MODULE_BUILT"), new Object[] {getCurrentModule().getName()});

@@ -123,12 +123,7 @@ public final class CommandContext {
   public void changeCurrentManifest(String manifestName) throws LocationException, ManifestException {
 
     ManifestFactory manifestFactory = ManifestFactory.getInstance(getLocalEnvironment());
-
     Manifest newManifest = manifestFactory.createManifest(manifestName);
-
-//
-//    Manifest newManifest = new Manifest(manifestName);
-//    newManifest.load(getLocalEnvironment());
 
     // If we are here, loading the new manifest was succesfull.
     //
@@ -179,6 +174,7 @@ public final class CommandContext {
     //todo what happens when an exception occurs in the execute wrt deregister?
     command.execute();
     command.deregisterCommandResponseListener(responseHandler);
+    command.cleanUp();
   }
 
   /**

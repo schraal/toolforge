@@ -43,6 +43,12 @@ public final class CVSResponseAdapter implements CVSListener {
 
   public CVSResponseAdapter() {}
 
+  private UpdateParser updateParser = new UpdateParser();
+
+  public UpdateParser getUpdateParser() {
+    return updateParser;
+  }
+
   /**
    * This class can use a <code>CommandResponseListener</code> to send cvs events to. For example, user interfaces can
    * register a listener to receive events from underlying code, thus creating interactivity.
@@ -215,6 +221,8 @@ public final class CVSResponseAdapter implements CVSListener {
 
       throw new CVSRuntimeException(CVSException.SECURITY_VIOLATION);
 
+    } else if (message.startsWith("?")) {
+      updateParser.addNewFile(message.substring(message.indexOf(" ") + 1));
     }
 
     if (!"".equals(message)) {

@@ -6,12 +6,16 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.ErrorMessage;
+import nl.toolforge.karma.core.cmd.AntErrorMessage;
 import nl.toolforge.karma.core.cmd.util.DescriptorReader;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ModuleDescriptor;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xml.sax.SAXException;
 
 import java.io.File;
@@ -28,6 +32,8 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 public class PackageModule extends AbstractBuildCommand {
+
+  private static final Log logger = LogFactory.getLog(PackageModule.class);
 
   private static final String MODULE_PACKAGE_NAME_PROPERTY = "module-package-name";
   private static final String MODULE_APPXML_PROPERTY = "module-appxml";
@@ -61,11 +67,35 @@ public class PackageModule extends AbstractBuildCommand {
         //
         project.setProperty(MODULE_WEBXML_PROPERTY, new File(getCurrentModule().getBaseDir(), "WEB-INF/web.xml".replace('/', File.separatorChar)).getPath());
 
-        // We always assume that 'web' and 'resources' exist.
-        // todo this should be solved like Maven does ???
-        project.setProperty(MODULE_INCLUDES_PROPERTY, "web/**,resources/**");
+        // Relative to Module.getBaseDir().
+        //
+        project.setProperty(
+            MODULE_INCLUDES_PROPERTY,
+            "web/**, " +
+            "resources/**, " +
+            "WEB-INF/lib/**, " +
+            "WEB-INF/resources/**"
+        );
 
-        project.setProperty(MODULE_EXCLUDES_PROPERTY, "*.war");
+        // The base dir for module dependencies.
+        //
+        project.setProperty(MANIFEST_BUILD_DIR, getBuildDirectory().getParent());
+
+        // Include all module-dependencies --> copied to WEB-INF/lib
+        //
+        String moduleDeps = getModuleDependencies(getCurrentModule().getDependencies(), true);
+        project.setProperty(MODULE_MODULE_DEPENDENCIES_PROPERTY, moduleDeps);
+
+        // Set the base location for jar dependencies.
+        //
+        project.setProperty(KARMA_JAR_REPOSITORY_PROPERTY, getContext().getLocalEnvironment().getLocalRepository().getPath());
+
+        // Include all jar dependencies --> copied to WEB-INF/lib
+        //
+        String jarDeps = getJarDependencies(getCurrentModule().getDependencies(), true);
+        project.setProperty(MODULE_JAR_DEPENDENCIES_PROPERTY, jarDeps);
+
+//        project.setProperty(MODULE_EXCLUDES_PROPERTY, "*.war");
         project.executeTarget(BUILD_TARGET_WAR);
 
       } else if (getCurrentModule().getDeploymentType().equals(Module.EAPP)) {
@@ -138,8 +168,11 @@ public class PackageModule extends AbstractBuildCommand {
     } catch (ManifestException m) {
       throw new CommandException(m.getErrorCode(), m.getMessageArguments());
     }catch (BuildException e) {
-      e.printStackTrace();
-      throw new CommandException(CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
+//      e.printStackTrace();
+      if (logger.isDebugEnabled()) {
+        commandResponse.addMessage(new AntErrorMessage(e));
+      }
+      throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
     }
   }
 

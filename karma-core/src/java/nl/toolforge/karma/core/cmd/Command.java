@@ -55,6 +55,11 @@ public interface Command {
 	 */
 	public void execute() throws CommandException;
 
+  /**
+   * Called after {@link #execute}. Implementations can use this method to clean up resources and the like.
+   */
+  public void cleanUp();
+
 	/**
 	 * Stores a reference to a <code>CommandContext</code>.
 	 *

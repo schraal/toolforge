@@ -29,8 +29,10 @@ public final class WebappModuleLayoutTemplate implements ModuleLayoutTemplate {
 
   public String[] getDirectoryElements() {
     return new String[] {
-      "src/java",
+      "src/java",                              // Java sources
       "resources",
-      "web"}; // for web-resources; appears as the web-root in the war file.
+      "web",                                   // Web-resources such as html, images and the like
+      "WEB-INF/lib",
+      "WEB-INF/resources"};                          // Runtime libraries
   }
 }

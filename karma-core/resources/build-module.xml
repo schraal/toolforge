@@ -27,6 +27,8 @@
 
     <mkdir dir="${module-build-dir}/${module-compile-dir}"/>
 
+    <delete dir="${module-build-dir}" includes="*.jar"/>
+
     <javac
       destdir="${module-build-dir}/${module-compile-dir}"
       classpath="${module-classpath}"
@@ -37,10 +39,6 @@
       <src path="${module-source-dir}"/>
 
     </javac>
-
-<!--    -->
-<!--      memoryinitialsize="64m" -->
-<!--      compiler="jikes"/>-->
 
   </target>
 
@@ -75,7 +73,7 @@
       <batchtest todir="${module-build-dir}/${module-compile-dir}/xml">
         <fileset dir="${module-build-dir}/${module-compile-dir}">
           <include name="**/Test*.class"/>
-    		  <exclude name=""/>
+          <exclude name=""/>
         </fileset>
       </batchtest>
     </junit>
@@ -101,7 +99,7 @@
       destfile="${module-package-name}"
       basedir="${module-build-dir}"
       excludes="${module-excludes}"
-    />
+      />
 
   </target>
 
@@ -111,14 +109,37 @@
 
   <target name="package-module-as-war" depends="init-build-dir">
 
-    <delete dir="${module-build-dir}" includes="*.war"/>
+    <delete>
+      <fileset dir="${module-build-dir}" includes="*.war"/>
+    </delete>
+
+    <echo message="1"/>
 
     <copy todir="${module-build-dir}" overwrite="true">
       <fileset dir="${module-base-dir}" includes="${module-includes}"/>
     </copy>
 
-<!--    <mkdir dir="${module-build-dir}/WEB-INF/classes"/>-->
-    
+    <echo message="2"/>
+
+    <!-- For standalone wars, all deps are copied to WEB-INF/lib and packaged as such.-->
+
+    <delete quiet="yes" >
+      <fileset dir="${module-build-dir}/WEB-INF/lib" includes="**"/>
+    </delete>
+
+    <echo message="3"/>
+
+    <copy todir="${module-build-dir}/WEB-INF/lib" flatten="yes" >
+      <!-- Module dependencies, appear as <dependency module=""/> -->
+      <fileset dir="${manifest-build-dir}" includes="${module-module-dependencies}"/>
+      <!-- Jar dependencies, from the jar-repository -->
+      <fileset dir="${karma-jar-repository}" includes="${module-jar-dependencies}"/>
+    </copy>
+
+    <echo message="4"/>
+
+    <!-- Package the module -->
+
     <war destfile="${module-package-name}" basedir="${module-build-dir}" webxml="${module-webxml}"/>
 
   </target>
@@ -149,7 +170,7 @@
       basedir="${module-build-dir}"
       appxml="${module-appxml}"
       excludes="${module-excludes}"
-     />
+      />
 
   </target>
 

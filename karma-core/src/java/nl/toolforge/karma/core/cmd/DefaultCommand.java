@@ -131,4 +131,10 @@ public abstract class DefaultCommand implements Command {
 		return BundleCache.getInstance().getBundle(BundleCache.FRONTEND_MESSAGES_KEY);
 	}
 
+  /**
+   * Override to clean up stuff.
+   */
+  public void cleanUp() {
+    // Nothing
+  }
 }
