@@ -24,9 +24,6 @@ public abstract class CommandResponse {
   //todo this has to become a list of listeners.
   private List listeners = new ArrayList();
 
-	// Contains the exception that was thrown during execution of the command
-	//
-	private Exception commandException = null;
 
 	public CommandResponse() {
 	}
