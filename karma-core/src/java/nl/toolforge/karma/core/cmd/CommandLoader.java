@@ -168,7 +168,7 @@ public final class CommandLoader {
 				}
 			}
 		} catch (Exception e) {
-			throw new KarmaException(ErrorCode.CORE_COMMAND_DESCRIPTOR_XML_ERROR, e);
+			throw new KarmaException(KarmaException.COMMAND_DESCRIPTOR_XML_ERROR, e);
 		}
 		return descriptors;
 	}

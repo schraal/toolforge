@@ -9,17 +9,14 @@ import nl.toolforge.karma.core.expr.VersionExpression;
  * on the local harddisk.
  *
  *
- * @see nl.toolforge.karma.core.Module
+ * @see Module
  *
  * @author D.A. Smedes
  */
-public class SourceModule extends DefaultModule {
+public class JarModule extends DefaultModule {
 
 	/** The <code>version</code>-attribute for a module. */
 	public static final String VERSION_ATTRIBUTE = "version";
-
-	/** The <code>branch</code>-attribute for a module. */
-	public static final String BRANCH_ATTRIBUTE = "branch";
 
 	private String version = null;
 
@@ -27,28 +24,26 @@ public class SourceModule extends DefaultModule {
      * Constructs a <code>SourceModule</code> instance.
      *
      * @param moduleName The name of the module. Module names are matched against
-     *                   a {@link nl.toolforge.karma.core.expr.ModuleNameExpression} instance.
+     *                   a {@link ModuleNameExpression} instance.
 	 *
 	 * @throws KarmaException When input parameters don't match their respective patterns
      */
-	SourceModule(String moduleName) throws KarmaException {
+	JarModule(String moduleName) throws KarmaException {
 
 		create(moduleName);
 	}
 
 	/**
-	 * Creates a <code>SourceModule</code> instance; the module contains a <code>version</code> attribute.
+	 * Creates a <code>Module</code> instance; the module contains a <code>version</code> attribute.
 	 *
 	 * @param moduleName The name of the module. Module names are matched against
-	 *                   a {@link nl.toolforge.karma.core.expr.ModuleNameExpression} instance.
+	 *                   a {@link ModuleNameExpression} instance.
 	 * @param version    The version of the module. Versionnumbers are matched against
-	 *                   a {@link nl.toolforge.karma.core.expr.VersionExpression} instance.
+	 *                   a {@link VersionExpression} instance.
 	 *
 	 * @throws KarmaException When input parameters don't match their respective patterns
 	 */
-	SourceModule (String moduleName, String version) throws KarmaException {
-
-		// TODO : refactor out to DefaultModule
+	JarModule (String moduleName, String version) throws KarmaException {
 
         create(moduleName);
 
@@ -57,8 +52,7 @@ public class SourceModule extends DefaultModule {
 		if (pattern.matcher(version).matches()) {
 			this.version = version;
 		} else {
-			// log.debug("Version in module " + moduleName +
-			//	" does not comply to pattern " + new VersionExpression().getPatternString());
+			// log.debug();
 			throw new KarmaException(KarmaException.DATAFORMAT_ERROR);
 		}
 	}
@@ -70,30 +64,30 @@ public class SourceModule extends DefaultModule {
 		if (pattern.matcher(moduleName).matches()) {
 			setName(moduleName);
 		} else {
-			// log.debug("Version in module " + moduleName +
-			//	" does not comply to pattern " + new VersionExpression().getPatternString());
+			//log.debug("Modulename " + moduleName +
+			//	" does not comply to pattern " + new ModuleNameExpression().getPatternString());
 			throw new KarmaException(KarmaException.DATAFORMAT_ERROR);
 		}
 	}
 
 	/**
-	 * @see {@link nl.toolforge.karma.core.Module#setVersion}
+	 * @see {@link Module#setVersion}
 	 */
-	public final void setVersion(String version) {
+	public void setVersion(String version) {
 		this.version = version;
 	}
 
 	/**
-	 * @see {@link nl.toolforge.karma.core.Module#getVersion}
+	 * @see {@link Module#getVersion}
 	 */
-	public final String getVersion() {
+	public String getVersion() {
 		return version;
 	}
 
 	/**
-	 * @see {@link nl.toolforge.karma.core.Module#getController}
+	 * @see {@link Module#getController}
 	 */
-	public final ModuleController getController() {
+	public ModuleController getController() {
 		return null;
 	}
 }

@@ -1,6 +1,5 @@
 package nl.toolforge.karma.core.cmd;
 
-import nl.toolforge.karma.core.exception.ErrorCode;
 import nl.toolforge.karma.core.KarmaException;
 import org.apache.commons.cli.Options;
 
@@ -61,7 +60,7 @@ public abstract class DefaultCommand implements Command {
 	}
 
 	public void validate() throws KarmaException {
-        throw new KarmaException(ErrorCode.CORE_NOT_IMPLEMENTED);
+        throw new KarmaException(KarmaException.NOT_IMPLEMENTED);
 	}
 
 	public final CommandResponse execute() throws KarmaException {

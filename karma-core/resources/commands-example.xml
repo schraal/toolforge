@@ -16,7 +16,7 @@
 			</option>
 		</options>
 
-		<classname>nl.toolforge.karma.core.cms.impl.UpdateCommand</classname>
+		<classname>nl.toolforge.karma.core.cmd.impl.CommandFaker</classname>
 
 		<dependencies>
 			<dependency type="vc-support" name="cvs"/>
@@ -41,7 +41,7 @@
 			</option>
 		</options>
 
-		<classname>nl.toolforge.karma.core.cms.impl.UpdateCommand</classname>
+		<classname>nl.toolforge.karma.core.cmd.impl.CommandFaker</classname>
 
 		<dependencies>
 			<dependency type="vc-support" name="cvs"/>

@@ -56,7 +56,7 @@ public final class Preferences
             }
         } catch (Exception e) {
             //logger.error("Could not load " + UserEnvironment.CONFIGURATION_DIRECTORY_PROPERTY + "/karma.properties, exiting...");
-            throw new KarmaRuntimeException(e);
+            throw new KarmaRuntimeException("Could not load " + UserEnvironment.CONFIGURATION_DIRECTORY_PROPERTY + "/karma.properties, exiting...", e);
         }
 
         // Lets store the prefs to a file (if possible), which now should be up to date.

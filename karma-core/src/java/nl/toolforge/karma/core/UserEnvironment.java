@@ -2,7 +2,6 @@ package nl.toolforge.karma.core;
 
 import nl.toolforge.karma.core.prefs.Preferences;
 import nl.toolforge.karma.core.prefs.UnavailableValueException;
-import nl.toolforge.karma.core.exception.ErrorCode;
 
 import java.io.File;
 import java.io.IOException;
@@ -163,7 +162,7 @@ public final class UserEnvironment {
                 try {
                     new File(karmaConfigurationDirectory).createNewFile();
                 } catch (IOException i) {
-					throw new KarmaRuntimeException(KarmaRuntimeException.CONFIG_HOME_CANNOT_BE_CREATED);
+					throw new KarmaRuntimeException("Configuration home directory cannot be created", i);
                 }
             }
         }
@@ -184,7 +183,7 @@ public final class UserEnvironment {
                 try {
                     new File(developmentHome).createNewFile();
                 } catch (IOException i) {
-                    throw new KarmaRuntimeException(KarmaRuntimeException.DEVELOPMENT_HOME_CANNOT_BE_CREATED);
+                    throw new KarmaRuntimeException("Development home directory cannot be created.", i);
                 }
             }
         }
@@ -212,9 +211,9 @@ public final class UserEnvironment {
     public static Map getCurrentConfiguration() throws KarmaRuntimeException {
 
         try {
-            throw new KarmaRuntimeException(KarmaRuntimeException.LAZY_BASTARD);
+            throw new KarmaRuntimeException("Not implemented lazy bastard you are !");
         } catch (Exception e) {
-            throw new KarmaRuntimeException(KarmaRuntimeException.MISSING_CONFIGURATION);
+            throw new KarmaRuntimeException("Missing configuration. Check documentation.");
         }
     }
 
@@ -238,7 +237,7 @@ public final class UserEnvironment {
                 home = new File(developmentHome);
             }
         } catch (NullPointerException n) {
-            throw new KarmaException(ErrorCode.CORE_NO_DEVELOPMENT_HOME);
+            throw new KarmaException(KarmaException.NO_DEVELOPMENT_HOME);
         }
 
         return home;
@@ -275,7 +274,7 @@ public final class UserEnvironment {
                 home = new File(karmaConfigurationDirectory);
             }
         } catch (NullPointerException n) {
-			throw new KarmaException(ErrorCode.CORE_NO_CONFIGURATION_DIRECTORY);
+			throw new KarmaException(KarmaException.NO_CONFIGURATION_DIRECTORY);
         }
 
         return home;

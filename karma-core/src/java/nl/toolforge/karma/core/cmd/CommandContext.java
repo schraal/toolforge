@@ -23,7 +23,7 @@ public class CommandContext {
 	/**
 	 * <p>Checks if this <code>CommandContext</code> has been initialized. A non-initialized context cannot be used and
 	 * methods in this class will throw a <code>KarmaException</code> with error code
-	 * <code>KarmaException.CORE_COMMAND_CONTEXT_NOT_INITIALIZED</code> if a non-initialized context is encountered.
+	 * <code>KarmaException.COMMAND_CONTEXT_NOT_INITIALIZED</code> if a non-initialized context is encountered.
 	 *
 	 * @return <code>true</code> if this command context has been initialized, false if it isn't
 	 */
@@ -56,7 +56,7 @@ public class CommandContext {
 	public CommandResponse execute(String commandLine) throws KarmaException {
 
 		if (!isInitialized()) {
-			throw new KarmaException(ErrorCode.CORE_COMMAND_CONTEXT_NOT_INITIALIZED);
+			throw new KarmaException(KarmaException.COMMAND_CONTEXT_NOT_INITIALIZED);
 		}
 
 		CommandLineParser parser = new PosixParser();
@@ -71,7 +71,7 @@ public class CommandContext {
 	public CommandResponse execute(Command command) throws KarmaException {
 
 		if (!isInitialized()) {
-			throw new KarmaException(ErrorCode.CORE_COMMAND_CONTEXT_NOT_INITIALIZED);
+			throw new KarmaException(KarmaException.COMMAND_CONTEXT_NOT_INITIALIZED);
 		}
 
 		return new CommandResponse();

@@ -1,7 +1,6 @@
 package nl.toolforge.karma.core;
 
 import nl.toolforge.karma.core.vc.VersionControlSystem;
-import nl.toolforge.karma.core.exception.ErrorCode;
 
 import java.io.File;
 
@@ -29,7 +28,7 @@ public class ManifestImpl implements Manifest {
 		if ((manifestName == null) || (manifestName.length() == 0)) {
 			// Most probably a programmers' mistake, so a runtime exception
 			//
-			throw new KarmaRuntimeException(KarmaRuntimeException.INVALID_MANIFEST_NAME);
+			throw new KarmaRuntimeException("Manifest name should not be null or an empty string.");
 		}
 		this.manifestName = manifestName;
     }

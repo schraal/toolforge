@@ -11,6 +11,52 @@ import nl.toolforge.karma.core.exception.ErrorCode;
  */
 public class KarmaException extends Exception {
 
+
+	/** When some function is not yet implemented and likely to be forgotten, this one can be thrown to be reminded */
+	public static final ErrorCode LAZY_BASTARD = new ErrorCode("RT-00000");
+
+	/** Vital configuration is missing */
+	public static final ErrorCode MISSING_CONFIGURATION = new ErrorCode("RT-00001");
+
+	/** The development home directory cannot be created */
+	public static final ErrorCode DEVELOPMENT_HOME_CANNOT_BE_CREATED = new ErrorCode("RT-00010");
+
+	/** The configuration home directory cannot be created */
+	public static final ErrorCode CONFIG_HOME_CANNOT_BE_CREATED = new ErrorCode("RT-00011");
+
+	/** Manifest cannot only contain certain types of <code>Module</code>s. */
+	public static final ErrorCode INVALID_MANIFEST_NAME = new ErrorCode("RT-00004");
+
+
+
+
+
+	/** Can be used to identify something that is not implemented */
+	public static final ErrorCode NOT_IMPLEMENTED = new ErrorCode("CORE-00000");
+
+	public static final ErrorCode MANIFEST_COULD_NOT_BE_LOADED = new ErrorCode("CORE-00001");
+
+	/** The implementation class for the command as defined in the descriptor cannot be found */
+	public static final ErrorCode COMMAND_IMPLEMENTATION_CLASS_NOT_FOUND = new ErrorCode("CORE-00002");
+
+	/** The XML describing the command is invalid */
+	public static final ErrorCode COMMAND_DESCRIPTOR_XML_ERROR = new ErrorCode("CORE-00003");
+
+	/**
+	 * The {@link nl.toolforge.karma.core.cmd.CommandContext#init} method has not been called. This is
+	 * serious, as commands are run by this command context.
+	 */
+	public static final ErrorCode COMMAND_CONTEXT_NOT_INITIALIZED = new ErrorCode("CORE-00004");
+
+	/** No development home directory could be created. This is panic, because without it, nothing will work. */
+	public static final ErrorCode NO_DEVELOPMENT_HOME = new ErrorCode("CORE-00005");
+
+	/** No configuration directory could be referenced to. This is panic, because without it, nothing will work. */
+	public static final ErrorCode NO_CONFIGURATION_DIRECTORY = new ErrorCode("CORE-00006");
+
+    /** Data format errors (errors during pattern matching, etc). */
+	public static final ErrorCode DATAFORMAT_ERROR = new ErrorCode("CORE-00020");
+
 	protected ErrorCode errorCode = null;
 
 	public KarmaException() {}
