@@ -37,6 +37,7 @@
 
   </command>
 
+
   <command name="list-locations" alias="ll">
 
     <description lang="en">Shows all locations from the local locations-store</description>
@@ -48,6 +49,7 @@
     </help>
 
   </command>
+
 
   <command name="start-work" alias="start">
 
@@ -77,13 +79,16 @@
       <option opt="m" longOpt="module" hasArgs="true" required="true" description="The module name">
         <arg>module-name</arg>
       </option>
+      <option opt="f" longOpt="force" hasArgs="false" required="false" description="Force"/>
     </options>
 
     <classname>nl.toolforge.karma.cli.cmd.StopWorkImpl</classname>
 
     <help lang="en">
       Changes a modules' state. When the manifest is a development manifest, the state is changed to
-      DYNAMIC. If the manifest is a release manifest, the state is changed to STATIC.
+      DYNAMIC. If the manifest is a release manifest, the state is changed to STATIC. When uncommitted files are
+      detected, a warning is given when the `-f` flag is set. When not set, a promote will fail upon detecting this
+      situation.
     </help>
   </command>
 

@@ -25,6 +25,7 @@ import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.event.MessageEvent;
 import nl.toolforge.karma.core.cmd.event.SimpleMessage;
+import nl.toolforge.karma.core.cmd.event.ErrorEvent;
 import nl.toolforge.karma.core.manifest.BaseModule;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
@@ -36,6 +37,9 @@ import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.cvsimpl.AdminHandler;
 import nl.toolforge.karma.core.vc.cvsimpl.Utils;
+import org.apache.commons.io.FileUtils;
+
+import java.io.IOException;
 
 /**
  *
@@ -82,21 +86,38 @@ public class StopWorkCommand extends DefaultCommand {
     AdminHandler handler = new AdminHandler(module);
     handler.administrate();
 
+    boolean force = getCommandLine().hasOption("f");
     boolean proceed = true;
+
     if (handler.hasNewStuff()) {
-      // todo implies an error, should be errorcode
-      response.addEvent(new MessageEvent(this, new SimpleMessage("ERROR : Module " + moduleName + " has new, but uncommitted files.")));
-      proceed = false;
+      if (force) {
+        try {
+          FileUtils.deleteDirectory(module.getBaseDir());
+        } catch (IOException e) {}
+      } else {
+        response.addEvent(new ErrorEvent(this, CommandException.UNCOMMITTED_NEW_FILES, new Object[]{moduleName}));
+        proceed = false;
+      }
     }
     if (handler.hasChangedStuff()) {
-      // todo implies an error, should be errorcode
-      response.addEvent(new MessageEvent(this, new SimpleMessage("ERROR : Module " + moduleName + " has changed, but uncommitted files.")));
-      proceed = false;
+      if (force) {
+        try {
+          FileUtils.deleteDirectory(module.getBaseDir());
+        } catch (IOException e) {}
+      } else {
+        response.addEvent(new ErrorEvent(this, CommandException.UNCOMMITTED_CHANGED_FILES, new Object[]{moduleName}));
+        proceed = false;
+      }
     }
     if (handler.hasRemovedStuff()) {
-      // todo implies an error, should be errorcode
-      response.addEvent(new MessageEvent(this, new SimpleMessage("ERROR : Module " + moduleName + " has removed, but uncommitted files.")));
-      proceed = false;
+      if (force) {
+        try {
+          FileUtils.deleteDirectory(module.getBaseDir());
+        } catch (IOException e) {}
+      } else {
+        response.addEvent(new ErrorEvent(this, CommandException.UNCOMMITTED_REMOVED_FILES, new Object[]{moduleName}));
+        proceed = false;
+      }
     }
 
     if (proceed) {
@@ -123,9 +144,9 @@ public class StopWorkCommand extends DefaultCommand {
       }
       response.addEvent(
           new MessageEvent(this,
-          new SimpleMessage(
-              getFrontendMessages().getString("message.STOP_WORK_SUCCESSFULL"),
-              new Object[]{module.getName(), m.getState(module).toString()})));
+              new SimpleMessage(
+                  getFrontendMessages().getString("message.STOP_WORK_SUCCESSFULL"),
+                  new Object[]{module.getName(), m.getState(module).toString()})));
     } else {
       response.addEvent(new MessageEvent(this, new SimpleMessage("Module " + moduleName + " still WORKING.")));
     }

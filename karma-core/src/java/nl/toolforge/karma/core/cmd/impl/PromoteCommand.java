@@ -91,7 +91,7 @@ public class PromoteCommand extends DefaultCommand {
 
       if (handler.hasNewStuff()) {
         if (force) {
-          commandResponse.addEvent(new MessageEvent(new SimpleMessage("WARNING : Module " + moduleName + " has new, but uncommitted files.")));
+          commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("WARNING : Module " + moduleName + " has new, but uncommitted files.")));
         } else {
           commandResponse.addEvent(new ErrorEvent(this, CommandException.UNCOMMITTED_NEW_FILES, new Object[]{moduleName}));
           proceed = false;
@@ -99,17 +99,17 @@ public class PromoteCommand extends DefaultCommand {
       }
       if (handler.hasChangedStuff()) {
         if (force) {
-          commandResponse.addEvent(new MessageEvent(new SimpleMessage("WARNING : Module " + moduleName + " has changed, but uncommitted files.")));
+          commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("WARNING : Module " + moduleName + " has changed, but uncommitted files.")));
         } else {
-          commandResponse.addEvent(new ErrorEvent(CommandException.UNCOMMITTED_CHANGED_FILES, new Object[]{moduleName}));
+          commandResponse.addEvent(new ErrorEvent(this, CommandException.UNCOMMITTED_CHANGED_FILES, new Object[]{moduleName}));
           proceed = false;
         }
       }
       if (handler.hasRemovedStuff()) {
         if (force) {
-          commandResponse.addEvent(new MessageEvent(new SimpleMessage("WARNING : Module " + moduleName + " has removed, but uncommitted files.")));
+          commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("WARNING : Module " + moduleName + " has removed, but uncommitted files.")));
         } else {
-          commandResponse.addEvent(new ErrorEvent(CommandException.UNCOMMITTED_REMOVED_FILES, new Object[]{moduleName}));
+          commandResponse.addEvent(new ErrorEvent(this, CommandException.UNCOMMITTED_REMOVED_FILES, new Object[]{moduleName}));
           proceed = false;
         }
       }
