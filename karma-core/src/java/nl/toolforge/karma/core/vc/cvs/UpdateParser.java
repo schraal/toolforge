@@ -18,9 +18,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.vc.cvs;
 
-import java.util.Set;
-import java.util.HashSet;
 import java.io.File;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * <p>An object that can be passed to the CVSResponseAdapter that captures specific events during a

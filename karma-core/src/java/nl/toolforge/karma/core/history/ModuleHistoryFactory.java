@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.history;
 
+import nl.toolforge.karma.core.manifest.Module;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,8 +26,6 @@ import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
-
-import nl.toolforge.karma.core.manifest.Module;
 
 /**
  * Factory for {@link ModuleHistory} objects. The factory is initialized with the manifest home, which is the

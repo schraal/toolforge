@@ -1,8 +1,8 @@
 package nl.toolforge.karma.core.location.digester;
 
+import nl.toolforge.karma.core.location.LocationDescriptor;
 import org.apache.commons.digester.AbstractObjectCreationFactory;
 import org.xml.sax.Attributes;
-import nl.toolforge.karma.core.location.LocationDescriptor;
 
 /**
  * @author D.A. Smedes

@@ -18,9 +18,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.digester;
 
-import nl.toolforge.karma.core.cmd.CommandDescriptor;
-import org.apache.commons.digester.AbstractObjectCreationFactory;
 import org.apache.commons.cli.Option;
+import org.apache.commons.digester.AbstractObjectCreationFactory;
 import org.xml.sax.Attributes;
 
 /**

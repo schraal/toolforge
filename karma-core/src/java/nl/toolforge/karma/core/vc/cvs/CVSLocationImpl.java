@@ -18,22 +18,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.vc.cvs;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Locale;
-
+import nl.toolforge.core.util.net.Ping;
+import nl.toolforge.karma.core.location.BaseLocation;
+import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.location.LocationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.connection.Connection;
 import org.netbeans.lib.cvsclient.connection.ConnectionFactory;
 import org.netbeans.lib.cvsclient.connection.PServerConnection;
 
-import nl.toolforge.core.util.net.Ping;
-import nl.toolforge.karma.core.location.BaseLocation;
-import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.location.LocationException;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Locale;
 
 /**
  * <p>Class representing a location to a CVS repository. This class is not the 'real' connection, as that is handled

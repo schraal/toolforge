@@ -1,8 +1,8 @@
 package nl.toolforge.karma.core.scm.digester;
 
+import nl.toolforge.karma.core.scm.ModuleDependency;
 import org.apache.commons.digester.AbstractObjectCreationFactory;
 import org.xml.sax.Attributes;
-import nl.toolforge.karma.core.scm.ModuleDependency;
 
 /**
  * Creation factory for {@link ModuleDependency} instances.

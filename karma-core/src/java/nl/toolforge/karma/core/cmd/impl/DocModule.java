@@ -1,15 +1,14 @@
 package nl.toolforge.karma.core.cmd.impl;
 
-import java.io.File;
-
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.manifest.ManifestException;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+
+import java.io.File;
 
 /**
  * Generates Javadoc API documentation for the given module.

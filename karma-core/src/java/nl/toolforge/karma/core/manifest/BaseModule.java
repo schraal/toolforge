@@ -23,9 +23,9 @@ import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
 import nl.toolforge.karma.core.vc.PatchLine;
+import org.apache.commons.digester.Digester;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.digester.Digester;
 import org.xml.sax.SAXException;
 
 import java.io.File;
@@ -44,16 +44,12 @@ public abstract class BaseModule implements Module {
 
   private Location location = null;
   private String name = null;
-//  private Manifest manifest = null;
 
   private File baseDir = null;
 
   private Version version = null;
   private boolean patchLine = false;
   private boolean developmentLine = false;
-
-
-//  private Module.DeploymentType deploymentType = null;
 
   public BaseModule(String name, Location location, Version version) {
     this(name, location);
@@ -71,8 +67,6 @@ public abstract class BaseModule implements Module {
     }
 
     this.name = name;
-//    setDeploymentType(name);
-
     this.location = location;
   }
 
@@ -84,14 +78,6 @@ public abstract class BaseModule implements Module {
   public final String getName() {
     return name;
   }
-
-//  private void setDeploymentType(String moduleName) {
-//    deploymentType = new Module.DeploymentType(moduleName);
-//  }
-//
-//  public final DeploymentType getDeploymentType() {
-//    return deploymentType;
-//  }
 
   /**
    * Gets the modules' location.

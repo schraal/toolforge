@@ -1,21 +1,21 @@
 package nl.toolforge.karma.core.cmd.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
 import nl.toolforge.core.util.collection.CollectionUtil;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.manifest.ModuleTypeException;
+import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.Utils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Dependency management is heavily used by Karma. This helper class provides methods to resolve dependencies, check
@@ -202,10 +202,8 @@ public final class DependencyHelper {
     // todo introduce a method to determine if a module is webapp-module; maybe its own class.
     //
     String extension;
-//    if (module.getDeploymentType().equals(Module.WEBAPP)) {
     if (module.getType().equals(Module.JAVA_WEB_APPLICATION)) {
       extension = ".war";
-//    } else if (module.getDeploymentType().equals(Module.EAPP)) {
     } else if (module.getType().equals(Module.JAVA_ENTERPRISE_APPLICATION)) {
       extension = ".ear";
     } else {

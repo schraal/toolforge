@@ -2,8 +2,8 @@ package nl.toolforge.karma.core.scm;
 
 import junit.framework.TestCase;
 
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author D.A. Smedes

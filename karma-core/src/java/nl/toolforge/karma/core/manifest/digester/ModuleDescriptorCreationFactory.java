@@ -36,12 +36,8 @@ public class ModuleDescriptorCreationFactory extends AbstractObjectCreationFacto
   public Object createObject(Attributes attributes) throws Exception {
 
     String name = attributes.getValue("name");
-//    String type = attributes.getValue("type");
     String location = attributes.getValue("location");
 
-//    ModuleDigester digester = new ModuleDigester(name, type, location);
-    ModuleDigester digester = new ModuleDigester(name, location);
-
-    return digester;
+    return new ModuleDigester(name, location);
   }
 }

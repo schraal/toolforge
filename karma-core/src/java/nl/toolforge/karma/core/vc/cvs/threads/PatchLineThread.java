@@ -21,16 +21,8 @@ package nl.toolforge.karma.core.vc.cvs.threads;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.ModuleStatus;
-import nl.toolforge.karma.core.vc.Runner;
-import nl.toolforge.karma.core.vc.cvs.CVSException;
-import nl.toolforge.karma.core.vc.cvs.CVSModuleStatus;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
 import nl.toolforge.karma.core.vc.threads.RunnerThread;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import org.netbeans.lib.cvsclient.command.log.LogInformation;
-
-import java.io.File;
 
 /**
  * Checks if a module has a PatchLine in the version control repository. If the module that is passed to this instance

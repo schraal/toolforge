@@ -24,8 +24,8 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Properties;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * @version $Id$

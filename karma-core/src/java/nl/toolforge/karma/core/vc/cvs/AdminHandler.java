@@ -20,22 +20,22 @@ package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.manifest.Module;
-import org.netbeans.lib.cvsclient.CVSRoot;
-import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
-import org.netbeans.lib.cvsclient.admin.Entry;
 import org.apache.tools.ant.DirectoryScanner;
+import org.netbeans.lib.cvsclient.CVSRoot;
+import org.netbeans.lib.cvsclient.admin.Entry;
+import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.FilenameFilter;
-import java.util.List;
-import java.util.Arrays;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Helper class to execute stuff on admin files in <code>CVS</code> directories on behalf of <code>module</code>.

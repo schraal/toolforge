@@ -19,9 +19,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.core.util.file.XMLFilenameFilter;
+import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.cmd.digester.CommandDescriptorCreationFactory;
 import nl.toolforge.karma.core.cmd.digester.OptionDescriptorCreationFactory;
-import nl.toolforge.karma.core.boot.WorkingContext;
 import org.apache.commons.cli.Options;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.logging.Log;

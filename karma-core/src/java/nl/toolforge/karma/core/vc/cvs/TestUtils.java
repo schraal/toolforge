@@ -19,12 +19,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.test.LocalCVSInitializer;
-import nl.toolforge.karma.core.vc.model.MainLine;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
-import nl.toolforge.karma.core.vc.PatchLine;
+import nl.toolforge.karma.core.vc.model.MainLine;
 
 public class TestUtils extends LocalCVSInitializer {
 

@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.vc;
 
-import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.Patch;
+import nl.toolforge.karma.core.Version;
 
 /**
  * A <code>PatchLine</code> is a special type of <code>DevelopmentLine</code>, used when a module has been released to

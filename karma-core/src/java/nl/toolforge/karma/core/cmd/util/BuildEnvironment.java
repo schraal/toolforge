@@ -1,11 +1,9 @@
 package nl.toolforge.karma.core.cmd.util;
 
-import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.manifest.Module;
 
 import java.io.File;
-
-import com.sun.jndi.toolkit.url.Uri;
 
 /**
  * The BuildEnvironment

@@ -19,29 +19,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.cmd.impl;
 
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Target;
-import org.apache.tools.ant.taskdefs.Copy;
-import org.apache.tools.ant.taskdefs.Ear;
-import org.apache.tools.ant.taskdefs.Jar;
-import org.apache.tools.ant.taskdefs.War;
-import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.FilterSet;
-import org.xml.sax.SAXException;
-
 import nl.toolforge.core.util.collection.CollectionUtil;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
@@ -63,6 +40,28 @@ import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ModuleDigester;
 import nl.toolforge.karma.core.manifest.ModuleTypeException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Target;
+import org.apache.tools.ant.taskdefs.Copy;
+import org.apache.tools.ant.taskdefs.Ear;
+import org.apache.tools.ant.taskdefs.Jar;
+import org.apache.tools.ant.taskdefs.War;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.FilterSet;
+import org.xml.sax.SAXException;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author D.A. Smedes
@@ -125,17 +124,8 @@ public class PackageModule extends AbstractBuildCommand {
         logger.info("User has explicitly disabled running the unit tests.");
       }
 
-//      check whether the dependencies are present
-//      try {
-//        todo: this is not really okidoki. A dependency checker method should be used.
-//        getDependencies(getCurrentModule().getDependencies(), false, CLASSPATH_SEPARATOR_CHAR);
-//      } catch (ManifestException me) {
-//        throw new CommandException(CommandException.DEPENDENCY_FILE_INVALID, me.getMessageArguments());
-//      }
-
       File packageName = new File(getBuildEnvironment().getModuleBuildRootDirectory(), helper.resolveArchiveName(getCurrentModule()));
 
-//      if (getCurrentModule().getDeploymentType().equals(Module.WEBAPP)) {
       if (getCurrentModule().getType().equals(Module.JAVA_WEB_APPLICATION)) {
         packageWar(packageName);
       } else if (getCurrentModule().getType().equals(Module.JAVA_ENTERPRISE_APPLICATION)) {

@@ -146,7 +146,6 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
     File base = env.getModuleBuildRootDirectory();
 
     if (module.getType().equals(Module.JAVA_WEB_APPLICATION)) {
-//    if (module.getDeploymentType().equals(Module.WEBAPP)) {
       return new File(base, "build/WEB-INF/classes");
     } else {
       return new File(base, "build");

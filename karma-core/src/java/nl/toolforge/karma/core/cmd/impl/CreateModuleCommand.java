@@ -18,12 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import java.util.regex.PatternSyntaxException;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
@@ -41,7 +36,11 @@ import nl.toolforge.karma.core.manifest.util.WebappModuleLayoutTemplate;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.KarmaRuntimeException;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Creates a module in a repository. Modules are created using a layout template (instances of 
@@ -77,7 +76,6 @@ public class CreateModuleCommand extends DefaultCommand {
     // todo this bit sucks. Since renamed to ModuleDigester, it doesn't make sense anymore.
     ModuleDigester digester = null;
     try {
-//      digester = new ModuleDigester(moduleName, "src", locationAlias);
       digester = new ModuleDigester(moduleName, locationAlias);
     } catch (PatternSyntaxException e) {
       throw new CommandException(CommandException.INVALID_ARGUMENT, new Object[]{moduleName});
@@ -108,11 +106,9 @@ public class CreateModuleCommand extends DefaultCommand {
       runner.setCommandResponse(getCommandResponse());
 
       if (moduleType.equals(Module.JAVA_WEB_APPLICATION)) {
-//      if (module.getDeploymentType().equals(Module.WEBAPP)) {
         runner.create(module, comment, new WebappModuleLayoutTemplate());
         message = new SuccessMessage(getFrontendMessages().getString("message.WEBAPP_MODULE_CREATED"), new Object[]{moduleName, locationAlias});
       } else if (moduleType.equals(Module.JAVA_ENTERPRISE_APPLICATION)) {
-//      } else if (module.getDeploymentType().equals(Module.EAPP)) {
         runner.create(module, comment, new EappModuleLayoutTemplate());
         message = new SuccessMessage(getFrontendMessages().getString("message.EAPP_MODULE_CREATED"), new Object[]{moduleName, locationAlias});
       } else if (moduleType.equals(Module.JAVA_SOURCE_MODULE)) {
@@ -130,7 +126,6 @@ public class CreateModuleCommand extends DefaultCommand {
     } catch (VersionControlException e) {
       logger.error(e);
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
-      //commandResponse.addMessage(new ErrorMessage(ke));
     }
   }
 
