@@ -18,12 +18,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd;
 
+import java.util.ResourceBundle;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.bundle.BundleCache;
 import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
-import org.apache.commons.cli.CommandLine;
-
-import java.util.ResourceBundle;
 
 /**
  * Default stuff for a command. Provides the datastructure and some helper methods to implementing commands.
@@ -32,6 +35,8 @@ import java.util.ResourceBundle;
  * @version $Id$
  */
 public abstract class DefaultCommand implements Command {
+
+  private static final Log logger = LogFactory.getLog(DefaultCommand.class);
 
 	private CommandContext contextRef = null;
 
@@ -125,11 +130,21 @@ public abstract class DefaultCommand implements Command {
 
   public final void registerCommandResponseListener(CommandResponseListener responseListener) {
     this.responseListener = responseListener;
-    getCommandResponse().addCommandResponseListener(responseListener);
+    CommandResponse commandResponse = getCommandResponse();
+    if (commandResponse != null) {
+      commandResponse.addCommandResponseListener(responseListener);
+    } else {
+      logger.error("getCommandResponse() returned 'null' for command '"+getName()+"'.");
+    }
   }
 
   public final void deregisterCommandResponseListener(CommandResponseListener responseListener) {
-    getCommandResponse().removeCommandReponseListener(responseListener);
+    CommandResponse commandResponse = getCommandResponse();
+    if (commandResponse != null) {
+      getCommandResponse().removeCommandReponseListener(responseListener);
+    } else {
+      logger.error("getCommandResponse() returned 'null' for command '"+getName()+"'.");
+    }
   }
 
   /**
