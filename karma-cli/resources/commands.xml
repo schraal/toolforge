@@ -4,8 +4,26 @@
 
 <commands>
 
+  <command name="create-release" alias="cr">
+
+    <description lang="en">
+			Something.
+    </description>
+
+    <options>
+      <option opt="m" longOpt="manifest" required="false" description="The manifest name (development manifest)">
+        <arg name="manifest-name"/>
+      </option>
+    </options>
+
+    <classname>nl.toolforge.karma.core.cmd.impl.CreateRelease</classname>
+
+    <help/>
+
+  </command>
+
   <command name="package" alias="pa">
-    
+
     <description lang="en">
 			Something.
     </description>
