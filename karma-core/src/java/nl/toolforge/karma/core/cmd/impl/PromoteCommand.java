@@ -83,10 +83,6 @@ public class PromoteCommand extends DefaultCommand {
       }
 
       this.newVersion = nextVersion;
-
-      CommandMessage message = new SuccessMessage(getFrontendMessages().getString("message.PROMOTE_MODULE_STARTED"), new Object[]{moduleName, nextVersion});
-      commandResponse.addMessage(message);
-
       Runner runner = RunnerFactory.getRunner(module.getLocation());
 
       // TODO check whether files exist that have not yet been committed.

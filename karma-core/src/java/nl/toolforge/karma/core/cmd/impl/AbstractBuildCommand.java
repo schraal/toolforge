@@ -143,7 +143,6 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
   protected static final String MANIFEST_BUILD_DIR = "manifest-build-dir";
 
   protected Module module = null;
-  private Manifest currentManifest = null;
 
   private File tempBuildFileLocation = null; // Maintains a hook to a temp location for the Ant build file.
 
@@ -167,7 +166,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
     try {
       // todo move this bit to aspect-code.
       //
-      currentManifest = getContext().getCurrentManifest();
+      Manifest currentManifest = getContext().getCurrentManifest();
 
       module = currentManifest.getModule(moduleName);
       if (!currentManifest.isLocal(module)) {
@@ -177,6 +176,15 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
     } catch (ManifestException m) {
       throw new CommandException(m.getErrorCode(), m.getMessageArguments());
     }
+  }
+
+  /**
+   * Helper method to retrieve the current manifest.
+   *
+   * @return The current manifest.
+   */
+  protected final Manifest getCurrentManifest() {
+    return getContext().getCurrentManifest();
   }
 
   /**
@@ -193,16 +201,16 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
   }
 
   /**
-   * Helper method to get to the current manifest.
+   * Returns the build directory.
    *
    * @return
+   * @throws ManifestException
    */
-  protected Manifest getCurrentManifest() {
+  protected final File getBuildDirectory() throws ManifestException {
 
-    if (currentManifest == null) {
-      throw new KarmaRuntimeException("Manifest is null. Execute method has not been called by subclass.");
-    }
-    return currentManifest;
+    // the rest, for the time being.
+    //
+    return new File(getContext().getCurrentManifest().getDirectory(), "build");
   }
 
   /**
@@ -211,7 +219,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
    * @return
    * @throws ManifestException
    */
-  protected final File getBuildDirectory() throws ManifestException {
+  protected final File getModuleBuildDirectory() throws ManifestException {
 
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
@@ -219,7 +227,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
     // the rest, for the time being.
     //
-    return new File(new File(getCurrentManifest().getDirectory(), "build"), getCurrentModule().getName());
+    return new File(getBuildDirectory(), getCurrentModule().getName());
   }
 
 
@@ -227,9 +235,8 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
    * Returns the compile directory for a module.
    *
    * @return
-   * @throws ManifestException
    */
-  protected final File getCompileDirectory() throws ManifestException {
+  protected final File getCompileDirectory() {
 
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
@@ -246,9 +253,8 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
    * Returns the test directory for a module.
    *
    * @return
-   * @throws ManifestException
    */
-  protected final File getTestDirectory() throws ManifestException {
+  protected final File getTestDirectory() {
 
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
@@ -261,9 +267,8 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
    * Returns the package directory for a module.
    *
    * @return
-   * @throws ManifestException
    */
-  protected final File getPackageDirectory() throws ManifestException {
+  protected final File getPackageDirectory() {
 
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
@@ -311,7 +316,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
     StringBuffer buffer = new StringBuffer();
 
-    File baseDir = getCurrentManifest().getDirectory();
+    File baseDir = getContext().getCurrentManifest().getDirectory();
 
     for (Iterator iterator = dependencies.iterator(); iterator.hasNext();) {
       ModuleDependency dep = (ModuleDependency) iterator.next();
@@ -325,7 +330,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
         File moduleBuildDir = new File(new File(baseDir, DEFAULT_BUILD_DIR), dep.getModule());
 
         File dependencyJar =
-            new File(moduleBuildDir + File.separator + getCurrentManifest().resolveArchiveName(getCurrentManifest().getModule(dep.getModule())));
+            new File(moduleBuildDir + File.separator + getContext().getCurrentManifest().resolveArchiveName(getContext().getCurrentManifest().getModule(dep.getModule())));
 
         if (!dependencyJar.exists()) {
           throw new CommandException(CommandException.DEPENDENCY_DOES_NOT_EXIST, new Object[] {dep.getModule(), getCurrentModule().getName()});

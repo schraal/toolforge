@@ -33,7 +33,7 @@ public class UpdateAllModulesCommand extends CompositeCommand {
    *
    * @param descriptor The command descriptor for this command.
    */
-  public UpdateAllModulesCommand(CommandDescriptor descriptor) throws CommandException {
+  public UpdateAllModulesCommand(CommandDescriptor descriptor) {
     super(descriptor);
   }
 

@@ -56,11 +56,11 @@ public class PackageModule extends AbstractBuildCommand {
 
     try {
 
-      project.setProperty(MODULE_BUILD_DIR_PROPERTY, getBuildDirectory().getPath());
+      project.setProperty(MODULE_BUILD_DIR_PROPERTY, getModuleBuildDirectory().getPath());
       project.setProperty(MODULE_COMPILE_DIR_PROPERTY, getCompileDirectory().getPath());
       project.setProperty(MODULE_PACKAGE_DIR_PROPERTY, getPackageDirectory().getPath());
 
-      String packageName = new File(getBuildDirectory(), getCurrentManifest().resolveArchiveName(getCurrentModule())).getPath();
+      String packageName = new File(getModuleBuildDirectory(), getCurrentManifest().resolveArchiveName(getCurrentModule())).getPath();
       project.setProperty(MODULE_PACKAGE_NAME_PROPERTY, packageName);
       project.setProperty(MODULE_BASEDIR_PROPERTY, getCurrentModule().getBaseDir().getPath());
 
@@ -81,7 +81,7 @@ public class PackageModule extends AbstractBuildCommand {
 
         // The base dir for module dependencies.
         //
-        project.setProperty(MANIFEST_BUILD_DIR, getBuildDirectory().getParent());
+        project.setProperty(MANIFEST_BUILD_DIR, getModuleBuildDirectory().getParent());
 
         // Include all module-dependencies --> copied to WEB-INF/lib
         //
@@ -131,8 +131,8 @@ public class PackageModule extends AbstractBuildCommand {
         }
 
         try {
-          FileWriter write1 = new FileWriter(new File(getBuildDirectory(), "archives.properties"));
-          FileWriter write2 = new FileWriter(new File(getBuildDirectory(), "archives.includes"));
+          FileWriter write1 = new FileWriter(new File(getModuleBuildDirectory(), "archives.properties"));
+          FileWriter write2 = new FileWriter(new File(getModuleBuildDirectory(), "archives.includes"));
 
           for (Iterator it = map.keySet().iterator(); it.hasNext(); ) {
             String key = (String) it.next();
@@ -149,7 +149,7 @@ public class PackageModule extends AbstractBuildCommand {
           e.printStackTrace();
         }
 
-        project.setProperty(MODULE_APPXML_PROPERTY, new File(getBuildDirectory(), "META-INF/application.xml".replace('/', File.separatorChar)).getPath());
+        project.setProperty(MODULE_APPXML_PROPERTY, new File(getModuleBuildDirectory(), "META-INF/application.xml".replace('/', File.separatorChar)).getPath());
         project.setProperty(MODULE_INCLUDES_PROPERTY, "META-INF/**");
         project.setProperty(MODULE_EXCLUDES_PROPERTY, "*.ear,archives.*");
         project.executeTarget(BUILD_TARGET_EAR);

@@ -55,7 +55,7 @@ public class TestModule extends AbstractBuildCommand {
       // Configure the Ant project
       //
       project.setProperty(MODULE_SOURCE_DIR_PROPERTY, srcBase.getPath());
-      project.setProperty(MODULE_BUILD_DIR_PROPERTY, getBuildDirectory().getPath());
+      project.setProperty(MODULE_BUILD_DIR_PROPERTY, getModuleBuildDirectory().getPath());
       project.setProperty(MODULE_TEST_DIR_PROPERTY, getTestDirectory().getPath());
       project.setProperty(MODULE_COMPILE_DIR_PROPERTY, getCompileDirectory().getPath());
       project.setProperty(MODULE_CLASSPATH_PROPERTY, getDependencies(getCurrentModule().getDependencies(), false, CLASSPATH_SEPARATOR_CHAR));

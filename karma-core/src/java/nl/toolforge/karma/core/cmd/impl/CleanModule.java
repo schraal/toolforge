@@ -36,16 +36,16 @@ public class CleanModule extends AbstractBuildCommand {
     Project project = getAntProject();
 
     try {
-      File buildBase = getBuildDirectory();
+      File buildBase = getModuleBuildDirectory();
       if (!buildBase.exists()) {
         // No point in removing built stuff if it isn't there
         //
-        throw new CommandException(CommandException.NO_MODULE_BUILD_DIR, new Object[] {getCurrentModule().getName(), getBuildDirectory().getPath()});
+        throw new CommandException(CommandException.NO_MODULE_BUILD_DIR, new Object[] {getCurrentModule().getName(), getModuleBuildDirectory().getPath()});
       }
 
       // Configure the Ant project
       //
-      project.setProperty(MODULE_BUILD_DIR_PROPERTY, getBuildDirectory().getPath());
+      project.setProperty(MODULE_BUILD_DIR_PROPERTY, getModuleBuildDirectory().getPath());
 
       try {
         project.executeTarget(CLEAN_MODULE_TARGET);
@@ -56,7 +56,7 @@ public class CleanModule extends AbstractBuildCommand {
 
       } catch (BuildException e) {
         e.printStackTrace();
-        throw new CommandException(CommandException.CLEAN_MODULE_FAILED, new Object[] {getBuildDirectory().getPath()});
+        throw new CommandException(CommandException.CLEAN_MODULE_FAILED, new Object[] {getModuleBuildDirectory().getPath()});
       }
     } catch (ManifestException e) {
       e.printStackTrace();
