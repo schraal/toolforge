@@ -6,7 +6,7 @@
 	<name>Toolforge Core Functionality</name>
         <groupId>toolforge</groupId>
 	<id>toolforge-core</id>
-	<currentVersion>1.0</currentVersion>
+	<currentVersion>1.1-dev</currentVersion>
 	<inceptionYear>2002</inceptionYear>
 	<package>nl.toolforge.core</package>
 	<siteAddress>ssh.sf.net</siteAddress>
