@@ -475,11 +475,13 @@ public abstract class AbstractManifest implements Manifest {
   private void setModuleBaseDir(Module module) {
 
     try {
-      if (((VersionControlSystem)module.getLocation()).getModuleOffset() == null) {
-        module.setBaseDir(new File(getModuleBaseDirectory(), module.getName()));
-      } else {
-        module.setBaseDir(new File(new File(getModuleBaseDirectory(), ((VersionControlSystem)module.getLocation()).getModuleOffset()), module.getName()));
-      }
+      module.setBaseDir(new File(getModuleBaseDirectory(), module.getName()));
+
+//      if (((VersionControlSystem)module.getLocation()).getModuleOffset() == null) {
+//        module.setBaseDir(new File(getModuleBaseDirectory(), module.getName()));
+//      } else {
+//        module.setBaseDir(new File(new File(getModuleBaseDirectory(), ((VersionControlSystem)module.getLocation()).getModuleOffset()), module.getName()));
+//      }
 //      module.setCheckoutDir(getModuleBaseDirectory());
     } catch(Exception e) {
       // Basically, if we can't do this, we have nothing ... really a RuntimeException

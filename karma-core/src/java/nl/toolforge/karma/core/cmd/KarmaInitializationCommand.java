@@ -18,31 +18,23 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd;
 
-import nl.toolforge.karma.core.boot.WorkingContext;
-import nl.toolforge.karma.core.boot.ManifestStore;
-import nl.toolforge.karma.core.boot.WorkingContextException;
 import nl.toolforge.karma.core.boot.LocationStore;
+import nl.toolforge.karma.core.boot.ManifestStore;
+import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.bundle.BundleCache;
 import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
 import nl.toolforge.karma.core.cmd.event.ErrorEvent;
 import nl.toolforge.karma.core.cmd.event.MessageEvent;
 import nl.toolforge.karma.core.cmd.event.SimpleMessage;
-import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.module.LocationModule;
-import nl.toolforge.karma.core.module.ManifestModule;
 import nl.toolforge.karma.core.vc.AuthenticationException;
-import nl.toolforge.karma.core.vc.Runner;
-import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.cvsimpl.AdminHandler;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.File;
 import java.util.ResourceBundle;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;

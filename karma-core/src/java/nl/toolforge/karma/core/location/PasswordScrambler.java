@@ -18,10 +18,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.location;
 
-import org.netbeans.lib.cvsclient.connection.StandardScrambler;
 import org.netbeans.lib.cvsclient.connection.Scrambler;
-
-import javax.swing.*;
+import org.netbeans.lib.cvsclient.connection.StandardScrambler;
 
 /**
  *

@@ -19,8 +19,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.cmd.util;
 
 import java.io.File;
-import java.util.Set;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Represents the path to a dependency. Consists of two parts, a relative part

@@ -18,11 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.location;
 
-import nl.toolforge.core.util.file.XMLFilenameFilter;
 import nl.toolforge.karma.core.boot.WorkingContext;
-import nl.toolforge.karma.core.vc.cvsimpl.CVSRepository;
-import nl.toolforge.karma.core.vc.cvsimpl.CVSException;
-import nl.toolforge.karma.core.vc.svnimpl.SubversionLocationImpl;
 import org.apache.commons.digester.Digester;
 import org.apache.tools.ant.DirectoryScanner;
 import org.xml.sax.SAXException;

@@ -21,10 +21,10 @@ package nl.toolforge.karma.core;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.text.MessageFormat;
 
 /**
  * <p>Class representing a Karma errorcode. These errorcodes are localized to support different languages. Errorcodes

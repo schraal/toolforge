@@ -484,7 +484,7 @@ public final class CVSRunner implements Runner {
     RlogCommand logCommand = new RlogCommand();
     logCommand.setModule(getModuleOffset(module) + "/" + Module.MODULE_DESCRIPTOR);
 
-    executeOnCVS(logCommand, module.getBaseDir(), arguments);
+    executeOnCVS(logCommand, new File("."), arguments);
 
     // Another hook into ext support.
     //
@@ -493,58 +493,7 @@ public final class CVSRunner implements Runner {
     } else {
       return ((CVSResponseAdapter) this.listener).getLogInformation();
     }
-
-//    return log(module, false);
   }
-
-//  public boolean exists(Module module) {
-//
-//    RannotateCommand r = new RannotateCommand();
-//    r.setModule(getModuleOffset(module));
-//
-//    try {
-//      executeOnCVS(r, module.getBaseDir(), null);
-//      return true;
-//    } catch (CVSException e) {
-//      return false;
-//    }
-//  }
-//
-//  /**
-//   *
-//   * @param module
-//   * @param moduleNameOnly Defaults to <code>true</code> if {@link #log(nl.toolforge.karma.core.manifest.Module)} is
-//   *                       used.
-//   * @return
-//   * @throws CVSException
-//   */
-//  public LogInformation log(Module module, boolean moduleNameOnly) throws CVSException {
-//
-//    Map arguments = new Hashtable();
-//    arguments.put("MODULE", module.getName());
-//    arguments.put("REPOSITORY", module.getLocation().getId());
-//
-//    RlogCommand logCommand = new RlogCommand();
-//
-//    if (moduleNameOnly) {
-//      logCommand.setModule(getModuleOffset(module));
-//      logCommand.setRecursive(false);
-////      logCommand.setHeaderAndDescOnly(true);
-////      logCommand.setCVSCommand('l', "");
-//    } else {
-//      logCommand.setModule(getModuleOffset(module) + "/" + Module.MODULE_DESCRIPTOR);
-//    }
-//
-//    executeOnCVS(logCommand, module.getBaseDir(), arguments);
-//
-//    // Another hook into ext support.
-//    //
-//    if (isExt) {
-//      return ((LogParser) this.listener).getLogInformation();
-//    } else {
-//      return ((CVSResponseAdapter) this.listener).getLogInformation();
-//    }
-//  }
 
   /**
    * Checks if the module has a CVS branch tag <code>module.getPatchLine().getName()</code> attached.

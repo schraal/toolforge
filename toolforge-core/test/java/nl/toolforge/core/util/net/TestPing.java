@@ -2,8 +2,8 @@ package nl.toolforge.core.util.net;
 
 import junit.framework.TestCase;
 
-import java.net.ServerSocket;
 import java.io.IOException;
+import java.net.ServerSocket;
 
 /**
  * @author D.A. Smedes

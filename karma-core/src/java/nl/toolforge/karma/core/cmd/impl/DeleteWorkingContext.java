@@ -24,9 +24,9 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.event.ErrorEvent;
+import nl.toolforge.karma.core.cmd.event.ExceptionEvent;
 import nl.toolforge.karma.core.cmd.event.MessageEvent;
 import nl.toolforge.karma.core.cmd.event.SimpleMessage;
-import nl.toolforge.karma.core.cmd.event.ExceptionEvent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

@@ -18,19 +18,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest.util;
 
-import nl.toolforge.karma.core.manifest.SourceModule;
-import nl.toolforge.karma.core.manifest.BaseModule;
 import nl.toolforge.karma.core.KarmaRuntimeException;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.FileOutputStream;
-
+import nl.toolforge.karma.core.manifest.SourceModule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
 /**
  * @author D.A. Smedes

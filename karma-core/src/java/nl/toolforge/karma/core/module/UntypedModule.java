@@ -22,11 +22,9 @@ import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.manifest.BaseModule;
-import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
 
 import java.io.IOException;
-import java.util.Set;
 
 /**
  * This type of module is used when a Module instance is required for remote modules. At this point, the type is not yet

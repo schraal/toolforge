@@ -21,9 +21,9 @@ package nl.toolforge.karma.core.cmd;
 import org.apache.commons.cli.Options;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Iterator;
 
 /**
  * A <code>CommandDescriptor</code> is the object representation of a command as it is specified in a

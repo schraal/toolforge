@@ -33,8 +33,8 @@ import nl.toolforge.karma.core.manifest.ModuleTypeException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
 import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.Project;
 
 import java.io.File;
 

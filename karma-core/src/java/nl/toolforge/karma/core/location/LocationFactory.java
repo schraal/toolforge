@@ -3,12 +3,11 @@
 */
 package nl.toolforge.karma.core.location;
 
-import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSRepository;
 import nl.toolforge.karma.core.vc.svnimpl.SubversionRepository;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class LocationFactory {
 

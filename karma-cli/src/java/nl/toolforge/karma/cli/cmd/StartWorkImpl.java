@@ -20,8 +20,6 @@ package nl.toolforge.karma.cli.cmd;
 
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.event.MessageEvent;
-import nl.toolforge.karma.core.cmd.event.SimpleMessage;
 import nl.toolforge.karma.core.cmd.impl.StartWorkCommand;
 
 /**

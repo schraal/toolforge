@@ -1,7 +1,5 @@
 package nl.toolforge.core.util.lang;
 
-import org.apache.commons.lang.StringUtils;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.cli;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class managing the CLI history of commands that have been run. The CLI is capable of fetching arrow-up and

@@ -18,16 +18,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.util;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.LinkedHashSet;
-
 import net.sf.sillyexceptions.OutOfTheBlueException;
-
+import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
@@ -36,7 +28,14 @@ import nl.toolforge.karma.core.manifest.ModuleTypeException;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvsimpl.Utils;
-import nl.toolforge.karma.core.Version;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Dependency management is heavily used by Karma. This helper class provides methods to resolve dependencies, check

@@ -21,9 +21,6 @@ package nl.toolforge.karma.cli.cmd;
 import nl.toolforge.karma.console.KarmaConsole;
 import nl.toolforge.karma.core.cmd.CommandResponseHandler;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
-import nl.toolforge.karma.core.manifest.Manifest;
-import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.location.LocationException;
 
 /**
  * This class is responsible for handling CommandResponses in an interactive way.

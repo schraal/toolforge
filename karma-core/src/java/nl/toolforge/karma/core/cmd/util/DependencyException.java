@@ -20,8 +20,6 @@ package nl.toolforge.karma.core.cmd.util;
 
 import nl.toolforge.karma.core.ErrorCode;
 
-import java.text.MessageFormat;
-
 /**
  * Thrown when
  *

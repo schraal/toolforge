@@ -18,14 +18,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest;
 
-import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.module.JavaEnterpriseApplicationModule;
-import nl.toolforge.karma.core.module.JavaWebApplicationModule;
-import nl.toolforge.karma.core.module.UntypedModule;
+import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.karma.core.module.JavaEnterpriseApplicationModule;
+import nl.toolforge.karma.core.module.JavaWebApplicationModule;
+import nl.toolforge.karma.core.module.UntypedModule;
 
 /**
  * <p>Factory class to create modules based on a {@link ModuleDigester}.</p>

@@ -25,7 +25,6 @@ import nl.toolforge.karma.core.cmd.event.MessageEvent;
 import nl.toolforge.karma.core.cmd.event.SimpleMessage;
 import org.apache.commons.io.FileUtils;
 
-import java.io.File;
 import java.io.IOException;
 
 /**

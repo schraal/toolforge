@@ -20,8 +20,8 @@ package nl.toolforge.karma.core;
 
 import junit.framework.TestCase;
 
-import java.util.ResourceBundle;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * @author D.A. Smedes

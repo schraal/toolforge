@@ -18,13 +18,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest;
 
-import java.util.Set;
-
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.manifest.util.LibModuleLayoutTemplate;
 import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
+
+import java.util.Set;
 
 /**
  * Module type containing libraries. This release only supports the Karma Java Edition, which means that the libs

@@ -1,7 +1,6 @@
 package nl.toolforge.karma.core.boot;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 
 /**
  * @author D.A. Smedes

@@ -20,8 +20,6 @@ package nl.toolforge.karma.core.location;
 
 import nl.toolforge.karma.core.ErrorCode;
 
-import java.text.MessageFormat;
-
 /**
  * <p>Exceptions relating to <code>Location</code>s. As with all other <code>KarmaExceptions</code>, exceptions can
  * only be thrown with a certain <code>ErrorCode</code>.

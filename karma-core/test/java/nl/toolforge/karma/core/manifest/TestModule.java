@@ -21,13 +21,12 @@ package nl.toolforge.karma.core.manifest;
 import com.mockobjects.dynamic.Mock;
 import junit.framework.TestCase;
 import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.manifest.util.SourceModuleLayoutTemplate;
 import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.manifest.util.SourceModuleLayoutTemplate;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.io.File;
 
 /**
  * Tests the {@link Module} interface and the {@link SourceModule} implementation.

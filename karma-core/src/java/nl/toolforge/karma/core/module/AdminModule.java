@@ -19,15 +19,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.module;
 
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.vc.VersionControlSystem;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.Authenticator;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.AuthenticationException;
-import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.vc.VersionControlSystem;
+import org.apache.tools.ant.DirectoryScanner;
 
 import java.io.File;
-
-import org.apache.tools.ant.DirectoryScanner;
 
 /**
  * <code>AdminModule</code>s are suitable for module-like structures which are not used by any <code>Manifest</code>. A

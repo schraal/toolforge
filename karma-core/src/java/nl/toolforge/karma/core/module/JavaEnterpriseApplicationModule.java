@@ -18,22 +18,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.module;
 
-import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.manifest.BaseModule;
-import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.util.EappModuleLayoutTemplate;
 import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
-import nl.toolforge.karma.core.scm.digester.ModuleDependencyCreationFactory;
-import org.apache.commons.digester.Digester;
-import org.xml.sax.SAXException;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Module type containing libraries. This release only supports the Karma Java Edition, which means that the libs

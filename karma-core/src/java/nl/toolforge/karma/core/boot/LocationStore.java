@@ -1,10 +1,10 @@
 package nl.toolforge.karma.core.boot;
 
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.manifest.BaseModule;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
-import nl.toolforge.karma.core.KarmaRuntimeException;
 
 import java.io.File;
 

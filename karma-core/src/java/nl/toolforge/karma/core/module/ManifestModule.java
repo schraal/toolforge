@@ -22,10 +22,10 @@ import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
-import nl.toolforge.karma.core.vc.DevelopmentLine;
-import nl.toolforge.karma.core.vc.Authenticator;
-import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.AuthenticationException;
+import nl.toolforge.karma.core.vc.Authenticator;
+import nl.toolforge.karma.core.vc.DevelopmentLine;
+import nl.toolforge.karma.core.vc.VersionControlException;
 
 import java.util.Set;
 

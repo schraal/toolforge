@@ -29,11 +29,6 @@ import org.xml.sax.SAXException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Iterator;
-import java.util.ArrayList;
 
 /**
  * <p>Loads command-descriptors from an <code>XML</code>-file. The default filename

@@ -26,8 +26,6 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 
 import java.net.URL;
-import java.util.Set;
-import java.util.List;
 
 /**
  * @author D.A. Smedes

@@ -20,7 +20,6 @@ package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
-import nl.toolforge.karma.core.cmd.event.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

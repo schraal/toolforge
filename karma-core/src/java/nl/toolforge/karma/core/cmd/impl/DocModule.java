@@ -21,7 +21,6 @@ package nl.toolforge.karma.core.cmd.impl;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.event.ExceptionEvent;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;

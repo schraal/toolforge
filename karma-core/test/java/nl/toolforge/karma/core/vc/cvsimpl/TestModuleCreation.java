@@ -30,10 +30,6 @@ import nl.toolforge.karma.core.vc.AuthenticatorKey;
 import nl.toolforge.karma.core.vc.Authenticators;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * @author D.A. Smedes

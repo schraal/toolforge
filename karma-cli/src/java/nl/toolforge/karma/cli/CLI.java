@@ -1,20 +1,19 @@
 package nl.toolforge.karma.cli;
 
 import nl.toolforge.karma.cli.cmd.CLICommandResponseHandler;
-import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.boot.Karma;
+import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.boot.WorkingContextConfiguration;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandContext;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandFactory;
 import nl.toolforge.karma.core.cmd.CommandLoadException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.prefs.Preferences;
 import java.io.File;
+import java.util.prefs.Preferences;
 
 /**
  * The command-line-interface for Karma. This class runs one command, then quits (gracefully hopefully). All arguments

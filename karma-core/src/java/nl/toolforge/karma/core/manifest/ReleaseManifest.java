@@ -18,13 +18,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest;
 
-import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.vc.cvsimpl.threads.PatchLineThread;
 import nl.toolforge.karma.core.vc.threads.ParallelRunner;
-
-import java.io.File;
 
 /**
  * A <code>ReleaseManifest</code> is created when the Release Manager collects all stable versions of modules.

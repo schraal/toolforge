@@ -1,7 +1,7 @@
 package nl.toolforge.karma.core.boot;
 
-import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.ErrorCode;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.manifest.Module;

@@ -19,8 +19,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.location;
 
 import nl.toolforge.karma.core.boot.WorkingContext;
-import nl.toolforge.karma.core.vc.AuthenticatorKey;
 import nl.toolforge.karma.core.vc.AuthenticationException;
+import nl.toolforge.karma.core.vc.AuthenticatorKey;
 
 /**
  * <p>A <code>Location</code> describes a location aspect of a module. Source modules are kept in a version control

@@ -1,18 +1,14 @@
 package nl.toolforge.karma.core.vc.cvsimpl;
 
 import nl.toolforge.core.util.file.MyFileUtils;
-import nl.toolforge.core.util.net.Ping;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.CommandResponseHandler;
-import nl.toolforge.karma.core.location.LocationException;
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.helper.ProjectHelperImpl;
 import org.netbeans.lib.cvsclient.command.Command;
-import org.netbeans.lib.cvsclient.event.CVSListener;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

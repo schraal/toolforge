@@ -21,11 +21,11 @@ package nl.toolforge.karma.core.test;
 import junit.framework.TestCase;
 import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.boot.Karma;
+import nl.toolforge.karma.core.boot.LocationStore;
+import nl.toolforge.karma.core.boot.ManifestStore;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.boot.WorkingContextConfiguration;
 import nl.toolforge.karma.core.boot.WorkingContextException;
-import nl.toolforge.karma.core.boot.ManifestStore;
-import nl.toolforge.karma.core.boot.LocationStore;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;

@@ -2,9 +2,8 @@ package nl.toolforge.core.util.collection;
 
 import junit.framework.TestCase;
 
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @author D.A. Smedes

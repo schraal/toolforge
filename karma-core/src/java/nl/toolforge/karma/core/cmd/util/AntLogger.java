@@ -18,16 +18,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.util;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
-
-import org.apache.tools.ant.BuildEvent;
-import org.apache.tools.ant.DefaultLogger;
-
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.event.MessageEvent;
 import nl.toolforge.karma.core.cmd.event.SimpleMessage;
+import org.apache.tools.ant.BuildEvent;
+import org.apache.tools.ant.DefaultLogger;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * @author D.A. Smedes

@@ -1,7 +1,7 @@
 package nl.toolforge.core.util.net;
 
-import java.net.Socket;
 import java.io.IOException;
+import java.net.Socket;
 
 /**
  * @author D.A. Smedes

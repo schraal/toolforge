@@ -1,7 +1,7 @@
 package nl.toolforge.karma.cli.cmd;
 
-import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.boot.Karma;
+import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.boot.WorkingContextConfiguration;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
@@ -11,12 +11,12 @@ import nl.toolforge.karma.core.cmd.event.ExceptionEvent;
 import nl.toolforge.karma.core.cmd.event.MessageEvent;
 import nl.toolforge.karma.core.cmd.event.SimpleMessage;
 import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.manifest.ManifestException;
 
+import java.io.File;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
-import java.io.File;
 
 /**
  * Sets the default working context identifier as a user preference. Note, this command has no effect

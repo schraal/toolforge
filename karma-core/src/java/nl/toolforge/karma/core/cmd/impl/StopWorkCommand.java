@@ -18,10 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import java.io.IOException;
-
-import org.apache.commons.io.FileUtils;
-
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
@@ -42,6 +38,9 @@ import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvsimpl.AdminHandler;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSModuleStatus;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
+import org.apache.commons.io.FileUtils;
+
+import java.io.IOException;
 
 /**
  *

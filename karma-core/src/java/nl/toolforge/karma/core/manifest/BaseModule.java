@@ -18,20 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.PatternSyntaxException;
-
 import net.sf.sillyexceptions.OutOfTheBlueException;
-import org.apache.commons.digester.Digester;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.xml.sax.SAXException;
-
 import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.Version;
@@ -51,6 +38,18 @@ import nl.toolforge.karma.core.vc.PatchLine;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
+import org.apache.commons.digester.Digester;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.xml.sax.SAXException;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * The name says it all. This class is the base (template) for a module.
@@ -197,27 +196,6 @@ public abstract class BaseModule implements Module {
     return baseDir;
   }
 
-//  public final void setCheckoutDir(File checkoutDir) {
-//
-//    if (checkoutDir == null) {
-//      throw new IllegalArgumentException("If you use it, initialize it with a valid 'File' instance ...");
-//    }
-//    this.checkoutDir = checkoutDir;
-//  }
-
-  /**
-   * Warning, as for {@link #getBaseDir}, this method will throw a KarmaRuntimeException when the checkoutdir has not
-   * been set.
-   *
-   * @return The directory where a version control system should check out the module.
-   */
-//  public final File getCheckoutDir() {
-//    if (checkoutDir == null) {
-//      throw new KarmaRuntimeException("CheckoutDir not set.");
-//    }
-//    return checkoutDir;
-//  }
-
   public abstract ModuleLayoutTemplate getLayoutTemplate();
 
   /**
@@ -253,7 +231,6 @@ public abstract class BaseModule implements Module {
 
     // Add the module to the version control system
     //
-//    setCheckoutDir(tmpDir);
     setBaseDir(moduleDir);
 
     ModuleDescriptor descriptor = new ModuleDescriptor(this);

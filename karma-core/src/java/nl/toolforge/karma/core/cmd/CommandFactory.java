@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.cmd;
 
 import net.sf.sillyexceptions.OutOfTheBlueException;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.MissingArgumentException;
 import org.apache.commons.cli.MissingOptionException;
@@ -37,8 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-
-import nl.toolforge.karma.core.KarmaRuntimeException;
 
 //import net.sf.sillyexceptions.OutOfTheBlueException;
 

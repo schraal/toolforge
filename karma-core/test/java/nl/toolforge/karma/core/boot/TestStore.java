@@ -1,12 +1,9 @@
 package nl.toolforge.karma.core.boot;
 
-import junit.framework.TestCase;
-import nl.toolforge.karma.core.vc.AuthenticationException;
-import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.KarmaRuntimeException;
 import com.mockobjects.dynamic.Mock;
+import junit.framework.TestCase;
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.location.Location;
 
 /**
  * @author D.A. Smedes

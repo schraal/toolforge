@@ -3,12 +3,12 @@
 */
 package nl.toolforge.karma.core.cmd;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Collection;
 
 /**
  * @author W.M. Oosterom

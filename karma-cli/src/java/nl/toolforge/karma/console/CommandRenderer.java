@@ -18,19 +18,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.console;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Hashtable;
-
-import org.apache.commons.cli.Option;
-import org.apache.commons.lang.StringUtils;
-
 import nl.toolforge.core.util.lang.NiftyStringUtils;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandFactory;
 import nl.toolforge.karma.core.cmd.CommandLoadException;
+import org.apache.commons.cli.Option;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.Collection;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 
 public final class CommandRenderer {
 
