@@ -10,7 +10,7 @@
 
     <ant:copy
       file="${maven.build.dir}/${maven.final.name}.jar"
-      todir="../karma-cli/lib/"
+      tofile="../karma-cli/lib/karma-launcher.jar"
       overwrite="true"
       />
   </postGoal>
