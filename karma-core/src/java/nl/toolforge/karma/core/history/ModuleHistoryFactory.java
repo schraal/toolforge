@@ -9,52 +9,73 @@ import java.io.File;
 import java.io.IOException;
 
 /**
+ * Factory for {@link ModuleHistory} objects. The factory is initialized with the manifest home, which is the
+ * fysical location where the modules of the current manifest are located. Then, for each module the module
+ * history can be retrieved.
+ *
  * @author W.H. Schraal
  */
 public class ModuleHistoryFactory {
 
     private static final Log logger = LogFactory.getLog(ModuleHistoryFactory.class);
-    private File projectRoot = null;
+    private static File manifestHome = null;
 
     private static ModuleHistoryFactory instance = null;
 
-    private ModuleHistoryFactory(File projectRoot) {
-        this.projectRoot = projectRoot;
+    private ModuleHistoryFactory(File manifestHome) {
+        ModuleHistoryFactory.manifestHome = manifestHome;
     }
 
-    public static ModuleHistoryFactory getInstance(File projectRoot) {
-        if (instance == null) {
-            logger.info("ModuleHistoryFactory not initialized yet. Making new instance with projectRoot: "+projectRoot);
-            instance = new ModuleHistoryFactory(projectRoot);
+    /**
+     * Retrieve the one and only instance of this class, given the specified manifest home.
+     *
+     * @param manifestHome  The fysical location of the local copies of the current manifest's module
+     * @return ModuleHistoryFactory
+     */
+    public static ModuleHistoryFactory getInstance(File manifestHome) {
+        if ( (instance == null) || !ModuleHistoryFactory.manifestHome.equals(manifestHome)) {
+            logger.info("ModuleHistoryFactory not initialized yet. Making new instance with manifestHome: "+manifestHome);
+            instance = new ModuleHistoryFactory(manifestHome);
         }
         return instance;
     }
 
+    /**
+     * Retrieve the module history (from file) of the given module. Returns null when no module history
+     * can be found.
+     *
+     * @param moduleName  The name of the module for which to retrieve the module history.
+     * @return ModuleHistory of the given module or null when no module history can be found.
+     */
     public ModuleHistory getModuleHistory(String moduleName) {
         try {
-            File history = new File(projectRoot, moduleName+File.separator+"history.xml");
-            System.out.println("loading history from: "+history);
+            File historyLocation = new File(manifestHome, moduleName+File.separator+"history.xml");
+            logger.info("loading history from: "+historyLocation);
 
             Digester digester = new Digester();
-            digester.setValidating(false);
+            digester.setValidating(false);   //todo: dit moet true worden
             digester.addObjectCreate("history", "nl.toolforge.karma.core.history.ModuleHistory");
-            digester.addObjectCreate("history/event", "nl.toolforge.karma.core.history.Event");
+            digester.addObjectCreate("history/event", "nl.toolforge.karma.core.history.ModuleHistoryEvent");
             digester.addSetProperties("history/event");
             digester.addObjectCreate("history/event/datetime", "java.util.Date");
             digester.addSetProperties("history/event/datetime");
             digester.addFactoryCreate("history/event/version", "nl.toolforge.karma.core.VersionCreationFactory");
             digester.addSetNext("history/event/version", "setVersion", "nl.toolforge.karma.core.Version");
             digester.addSetNext("history/event/datetime", "setDatetime", "java.util.Date");
-            digester.addSetNext("history/event", "addEvent", "nl.toolforge.karma.core.history.Event");
+            digester.addSetNext("history/event", "addEvent", "nl.toolforge.karma.core.history.ModuleHistoryEvent");
 
-            ModuleHistory moduleHistory = (ModuleHistory) digester.parse(history);
-            System.out.println(moduleHistory);
+            ModuleHistory moduleHistory = (ModuleHistory) digester.parse(historyLocation);
+            moduleHistory.setHistoryLocation(historyLocation);
+
+            logger.debug(moduleHistory);
             return moduleHistory;
 
         } catch (IOException ioe) {
             ioe.printStackTrace();
+            //todo: fatsoenlijke foutmelding geven
         } catch (SAXException se) {
             se.printStackTrace();
+            //todo: fatsoenlijke foutmelding geven
         }
         return null;
     }
