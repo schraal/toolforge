@@ -5,9 +5,15 @@
 
   <body>
     <links>
-      <item name="Maven" href="http://jakarta.apache.org/turbine/maven/"/>
+      <item name="Toolforge Home"	   href="http://toolforge.sourceforge.net"/>
     </links>
 
+    <menu name="Toolforge Components">
+	    <item name="Toolforge Core" href="../toolforge-core/"/>
+	    <item name="Karma Core"     href="../karma-core/"/>
+	    <item name="Karma CLI"      href="../karma-cli/"/>
+	    <item name="Karma launcher" href="../karma-launcher/"/>
+    </menu>
     <menu name="Essentials">
       <item name="Overview" href="/index.html"/>
     </menu>

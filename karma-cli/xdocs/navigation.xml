@@ -9,6 +9,12 @@
       <item name="Toolforge Home"	   href="http://toolforge.sourceforge.net"/>
     </links>
 
+    <menu name="Toolforge Components">
+	    <item name="Toolforge Core" href="../toolforge-core/"/>
+	    <item name="Karma Core"     href="../karma-core/"/>
+	    <item name="Karma CLI"      href="../karma-cli/"/>
+	    <item name="Karma launcher" href="../karma-launcher/"/>
+    </menu>
     <menu name="General Information">
       <item name="Overview"              href="/index.html"/>
       <item name="Features"              href="/features.html"/>
@@ -22,10 +28,10 @@
       <item name="Aura GUI"                href=""/>
 
       <submenu name="Plugins">
-      <item name="Intelli-J" href="/plugins/intelli-j.html"/>    
-      <item name="Eclipse" href="/plugins/eclipse.html"/>    
-      <item name="JDeveloper" href="/plugins/jdeveloper.html"/>    
-      <item name="Maven Plugin" href=""/>    
+      <item name="Intelli-J" href="/plugins/intelli-j.html"/>
+      <item name="Eclipse" href="/plugins/eclipse.html"/>
+      <item name="JDeveloper" href="/plugins/jdeveloper.html"/>
+      <item name="Maven Plugin" href=""/>
       </submenu>
 
     </menu>
