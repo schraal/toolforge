@@ -1,15 +1,5 @@
 package nl.toolforge.karma.core.cmd.util;
 
-import nl.toolforge.karma.core.boot.WorkingContext;
-import nl.toolforge.karma.core.manifest.Manifest;
-import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.ModuleTypeException;
-import nl.toolforge.karma.core.manifest.SourceModule;
-import nl.toolforge.karma.core.scm.ModuleDependency;
-import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.cvsimpl.Utils;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -18,6 +8,15 @@ import java.util.Iterator;
 import java.util.Set;
 
 import net.sf.sillyexceptions.OutOfTheBlueException;
+
+import nl.toolforge.karma.core.boot.WorkingContext;
+import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.ModuleTypeException;
+import nl.toolforge.karma.core.scm.ModuleDependency;
+import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.cvsimpl.Utils;
 
 /**
  * Dependency management is heavily used by Karma. This helper class provides methods to resolve dependencies, check
@@ -140,7 +139,7 @@ public final class DependencyHelper {
    * stored in the build directory of the given module.
    * </p>
    */
-  public void createModuleDependenciesFilter(Module module) throws ModuleTypeException, DependencyException {
+  public void createModuleDependenciesFilter(Module module) throws DependencyException {
     BuildEnvironment env = new BuildEnvironment(manifest, module);
 
     FileWriter write1 = null;
@@ -277,7 +276,7 @@ public final class DependencyHelper {
       } else if (manifest.getState(module).equals(Module.DYNAMIC)) {
         artifact += (Utils.getLocalVersion(module));
       } else { // STATIC module
-        artifact += ((SourceModule) module).getVersionAsString();
+        artifact += ((Module) module).getVersionAsString();
       }
     } catch (VersionControlException v) {
       throw new DependencyException(v.getErrorCode(), v.getMessageArguments());
