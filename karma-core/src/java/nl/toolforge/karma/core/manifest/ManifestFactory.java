@@ -114,8 +114,6 @@ public final class ManifestFactory {
   private Digester getDigester() {
 
     Digester digester = new Digester();
-    digester.setSchema();
-    
 
     // The <manifest>-element
     //
@@ -135,9 +133,6 @@ public final class ManifestFactory {
     digester.addSetNext("*/include-manifest", "includeManifest");
 
     return digester;
-
-//    URL rules = ManifestFactory.class.getClassLoader().getResource("manifest-rules.xml");
-//    return DigesterLoader.createDigester(rules);
   }
 
   private InputStream getManifestFileAsStream(String id) throws ManifestException {
