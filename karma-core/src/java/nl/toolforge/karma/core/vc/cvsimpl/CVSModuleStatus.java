@@ -40,6 +40,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import net.sf.sillyexceptions.OutOfTheBlueException;
+
 /**
  * @author D.A. Smedes
  * @version $Id$
@@ -120,6 +122,12 @@ public class CVSModuleStatus implements ModuleStatus {
     return (Version) matchingList.get(matchingList.size() - 1);
   }
 
+  /**
+   * Gets the local version of the module, which is determined by parsing the <code>CVS/Entries</code> file.
+   *
+   * @return The version of the local checkout or <code>null</code> when the HEAD of the developmentline is local.
+   * @throws CVSException
+   */
   public Version getLocalVersion() throws CVSException {
 
     StandardAdminHandler handler = new StandardAdminHandler();
@@ -128,22 +136,26 @@ public class CVSModuleStatus implements ModuleStatus {
     try {
       Entry[] entries = handler.getEntriesAsArray(module.getBaseDir());
 
-      Entry moduleInfo = null;
+      Entry moduleDescriptor = null;
       for (int i = 0; i < entries.length; i++) {
         if (entries[i].getName().equals(Module.MODULE_DESCRIPTOR)) {
-          moduleInfo = entries[i];
+          moduleDescriptor = entries[i];
         }
       }
       try {
-        if (moduleInfo == null || moduleInfo.getTag() == null || moduleInfo.getTag().matches(DevelopmentLine.DEVELOPMENT_LINE_PATTERN_STRING)) {
+        if (moduleDescriptor == null) {
+          throw new OutOfTheBlueException("`module-descriptor.xml` does not exist !!!! MAJOR module inconsistency.");
+        }
+
+        if (moduleDescriptor.getTag() == null || moduleDescriptor.getTag().matches(DevelopmentLine.DEVELOPMENT_LINE_PATTERN_STRING)) {
           // We have the HEAD of a DevelopmentLine.
           //
           return null;
         }
-        if (moduleInfo.getTag().startsWith(PatchLine.NAME_PREFIX)) {
-          localVersion = new Patch(moduleInfo.getTag().substring(moduleInfo.getTag().indexOf("_") + 1));
+        if (moduleDescriptor.getTag().startsWith(PatchLine.NAME_PREFIX)) {
+          localVersion = new Patch(moduleDescriptor.getTag().substring(moduleDescriptor.getTag().indexOf("_") + 1));
         } else {
-          localVersion = new Version(moduleInfo.getTag().substring(moduleInfo.getTag().indexOf("_") + 1));
+          localVersion = new Version(moduleDescriptor.getTag().substring(moduleDescriptor.getTag().indexOf("_") + 1));
         }
 
       } catch (Exception e) {
