@@ -132,6 +132,10 @@ public class KarmaException extends Exception {
 		}
 	}
 
+	public String getMessage() {
+		return getErrorMessage();
+	}
+
 	public void printStackTrace() {
 
 		logger.error("ERRORCODE : " + errorCode.getErrorCode());

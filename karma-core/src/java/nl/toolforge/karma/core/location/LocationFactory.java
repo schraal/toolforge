@@ -5,6 +5,8 @@ import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.prefs.Preferences;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -25,12 +27,20 @@ import java.util.Map;
  */
 public final class LocationFactory {
 
+	private static Log logger = LogFactory.getLog(LocationFactory.class);
+
 	private static LocationFactory instance = null;
 
 	private static Map locations = null;
 
 	private LocationFactory() {}
 
+	/**
+	 * Gets the singleton instance of the location factory. This instance can be used to get access to all location
+	 * objects.
+	 *
+	 * @return A location factory.
+	 */
 	public static LocationFactory getInstance() {
 
 		if (instance == null) {
@@ -39,25 +49,51 @@ public final class LocationFactory {
 		return instance;
 	}
 
+	/**
+	 * <p>Loads authentication data from the <code>location-authentication.xml</code> in the karma configuration directory.
+	 * The file should contain the following xml:
+	 *
+	 * <pre>
+	 *
+	 * &lt;authenticators&gt;
+	 *   &lt;location type="cvs-repository" id="cvs-local"&gt;
+	 *     &lt;username&gt;asmedes&lt;/username&gt;
+	 *     &lt;password&gt;_9heyjji&lt;/password&gt;
+	 *     &lt;protocol&gt;pserver&lt;/protocol&gt;
+	 * &lt;/location&gt;
+	 * &lt;/authenticators&gt;
+	 *
+	 * </pre>
+	 *
+	 * @throws KarmaException When the authentication data could not be loaded.
+	 */
 	public synchronized void load() throws KarmaException {
 
 		Preferences prefs = Preferences.getInstance();
 
-		load(
-			new File(prefs.get(Preferences.LOCATION_STORE_DIRECTORY_PROPERTY)),
-			prefs.getConfigurationDirectory().getPath() + File.separator + "location-authentication.xml"
-		);
+		try {
+			load(
+				new File(prefs.get(Preferences.LOCATION_STORE_DIRECTORY_PROPERTY)),
+				prefs.getConfigurationDirectory().getPath() + File.separator + "location-authentication.xml"
+			);
+		} catch (KarmaException k) {
+			logger.error(
+				"Check if a location-authentication.xml is available in the directory " +
+				"identified by the property 'karma.location-store.directory'");
+			throw k;
+		}
 	}
 
 	/**
-	 * Uses all <code>xml</code> files in the directory identified by the
-	 * {@link nl.toolforge.karma.core.prefs.Preferences#LOCATION_STORE_DIRECTORY_PROPERTY} property.
+	 * See {@link #load()}
 	 *
 	 * @param locationFilesPath
 	 *        The path where all location XML files can be found.
 	 * @param authenticationFilePath
 	 *        The path to the location where <code>location-authentication.xml</code> can be found. The final "/" is not
 	 *        required.
+	 *
+	 * @throws KarmaException See {@link #load()}
 	 *
 	 * TODO make sure that all xml files are validated before being used.
 	 */
@@ -95,7 +131,6 @@ public final class LocationFactory {
 				// Check all elements for their type and add them to the locationList
 				//
 				Element locationElement = (Element) locationElements.item(i);
-				Location location = null;
 
 				if (Location.Type.CVS_REPOSITORY.equals(locationElement.getAttribute("type").toUpperCase())) {
 					CVSLocationImpl cvsLocation = new CVSLocationImpl(locationElement.getAttribute("id"));
@@ -130,7 +165,7 @@ public final class LocationFactory {
 				}
 			}
 
-			Document authenticators = builder.parse(new File(authenticationFilePath));
+//			Document authenticators = builder.parse(new File(authenticationFilePath));
 
 			// TODO : match with authenticators
 
@@ -152,5 +187,4 @@ public final class LocationFactory {
 	public String toString() {
 		return locations.toString();
 	}
-
 }

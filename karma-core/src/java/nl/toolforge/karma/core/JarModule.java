@@ -5,13 +5,13 @@ import nl.toolforge.karma.core.expr.ModuleNameExpression;
 import nl.toolforge.karma.core.expr.VersionExpression;
 
 /**
- * <p>A <code>SourceModule</code> represents a module for which the developer wants to have the sources available to
- * on the local harddisk.
- *
+ * <p>A <code>JarModule</code> represents a Java <code>jar</code>-artifact. *
  *
  * @see Module
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public class JarModule extends DefaultModule {
 

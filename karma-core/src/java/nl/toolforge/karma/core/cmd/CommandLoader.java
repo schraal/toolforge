@@ -16,8 +16,8 @@ import java.util.Set;
 
 /**
  * <p>Loads command-descriptors from an <code>XML</code>-file. The default filename
- * is <code>commands.xml</code>, which is located in the directory described by
- * {@link nl.toolforge.karma.core.prefs.Preferences#CONFIGURATION_DIRECTORY_PROPERTY}.
+ * is <code>commands.xml</code>, which should be available in the classpath. It should have been shipped with
+ * the Karma Core release jar-file.
  *
  * <p>TODO the xml instance should be checked by a DTD or XML Schema document.
  *
@@ -60,8 +60,6 @@ public final class CommandLoader {
 	 * @return A <code>Set</code> of {@link nl.toolforge.karma.core.cmd.DefaultCommand} instances.
 	 */
 	Set load(String resource) throws KarmaException {
-
-		// TODO : I would like to parse this thing using a Digester, yet my first attempts failed.
 
 		Set descriptors = new HashSet();
 		Set uniqueAliasses = new HashSet();
