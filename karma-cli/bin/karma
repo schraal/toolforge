@@ -37,7 +37,7 @@ for JAR in $JARS ; do
   CLASSPATH=$CLASSPATH:$JAR
 done
 
-echo "Loading plugins"
+echo "Loading plugins ..."
 PLUGINS=`ls $KARMA_HOME/lib/plugins/*.jar 2>/dev/null`
 for PLUGIN in $PLUGINS ; do
   echo "  plugin ${PLUGIN} found."	
@@ -49,7 +49,7 @@ CLASSPATH=$CLASSPATH:$JAVA_HOME/lib/tools.jar
 # The Jar file containing the launcher. This should be
 # the only class file in the classpath
 #
-KARMA_LAUNCHER_JAR=`ls $KARMA_HOME/lib/karma-launcher-*.jar`
+KARMA_LAUNCHER_JAR=`ls $KARMA_HOME/lib/karma-launcher*.jar`
 
 # Now finally we are able to run karma
 #
