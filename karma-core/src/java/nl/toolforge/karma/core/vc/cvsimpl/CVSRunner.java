@@ -18,26 +18,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.vc.cvsimpl;
 
-import nl.toolforge.core.util.file.MyFileUtils;
-import nl.toolforge.karma.core.ErrorCode;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.cmd.Command;
-import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.history.ModuleHistory;
-import nl.toolforge.karma.core.history.ModuleHistoryEvent;
-import nl.toolforge.karma.core.history.ModuleHistoryException;
-import nl.toolforge.karma.core.history.ModuleHistoryFactory;
-import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.vc.Authenticator;
-import nl.toolforge.karma.core.vc.Authenticators;
-import nl.toolforge.karma.core.vc.DevelopmentLine;
-import nl.toolforge.karma.core.vc.PatchLine;
-import nl.toolforge.karma.core.vc.Runner;
-import nl.toolforge.karma.core.vc.SymbolicName;
-import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.VersionControlSystem;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+
+import net.sf.sillyexceptions.OutOfTheBlueException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.Client;
@@ -58,18 +50,26 @@ import org.netbeans.lib.cvsclient.connection.ConnectionFactory;
 import org.netbeans.lib.cvsclient.connection.PServerConnection;
 import org.netbeans.lib.cvsclient.event.CVSListener;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
-import net.sf.sillyexceptions.OutOfTheBlueException;
+import nl.toolforge.core.util.file.MyFileUtils;
+import nl.toolforge.karma.core.ErrorCode;
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.cmd.Command;
+import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.history.ModuleHistory;
+import nl.toolforge.karma.core.history.ModuleHistoryEvent;
+import nl.toolforge.karma.core.history.ModuleHistoryException;
+import nl.toolforge.karma.core.history.ModuleHistoryFactory;
+import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.vc.Authenticator;
+import nl.toolforge.karma.core.vc.Authenticators;
+import nl.toolforge.karma.core.vc.DevelopmentLine;
+import nl.toolforge.karma.core.vc.PatchLine;
+import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.vc.SymbolicName;
+import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.VersionControlSystem;
 
 /**
  * <p>Runner class for CVS. Executes stuff on a CVS repository.
@@ -127,7 +127,7 @@ public final class CVSRunner implements Runner {
       throw new KarmaRuntimeException("Wrong type for location. Should be CVSRepository.", e);
     }
 
-    //
+    //If we don't have a
     //
     Authenticator a = Authenticators.getAuthenticator(cvsLocation.getAuthenticatorKey());
     cvsLocation.setUsername(a.getUsername());
@@ -270,7 +270,7 @@ public final class CVSRunner implements Runner {
     }
     // NOTE : the following may not be included. My theory is there is a bug in the netbeans api.
     // todo to be investigated further.
-    //    checkoutCommand.setPruneDirectories(true);
+    checkoutCommand.setPruneDirectories(true);
 
     // The checkout directory for a module has to be relative to
 

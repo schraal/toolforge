@@ -28,10 +28,10 @@
       <option opt="l" longOpt="location" hasArgs="true" required="true" description="The location alias.">
         <arg>location</arg>
       </option>
-      <option opt="p" longOpt="password" hasArgs="true" required="true" description="The password for the location">
+      <option opt="p" longOpt="password" hasArgs="true" required="false" description="The password for the location">
         <arg>password</arg>
       </option>
-      <option opt="u" longOpt="username" hasArgs="true" required="false" description="The username for the location">
+      <option opt="u" longOpt="username" hasArgs="true" required="true" description="The username for the location">
         <arg>username</arg>
       </option>
     </options>
@@ -39,8 +39,8 @@
     <classname>nl.toolforge.karma.core.cmd.impl.CreatePassword</classname>
 
     <help lang="en">
-      Create or changes an authenticator entry in `authenticators.xml` for a location. Username is optional. When
-      username is provided as an argument and it is different than the old username, the username will also be changed.
+      Create or changes an authenticator entry in `authenticators.xml` for a location. When
+      username is is different than the old username, the username will be changed.
     </help>
 
   </command>
