@@ -5,6 +5,8 @@ package nl.toolforge.karma.core.cmd;
  *
  * @author D.A. Smedes
  * @version $Id$
+ *
+ * @deprecated
  */
 public class SimpleCommandResponse extends CommandResponse {
 
@@ -13,7 +15,7 @@ public class SimpleCommandResponse extends CommandResponse {
 		// Do some checking if need be ...
 		//
 
-		super.add(message);
+		super.addMessage(message);
 	}
 
 }

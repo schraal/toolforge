@@ -70,7 +70,7 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
 	 *                <code>CVSCommandMessage</code>
 	 */
 	public void addMessage(CommandMessage message) {
-		add(message);
+		super.addMessage(message);
 	}
 
 	/**

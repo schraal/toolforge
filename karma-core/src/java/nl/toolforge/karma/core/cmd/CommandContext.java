@@ -112,28 +112,26 @@ public final class CommandContext {
 	 * a result of this exception. It should be handled nicely.
 	 *
 	 * @param commandLine The command to execute. A full command line is passed as a parameter.
-	 * @return The result of the execution run of the command.
 	 * @throws KarmaException A whole lot. Interface applications should <b>*** NOT ***</b> quit program execution as a
 	 *                        result of this exception. It should be handled nicely.
 	 */
-	public CommandResponse execute(String commandLine) throws KarmaException {
+	public void execute(String commandLine, CommandResponseHandler responseHandler) throws KarmaException {
 
 		if (!isInitialized()) {
 			throw new KarmaException(KarmaException.COMMAND_CONTEXT_NOT_INITIALIZED);
 		}
 
     Command command = CommandFactory.getInstance().getCommand(commandLine);
-		return execute(command);
+		execute(command, responseHandler);
 	}
 
 	/**
-	 * See {@link #execute(java.lang.String)}.
+	 * See {@link #execute(java.lang.String, CommandResponseHandler)}.
 	 *
 	 * @param command The command to execute.
-	 * @return See {@link #execute(java.lang.String)}.
-	 * @throws KarmaException See {@link #execute(java.lang.String)}.
+	 * @throws KarmaException See {@link #execute(java.lang.String, CommandResponseHandler)}.
 	 */
-	public CommandResponse execute(Command command) throws KarmaException {
+	public void execute(Command command, CommandResponseHandler responseHandler) throws KarmaException {
 
 		if (!isInitialized()) {
 			throw new KarmaException(KarmaException.COMMAND_CONTEXT_NOT_INITIALIZED);
@@ -145,9 +143,7 @@ public final class CommandContext {
 		// Store a reference to this context in the command
 		//
 		command.setContext(this);
-		CommandResponse response = command.execute();
-
-		return response;
+		command.execute(responseHandler);
 	}
 
 	/**

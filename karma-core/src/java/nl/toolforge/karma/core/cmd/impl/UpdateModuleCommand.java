@@ -8,6 +8,7 @@ import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
+import nl.toolforge.karma.core.cmd.CommandResponseHandler;
 import nl.toolforge.karma.core.vc.Runner;
 
 /**
@@ -42,43 +43,43 @@ public class UpdateModuleCommand extends DefaultCommand {
 	 * This command will update the module from the version control system. An update is done when
 	 * the module is already present, otherwise a checkout will be performed. The checkout directory for the module
 	 * is relative to the root directory of the <code>active</code> manifest.
-	 *
-	 * @throws KarmaException When no manifest is loaded, a {@link nl.toolforge.karma.core.ManifestException#NO_MANIFEST_SELECTED} is thrown. For
-	 *                        other errors, a more generic {@link KarmaException} is thrown.
 	 */
-	public CommandResponse execute() throws KarmaException {
+	public void execute(CommandResponseHandler handler) {
+    try {
+      // A manifest must be present for this command
+      //
+      if (!getContext().isManifestLoaded()) {
+        throw new ManifestException(ManifestException.NO_MANIFEST_SELECTED);
+      }
 
-		// A manifest must be present for this command
-		//
-    if (!getContext().isManifestLoaded()) {
-      throw new ManifestException(ManifestException.NO_MANIFEST_SELECTED);
+      String moduleName = getCommandLine().getOptionValue("m");
+
+      Module module = getContext().getCurrent().getModule(moduleName);
+
+      Version version = null;
+      if (getCommandLine().getOptionValue("v") != null) {
+        // The module should be updated to a specific version.
+        //
+        version = new Version(getCommandLine().getOptionValue("v"));
+      }
+
+      Runner runner = getContext().getRunner(module);
+
+      CommandResponse response = null;
+      if (getContext().getCurrent().isLocal(module)) {
+        response = runner.update(module, version);
+      } else {
+        response = runner.checkout(module, version);
+      }
+
+      // Apparently, no exceptions where thrown, so we can continue
+      //
+
+      // ...
+    } catch (Exception e) {
+      //todo proper exception handling
+      e.printStackTrace();
     }
-
-		String moduleName = getCommandLine().getOptionValue("m");
-
-		Module module = getContext().getCurrent().getModule(moduleName);
-
-		Version version = null;
-		if (getCommandLine().getOptionValue("v") != null) {
-			// The module should be updated to a specific version.
-			//
-			version = new Version(getCommandLine().getOptionValue("v"));
-		}
-
-		Runner runner = getContext().getRunner(module);
-
-		CommandResponse response = null;
-		if (getContext().getCurrent().isLocal(module)) {
-			response = runner.update(module, version);
-		} else {
-			response = runner.checkout(module, version);
-		}
-
-		// Apparently, no exceptions where thrown, so we can continue
-		//
-
-		// ...
-
-		return response;
 	}
+
 }

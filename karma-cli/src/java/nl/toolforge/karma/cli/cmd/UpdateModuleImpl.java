@@ -4,6 +4,7 @@ import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.CommandResponseHandler;
 import nl.toolforge.karma.core.cmd.impl.UpdateModuleCommand;
 
 /**
@@ -19,11 +20,8 @@ public class UpdateModuleImpl extends UpdateModuleCommand {
     super(descriptor);
   }
 
-  public CommandResponse execute() throws KarmaException {
-
-    CommandResponse response = super.execute();
-
-    return response;
+  public void execute(CommandResponseHandler handler) {
+    super.execute(handler);
   }
 
 }

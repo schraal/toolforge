@@ -9,11 +9,12 @@ import java.util.Set;
 
 /**
  * Command response objects are returned by the execute method of the Command Object. It is recognized that a GUI needs
- * to be aware of the result of some commands. Commands do sometimes log a few things through the logging facilities,
- * but that's something that is not very usefull for a GUI.
+ * to be aware of the result of some commands. Therefor, all communication from to command back to the caller goes through
+ * a response object.
  *
  * @author W.M. Oosterom
  * @author D.A. Smedes
+ * @author W.H. Schraal
  * @version $Id$
  */
 public abstract class CommandResponse {
@@ -61,15 +62,19 @@ public abstract class CommandResponse {
 		return (CommandMessage[]) commandMessages.toArray(new SimpleCommandMessage[commandMessages.size()]);
 	}
 
-	public abstract void addMessage(CommandMessage message);
+  /**
+   * Add a message to the command response.
+   *
+   * @param message  The message to add to the response.
+   */
+	public void addMessage(CommandMessage message) {
+    commandMessages.add(message);
+  }
 
-	protected void add(CommandMessage message) {
-		commandMessages.add(message);
-	}
 
 	/**
 	 * The response maintains an list of status updates that have been set by commands. For instance, a CVS repository
-	 * generates a <code>fileAdded</code> event, when a file has been added. The class the fetches these events, should
+	 * generates a <code>fileAdded</code> event, when a file has been added. The class that fetches these events, should
 	 * implement constant values for these statusses and add them here. This class can then be queried for these
 	 * statusses and do something with it.
 	 *

@@ -88,10 +88,10 @@ public interface Command {
 	/**
 	 * Executes the command and captures its results in a <code>CommandResponse</code> object for further reference.
 	 *
-	 * @return The command's output, captured in an object structure.
+   * @param handler  Handles the command's response.
 	 * @throws KarmaException To be documented.
 	 */
-	public CommandResponse execute() throws KarmaException;
+	public void execute(CommandResponseHandler handler) throws KarmaException;
 
 	/**
 	 * Stores a reference to a <code>CommandContext</code>.

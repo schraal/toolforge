@@ -5,6 +5,8 @@ import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
 import nl.toolforge.karma.core.cmd.CommandMessage;
+import nl.toolforge.karma.core.cmd.CommandResponseHandler;
+import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.ManifestException;
 import nl.toolforge.karma.core.KarmaException;
 
@@ -14,9 +16,9 @@ public class PromoteModuleImpl extends PromoteCommand {
 		super(descriptor);
 	}
 
-	public CommandResponse execute() throws KarmaException {
+	public void execute(CommandResponseHandler handler) {
 
-		CommandResponse response = super.execute();
+		super.execute(handler);
 
 		CommandMessage message =
 			new SimpleCommandMessage(
@@ -24,9 +26,8 @@ public class PromoteModuleImpl extends PromoteCommand {
 				new Object[]{getCommandLine().getOptionValue("m"), getNewVersion()}
 			);
 
-		response.addMessage(message);
-
-		return response;
+		CommandResponse response = new ActionCommandResponse();
+    response.addMessage(message);
 	}
 
 

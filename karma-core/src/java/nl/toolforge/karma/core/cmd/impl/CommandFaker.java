@@ -2,7 +2,7 @@ package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
-import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.CommandResponseHandler;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 
 /**
@@ -19,7 +19,7 @@ public final class CommandFaker extends DefaultCommand {
 		throw new RuntimeException("Implementation " + CommandFaker.class.getName() + " is fake ...");
 	}
 
-	public CommandResponse execute() throws KarmaException {
+	public void execute(CommandResponseHandler handler) throws KarmaException {
 		throw new RuntimeException("Implementation " + CommandFaker.class.getName() + " is fake ...");
 	}
 }

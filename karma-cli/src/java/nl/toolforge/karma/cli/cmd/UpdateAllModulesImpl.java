@@ -1,7 +1,12 @@
 package nl.toolforge.karma.cli.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.cmd.*;
+import nl.toolforge.karma.core.cmd.ActionCommandResponse;
+import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
+import nl.toolforge.karma.core.cmd.CommandResponseHandler;
 import nl.toolforge.karma.core.cmd.impl.UpdateAllModulesCommand;
 
 /**
@@ -17,14 +22,12 @@ public class UpdateAllModulesImpl extends UpdateAllModulesCommand {
     super(descriptor);
   }
 
-  public CommandResponse execute() throws KarmaException {
+  public void execute(CommandResponseHandler handler) {
 
-    super.execute();
+    super.execute(handler);
 
-		CommandResponse response = new SimpleCommandResponse();
+		CommandResponse response = new ActionCommandResponse();
 		response.addMessage(new SimpleCommandMessage(getFrontendMessages().getString("message.MODULES_UPDATED")));
-
-    return response;
   }
 
 }

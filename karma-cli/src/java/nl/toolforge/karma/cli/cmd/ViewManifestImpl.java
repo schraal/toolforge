@@ -1,13 +1,16 @@
 package nl.toolforge.karma.cli.cmd;
 
-import nl.toolforge.karma.core.ManifestException;
-import nl.toolforge.karma.core.cmd.*;
-import nl.toolforge.karma.core.cmd.impl.ViewManifest;
-import nl.toolforge.karma.core.vc.VersionControlException;
-import org.apache.commons.lang.StringUtils;
-
 import java.util.Iterator;
 import java.util.List;
+import org.apache.commons.lang.StringUtils;
+
+import nl.toolforge.karma.core.ManifestException;
+import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.CommandResponseHandler;
+import nl.toolforge.karma.core.cmd.QueryCommandResponse;
+import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
+import nl.toolforge.karma.core.cmd.impl.ViewManifest;
 
 /**
  * @author D.A. Smedes
@@ -23,9 +26,9 @@ public class ViewManifestImpl extends ViewManifest {
 	/**
 	 * Shows the contents using simple rendering.
 	 */
-	public CommandResponse execute() throws ManifestException{
+	public void execute(CommandResponseHandler handler) {
 
-		super.execute(); // Ignore the response from the superclass
+		super.execute(handler); // Ignore the response from the superclass
 
 		List renderedData = getData();
 
@@ -60,10 +63,8 @@ public class ViewManifestImpl extends ViewManifest {
 
 		// -- end of formatting
 
-		SimpleCommandResponse response = new SimpleCommandResponse();
+		CommandResponse response = new QueryCommandResponse();
 		SimpleCommandMessage message = new SimpleCommandMessage(buffer.toString());
 		response.addMessage(message);
-
-		return response;
 	}
 }

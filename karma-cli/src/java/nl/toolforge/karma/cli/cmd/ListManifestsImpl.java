@@ -7,13 +7,15 @@ import nl.toolforge.karma.core.ManifestException;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
-import nl.toolforge.karma.core.cmd.SimpleCommandResponse;
+import nl.toolforge.karma.core.cmd.QueryCommandResponse;
+import nl.toolforge.karma.core.cmd.CommandResponseHandler;
 import nl.toolforge.karma.core.cmd.impl.ListManifests;
 
 /**
  * Command line interface implementation of the {@link ListManifests} command.
  *
- * @author D.A. Smedes  
+ * @author D.A. Smedes
+ * @author W.H. Schraal
  * @version $Id$
  */
 public class ListManifestsImpl extends ListManifests {
@@ -22,17 +24,20 @@ public class ListManifestsImpl extends ListManifests {
 		super(descriptor);
 	}
 
-	public CommandResponse execute() throws ManifestException {
-    CommandResponse response = new SimpleCommandResponse();
+	public void execute(CommandResponseHandler handler) {
+    try {
+      CommandResponse response = new QueryCommandResponse();
 
-    Set manifests = getContext().getAllManifests();
+      Set manifests = getContext().getAllManifests();
 
-    Iterator manifestsIterator = manifests.iterator();
-    while (manifestsIterator.hasNext()) {
-      Object manifest = manifestsIterator.next();
-      response.addMessage(new SimpleCommandMessage(manifest.toString()));
+      Iterator manifestsIterator = manifests.iterator();
+      while (manifestsIterator.hasNext()) {
+        Object manifest = manifestsIterator.next();
+        response.addMessage(new SimpleCommandMessage(manifest.toString()));
+      }
+    } catch (Exception e) {
+      //todo proper exception handling
+      e.printStackTrace();
     }
-
-    return response;
 	}
 }

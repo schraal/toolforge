@@ -4,7 +4,8 @@ import nl.toolforge.karma.core.ManifestException;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.SimpleCommandResponse;
+import nl.toolforge.karma.core.cmd.QueryCommandResponse;
+import nl.toolforge.karma.core.cmd.CommandResponseHandler;
 import nl.toolforge.karma.core.location.LocationException;
 
 /**
@@ -24,17 +25,18 @@ public class SelectManifest extends DefaultCommand {
 
 	/**
 	 * Activates a manifest.
-	 *
-	 * @return A command response with the results of the activation.
-	 * @throws ManifestException When problems occurred while loading the new manifest.
-	 */
-	public CommandResponse execute() throws ManifestException, LocationException {
+	 *	 */
+	public void execute(CommandResponseHandler handler) {
 
 		// Select a manifest and store it in the command context
 		//
-		getContext().changeCurrent(getCommandLine().getOptionValue("m"));
-
-		return new SimpleCommandResponse();
+    try {
+		  getContext().changeCurrent(getCommandLine().getOptionValue("m"));
+    } catch (ManifestException me) {
+      //todo proper exception handling
+      me.printStackTrace();
+    }
+		new QueryCommandResponse();
 	}
 
 }

@@ -139,10 +139,9 @@ public abstract class DefaultCommand implements Command {
 	/**
 	 * See {@link #execute}. Implementations must implement this method to get something out of the command.
 	 *
-	 * @return Command response object, containing whatever happened during execution of the command.
 	 * @throws KarmaException
 	 */
-	public abstract CommandResponse execute() throws KarmaException;
+	public abstract void execute(CommandResponseHandler handler) throws KarmaException;
 
 	/**
 	 * Helper method to get a resource bundle for frontend messages for commands.
