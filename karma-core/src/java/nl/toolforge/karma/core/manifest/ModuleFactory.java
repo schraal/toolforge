@@ -67,6 +67,9 @@ public final class ModuleFactory {
         case ModuleDescriptor.MAVEN_MODULE :
           module = new MavenModule(descriptor.getName(), location, version);
           break;
+        case ModuleDescriptor.LIB_MODULE :
+          module = new LibModule(descriptor.getName(), location, version);
+          break;
       }
     } else {
       //
@@ -78,6 +81,9 @@ public final class ModuleFactory {
           break;
         case ModuleDescriptor.MAVEN_MODULE :
           module = new MavenModule(descriptor.getName(), location);
+          break;
+        case ModuleDescriptor.LIB_MODULE :
+          module = new LibModule(descriptor.getName(), location);
           break;
       }
     }

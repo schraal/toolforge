@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="clean-all" default="run">
+
+  <target name="run">
+    <delete dir="${manifest-build-dir}" />
+  </target>
+
+</project>

@@ -21,8 +21,7 @@ package nl.toolforge.karma.core.manifest;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.vc.DevelopmentLine;
-import nl.toolforge.karma.core.vc.PatchLine;
+import nl.toolforge.karma.core.scm.digester.ModuleDependencyCreationFactory;
 import org.apache.commons.digester.Digester;
 import org.xml.sax.SAXException;
 
@@ -42,10 +41,7 @@ import java.util.Set;
 public class SourceModule extends BaseModule {
 
 //  private State state = null;
-  private Version version = null;
-  private boolean patchLine = false;
-  private boolean developmentLine = false;
-  private File baseDir = null;
+  private Set dependencies = null;
 
   /**
    * Constructs a <code>SourceModule</code> with a <code>name</code> and <code>location</code>.
@@ -62,118 +58,45 @@ public class SourceModule extends BaseModule {
    */
   public SourceModule(String name, Location location, Version version) {
 
-    super(name, location);
-    this.version = version;
-  }
+    super(name, location, version);
 
-  /**
-   * Future functionality. Not yet supported. Returns <code>false</code>.
-   *
-   * @return <code>false</code>.
-   */
-  public boolean hasDevelopmentLine() {
-    return false;
-  }
-
-  public final void markDevelopmentLine(boolean mark) {
-    developmentLine = mark;
-  }
-
-  public final DevelopmentLine getPatchLine() {
-    return new PatchLine(getVersion());
-  }
-
-  public final void markPatchLine(boolean mark) {
-    patchLine = true;
-  }
-
-  public final Version getVersion() {
-    return version;
-  }
-
-  /**
-   * If the module element in the manifest contains a <code>version</code> attribute, this method will return the
-   * value of that attribute.
-   *
-   * @return The module version, or <code>N/A</code>, when no version number exists.
-   */
-  public final String getVersionAsString() {
-    return (version == null ? "N/A" : version.getVersionNumber());
-  }
-
-  public boolean hasVersion() {
-    return version != null;
-  }
-
-  /**
-   * Checks if this module has been patched (and is thus part of a <code>ReleaseManifest</code>).
-   *
-   * @return <code>true</code> when this module has a <code>PatchLine</code> attached to it, <code>false</code> if it
-   *         hasn't.
-   */
-  public boolean hasPatchLine() {
-    return patchLine;
-  }
-
-  /**
-   * When initialized by <code>AbstractManifest</code>, a module is assigned its base directory, relative to the manifest. The
-   * base directory is used internally for base-directory-aware methods.
-   *
-   * @param baseDir
-   */
-  public final void setBaseDir(File baseDir) {
-
-    if (baseDir == null) {
-      throw new IllegalArgumentException("If you use it, initialize it with a valid 'File' instance ...");
-    }
-    this.baseDir = baseDir;
   }
 
   public SourceType getSourceType() {
     return new Module.SourceType("src");
   }
 
-  public File getBaseDir() {
-
-    if (baseDir == null) {
-      throw new KarmaRuntimeException("Basedir not set.");
-    }
-    return baseDir;
-  }
-
   /**
-   * Converts a modules dependencies XML-tree to a <code>Set</code> of
-   * {@link nl.toolforge.karma.core.scm.ModuleDependency} instances. This method merely transforms the deps for a
-   * module. It doesn't do any validation (like, does the dep actually exist locally).
+   * See {@link Module#getDependencies}. This implementation throws a <code>KarmaRuntimeException</code> when the
+   *  modules' <code>dependencies.xml</code> could not be parsed properly. When no dependencies have been specified, or
+   * when the file does not exist, the method returns an empty <code>Set</code>.
    *
    * @return A <code>Set</code> containing {@link nl.toolforge.karma.core.scm.ModuleDependency} instances.
    */
-  public Set getDependencies() throws ManifestException {
+  public Set getDependencies() {
 
-    // For now, we assume each module has a project.xml, modelled as per the Maven definition.
-    //
-    Set deps = new HashSet();
+    if (dependencies == null) {
 
-    // Read in the base dependency structure of a Maven project.xml file
-    //
-    Digester digester = new Digester();
+      dependencies = new HashSet();
 
-    digester.addObjectCreate("*/dependencies", "java.util.HashSet");
-    digester.addFactoryCreate("*/dependency", "nl.toolforge.karma.core.scm.digester.ModuleDependencyCreationFactory");
-    digester.addSetNext("*/dependency", "add");
-
-    try {
-      // Load 'dependencies.xml'
+      // Read in the base dependency structure of a Maven project.xml file
       //
-      deps = (Set) digester.parse(new File(getBaseDir(), "dependencies.xml"));
-    } catch (IOException e) {
+      Digester digester = new Digester();
 
-      logger.info("No dependencies found for module : " + getName());
+      digester.addObjectCreate("*/dependencies", HashSet.class);
+      digester.addFactoryCreate("*/dependency", ModuleDependencyCreationFactory.class);
+      digester.addSetNext("*/dependency", "add");
 
-    } catch (SAXException e) {
-      throw new ManifestException(e, ManifestException.DEPENDENCY_FILE_LOAD_ERROR, new Object[]{getName()});
+      try {
+
+        dependencies = (Set) digester.parse(new File(getBaseDir(), "dependencies.xml"));
+
+      } catch (IOException e) {
+        return new HashSet();
+      } catch (SAXException e) {
+        throw new KarmaRuntimeException(ManifestException.DEPENDENCY_FILE_LOAD_ERROR, new Object[]{getName()});
+      }
     }
-
-    return deps;
+    return dependencies;
   }
 }

@@ -29,12 +29,17 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.DefaultCommand;
+import nl.toolforge.karma.core.cmd.util.BuildEnvironment;
 import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.manifest.Module;
 
 /**
  * Remove all built stuff.
  *
  * @author W.H. Schraal
+ * @author D.A. Schraal
  * @version $Id$
  */
 public class CleanAll extends AbstractBuildCommand {
@@ -47,23 +52,11 @@ public class CleanAll extends AbstractBuildCommand {
 
   public void execute() throws CommandException {
 
-    Project project = getAntProject();
-
-    File buildBase = getBuildDirectory();
-    if (!buildBase.exists()) {
-      // No point in removing built stuff if it isn't there
-      //
-      throw new CommandException(CommandException.NO_BUILD_DIR);
-    }
-
-    // Configure the Ant project
-    //
-    // The base dir
-    //
-    project.setProperty(MANIFEST_BUILD_DIR, buildBase.getPath());
-
     try {
-      project.executeTarget(CLEAN_ALL_TARGET);
+
+      Project project = getAntProject("clean-all.xml");
+      project.setProperty("manifest-build-dir", new File(getCurrentManifest().getDirectory(), "build").getPath());
+      project.executeTarget("run");
 
       // todo: localize message
       CommandMessage message = new SuccessMessage("All modules cleaned succesfully.");
@@ -75,13 +68,7 @@ public class CleanAll extends AbstractBuildCommand {
     }
   }
 
-  protected File getSourceDirectory() {
-    //dummy impl. method is not used by this command.
-    return null;
-  }
-
   public CommandResponse getCommandResponse() {
     return this.commandResponse;
   }
-
 }

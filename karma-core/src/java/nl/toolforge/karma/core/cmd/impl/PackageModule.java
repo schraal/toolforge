@@ -18,15 +18,27 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import nl.toolforge.core.util.collection.CollectionUtil;
+import nl.toolforge.karma.core.boot.WorkingContext;
+import nl.toolforge.karma.core.cmd.ActionCommandResponse;
+import nl.toolforge.karma.core.cmd.AntErrorMessage;
+import nl.toolforge.karma.core.cmd.Command;
+import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.cmd.CommandFactory;
+import nl.toolforge.karma.core.cmd.CommandMessage;
+import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.ErrorMessage;
+import nl.toolforge.karma.core.cmd.StatusMessage;
+import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.util.BuildEnvironment;
+import nl.toolforge.karma.core.cmd.util.DependencyHelper;
+import nl.toolforge.karma.core.cmd.util.DescriptorReader;
+import nl.toolforge.karma.core.cmd.util.KarmaBuildException;
+import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.ModuleDescriptor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tools.ant.BuildException;
@@ -40,25 +52,20 @@ import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.FilterSet;
 import org.xml.sax.SAXException;
 
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
-import nl.toolforge.karma.core.cmd.AntErrorMessage;
-import nl.toolforge.karma.core.cmd.Command;
-import nl.toolforge.karma.core.cmd.CommandDescriptor;
-import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.CommandFactory;
-import nl.toolforge.karma.core.cmd.CommandMessage;
-import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.ErrorMessage;
-import nl.toolforge.karma.core.cmd.StatusMessage;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
-import nl.toolforge.karma.core.cmd.util.DescriptorReader;
-import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.ModuleDescriptor;
-
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author D.A. Smedes
+ * @author W.H. Schraal
+ *
  * @version $Id$
  */
 public class PackageModule extends AbstractBuildCommand {
@@ -66,28 +73,34 @@ public class PackageModule extends AbstractBuildCommand {
   private static final Log logger = LogFactory.getLog(PackageModule.class);
 
   private CommandResponse commandResponse = new ActionCommandResponse();
+  private BuildEnvironment env = null;
 
   public PackageModule(CommandDescriptor descriptor) {
     super(descriptor);
+
   }
 
   public void execute() throws CommandException {
 
     super.execute();
 
+    DependencyHelper helper = new DependencyHelper(getCurrentManifest());
+
     try {
       //first, when not explicitly set off, run the unit tests
-      if ( ! getCommandLine().hasOption("nt") ) {
+      if ( ! getCommandLine().hasOption("n") ) {
+
         logger.info("Going to run the unit tests before packaging.");
 
         Command command = null;
         try {
           String commandLineString = "tm -m " + module.getName();
-//System.out.println("Going to: "+commandLineString);
+
           command = CommandFactory.getInstance().getCommand(commandLineString);
           command.setContext(getContext());
           command.registerCommandResponseListener(getResponseListener());
           command.execute();
+
         } catch (CommandException ce) {
           if (ce.getErrorCode().equals(CommandException.TEST_FAILED)) {
             commandResponse.addMessage(new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments()));
@@ -108,15 +121,17 @@ public class PackageModule extends AbstractBuildCommand {
         logger.info("User has explicitly disabled running the unit tests.");
       }
 
-      //check whether the dependencies are present
-      try {
-        //todo: this is not really okidoki. A dependency checker method should be used.
-        getDependencies(getCurrentModule().getDependencies(), false, CLASSPATH_SEPARATOR_CHAR);
-      } catch (ManifestException me) {
-        throw new CommandException(CommandException.DEPENDENCY_FILE_INVALID, me.getMessageArguments());
-      }
+      BuildEnvironment env = new BuildEnvironment(getCurrentManifest(), getCurrentModule());
 
-      File packageName = new File(getModuleBuildDirectory(), getCurrentManifest().resolveArchiveName(getCurrentModule()));
+//      check whether the dependencies are present
+//      try {
+//        todo: this is not really okidoki. A dependency checker method should be used.
+//        getDependencies(getCurrentModule().getDependencies(), false, CLASSPATH_SEPARATOR_CHAR);
+//      } catch (ManifestException me) {
+//        throw new CommandException(CommandException.DEPENDENCY_FILE_INVALID, me.getMessageArguments());
+//      }
+
+      File packageName = new File(env.getModuleBuildDirectory(), helper.resolveArchiveName(getCurrentModule()));
 
       if (getCurrentModule().getDeploymentType().equals(Module.WEBAPP)) {
         packageWar(packageName);
@@ -132,14 +147,15 @@ public class PackageModule extends AbstractBuildCommand {
               new Object[] {getCurrentModule().getName(), packageName});
       commandResponse.addMessage(message);
 
-    } catch (ManifestException m) {
-      throw new CommandException(m.getErrorCode(), m.getMessageArguments());
+    } catch (KarmaBuildException m) {
+      throw new CommandException(m, CommandException.PACKAGE_FAILED);
     }
   }
 
   private void packageJar(File packageName) throws CommandException {
 
     try {
+
 
       Project project = getProjectInstance();
 
@@ -149,13 +165,13 @@ public class PackageModule extends AbstractBuildCommand {
 
       project.addTarget(target);
 
-      executeDelete(getModuleBuildDirectory(), "*.jar");
+      executeDelete(env.getModuleBuildDirectory(), "*.jar");
 
       Copy copy = null;
 
       copy = new Copy();
       copy.setProject(getProjectInstance());
-      copy.setTodir(getPackageDirectory());
+      copy.setTodir(env.getModulePackageDirectory());
       copy.setOverwrite(true);
 
       FileSet fileSet = new FileSet();
@@ -167,7 +183,7 @@ public class PackageModule extends AbstractBuildCommand {
 
       copy = new Copy();
       copy.setProject(getProjectInstance());
-      copy.setTodir(getPackageDirectory());
+      copy.setTodir(env.getModulePackageDirectory());
       copy.setOverwrite(true);
 
       fileSet = new FileSet();
@@ -183,7 +199,7 @@ public class PackageModule extends AbstractBuildCommand {
       if (getCompileDirectory().exists()) {
         copy = new Copy();
         copy.setProject(getProjectInstance());
-        copy.setTodir(getPackageDirectory());
+        copy.setTodir(env.getModulePackageDirectory());
         copy.setOverwrite(true);
 
         fileSet = new FileSet();
@@ -197,7 +213,7 @@ public class PackageModule extends AbstractBuildCommand {
       Jar jar = new Jar();
       jar.setProject(getProjectInstance());
       jar.setDestFile(packageName);
-      jar.setBasedir(getPackageDirectory());
+      jar.setBasedir(env.getModulePackageDirectory());
       jar.setExcludes("*.jar");
       target.addTask(jar);
 
@@ -215,13 +231,14 @@ public class PackageModule extends AbstractBuildCommand {
 
   private void packageWar(File packageName) throws CommandException {
 
+    DependencyHelper helper = new DependencyHelper(getCurrentManifest());
+
     try {
-      //start with a clean situation.
-      executeDelete(getModuleBuildDirectory(), "*.war");
+      executeDelete(env.getModuleBuildDirectory(), "*.war");
 
       Copy copy = new Copy();
       copy.setProject(getProjectInstance());
-      copy.setTodir(getPackageDirectory());
+      copy.setTodir(env.getModulePackageDirectory());
       copy.setOverwrite(true);
 
       FileSet fileSet = new FileSet();
@@ -239,7 +256,6 @@ public class PackageModule extends AbstractBuildCommand {
         fileSet = new FileSet();
         fileSet.setDir(webdir);
         fileSet.setIncludes("**");
-//      fileSet.setExcludes("web");
 
         copy.addFileset(fileSet);
         copy.execute();
@@ -248,33 +264,36 @@ public class PackageModule extends AbstractBuildCommand {
       // Copy dependencies
       //
 
-      String moduleDeps = getModuleDependencies(getCurrentModule().getDependencies(), true, DEPENDENCY_SEPARATOR_CHAR);
-      String jarDeps = getJarDependencies(getCurrentModule().getDependencies(), true, DEPENDENCY_SEPARATOR_CHAR);
+      Set moduleDeps = helper.getModuleDependencies(getCurrentModule());
+      Set jarDeps = helper.getJarDependencies(getCurrentModule());
 
-      if ( (moduleDeps != null && !"".equals(moduleDeps)) ||
-          (jarDeps != null && !"".equals(jarDeps))) {
+      if (moduleDeps.size() > 0 || jarDeps.size() > 0) {
 
         copy = new Copy();
         copy.setProject(getProjectInstance());
-        copy.setTodir(new File(getPackageDirectory(), "WEB-INF/lib"));
+        copy.setTodir(new File(env.getModulePackageDirectory(), "WEB-INF/lib"));
         copy.setFlatten(true);
 
         // Module dependencies
         //
         if (moduleDeps != null && !"".equals(moduleDeps)) {
           fileSet = new FileSet();
-          fileSet.setDir(getBuildDirectory());
-          fileSet.setIncludes(moduleDeps);
+          fileSet.setDir(env.getModuleBuildDirectory());
+          fileSet.setIncludes(CollectionUtil.concat(moduleDeps, ','));
           copy.addFileset(fileSet);
         }
 
         // Jar dependencies
         //
-        if (jarDeps != null && !"".equals(jarDeps)) {
-          fileSet = new FileSet();
-          fileSet.setDir(getWorkingContext().getLocalRepository());
-          fileSet.setIncludes(jarDeps);
-          copy.addFileset(fileSet);
+        try {
+          if (jarDeps != null && !"".equals(jarDeps)) {
+            fileSet = new FileSet();
+            fileSet.setDir(WorkingContext.getLocalRepository());
+            fileSet.setIncludes(CollectionUtil.concat(jarDeps, ','));
+            copy.addFileset(fileSet);
+          }
+        } catch (IOException e) {
+          throw new CommandException(e, CommandException.PACKAGE_FAILED);
         }
 
         copy.execute();
@@ -285,17 +304,18 @@ public class PackageModule extends AbstractBuildCommand {
       War war = new War();
       war.setProject(getProjectInstance());
       war.setDestFile(packageName);
-      war.setBasedir(getPackageDirectory());
+      war.setBasedir(env.getModulePackageDirectory());
       war.setWebxml(new File(getCurrentModule().getBaseDir(), "WEB-INF/web.xml".replace('/', File.separatorChar)));
 
       war.execute();
-    } catch (ManifestException m) {
-      throw new CommandException(m.getErrorCode(), m.getMessageArguments());
+
     } catch (BuildException e) {
 //      e.printStackTrace();
       if (logger.isDebugEnabled()) {
         commandResponse.addMessage(new AntErrorMessage(e));
       }
+      throw new CommandException(e, CommandException.PACKAGE_FAILED, new Object[] {getCurrentModule().getName()});
+    } catch (KarmaBuildException e) {
       throw new CommandException(e, CommandException.PACKAGE_FAILED, new Object[] {getCurrentModule().getName()});
     }
 
@@ -303,10 +323,13 @@ public class PackageModule extends AbstractBuildCommand {
 
   private void packageEar(File packageName) throws CommandException {
 
+    DependencyHelper helper = new DependencyHelper(getCurrentManifest());
+
     final String ARCHIVES_PROPERTIES = "archives.properties";
     final String ARCHIVES_INCLUDES   = "archives.includes";
 
     try {
+
       // Create an ear-file
       //
       //reading the application.xml
@@ -332,10 +355,8 @@ public class PackageModule extends AbstractBuildCommand {
         if (m.matches()) {
           moduleName = m.group(1);
           Module module = getCurrentManifest().getModule(moduleName);
-//todo: check that the archive exists. if not, give a dependency error.
-          map.put(moduleName, getCurrentManifest().resolveArchiveName(module));
+          map.put(moduleName, helper.resolveArchiveName(module));
         } else {
-//System.out.println("Module "+moduleName+" is not a source module. No special handling necessary.");
           //todo: throw new Exception();
         }
       }
@@ -344,7 +365,7 @@ public class PackageModule extends AbstractBuildCommand {
       //the first one is used for replacing the special tokens in the application.xml
       //the second one is used for packaging purposes.
       try {
-        File moduleBuildDir = getModuleBuildDirectory();
+        File moduleBuildDir = env.getModuleBuildDirectory();
         moduleBuildDir.mkdirs();
         File archivesProperties = new File(moduleBuildDir, ARCHIVES_PROPERTIES);
         File archivesIncludes = new File(moduleBuildDir, ARCHIVES_INCLUDES);
@@ -367,13 +388,13 @@ public class PackageModule extends AbstractBuildCommand {
         e.printStackTrace();
       }
 
+      executeDelete(env.getModuleBuildDirectory(), "*.ear");
       commandResponse.addMessage(new StatusMessage("Deleting previous ear file."));
-      executeDelete(getModuleBuildDirectory(), "*.ear");
 
       commandResponse.addMessage(new StatusMessage("Copying META-INF dir."));
       Copy copy = new Copy();
       copy.setProject(getProjectInstance());
-      copy.setTodir(getPackageDirectory());
+      copy.setTodir(env.getModulePackageDirectory());
       copy.setOverwrite(true);
 
       FileSet fileSet = new FileSet();
@@ -383,7 +404,7 @@ public class PackageModule extends AbstractBuildCommand {
       // Filtering
       //
       FilterSet filterSet = copy.createFilterSet();
-      filterSet.setFiltersfile(new File(getModuleBuildDirectory(), ARCHIVES_PROPERTIES));
+      filterSet.setFiltersfile(new File(env.getModuleBuildDirectory(), ARCHIVES_PROPERTIES));
 
       copy.addFileset(fileSet);
       copy.execute();
@@ -391,36 +412,37 @@ public class PackageModule extends AbstractBuildCommand {
       commandResponse.addMessage(new StatusMessage("Copying module dependencies"));
       copy = new Copy();
       copy.setProject(getProjectInstance());
-      copy.setTodir(getPackageDirectory());
+      copy.setTodir(env.getModulePackageDirectory());
       copy.setFlatten(true);
 
       //copy the module dependencies from the application.xml
       fileSet = new FileSet();
-      fileSet.setDir(getBuildDirectory());
-      fileSet.setIncludesfile(new File(getModuleBuildDirectory(), ARCHIVES_INCLUDES));
+
+      fileSet.setDir(env.getModuleBuildDirectory());
+      fileSet.setIncludesfile(new File(env.getModuleBuildDirectory(), ARCHIVES_INCLUDES));
       copy.addFileset(fileSet);
       copy.execute();
 
       //copy the non-module dependencies to /lib
       copy = new Copy();
       copy.setProject(getProjectInstance());
-      copy.setTodir(new File(getPackageDirectory(), "lib"));
+      copy.setTodir(new File(env.getModulePackageDirectory(), "lib"));
       copy.setFlatten(true);
 
       fileSet = new FileSet();
-      String jarDependencies = getJarDependencies(getCurrentModule().getDependencies(), true, ' ');
-System.out.println("repo root: "+getWorkingContext().getLocalRepository());
+System.out.println("repo root: "+ getWorkingContext().getLocalRepository());
       fileSet.setDir(getWorkingContext().getLocalRepository());
-      fileSet.setIncludes(jarDependencies);
+      fileSet.setIncludes(CollectionUtil.concat(helper.getJarDependencies(getCurrentModule()), ','));
       copy.addFileset(fileSet);
       copy.execute();
 
       commandResponse.addMessage(new StatusMessage("Creating ear"));
+
       Ear ear = new Ear();
       ear.setProject(getProjectInstance());
       ear.setDestFile(packageName);
-      ear.setBasedir(getPackageDirectory());
-      ear.setAppxml(new File(getPackageDirectory(), "META-INF/application.xml".replace('/', File.separatorChar)));
+      ear.setBasedir(env.getModulePackageDirectory());
+      ear.setAppxml(new File(env.getModuleBuildDirectory(), "META-INF/application.xml".replace('/', File.separatorChar)));
 
       ear.execute();
 
@@ -433,20 +455,16 @@ e.printStackTrace();
         commandResponse.addMessage(new AntErrorMessage(e));
       }
       throw new CommandException(e, CommandException.PACKAGE_FAILED, new Object[] {getCurrentModule().getName()});
+    } catch (KarmaBuildException e) {
+      throw new CommandException(e, CommandException.PACKAGE_FAILED);
+    } catch (IOException e) {
+      throw new CommandException(e, CommandException.PACKAGE_FAILED);
     }
 
   }
 
-
-
   public CommandResponse getCommandResponse() {
     return commandResponse;
   }
-
-  protected File getSourceDirectory() throws ManifestException {
-    //package does not need the sources.
-    return null;
-  }
-
-
+  
 }

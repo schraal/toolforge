@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="build-module" default="run">
+
+  <target name="run">
+
+    <!-- Remove the old jar file(s). -->
+
+    <delete>
+      <fileset dir="${module-build-dir}">
+        <include name="*.jar"/>
+      </fileset>
+    </delete>
+
+    <!-- Compile all sources -->
+
+    <javac
+      destdir="${module-build-dir}"
+      classpath="${classpath}"
+      source="1.4"
+      includes="**/*.java"
+      compiler="modern"
+      debug="true">
+
+      <src path="${module-source-dir}"/>
+
+    </javac>
+
+  </target>
+
+</project>

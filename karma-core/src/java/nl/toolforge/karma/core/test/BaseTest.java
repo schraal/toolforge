@@ -44,6 +44,7 @@ public class BaseTest extends TestCase {
 
   private File wcBaseDir = null;
   private File projectBaseDir = null;
+  private File localRepo = null;
   private WorkingContext ctx = null;
 
   public void setUp() {
@@ -56,11 +57,14 @@ public class BaseTest extends TestCase {
     try {
       wcBaseDir = MyFileUtils.createTempDirectory();
       projectBaseDir = MyFileUtils.createTempDirectory();
+      localRepo = MyFileUtils.createTempDirectory();
     } catch (IOException e) {
       fail(e.getMessage());
     }
 
     p = new Properties();
+
+    p.put(WorkingContext.LOCAL_REPOSITORY, localRepo);
 
     p.put(WorkingContext.MANIFEST_STORE_HOST, "localhost");
     p.put(WorkingContext.MANIFEST_STORE_PORT, "2401");
@@ -77,7 +81,7 @@ public class BaseTest extends TestCase {
     ctx = new WorkingContext("test", wcBaseDir, projectBaseDir, p);
 
     try {
-      writeFile(ctx.getConfigurationBaseDir(), new File("test/authenticators.xml"));
+      writeFile(WorkingContext.getConfigurationBaseDir(), new File("test/authenticators.xml"));
 
       writeFile(ctx.getLocationStore(), new File("test/test-locations.xml"));
       writeFile(ctx.getLocationStore(), new File("test/test-locations-2.xml"));
@@ -103,6 +107,7 @@ public class BaseTest extends TestCase {
     try {
       FileUtils.deleteDirectory(wcBaseDir);
       FileUtils.deleteDirectory(projectBaseDir);
+      FileUtils.deleteDirectory(localRepo);
     } catch (IOException e) {
       fail(e.getMessage());
     }

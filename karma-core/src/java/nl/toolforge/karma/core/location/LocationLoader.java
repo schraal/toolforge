@@ -86,7 +86,7 @@ public final class LocationLoader {
 
     Map authenticators = new Hashtable();
 
-    File authenticatorsFile = new File(workingContext.getConfigurationBaseDir(), "authenticators.xml");
+    File authenticatorsFile = new File(WorkingContext.getConfigurationBaseDir(), "authenticators.xml");
 
     if (authenticatorsFile == null) {
       throw new LocationException(LocationException.MISSING_AUTHENTICATOR_CONFIGURATION);
@@ -114,7 +114,7 @@ public final class LocationLoader {
       if (authenticators.containsKey(authDescriptor.getId())) {
         throw new LocationException(
             LocationException.DUPLICATE_AUTHENTICATOR_KEY,
-            new Object[] {authDescriptor.getId(), workingContext.getConfigurationBaseDir().getPath()}
+            new Object[] {authDescriptor.getId(), WorkingContext.getConfigurationBaseDir().getPath()}
         );
       }
       authenticators.put(authDescriptor.getId(), authDescriptor);

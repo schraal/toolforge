@@ -106,6 +106,9 @@ public final class ModuleDependency {
     return dep;
   }
 
+  /**
+   * <code>true</code> if the dependency identifies a module in the same manifest, otherwise false.
+   */
   public boolean isModuleDependency() {
 
     // <dependency module=""/>

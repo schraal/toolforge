@@ -73,7 +73,7 @@ public final class TestWorkingContext extends TestCase {
 
     WorkingContext ctx = new WorkingContext("blaat", dotKarma, projectsDir, p);
 
-    assertEquals(dotKarma, ctx.getConfigurationBaseDir());
+    assertEquals(dotKarma, WorkingContext.getConfigurationBaseDir());
     assertEquals(new File(dotKarma, "blaat"), ctx.getWorkingContextConfigDir());
     assertEquals(new File(dotKarma, "blaat/workingcontext.properties"), ctx.getConfigurationFile());
     assertEquals(new File(dotKarma, "blaat"), ctx.getWorkingContextConfigDir());

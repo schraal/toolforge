@@ -283,13 +283,14 @@ public final class CLI {
     Calendar now = Calendar.getInstance();
 
     String end = (manifest == null ? "Karma" : manifest.getName());
+    end = workingContext.getName() + "::" + end;
     return
         StringUtils.leftPad("" + now.get(Calendar.HOUR_OF_DAY) , 2, "0") + ":" +
         StringUtils.leftPad("" + now.get(Calendar.MINUTE) , 2, "0") + ":" +
         StringUtils.leftPad("" + now.get(Calendar.SECOND) , 2, "0") + " [ " + end + " ] > ";
   }
 
-  public  void writeln(String text) {
+  public void writeln(String text) {
     System.out.println(text);
   }
 

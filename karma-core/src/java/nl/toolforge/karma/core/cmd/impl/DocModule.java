@@ -5,6 +5,7 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
+import nl.toolforge.karma.core.cmd.util.BuildEnvironment;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import org.apache.tools.ant.Project;
@@ -16,11 +17,18 @@ import org.apache.tools.ant.taskdefs.Echo;
 import java.io.File;
 
 /**
- * Generates API documentation for the given module.
+ * Generates Javadoc API documentation for the given module.
  *
  * @author W.H. Schraal
+ * @author D.A. Smedes
+ * @version $Id$
  */
 public class DocModule extends AbstractBuildCommand {
+
+  private static final String JAVADOC_OUTPUT_DIR = "module.javadoc.outputdir";
+  private static final String MODULE_NAME = "module.name";
+  private static final String MODULE_STATE = "module.state";
+  private static final String MODULE_SRC = "module.src";
 
   protected CommandResponse response = new ActionCommandResponse();
 
@@ -32,36 +40,20 @@ public class DocModule extends AbstractBuildCommand {
 
     super.execute();
 
+    BuildEnvironment env = new BuildEnvironment(getCurrentManifest(), getCurrentModule());
+
+    Project project = getAntProject("doc-module.xml");
+
+    project.setProperty(JAVADOC_OUTPUT_DIR, env.getModuleJavadocDirectory().getPath());
+    project.setProperty(MODULE_NAME, getCurrentModule().getName());
+    project.setProperty(MODULE_STATE, getCurrentManifest().getState(getCurrentModule()).toString());
+    project.setProperty(MODULE_SRC, env.getModuleSourceDirectory().getPath());
+
     try {
-      Project project = getProjectInstance();
-
-//      Echo blaat = new Echo();
-//      blaat.setProject(project);
-//      blaat.addText("blaat");
-//      blaat.execute();
-
-      Javadoc javadoc = new Javadoc();
-      javadoc.setProject(project);
-      javadoc.setAuthor(true);
-      javadoc.setDestdir(getModuleBuildDirectory());
-
-      Path path = new Path(project);
-      path.setPath(getSourceDirectory().getPath());
-
-      javadoc.setSourcepath(path);
-      javadoc.setSourcefiles("*.java");
-//      javadoc.setSource(getSourceDirectory().getPath());
-      javadoc.setPackagenames("nl/*");
-
-      javadoc.execute();
-
-    } catch (BuildException e) {
-      e.printStackTrace();
-    } catch (ManifestException e) {
-      e.printStackTrace();
+      project.executeTarget("run");
+    } catch (BuildException b) {
+      throw new CommandException(b, CommandException.BUILD_FAILED);
     }
-
-    //To change body of implemented methods use File | Settings | File Templates.
   }
 
   public CommandResponse getCommandResponse() {

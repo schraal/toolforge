@@ -23,10 +23,10 @@ import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
+import nl.toolforge.karma.core.cmd.util.BuildEnvironment;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.scm.ModuleDependency;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,8 +44,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Iterator;
-import java.util.Set;
 
 /**
  * Superclass for all commands dealing with building modules. This class provides all basic property mappers and methods
@@ -59,112 +57,11 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
   private static final Log logger = LogFactory.getLog(AbstractBuildCommand.class);
 
-  protected static final char DEPENDENCY_SEPARATOR_CHAR = ',';
-  protected static final char CLASSPATH_SEPARATOR_CHAR = ';';
-
-  protected static final String DEFAULT_BUILD_DIR = "build";
-  protected final static String DEFAULT_TEST_BUILD_DIRECTORY = "test";
-  protected final static String DEFAULT_PACKAGE_DIRECTORY = "package";
-
-  /**
-   * Mapper to the target in <code>build-module.xml</code> to build a module.
-   */
-  protected static final String BUILD_MODULE_TARGET = "build-module";
-
-  /**
-   * Mapper to the target in <code>build-module.xml</code> to test a module.
-   */
-  protected static final String TEST_MODULE_TARGET = "test-module";
-
-  /**
-   * Mapper to the target in <code>build-module.xml</code> to clean a module.
-   */
-  protected static final String CLEAN_MODULE_TARGET = "clean-module";
-
-  /**
-   * Mapper to the target in <code>build-module.xml</code> to clean all modules.
-   */
-  protected static final String CLEAN_ALL_TARGET = "clean-all";
-
-  /**
-   * Mapper to the target in <code>build-module.xml</code> to package a module as a <code>jar</code>-file.
-   */
-  protected static final String BUILD_TARGET_JAR = "package-module-as-jar";
-
-  /**
-   * Mapper to the target in <code>build-module.xml</code> to package a module as a <code>war</code>-file.
-   */
-  protected static final String BUILD_TARGET_WAR = "package-module-as-war";
-
-  /**
-   * Mapper to the target in <code>build-module.xml</code> to package a module as an <code>ear</code>-file.
-   */
-  protected static final String BUILD_TARGET_EAR = "package-module-as-ear";
-
-  /**
-   * Property describing the full path-name to the modules' <code>src/java</code> directory.
-   */
-  protected static final String MODULE_SOURCE_DIR_PROPERTY = "module-source-dir";
-
-  /**
-   * Property describing the full path-name to the modules' <code>build</code> directory; this is generally pointing
-   * to <code>&lt;development-home&gt/&lt;manifest-name&gt/build/&lt;module-name&gt</code>.
-   */
-  protected static final String MODULE_BUILD_DIR_PROPERTY = "module-build-dir";
-
-  /**
-   * Property describing the <strong>relative</strong> path-name (to {@link #MODULE_BUILD_DIR_PROPERTY} to the directory
-   * where compiled classes will be stored.
-   */
-  protected static final String MODULE_COMPILE_DIR_PROPERTY = "module-compile-dir";
-
-  /**
-   * Property describing the <strong>relative</strong> path-name (to {@link #MODULE_BUILD_DIR_PROPERTY} to the directory
-   * where compiled tests and the results of the tests will be stored.
-   */
-  protected static final String MODULE_TEST_DIR_PROPERTY = "module-test-dir";
-
-  /**
-   * Property describing the <strong>relative</strong> path-name (to {@link #MODULE_BUILD_DIR_PROPERTY} to the directory
-   * where the exploded package will be stored.
-   */
-  protected static final String MODULE_PACKAGE_DIR_PROPERTY = "module-package-dir";
-
-  /**
-   * Property containing the compile classpath while building a module.
-   */
-  protected static final String MODULE_CLASSPATH_PROPERTY = "module-classpath";
-
-  /**
-   * The modules' base directory (<code>&lt;development-home&gt/&lt;manifest-name&gt/&lt;module-name&gt;).
-   */
-  protected static final String MODULE_BASEDIR_PROPERTY = "module-base-dir";
-
-  /**
-   * The modules' 'module'-dependencies, relative from a manifests' build-directory.
-   */
-  protected static final String MODULE_MODULE_DEPENDENCIES_PROPERTY = "module-module-dependencies";
-
-  /**
-   * The modules' 'module'-dependencies, relative from a manifests' build-directory.
-   */
-  protected static final String MODULE_JAR_DEPENDENCIES_PROPERTY = "module-jar-dependencies";
-
-  /**
-   * The base location for jar dependencies; follows the <code>Maven</code>-conventions. Would generally
-   * be equal to <code>maven.repo.local</code>.
-   */
-  protected static final String KARMA_JAR_REPOSITORY_PROPERTY = "karma-jar-repository";
-
-  /**
-   * The manifests' build directory.
-   */
-  protected static final String MANIFEST_BUILD_DIR = "manifest-build-dir";
-
   protected Module module = null;
 
   private File tempBuildFileLocation = null; // Maintains a hook to a temp location for the Ant build file.
   private Project project = null;
+  private BuildEnvironment env = null;
 
   /**
    * Creates a command by initializing the command through its <code>CommandDescriptor</code>.
@@ -182,19 +79,23 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
     }
 
     String moduleName = getCommandLine().getOptionValue("m");
+
     try {
       // todo move this bit to aspect-code.
       //
-      Manifest currentManifest = getContext().getCurrentManifest();
-      module = currentManifest.getModule(moduleName);
+      module = getCurrentManifest().getModule(moduleName);
 
       if (module == null) {
         throw new CommandException(ManifestException.MODULE_NOT_FOUND, new Object[]{module.getName()});
       }
 
-      if (!currentManifest.isLocal(module)) {
+      if (!getCurrentManifest().isLocal(module)) {
         throw new CommandException(ManifestException.MODULE_NOT_LOCAL, new Object[]{module.getName()});
       }
+
+      // Initialize the current build environment.
+      //
+      env = new BuildEnvironment(getCurrentManifest(), module);
 
     } catch (ManifestException m) {
       throw new CommandException(m.getErrorCode(), m.getMessageArguments());
@@ -224,32 +125,6 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
   }
 
   /**
-   * Returns the build directory. The build directory is the <code>build</code> subdirectory of the current
-   * manifest. For instance : <code>/home/asmedes/karma/projects/blaat/build</code>, where <code>blaat</code> is the
-   * current manifest name.
-   */
-  protected final File getBuildDirectory() {
-    return new File(getContext().getCurrentManifest().getDirectory(), "build");
-  }
-
-  /**
-   * Returns the build directory for a module.
-   *
-   * @return
-   */
-  protected final File getModuleBuildDirectory() {
-
-    if (module == null) {
-      throw new IllegalArgumentException("Module cannot be null.");
-    }
-
-    // the rest, for the time being.
-    //
-    return new File(getBuildDirectory(), getCurrentModule().getName());
-  }
-
-
-  /**
    * Returns the compile directory for a module, relative to the manifests' <code>build</code> directory.
    *
    * @return
@@ -260,7 +135,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
       throw new IllegalArgumentException("Module cannot be null.");
     }
 
-    File base = getModuleBuildDirectory();
+    File base = env.getModuleBuildDirectory();
 
     if (module.getDeploymentType().equals(Module.WEBAPP)) {
       return new File(base, "build/WEB-INF/classes");
@@ -270,164 +145,22 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
   }
 
   /**
-   * Returns the test directory for a module.
+   * Gets an Ant project initializing the project with <code>buildFile</code> which should be located on the
+   * classpath in the <code>ant</code> subdirectory.
    *
-   * @return
+   * @param buildFile The build file that should be loaded.
+   * @return An Ant project initialized with <code>buildFile</code>.
    */
-  protected final File getTestDirectory() {
+  protected Project getAntProject(String buildFile) throws CommandException {
 
-    if (module == null) {
-      throw new IllegalArgumentException("Module cannot be null.");
-    }
-
-    return  new File(getModuleBuildDirectory(), DEFAULT_TEST_BUILD_DIRECTORY);
-  }
-
-  /**
-   * Returns the package directory for a module.
-   *
-   * @return
-   */
-  protected final File getPackageDirectory() {
-
-    if (module == null) {
-      throw new IllegalArgumentException("Module cannot be null.");
-    }
-
-    return new File(getModuleBuildDirectory(), DEFAULT_PACKAGE_DIRECTORY);
-  }
-
-  /**
-   * Returns the source directory for a module.
-   *
-   * @return
-   * @throws ManifestException
-   */
-  protected abstract File getSourceDirectory() throws ManifestException;
-
-
-  protected String getJarDependencies(Set dependencies, boolean relative, char separator) throws ManifestException, CommandException {
-
-    StringBuffer buffer = new StringBuffer();
-
-    for (Iterator iterator = dependencies.iterator(); iterator.hasNext();) {
-      ModuleDependency dep = (ModuleDependency) iterator.next();
-
-      String jar = null;
-
-      if (!dep.isModuleDependency()) {
-
-        if (relative) {
-          jar = dep.getJarDependency();
-        } else {
-          jar = getWorkingContext().getLocalRepository().getPath() + File.separator + dep.getJarDependency();
-        }
-
-        buffer.append(jar);
-        if (iterator.hasNext()) {
-          buffer.append(separator);
-        }
-      }
-    }
-    return buffer.toString();
-  }
-
-  protected String getModuleDependencies(Set dependencies, boolean relative, char separator) throws ManifestException, CommandException {
-
-    StringBuffer buffer = new StringBuffer();
-
-    File baseDir = getContext().getCurrentManifest().getDirectory();
-
-    for (Iterator iterator = dependencies.iterator(); iterator.hasNext();) {
-      ModuleDependency dep = (ModuleDependency) iterator.next();
-
-      String jar = null;
-
-      if (dep.isModuleDependency()) {
-
-        // The module depends on another SourceModule.
-        //
-        File moduleBuildDir = new File(new File(baseDir, DEFAULT_BUILD_DIR), dep.getModule());
-
-        File dependencyJar =
-            new File(moduleBuildDir + File.separator + getContext().getCurrentManifest().resolveArchiveName(getContext().getCurrentManifest().getModule(dep.getModule())));
-
-        if (!dependencyJar.exists()) {
-          throw new CommandException(CommandException.DEPENDENCY_DOES_NOT_EXIST, new Object[] {dep.getModule(), getCurrentModule().getName()});
-        }
-
-        jar = dependencyJar.getPath();
-        if (relative) {
-          // Subtract the first bit.
-          //
-          File relativePart = new File(new File("", DEFAULT_BUILD_DIR), dep.getModule());
-          jar = jar.substring(jar.indexOf(relativePart.getPath()) + DEFAULT_BUILD_DIR.length() + 2);
-        }
-
-        buffer.append(jar);
-        if (iterator.hasNext()) {
-          buffer.append(separator);
-        }
-      }
-    }
-    return buffer.toString();
-  }
-
-  protected String getDependencies(Set dependencies, boolean relative, char separator) throws ManifestException, CommandException {
-
-    String moduleDeps = getModuleDependencies(dependencies, relative, separator);
-    String jarDeps = getJarDependencies(dependencies, relative, separator);
-
-    if (!"".equals(jarDeps) && !"".equals(moduleDeps)) {
-      moduleDeps += separator;
-    }
-
-    logger.debug("Dependencies: "+moduleDeps + jarDeps);
-    return moduleDeps + jarDeps;
-  }
-
-  /**
-   * Gets an Ant <code>Project</code> for a module.
-   *
-   * @deprecated Use
-   */
-  protected Project getAntProject() throws CommandException {
-
-    if (project == null) {
-
-
-      DefaultLogger logger = new DefaultLogger();
-//      DefaultLogger logger = new MessageLogger(this);
-      // todo hmm, this mechanism doesn't integrate with the commandresponse mechanism
-      //
-      logger.setOutputPrintStream(System.out);
-      logger.setErrorPrintStream(System.out);
-
-      logger.setMessageOutputLevel(Project.MSG_INFO); // Always handy ...
-//    logger.setMessageOutputLevel(Project.MSG_VERBOSE); // Always handy ...
-//    logger.setMessageOutputLevel(Project.MSG_DEBUG); // Always handy ...
-
-      // Configure underlying ant to run a command.
-      //
-      project = new Project();
-      project.addBuildListener(logger);
-      project.init();
-
-    }
-
-    // Read in the build.xml file
-    //
     ProjectHelper helper = new ProjectHelperImpl();
-    File tmp = null;
     try {
-      tmp = getBuildFile("build-module.xml");
-      helper.parse(project, tmp);
+      File tmp = getBuildFile(buildFile);
+      helper.parse(getProjectInstance(), tmp);
+      setBuildFileLocation(tmp);
     } catch (IOException e) {
-      throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {module.getName()});
+      throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
     }
-
-    setBuildFileLocation(tmp);
-
 
     return project;
   }
@@ -443,7 +176,6 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
     if (project == null) {
 
-
       DefaultLogger logger = new DefaultLogger();
       // todo hmm, this mechanism doesn't integrate with the commandresponse mechanism
       //
@@ -459,7 +191,6 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
       project = new Project();
       project.addBuildListener(logger);
       project.init();
-
     }
 
     return project;
@@ -529,14 +260,16 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
     }
   }
 
-  private File getBuildFile(String buildFile) throws IOException {
+  private final File getBuildFile(String buildFile) throws IOException {
 
     File tmp = null;
 
     tmp = MyFileUtils.createTempDirectory();
 
+    ClassLoader loader = this.getClass().getClassLoader();
+
     BufferedReader in =
-        new BufferedReader(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(buildFile)));
+        new BufferedReader(new InputStreamReader(loader.getResourceAsStream("ant" + File.separator + buildFile)));
     BufferedWriter out =
         new BufferedWriter(new FileWriter(new File(tmp, buildFile)));
 

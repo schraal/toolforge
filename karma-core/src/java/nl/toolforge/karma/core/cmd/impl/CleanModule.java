@@ -18,18 +18,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import java.io.File;
-
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
-import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.cmd.util.BuildEnvironment;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 
 /**
  * Remove all built stuff of the given module.
@@ -49,45 +46,26 @@ public class CleanModule extends AbstractBuildCommand {
 
     super.execute();
 
-    CommandMessage message = null;
+    BuildEnvironment env = null;
 
-    Project project = getAntProject();
+    try {
+      env = new BuildEnvironment(getCurrentManifest(), getCurrentModule());
 
-//    try {
-      File buildBase = getModuleBuildDirectory();
-      if (!buildBase.exists()) {
-        // No point in removing built stuff if it isn't there
-        //
-        throw new CommandException(CommandException.NO_MODULE_BUILD_DIR, new Object[] {getCurrentModule().getName(), getModuleBuildDirectory().getPath()});
-      }
+      Project project = getAntProject("clean-module.xml");
+      project.setProperty("module-build-dir", env.getModuleBuildDirectory().getPath());
+      project.executeTarget("run");
 
-      // Configure the Ant project
-      //
-      project.setProperty(MODULE_BUILD_DIR_PROPERTY, getModuleBuildDirectory().getPath());
+      // todo: localize message
+      CommandMessage message = new SuccessMessage("Module " + getCurrentModule().getName() + " cleaned succesfully.");
+      commandResponse.addMessage(message);
 
-      try {
-        project.executeTarget(CLEAN_MODULE_TARGET);
-
-        // todo: localize message
-        message = new SuccessMessage("Module " + getCurrentModule().getName() + " cleaned succesfully.");
-        commandResponse.addMessage(message);
-
-      } catch (BuildException e) {
-        e.printStackTrace();
-        throw new CommandException(CommandException.CLEAN_MODULE_FAILED, new Object[] {getModuleBuildDirectory().getPath()});
-      }
-//    } catch (ManifestException e) {
-//      e.printStackTrace();
-//      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
-//    }
+    } catch (BuildException e) {
+      e.printStackTrace();
+      throw new CommandException(CommandException.CLEAN_MODULE_FAILED, new Object[] {env.getModuleBuildDirectory().getPath()});
+    }
   }
 
   public CommandResponse getCommandResponse() {
     return this.commandResponse;
   }
-
-  protected File getSourceDirectory() throws ManifestException {
-    return null;
-  }
-
 }

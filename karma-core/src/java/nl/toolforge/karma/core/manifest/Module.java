@@ -177,7 +177,13 @@ public interface Module {
    */
   public boolean hasVersion();
 
-  public Set getDependencies() throws ManifestException;
+  /**
+   * Gets a <code>Set</code> of <code>ModuleDependency</code> objects. This method should return an empty set if no
+   * dependencies have been specified.
+   *
+   * @return A <code>Set</code> containing all dependencies as <code>ModuleDependency</code> objects.
+   */
+  public Set getDependencies();
 
   /**
    * Types a module in the source hierarchy.

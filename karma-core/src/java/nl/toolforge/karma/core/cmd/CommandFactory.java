@@ -252,42 +252,6 @@ public final class CommandFactory {
     throw new CommandException(CommandException.INVALID_COMMAND, new Object[]{commandLineString});
   }
 
-//  public Command getParallelClone(Command command) {
-//    CommandDescriptor descriptor = command.getDescriptor();
-//    try {
-//      Constructor defaultConstructor = null;
-//      defaultConstructor = descriptor.getImplementation().getConstructor(new Class[]{CommandDescriptor.class});
-//      Command parallelClone = (Command) defaultConstructor.newInstance(new Object[]{descriptor});
-//      return parallelClone;
-//    } catch (NoSuchMethodException e) {
-//      throw new KarmaRuntimeException(e);
-//    } catch (IllegalAccessException e) {
-//      throw new KarmaRuntimeException(e);
-//    } catch (InvocationTargetException e) {
-//      throw new KarmaRuntimeException(e);
-//    } catch (InstantiationException e) {
-//      throw new KarmaRuntimeException(e);
-//    }
-//  }
-
-//  public Command getParallelClone(Command command) {
-//     CommandDescriptor descriptor = command.getDescriptor();
-//     try {
-//       Constructor defaultConstructor = null;
-//       defaultConstructor = descriptor.getImplementation().getConstructor(new Class[]{CommandDescriptor.class});
-//       Command parallelClone = (Command) defaultConstructor.newInstance(new Object[]{descriptor});
-//       return parallelClone;
-//     } catch (NoSuchMethodException e) {
-//       throw new KarmaRuntimeException(e);
-//     } catch (IllegalAccessException e) {
-//       throw new KarmaRuntimeException(e);
-//     } catch (InvocationTargetException e) {
-//       throw new KarmaRuntimeException(e);
-//     } catch (InstantiationException e) {
-//       throw new KarmaRuntimeException(e);
-//     }
-//   }
-
   /**
    * Checks if some string is a command within this context.
    *

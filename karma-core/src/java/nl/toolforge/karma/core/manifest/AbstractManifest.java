@@ -327,54 +327,55 @@ public abstract class AbstractManifest implements Manifest {
     return name.hashCode();
   }
 
-  /**
-   * <p>Determines the correct artifact name for <code>module</code>. The artifact-name is determined as follows:
-   *
-   * <ul>
-   *   <li/>If the state of the module is <code>WORKING</code>, the artifact-name is
-   *        <code>&lt;module-name&gt;_WORKING.jar</code>.
-   *   <li/>If the state of the module is <code>DYNAMIC</code>, the artifact-name is
-   *        <code>&lt;module-name&gt;_&lt;latest-versions&gt;.jar</code>.
-   *   <li/>If the state of the module is <code>STATIC</code>, the artifact-name is
-   *        <code>&lt;module-name&gt;_&lt;version&gt;.jar</code>.
-   * </ul>
-   *
-   * <p>The extension if <code>.war</code> if the module is a <code>webapp</code>-module.
-   *
-   * @param module A <code>SourceModule</code> instance.
-   * @return The artifact-name as determined the way as described above.
-   * @throws ManifestException
-   */
-  public final String resolveArchiveName(Module module) throws ManifestException {
+//  /**
+//   * <p>Determines the correct artifact name for <code>module</code>. The artifact-name is determined as follows:
+//   *
+//   * <ul>
+//   *   <li/>If the state of the module is <code>WORKING</code>, the artifact-name is
+//   *        <code>&lt;module-name&gt;_WORKING.jar</code>.
+//   *   <li/>If the state of the module is <code>DYNAMIC</code>, the artifact-name is
+//   *        <code>&lt;module-name&gt;_&lt;latest-versions&gt;.jar</code>.
+//   *   <li/>If the state of the module is <code>STATIC</code>, the artifact-name is
+//   *        <code>&lt;module-name&gt;_&lt;version&gt;.jar</code>.
+//   * </ul>
+//   *
+//   * <p>The extension if <code>.war</code> if the module is a <code>webapp</code>-module.
+//   *
+//   * @param module A <code>SourceModule</code> instance.
+//   * @return The artifact-name as determined the way as described above.
+//   * @throws ManifestException
+//   */
+//  public final String resolveArchiveName(Module module) throws ManifestException {
+//
+//    String jar = module.getName() + "_";
+//
+//    // todo introduce a method to determine if a module is webapp-module; maybe its own class.
+//    //
+//    String extension;
+//    if (module.getDeploymentType().equals(Module.WEBAPP)) {
+//      extension = ".war";
+//    } else if (module.getDeploymentType().equals(Module.WEBAPP)) {
+//      extension = ".ear";
+//    } else {
+//      extension = ".jar";
+//    }
+//
+//    try {
+//      if (getState(module).equals(Module.WORKING)) {
+//        jar += Module.WORKING.toString();
+//      } else if (getState(module).equals(Module.DYNAMIC)) {
+//        jar += (Utils.getLocalVersion(module));
+//      } else { // STATIC module
+//        jar += ((SourceModule) module).getVersionAsString();
+//      }
+//      jar += extension;
+//    } catch (VersionControlException v) {
+//      throw new ManifestException(v.getErrorCode(), v.getMessageArguments());
+//    }
+//
+//    return jar;
+//  }
 
-    String jar = module.getName() + "_";
-
-    // todo introduce a method to determine if a module is webapp-module; maybe its own class.
-    //
-    String extension;
-    if (module.getDeploymentType().equals(Module.WEBAPP)) {
-      extension = ".war";
-    } else if (module.getDeploymentType().equals(Module.EAPP)) {
-      extension = ".ear";
-    } else {
-      extension = ".jar";
-    }
-
-    try {
-      if (getState(module).equals(Module.WORKING)) {
-        jar += Module.WORKING.toString();
-      } else if (getState(module).equals(Module.DYNAMIC)) {
-        jar += (Utils.getLocalVersion(module));
-      } else { // STATIC module
-        jar += ((SourceModule) module).getVersionAsString();
-      }
-      jar += extension;
-    } catch (VersionControlException v) {
-      throw new ManifestException(v.getErrorCode(), v.getMessageArguments());
-    }
-
-    return jar;
-  }
 
   /**
    *

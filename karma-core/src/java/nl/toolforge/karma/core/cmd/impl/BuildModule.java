@@ -19,19 +19,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
+import nl.toolforge.karma.core.cmd.AntErrorMessage;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
-import nl.toolforge.karma.core.cmd.AntErrorMessage;
-import nl.toolforge.karma.core.manifest.ManifestException;
-import org.apache.tools.ant.Project;
+import nl.toolforge.karma.core.cmd.util.BuildEnvironment;
+import nl.toolforge.karma.core.cmd.util.DependencyHelper;
+import nl.toolforge.karma.core.cmd.util.KarmaBuildException;
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.taskdefs.Javac;
-import org.apache.tools.ant.types.Path;
-
-import java.io.File;
+import org.apache.tools.ant.Project;
 
 /**
  * Builds a module in a manifest. Building a module means that all java sources will be compiled into the
@@ -54,76 +52,38 @@ public class BuildModule extends AbstractBuildCommand {
 
     super.execute();
 
-    CommandMessage message = null;
+    BuildEnvironment env = new BuildEnvironment(getCurrentManifest(), getCurrentModule());
+
+    if (!env.getModuleSourceDirectory().exists()) {
+      // No point in building a module, if no src/java is available.
+      //
+      throw new CommandException(CommandException.NO_SRC_DIR, new Object[] {getCurrentModule().getName(), DEFAULT_SRC_PATH});
+    }
+
+    DependencyHelper helper = new DependencyHelper(getCurrentManifest());
+
+    Project project = getAntProject("build-module.xml");
 
     try {
-      // moet anders !!!!
-      //
-//      File compileDirectory = new File(getBuildDirectory().getParentFile(), getCompileDirectory().getPath());
-//      File compileDirectory = getCompileDirectory();
+      project.setProperty("module-build-dir", env.getModuleBuildDirectory().getPath());
+      project.setProperty("classpath", helper.getClassPath(getCurrentModule()));
+      project.setProperty("module-source-dir", env.getModuleSourceDirectory().getPath());
 
-      File srcBase = getSourceDirectory();
-      if (!srcBase.exists()) {
-        // No point in building a module, if no src/java is available.
-        //
-        throw new CommandException(CommandException.NO_SRC_DIR, new Object[] {getCurrentModule().getName(), DEFAULT_SRC_PATH});
-      }
+      project.executeTarget("run");
 
-      // Ant project
-      //
-      Project project = getProjectInstance();
-
-      //  <javac>
-      //
-      Javac javac = new Javac();
-      javac.setProject(project);
-      javac.setSource("1.4");
-      javac.setCompiler("javac1.4");
-      javac.setDebug(true);
-      javac.setDeprecation(true);
-      javac.setDestdir(getCompileDirectory());
-
-      Path classPath = new Path(project);
-      try {
-        classPath.setPath(getDependencies(getCurrentModule().getDependencies(), false, CLASSPATH_SEPARATOR_CHAR));
-      } catch (ManifestException me) {
-        throw new CommandException(CommandException.DEPENDENCY_FILE_INVALID, me.getMessageArguments());
-      }
-      javac.setClasspath(classPath);
-
-      javac.setIncludes("**/*.java");
-
-      Path sourcePath = new Path(project);
-      sourcePath.setPath(srcBase.getPath());
-      javac.setSrcdir(sourcePath);
-
-      // <mkdir>
-      //
-      executeMkdir(getCompileDirectory());
-      executeDelete(getBuildDirectory(), "*.jar");
-
-      javac.execute();
-
-
-    }  catch (BuildException e) {
+    } catch (KarmaBuildException e) {
+      e.printStackTrace();
+      throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
+    } catch (BuildException e) {
       commandResponse.addMessage(new AntErrorMessage(e));
       throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
     }
 
-    message = new SuccessMessage(getFrontendMessages().getString("message.MODULE_BUILT"), new Object[] {getCurrentModule().getName()});
+    CommandMessage message = new SuccessMessage(getFrontendMessages().getString("message.MODULE_BUILT"), new Object[] {getCurrentModule().getName()});
     commandResponse.addMessage(message);
   }
 
   public CommandResponse getCommandResponse() {
     return this.commandResponse;
   }
-
-  protected File getSourceDirectory() {
-
-    if (module == null) {
-      throw new IllegalArgumentException("Module cannot be null.");
-    }
-    return new File(new File(getCurrentManifest().getDirectory(), getCurrentModule().getName()), DEFAULT_SRC_PATH);
-  }
-
 }

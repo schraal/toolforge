@@ -17,11 +17,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.Hashtable;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * A <code>WorkingContext</code> is used by Karma to determine the environment in which the user wants to use Karma. A
@@ -93,6 +92,8 @@ public final class WorkingContext {
    */
   public static final String PROJECT_BASE_DIRECTORY = System.getProperty("user.home") + File.separator + "karma";
 
+  // Stuff in the workingcontext.properties
+
   public static final String MANIFEST_STORE_HOST = "manifest-store.cvs.host";
   public static final String MANIFEST_STORE_PORT = "manifest-store.cvs.port";
   public static final String MANIFEST_STORE_REPOSITORY = "manifest-store.cvs.repository";
@@ -110,12 +111,16 @@ public final class WorkingContext {
    * resolved Maven style, but to support environments where Maven is not available, the directory is configurable.
    * The default Maven repository is used when this property is not set in <code>karma.properties</code>.
    */
-  // todo needs rethinking
-  public static final String JAR_REPOSITORY = "jar.repository";
+
+  // Stuff in the karma.properties
+
+  public static final String LOCAL_REPOSITORY = "jar.repository";
+
+  private static File localRepositoryBaseDir = null;
+  private static File configurationBaseDir = null;
 
   private String workingContext = null;
 
-  private File configBaseDir = null;
   private File projectBaseDir = null;
 
 //  private File defaultConfigurationDirectory = null;
@@ -172,7 +177,7 @@ public final class WorkingContext {
     if (configBaseDir == null) {
       throw new IllegalArgumentException("Configuration base directory cannot be null.");
     }
-    this.configBaseDir = configBaseDir;
+    configurationBaseDir = configBaseDir;
 
     if (projectBaseDir == null) {
       throw new IllegalArgumentException("Project base directory cannot be null.");
@@ -180,6 +185,12 @@ public final class WorkingContext {
     this.projectBaseDir = projectBaseDir;
 
     this.configuration = (configuration == null ? new Properties() : configuration);
+
+    // The repository where Karma can locate jar files (dependencies).
+    //
+    if (getConfiguration().getProperty(LOCAL_REPOSITORY) != null) {
+      localRepositoryBaseDir = new File(getConfiguration().getProperty(LOCAL_REPOSITORY));
+    }
 
     initialize();
   }
@@ -439,13 +450,13 @@ public final class WorkingContext {
    *
    * @return A <code>File</code> reference to the default base directory for Karma configuration files.
    */
-  public File getConfigurationBaseDir() {
+  public static File getConfigurationBaseDir() {
     // Create something like $USER_HOME/.karma/
     //
-    if (!configBaseDir.exists()) {
-      configBaseDir.mkdir();
+    if (!configurationBaseDir.exists()) {
+      configurationBaseDir.mkdir();
     }
-    return configBaseDir;
+    return configurationBaseDir;
   }
 
 
@@ -561,23 +572,21 @@ public final class WorkingContext {
 
   /**
    * Returns the <code>File</code> location for the repository where <code>jar</code>-dependencies can be found. The
-   * system property <code>JAR_REPOSITORY</code> is used to determine the location. If not set, the default jar
-   * repository ($HOME/.karma/repository) is returned (and created if it doesn't exist).
+   * system property {@link LOCAL_REPOSITORY} is used to determine the location. If not set, the default jar
+   * repository ($HOME/.karma/.repository) is returned. If the directory does not exist, or denotes a file, an
+   * IOException it thrown.
    *
    * @return See method description.
+   * @throws IOException When the local repository directory does not exist.
    */
-  public File getLocalRepository() {
+  public static File getLocalRepository() throws IOException {
 
-    File localRepository = null;
-
-    if (configuration.get(JAR_REPOSITORY) == null) {
-      localRepository = new File(System.getProperty("user.home"), ".karma" + File.separator + "repository");
-    } else {
-      localRepository = new File((String)configuration.get(JAR_REPOSITORY));
+    if (localRepositoryBaseDir == null) {
+      localRepositoryBaseDir = new File(getConfigurationBaseDir(), ".karma" + File.separator + "repository");
     }
-    localRepository.mkdirs();
+    localRepositoryBaseDir.mkdir();
 
-    return localRepository;
+    return localRepositoryBaseDir;
   }
 
   /**

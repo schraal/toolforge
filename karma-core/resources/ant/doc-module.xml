@@ -1,0 +1,28 @@
+<project name="karma" default="run">
+
+  <target name="run">
+
+    <mkdir dir="${module.javadoc.outputdir}"/>
+
+    <javadoc packagenames="*"
+      sourcepath="${module.src}"
+      destdir="${module.javadoc.outputdir}"
+      author="true"
+      version="true"
+      use="true"
+      windowtitle="Module ${module.name} (current state : ${module.state})"
+      maxmemory="128m"
+      source="1.4"
+      >
+<!--      classpathref="classpath" -->
+<!--      additionalparam="-breakiterator -tag ejbColumnName:f:'Column:' -tag
+author:a:'Author:' -tag pre:cm:'Pre condition:' -tag post:cm:'Post
+condition:'" -->
+
+      <doctitle><![CDATA[<h1>http://www.toolforge.org</h1>]]></doctitle>
+      <bottom><![CDATA[<i>Distributed under the GNU Lesser General Public License</i>]]></bottom>
+    </javadoc>
+
+  </target>
+
+</project>

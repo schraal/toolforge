@@ -18,11 +18,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest;
 
-import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.vc.DevelopmentLine;
+import nl.toolforge.karma.core.vc.PatchLine;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.File;
 import java.util.regex.PatternSyntaxException;
 
 /**
@@ -37,9 +41,21 @@ public abstract class BaseModule implements Module {
 
   private Location location = null;
   private String name = null;
-  private Manifest manifest = null;
+//  private Manifest manifest = null;
+
+  private File baseDir = null;
+
+  private Version version = null;
+  private boolean patchLine = false;
+  private boolean developmentLine = false;
+
 
   private Module.DeploymentType deploymentType = null;
+
+  public BaseModule(String name, Location location, Version version) {
+    this(name, location);
+    this.version = version;
+  }
 
   public BaseModule(String name, Location location) {
 
@@ -97,4 +113,79 @@ public abstract class BaseModule implements Module {
   public int hashCode() {
     return getName().hashCode() + getLocation().hashCode();
   }
+
+
+  /**
+   * Future functionality. Not yet supported. Returns <code>false</code>.
+   *
+   * @return <code>false</code>.
+   */
+  public final boolean hasDevelopmentLine() {
+    return false;
+  }
+
+  public final void markDevelopmentLine(boolean mark) {
+    developmentLine = mark;
+  }
+
+  public final DevelopmentLine getPatchLine() {
+    return new PatchLine(getVersion());
+  }
+
+  public final void markPatchLine(boolean mark) {
+    patchLine = true;
+  }
+
+  public final Version getVersion() {
+    return version;
+  }
+
+  /**
+   * If the module element in the manifest contains a <code>version</code> attribute, this method will return the
+   * value of that attribute.
+   *
+   * @return The module version, or <code>N/A</code>, when no version number exists.
+   */
+  public final String getVersionAsString() {
+    return (version == null ? "N/A" : version.getVersionNumber());
+  }
+
+  public final boolean hasVersion() {
+    return version != null;
+  }
+
+  /**
+   * Checks if this module has been patched (and is thus part of a <code>ReleaseManifest</code>).
+   *
+   * @return <code>true</code> when this module has a <code>PatchLine</code> attached to it, <code>false</code> if it
+   *         hasn't.
+   */
+  public final boolean hasPatchLine() {
+    return patchLine;
+  }
+
+  /**
+   * When initialized by <code>AbstractManifest</code>, a module is assigned its base directory, relative to the manifest. The
+   * base directory is used internally for base-directory-aware methods.
+   *
+   * @param baseDir
+   */
+  public final void setBaseDir(File baseDir) {
+
+    if (baseDir == null) {
+      throw new IllegalArgumentException("If you use it, initialize it with a valid 'File' instance ...");
+    }
+    this.baseDir = baseDir;
+  }
+
+
+
+  public final File getBaseDir() {
+
+    if (baseDir == null) {
+      throw new KarmaRuntimeException("Basedir not set.");
+    }
+    return baseDir;
+  }
+
 }
