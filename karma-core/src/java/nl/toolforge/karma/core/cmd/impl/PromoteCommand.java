@@ -18,12 +18,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
+import nl.toolforge.karma.core.Patch;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
+import nl.toolforge.karma.core.manifest.DevelopmentManifest;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
@@ -82,7 +84,14 @@ public class PromoteCommand extends DefaultCommand {
 
       if (getCommandLine().getOptionValue("v") != null) {
 
-        Version manualVersion = new Version(getCommandLine().getOptionValue("v"));
+        Version manualVersion = null;
+
+        if (manifest instanceof DevelopmentManifest) {
+          manualVersion= new Version(getCommandLine().getOptionValue("v"));
+        } else{
+          manualVersion = new Patch(getCommandLine().getOptionValue("v"));
+        }
+
         if (manualVersion.isLowerThan(status.getLastVersion())) {
           throw new CommandException(
               CommandException.MODULE_VERSION_ERROR,

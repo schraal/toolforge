@@ -113,4 +113,43 @@ public final class ModuleDependency {
     return module != null;
   }
 
+  /**
+   * Returns the hash code for this instance. The hash code is either <code>module.hashCode()</code> or
+   * <code>artifactId.hashCode()</code>; this follows the general structure
+   *
+   * @return
+   */
+  public int hashCode() {
+    if (isModuleDependency()) {
+      return module.hashCode();
+    } else {
+      if (groupId != null) {
+        return artifactId.hashCode();
+      } else {
+        return id.hashCode();
+      }
+    }
+  }
+
+  /**
+   * Checks two <code>ModuleDependency</code> instances for equality. If the dependency is a module dependency, their
+   * module names are checked for equality. Otherwise the <code>artifactId</code> attribute is used to determine
+   * equality.
+   *
+   * @param obj Another <code>ModuleDependency</code>.
+   */
+  public boolean equals(Object obj) {
+
+    if (!(obj instanceof ModuleDependency)) {
+      return false;
+    } else {
+
+      if (isModuleDependency()) {
+        return module.equals(((ModuleDependency) obj).module);
+      } else {
+        return artifactId.equals(((ModuleDependency) obj).artifactId);
+      }
+    }
+  }
+
 }

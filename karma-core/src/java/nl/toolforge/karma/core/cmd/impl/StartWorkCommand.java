@@ -130,6 +130,7 @@ public class StartWorkCommand extends DefaultCommand {
 
           if (!runner.hasPatchLine(module)) {
             runner.createPatchLine(module);
+            module.markPatchLine(true);
           }
           runner.checkout(module, module.getPatchLine(), null);
         } else {

@@ -228,6 +228,12 @@ public final class CVSLocationImpl extends BaseLocation {
     if ((repository == null) || (repository.length() == 0)) {
       throw new IllegalArgumentException("Repository cannot be null.");
     }
+    // due to some 'feature' in the netbeans API, we trim the repository string from slashes ...
+    //
+    while(repository.endsWith(File.separator)) {
+      repository = repository.substring(0, repository.lastIndexOf(File.separator));
+    }
+
     this.repository = repository;
   }
 

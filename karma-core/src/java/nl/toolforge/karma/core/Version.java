@@ -28,7 +28,7 @@ import java.util.regex.PatternSyntaxException;
  * @author D.A. Smedes
  * @version $Id$ 
  */
-public class Version implements Comparable {
+public class Version implements Cloneable, Comparable {
 
   public static String VERSION_PATTERN_STRING = "\\d{1,2}-\\d{1,2}";
 
@@ -90,7 +90,7 @@ public class Version implements Comparable {
    * @param patchNumber
    * @return
    */
-  public Patch createPatch(String patchNumber) {
+  public Patch createPatch(int patchNumber) {
     return new Patch(getVersionNumber() + VERSION_SEPARATOR_CHAR + patchNumber);
   }
 
@@ -218,5 +218,9 @@ public class Version implements Comparable {
    */
   public final void increase() {
     setDigit(getLastDigitIndex(), getLastDigit() + 1);
+  }
+
+  public Object clone() throws CloneNotSupportedException {
+    return super.clone();
   }
 }

@@ -219,12 +219,12 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
    *
    * @return
    */
-  protected SourceModule getCurrentModule() {
+  protected Module getCurrentModule() {
 
     if (module == null) {
       throw new KarmaRuntimeException("Module is null. Execute method has not been called by subclass.");
     }
-    return (SourceModule) module;
+    return module;
   }
 
   /**
@@ -375,10 +375,6 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
       }
     }
     return buffer.toString();
-  }
-
-  protected String getDependencies(Set dependencies, boolean relative) throws ManifestException, CommandException {
-    return getDependencies(dependencies, relative, DEPENDENCY_SEPARATOR_CHAR);
   }
 
   protected String getDependencies(Set dependencies, boolean relative, char separator) throws ManifestException, CommandException {

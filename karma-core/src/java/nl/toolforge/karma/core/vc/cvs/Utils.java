@@ -34,6 +34,9 @@ import nl.toolforge.karma.core.vc.model.MainLine;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.File;
+import java.io.FilenameFilter;
+
 public final class Utils {
 
   private static final Log logger = LogFactory.getLog(Utils.class);
@@ -121,7 +124,7 @@ public final class Utils {
     return status.getLocalVersion();
   }
 
-    public static boolean existsInRepository(Module module) throws VersionControlException {
+  public static boolean existsInRepository(Module module) throws VersionControlException {
 
     Runner runner = RunnerFactory.getRunner(module.getLocation());
 
@@ -129,7 +132,58 @@ public final class Utils {
     //the idea now is that the retrieval of status would have given an exception when
     //the module was not in the repo.
     ModuleStatus status = new CVSModuleStatus(module, ((CVSRunner) runner).log(module));
-//    return status.existsInRepository();
+
     return true;
   }
+
+  private static FilenameFilter filter = new FilenameFilter() {
+
+    public boolean accept(File dir, String name) {
+      return !(name.matches(".cvsignore") && name.matches("CVS"));
+    }
+  };
+
+//  /**
+//   * Gets all files not known to CVS.
+//   *
+//   * @param module
+//   * @return
+//   */
+//  public static Set getNewEntries(Module module) {
+//
+//    StandardAdminHandler handler = new StandardAdminHandler();
+//
+//    // Define a file filter for everything except:
+//    // 1. .cvsignore
+//    // 2. CVS-directories.
+//    //
+//
+//    String[] newEntries = (String[]) module.getBaseDir().list(filter);
+//
+//    while (true) {
+//
+//
+//
+//    }
+//
+//
+//  }
+//
+//  private Set addEntries(File dir, Set currentSet) {
+//
+//    String[] newEntries = (String[]) dir.list(filter);
+//
+//    for (int i = 0; i < newEntries.length; i++) {
+//
+//      File entry = new File(newEntries[i]);
+//      if (entry.isDirectory()) {
+//        currentSet.addAll(addEntries(entry, currentSet));
+//      } else {
+//        currentSet.add(entry);
+//      }
+//
+//    }
+//
+//  }
+
 }

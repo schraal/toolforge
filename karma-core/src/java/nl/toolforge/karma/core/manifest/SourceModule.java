@@ -159,8 +159,7 @@ public class SourceModule extends BaseModule {
     Digester digester = new Digester();
 
     digester.addObjectCreate("*/dependencies", "java.util.HashSet");
-    digester.addObjectCreate("*/dependency", "nl.toolforge.karma.core.scm.ModuleDependency");
-    digester.addSetProperties("*/dependency"); // new String[]{"id", "groupId", "artifactId", "version", "module", "jar"};
+    digester.addFactoryCreate("*/dependency", "nl.toolforge.karma.core.scm.digester.ModuleDependencyCreationFactory");
     digester.addSetNext("*/dependency", "add");
 
     try {

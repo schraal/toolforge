@@ -107,7 +107,7 @@ public class CreateRelease extends CompositeCommand {
     StringBuffer buffer = new StringBuffer();
     buffer.append("<?xml version=\"1.0\"?>\n");
 
-    buffer.append("<manifest name=\"" + releaseName + "\" type=\"release\" version=\"1.0\">\n");
+    buffer.append("<manifest name=\"" + releaseName + "\" type=\"release\" version=\"1-0\">\n");
 
     buffer.append("  <modules>\n");
 

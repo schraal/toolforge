@@ -20,37 +20,37 @@ package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
+import nl.toolforge.karma.core.cmd.AntErrorMessage;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
-import nl.toolforge.karma.core.cmd.AntErrorMessage;
 import nl.toolforge.karma.core.cmd.util.DescriptorReader;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ModuleDescriptor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.tools.ant.taskdefs.Copy;
-import org.apache.tools.ant.taskdefs.Jar;
-import org.apache.tools.ant.taskdefs.War;
-import org.apache.tools.ant.taskdefs.Ear;
-import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.FilterSet;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
+import org.apache.tools.ant.taskdefs.Copy;
+import org.apache.tools.ant.taskdefs.Ear;
+import org.apache.tools.ant.taskdefs.Jar;
+import org.apache.tools.ant.taskdefs.War;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.FilterSet;
 import org.xml.sax.SAXException;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.FileWriter;
-import java.util.Map;
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.regex.Pattern;
+import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -76,6 +76,11 @@ public class PackageModule extends AbstractBuildCommand {
   public void execute() throws CommandException {
 
     super.execute();
+
+
+
+//    String moduleDeps = getModuleDependencies(getCurrentModule().getDependencies(), true, DEPENDENCY_SEPARATOR_CHAR);
+
 
     try {
 
@@ -112,9 +117,6 @@ public class PackageModule extends AbstractBuildCommand {
 
       blaat.addTarget(t);
 
-
-
-
       executeDelete(getModuleBuildDirectory(), "*.jar");
 
       Copy copy = null;
@@ -132,7 +134,6 @@ public class PackageModule extends AbstractBuildCommand {
 //      copy.execute();
 
       t.addTask(copy);
-
 
       copy = new Copy();
       copy.setProject(getProjectInstance());
@@ -169,7 +170,7 @@ public class PackageModule extends AbstractBuildCommand {
       jar.setDestFile(packageName);
       jar.setBasedir(getPackageDirectory());
       jar.setExcludes("*.jar");
-t.addTask(jar);
+      t.addTask(jar);
 //      jar.execute();
 
       blaat.executeTarget("blaat");
@@ -226,7 +227,7 @@ t.addTask(jar);
       String jarDeps = getJarDependencies(getCurrentModule().getDependencies(), true, DEPENDENCY_SEPARATOR_CHAR);
 
       if ( (moduleDeps != null && !"".equals(moduleDeps)) ||
-              (jarDeps != null && !"".equals(jarDeps))) {
+          (jarDeps != null && !"".equals(jarDeps))) {
 
         copy = new Copy();
         copy.setProject(getProjectInstance());

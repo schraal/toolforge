@@ -39,7 +39,7 @@ public class TestManifest extends BaseTest {
       m.load();
 
       assertTrue( "test-manifest-1".equals(m.getName()));
-			assertTrue( Pattern.matches("[0-9][0-9]?[0-9]?-[0-9][0-9]?[0-9]?", m.getVersion()));
+			assertTrue( Pattern.matches("\\d{1}-\\d{1}", m.getVersion()));
       assertEquals(3, m.size());
 
       //assertNotNull(m.getDescription()); //todo something wrong in the digester rules.xml

@@ -22,7 +22,7 @@ import nl.toolforge.karma.core.cmd.CommandMessage;
 
 /**
  * Event thrown when a CommandResponse changes. Classes interested in this event implement
- * the CommandResponseListener interface.
+ * the {@link CommandResponseListener} interface.
  */
 public class CommandResponseEvent {
 

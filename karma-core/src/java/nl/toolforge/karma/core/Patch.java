@@ -33,12 +33,7 @@ public class Patch extends Version {
    */
   public static final String VERSION_PATTERN_STRING = Version.VERSION_PATTERN_STRING + PATCH_PATTERN_POSTFIX;
 
-  /**
-   * Override for {@link Version.INITIAL_VERSION}. The initial patch level is <code>0-0-0</code>.
-   *
-   * @see Version.INITIAL_VERSION
-   */
-  public static Version INITIAL_VERSION = new Patch("0-0-1");
+  public static int INITIAL_PATCH = 1;
 
   /**
    * Patches have the following format : <code>0-0-x</code>, where x is the actual patch number within the

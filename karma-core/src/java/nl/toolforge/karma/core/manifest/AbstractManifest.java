@@ -583,22 +583,30 @@ public abstract class AbstractManifest implements Manifest {
     String[] stateFiles = module.getBaseDir().list(filter);
 
     if ((stateFiles == null || stateFiles.length == 0)) {
-      return Module.STATIC;
-    }
-
-    if (stateFiles.length > 0 && ".WORKING".equals(stateFiles[0])) {
-      return Module.WORKING;
-    }
-
-    if (this instanceof ReleaseManifest) {
-      return Module.STATIC;
-    } else {
       if (module.hasVersion()) {
         return Module.STATIC;
+      } else {
+        return Module.DYNAMIC;
+      }
+    } else {
+
+      // We have state files, meaning that the module was local.
+      //
+      if (".WORKING".equals(stateFiles[0])) {
+        return Module.WORKING;
+      } else {
+
+        // The module is not working.
+        //
+        if (this instanceof ReleaseManifest) {
+          return Module.STATIC;
+        } else {
+          if (module.hasVersion()) {
+            return Module.STATIC;
+          }
+        }
+        return Module.DYNAMIC;
       }
     }
-    return Module.DYNAMIC;
   }
-
-
 }

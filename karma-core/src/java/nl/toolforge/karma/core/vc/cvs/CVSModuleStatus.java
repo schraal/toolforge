@@ -47,9 +47,9 @@ import nl.toolforge.karma.core.vc.model.MainLine;
  */
 public class CVSModuleStatus implements ModuleStatus {
 
-  private Version nextVersion = null;
-  private Version lastVersion = null;
-  private Version localVersion = null;
+//  private Version nextVersion = null;
+//  private Version lastVersion = null;
+//  private Version localVersion = null;
   private boolean existsInRepository = false;
 
   private List matchingList = null;
@@ -94,12 +94,17 @@ public class CVSModuleStatus implements ModuleStatus {
       // todo there is something to this logic.
 
       if (module.hasPatchLine()) {
-        return Patch.INITIAL_VERSION;
+        return module.getVersion().createPatch(Patch.INITIAL_PATCH);
       }
 
       return null;
     }
-    nextVersion = (Version) matchingList.get(matchingList.size() - 1);
+    Version nextVersion = null;
+    try {
+      nextVersion = (Version) ((Version) matchingList.get(matchingList.size() - 1)).clone();
+    } catch (CloneNotSupportedException e) {
+      throw new KarmaRuntimeException(e.getMessage());
+    }
     nextVersion.increase();
 
     return nextVersion;
@@ -115,14 +120,13 @@ public class CVSModuleStatus implements ModuleStatus {
     if (matchingList.size() == 0) {
       return null;
     }
-    lastVersion = (Version) matchingList.get(matchingList.size() - 1);
-
-    return lastVersion;
+    return (Version) matchingList.get(matchingList.size() - 1);
   }
 
   public Version getLocalVersion() throws CVSException {
 
     StandardAdminHandler handler = new StandardAdminHandler();
+    Version localVersion = null;
 
     try {
       Entry[] entries = handler.getEntriesAsArray(module.getBaseDir());
@@ -184,8 +188,6 @@ public class CVSModuleStatus implements ModuleStatus {
       // We are working on the PatchLine of a module.
       //
       pattern = Pattern.compile(((PatchLine) module.getPatchLine()).getMatchingPattern());
-//      pattern = Pattern.compile("PATCHLINE|p_0-0-{1}\\d{1,2}");
-
     } else {
       // We are doing MAINLINE development.
       //

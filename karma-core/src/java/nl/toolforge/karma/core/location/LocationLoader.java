@@ -141,8 +141,7 @@ public final class LocationLoader {
 
       digester = new Digester();
       digester.addObjectCreate("locations", "java.util.ArrayList");
-      digester.addObjectCreate("locations/location", "nl.toolforge.karma.core.location.LocationDescriptor");
-      digester.addSetProperties("locations/location");
+      digester.addFactoryCreate("locations/location", "nl.toolforge.karma.core.location.digester.LocationDescriptorCreationFactory");
       digester.addCallMethod("locations/location/protocol", "setProtocol", 0);
       digester.addCallMethod("locations/location/host", "setHost", 0);
       digester.addCallMethod("locations/location/port", "setPort", 0);

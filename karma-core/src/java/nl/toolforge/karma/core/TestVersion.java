@@ -172,7 +172,7 @@ public class TestVersion extends TestCase {
   public void testCreatePatch() {
 
     Version v1 = new Version("0-2");
-    assertEquals(v1.createPatch("1"), new Patch("0-2-1"));
+    assertEquals(v1.createPatch(1), new Patch("0-2-1"));
   }
 
 }

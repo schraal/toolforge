@@ -20,6 +20,7 @@ package nl.toolforge.karma.core.manifest;
 
 import java.io.File;
 import java.util.regex.PatternSyntaxException;
+import java.util.Set;
 
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.location.Location;
@@ -175,6 +176,8 @@ public interface Module {
    * @return <ode>true</code> if the module has a &lt;version&gt;-attribute or <code>false</code> if it hasn't.
    */
   public boolean hasVersion();
+
+  public Set getDependencies() throws ManifestException;
 
   /**
    * Types a module in the source hierarchy.
