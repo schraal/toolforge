@@ -1,20 +1,18 @@
 package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.boot.WorkingContext;
-import nl.toolforge.karma.core.location.LocationException;
 import org.apache.commons.digester.Digester;
 import org.xml.sax.SAXException;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.text.MessageFormat;
 
 /**
  * <p>When a {@link nl.toolforge.karma.core.location.Location} - more specifically, {@link VersionControlSystem} -
@@ -63,22 +61,22 @@ public final class Authenticator {
       throw new IllegalArgumentException("Location cannot be null.");
     }
 
-    try {
-      location.setUsername(((Authenticator) getAuthenticators().get(location.getId())).getUsername());
-    } catch (LocationException e) {
-      // todo extend the messaging scheme
-      throw new AuthenticationException("Could not authenticate location.");
+    Authenticator authenticator = ((Authenticator) getAuthenticators().get(location.getId()));
+
+    if (authenticator == null) {
+      throw new AuthenticationException(AuthenticationException.AUTHENTICATOR_NOT_FOUND, new Object[]{location.getId()});
     }
+    location.setUsername(authenticator.getUsername());
   }
 
-  private Map getAuthenticators() throws LocationException {
+  private Map getAuthenticators() throws AuthenticationException {
 
     Map authenticators = new Hashtable();
 
     File authenticatorsFile = new File(WorkingContext.getConfigurationBaseDir(), "authenticators.xml");
 
     if (authenticatorsFile == null) {
-      throw new LocationException(LocationException.MISSING_AUTHENTICATOR_CONFIGURATION);
+      throw new AuthenticationException(AuthenticationException.MISSING_AUTHENTICATOR_CONFIGURATION);
     }
 
     // Create a list of authenticators, anything you can find.
@@ -89,16 +87,16 @@ public final class Authenticator {
     try {
       subList = (List) digester.parse(authenticatorsFile.getPath());
     } catch (IOException e) {
-      throw new LocationException(e, LocationException.MISSING_AUTHENTICATOR_CONFIGURATION);
+      throw new AuthenticationException(e, AuthenticationException.MISSING_AUTHENTICATOR_CONFIGURATION);
     } catch (SAXException e) {
-      throw new LocationException(e, LocationException.AUTHENTICATOR_LOAD_ERROR);
+      throw new AuthenticationException(e, AuthenticationException.AUTHENTICATOR_LOAD_ERROR);
     }
 
     for (Iterator j = subList.iterator(); j.hasNext();) {
       Authenticator authDescriptor = (Authenticator) j.next();
       if (authenticators.containsKey(authDescriptor.getId())) {
-        throw new LocationException(
-            LocationException.DUPLICATE_AUTHENTICATOR_KEY,
+        throw new AuthenticationException(
+            AuthenticationException.DUPLICATE_AUTHENTICATOR_KEY,
             new Object[] {authDescriptor.getId(), WorkingContext.getConfigurationBaseDir().getPath()}
         );
       }
@@ -123,7 +121,7 @@ public final class Authenticator {
 
       authenticators = getAuthenticators();
 
-    } catch (LocationException e) {
+    } catch (AuthenticationException e) {
       return false;
     }
 

@@ -117,6 +117,7 @@ public final class CVSRunner implements Runner {
     try {
       cvsLocation.authenticate();
     } catch (nl.toolforge.karma.core.vc.AuthenticationException e) {
+      logger.error(e.getMessage());
       throw new CVSException(CVSException.AUTHENTICATION_ERROR);
     }
 
