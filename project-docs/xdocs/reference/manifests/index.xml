@@ -1,14 +1,48 @@
 <?xml version="1.0"?>
 <document>
 
-  <properties>
-    <title>Reference Documentation</title>
-  </properties>
+<properties>
+  <title>Reference Documentation</title>
+</properties>
 
-  <body>
-    <section name="Modules">
-      <p>
-      </p>
-    </section>
- </body>
+<body>
+  
+  <section name="Manifest Basics">
+  
+  <p>
+  </p>
+
+  <subsection name="Basic Structure">
+  </subsection>
+  
+  <subsection name="Using Includes">
+  </subsection>
+
+  </section>
+
+  <section name="Development Manifests">
+  
+  <p>
+  </p>
+  
+  </section>
+
+  <section name="Release Manifests">
+  
+  <p>
+  </p>
+  
+  </section>
+
+  <section name="Admin Issues">
+  
+  <p>
+    [ Something should be said about committing changed manifests to the
+    manifest-store repository ... ]
+  </p>
+  
+  </section>
+
+</body>
+
 </document>

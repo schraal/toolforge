@@ -104,9 +104,9 @@
     Karma can be started in the following ways:
   </p>
 
-  <source>karma -w &lt;working-context&gt;</source>
+  <source>karma [-w &lt;working-context&gt;]</source>
 
-  <source>karma &lt;command&gt; &lt;command-options&gt;</source>
+  <source>karma [-u] &lt;command&gt; &lt;command-options&gt;</source>
 
   <p>
     The first one starts the Karma console application for the specified
@@ -120,9 +120,9 @@
     Karma can be started in the following ways:
   </p>
 
-  <source>karma.bat -w &lt;working-context&gt;</source>
+  <source>karma.bat [-w &lt;working-context&gt;]</source>
 
-  <source>karma.bat &lt;command&gt; &lt;command-options&gt;</source>
+  <source>karma.bat [-u] &lt;command&gt; &lt;command-options&gt;</source>
 
   <p>
     Karma will start up and check its environment. The following output should
@@ -153,12 +153,20 @@ Checking manifest store configuration ...
   <subsection name="Working Context Configuration">
 
   <p>
-    The working context is the set of manifests
+    In the <a href="/basics#working-context-support">basics</a> section, the
+    working context concept is explained.
   </p>
 
   <p>
-    Using Karma directly with a command requires that a working context has
-    been set already. Using any command 
+    Having started Karma, you have configured your first working context. The
+    properties for a working context can be changed in
+    <code>workingcontext.properties</code>, located in the working context
+    subdirectory of <code>${user.home}/.karma</code>.
+  </p>
+
+  <p>
+     For an in-depth discussion on working contexts, see the <a
+     href="/reference/working-context/index.xml">reference</a> documentation.
   </p>
 
   </subsection>

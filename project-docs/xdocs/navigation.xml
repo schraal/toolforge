@@ -12,7 +12,9 @@
     <menu name="General Information">
       <item name="Overview"              href="/index.html"/>
       <item name="Basics"                href="/basics.html"/>
-      <item name="Getting Started"       href="/getting-started.html"/>
+      <item name="Getting Started"       href="/getting-started.html">
+        <item name="Administration Guide" href="/administration-guide.html"/>
+      </item>
     </menu>
 
     <menu name="Questions and Concerns">
@@ -27,13 +29,13 @@
       <item name="Karma Launcher" href="../karma-launcher/"/>
     </menu>
 
-    <menu name="End User Applications">
-      <item name="Command Line Interface"  href="../karma-cli"/>
-      <item name="Console" href="../karma-cli/"/>
+    <menu name="User Interfaces">
+      <item name="Command Line Interface"  href="/ui/cli.html"/>
+      <item name="Console" href="/ui/console.html"/>
 
-      <item name="IDE Plugins">
-        <item name="Intelli-J" href="/plugins/intelli-j.html"/>
-        <item name="Eclipse" href="/plugins/eclipse.html"/>
+      <item name="IDE Plugins" href="/ui/plugins/index.html">
+        <item name="Intelli-J" href="/ui/plugins/intelli-j.html"/>
+        <item name="Eclipse" href="/ui/plugins/eclipse.html"/>
       </item>
     </menu>
 

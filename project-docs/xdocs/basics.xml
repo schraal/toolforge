@@ -25,23 +25,21 @@
     group of software modules can be called a component, but we have chosen to
     refrain from the academic discussion about the definition of a software
     component. Karma doesn't care ! A manifest is an XML definition for
-    modules and other manifests (the so-called manifest-includes). We will
-    come back to manifest in much more detail (<a href="">later</a>) on, but
+    modules and other manifests (the so-called manifest-includes). Manifests
+    are covered in much more detail in the <a
+    href="/reference/manifests/index.html">Reference Documentation</a>, but
     here's what it looks like:
   </p>
 
   <source>
-
-  <![CDATA[
-    <manifest name="oracle-10g-dev" type="development" version="1-0">
-      <modules>
-        <module name="enterprise-manager" version="9-0" location="us-boston-01"/>
-        <module name="sql-plus-client" version="1-6" location="us-boston-01"/>
-      </modules>
-      <include-manifest name="database-server-8i-stable"/>
-    </manifest>
-  ]]>
-
+<![CDATA[
+<manifest name="oracle-10g-dev" type="development" version="1-0">
+  <modules>
+    <module name="enterprise-manager" version="9-0" location="us-boston-01"/>
+    <module name="sql-plus-client" version="1-6" location="us-boston-01"/>
+  </modules>
+  <include-manifest name="database-server-8i-stable"/>
+</manifest>]]>
   </source>
 
   <p>
@@ -176,6 +174,8 @@
   </p>
 
   </section>
+
+  <a name="working-context-support"/>
 
   <section name="Working Context Support">
 

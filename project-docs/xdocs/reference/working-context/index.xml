@@ -1,14 +1,135 @@
 <?xml version="1.0"?>
 <document>
 
-  <properties>
-    <title>Reference Documentation</title>
-  </properties>
+<properties>
+  <title>Reference Documentation</title>
+</properties>
 
-  <body>
-    <section name="Modules">
-      <p>
-      </p>
-    </section>
- </body>
+ <body>
+  
+  <section name="Working Contexts">
+
+  <p>
+    The working set of modules, manifests, etc for a developer is logically
+    grouped in a 'working context'. A working context is used by Karma to
+    check out modules and manage manifests within a logical context. Suppose
+    you work for two different clients. For each client, you can easily
+    configure a working context and separate every client-specific setting
+    from the other. 
+  </p>
+
+  <p>
+    The first thing that Karma does, when starting up, is locate the current
+    working context. When Karma is started using <code>karma -w
+    &lt;working-context&gt;</code>, the working-context is stored as a user
+    preference <code>karma.working-context</code> in
+    <code>.java/.userPrefs/prefs.xml</code>. Having set a working context, the
+    next time you use Karma, it can simply be started with <code>karma</code>
+    (or <code>karma.bat</code> for Windows users).
+  </p>
+
+  <subsection name="Configuration Items">
+
+  <p>
+    The working context requires a number of configuration items. All of these
+    items are configured in <code>workingcontext.properties</code>, located in
+    <code>${user.home}/.karma/&lt;working-context&gt;</code>.
+  </p>
+
+  <p>
+    The following properties are defined (as your CVS administrator for the
+    correct settings).
+  </p>
+
+  <table>
+
+  <tr>
+    <th><code>manifest-store.cvs.protocol</code></th>
+    <td>
+
+      The protocol that the CVS repository supports. This would be
+      <code>local</code> for local repositories and <code>pserver</code> for
+      (remote), password secured servers. Note that <code>ext</code> and
+      <code>server</code> are not yet supported (working on it).
+
+    </td>
+  </tr>
+
+  <tr>
+    <th><code>manifest-store.cvs.host</code></th>
+    <td>
+
+      The host (ip-adres or hostname) where the CVS repository resides. This
+      property is ignored when <code>manifest-store.cvs.protocol</code> is
+      <code>local</code>.
+
+    </td>
+
+  </tr>
+
+  <tr>
+    <th><code>manifest-store.cvs.port</code></th>
+    <td>
+
+      The server port at which the CVS repository is listening. Generally,
+      this would be 2401 (the default port).
+
+    </td>
+  </tr>
+
+  <tr>
+    <th><code>manifest-store.cvs.repository</code></th>
+    <td>
+
+      The repository (directory) on the CVS server.
+
+    </td>
+  </tr>
+
+  <tr>
+    <th><code>manifest-store.cvs.module</code></th>
+    <td>
+
+      The module in the CVS repository where the manifest files are
+      managed. Specify the full path to the module. If the module is located
+      in <code>manifests/development-manifests</code>, then use the full
+      module name for the <code>manifest-store.cvs.module</code> property.
+
+    </td>
+  </tr>
+
+  <tr>
+    <th><code>manifest-store.cvs.username</code></th>
+    <td>
+
+      The username that is configured on the CVS server and allows you (at
+      least read-)access to the manifest store.
+
+    </td>
+  </tr>
+
+  </table>
+
+  <p>
+    A flaw in Karma R1.0 is the way we lookup authentication data. You will
+    have to login to the CVS repository once to create the required password
+    entry in <code>${user.home}/.cvspass</code> (on Windows, you will even
+    have to create this file yourself (see : <a href="">authentication
+    issues</a>.
+  </p>
+
+  </subsection>
+
+  </section>
+
+  <section name="Best Practices">
+
+  <p>
+    [ It is a good practice to define a new working context when ... ]
+  </p>
+  
+  </section>
+
+</body>
+
 </document>
