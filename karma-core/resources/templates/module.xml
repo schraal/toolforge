@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+
+<!--
+   Template file for module.xml, which is contained in all modules of type SourceModule.
+-->
+
+<module>
+
+  <!--
+    Two types of dependencies are valid:
+
+    1. 'external' dependencies (use 'type="external"'). External dependencies require a <location>-child-element,
+       which is interpreted as follows :
+       - When <location>-value starts with '/' (slash), it denotes a directory, relative to the module root. This
+         mechanism is compatible with most non-Maven projects, where a 'lib'-directory is used, or subdirectories
+         thereof
+       - Else, the value is used as a lookup-value in the LocationFactory (the maven repository standard is adopted).
+    2. local dependencies, where the <name>-element of the <dependency>-element is looked up in the
+       current manifest. (use the 'type="internal"'). I
+
+    Unlike Maven, we must have a properly formatted dependency for all dependencies. MavenModules will be checked for
+    such a formatting, this file, when loaded will be parsed as such.
+   -->
+  
+  <dependencies>
+
+    <!--
+      The following dep identifies a jar-file in the ${module.home}/lib directory.
+    -->
+
+    <dependency type="external">
+      <name>junit</name>
+      <version>3.8.1</version>
+      <location>/lib/</location>
+    </dependency>
+
+    <!--
+      The following dep identifies a jar-file in the ${maven.repo.local} directory (as per the Maven specification).
+    -->
+
+    <dependency type="external">
+      <name>junit</name>
+      <version>3.8.1</version>
+      <location>maven-local</location>
+    </dependency>
+
+    <!--
+      The following dep identifies a
+    -->
+
+    <dependency type="internal">
+      <name>karma-core</name>
+    </dependency>
+
+  </dependencies>
+
+</module>
+
+
+<!--
+
+  1. Het manifest bevat modules met eventueel version-attributen.
+  2. Elke SourceModule definieert expliciete dependencies naar andere modules, dmv module.xml
+  3. Elke MavenModule (extends SourceModule ...) definieert expliciete dependencies naar andere modules, dmv project.xml
+     (volgens de Maven standaard).
+
+  Stel dat we dit hebben voor een bepaalde 'build-module'-run :
+
+  A. module.xml met twee deps (junit-3.8.1 en aura-core_0-9)
+  B. project.xml met twee deps (junit-3.7 en karma-core_1-4)
+  C. een manifest met daarin 
+
+
+
+
+-->
