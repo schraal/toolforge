@@ -20,22 +20,22 @@ public interface Command {
 	/**
 	 * Dependency type for a CVS version control system
 	 */
-	public static final String DEPENDENCY_CVS = "cvs";
+//	public static final String DEPENDENCY_CVS = "cvs";
 
 	/**
 	 * Dependency type for a Subversion version control system
 	 */
-	public static final String DEPENDENCY_SUBVERSION = "subversion";
+//	public static final String DEPENDENCY_SUBVERSION = "subversion";
 
 	/**
 	 * Dependency type for a library module (mainly a Java jar-file)
 	 */
-	public static final String DEPENDENCY_MODULE_TYPE_LIB = "lib";
+//	public static final String DEPENDENCY_MODULE_TYPE_LIB = "lib";
 
 	/**
 	 * Dependency type for a source module
 	 */
-	public static final String DEPENDENCY_MODULE_TYPE_SOURCE = "source";
+//	public static final String DEPENDENCY_MODULE_TYPE_SOURCE = "source";
 
 	/**
 	 * Default filename for the command descriptor file
@@ -70,7 +70,7 @@ public interface Command {
 	 * @throws KarmaException If the implementation class is not found, the error code will be set to :
 	 *                        {@link KarmaException#COMMAND_IMPLEMENTATION_CLASS_NOT_FOUND}
 	 */
-	public Class getImplementation() throws KarmaException;
+//	public Class getImplementation() throws KarmaException;
 
 	/**
 	 * Gets a <code>Map</code> containing type/name-pairs of dependencies for this module. Dependencies can be
@@ -87,11 +87,12 @@ public interface Command {
 	public String getHelp();
 
 	/**
-	 * Executes the command and captures its results in a <code>CommandResponse</code> object for further reference.
+	 * Executes the command.
 	 *
-	 * @throws KarmaException To be documented.
+	 * @throws CommandException When execution failed. This exception catches all underlying exceptions and rethrows them
+   *         as a CommandException, except for <code>RuntimeException</code>s.
 	 */
-	public void execute() throws KarmaException;
+	public void execute() throws CommandException;
 
 	/**
 	 * Stores a reference to a <code>CommandContext</code>.

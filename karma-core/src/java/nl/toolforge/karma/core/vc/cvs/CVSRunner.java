@@ -393,7 +393,7 @@ public final class CVSRunner implements Runner {
     if (!(this.listener instanceof CVSResponseAdapter)) {
       // todo this stuff sucks, but is a good reminder.
       throw new KarmaRuntimeException(
-        "Due to the way the Netbeans API works, the CVSRunner must be initialized with a 'CommandResponse' object.");
+          "Due to the way the Netbeans API works, the CVSRunner must be initialized with a 'CommandResponse' object.");
     }
 
     if (!(module instanceof SourceModule)) {
@@ -445,7 +445,7 @@ public final class CVSRunner implements Runner {
    * location. If that succeeds, apparently the module exists in that location and we have a <code>true</code> to
    * return.
    */
-  private boolean existsInRepository(Module module) throws CVSException {
+  private boolean existsInRepository(Module module) {
 
     if (module == null) {
       return false;
@@ -461,7 +461,16 @@ public final class CVSRunner implements Runner {
       throw new KarmaRuntimeException("Panic! Failed to create temporary directory for module " + module.getName());
     }
 
-    executeOnCVS(checkoutCommand, tmp);
+    try {
+      executeOnCVS(checkoutCommand, tmp);
+    } catch (CVSException e) {
+      if (e.getErrorCode().equals(CVSException.MODULE_EXISTS_IN_REPOSITORY)) {
+        // If the module already exists in the repository.
+        //
+        return true;
+      }
+      return false;
+    }
 
     File moduleDirectory = new File(tmp, module.getName());
 

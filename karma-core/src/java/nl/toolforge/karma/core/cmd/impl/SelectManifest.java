@@ -6,6 +6,7 @@ import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.QueryCommandResponse;
+import nl.toolforge.karma.core.cmd.CommandException;
 
 /**
  * <p>This command activates a manifest, which is a general requirement for most other commands. The newly activated
@@ -26,15 +27,14 @@ public class SelectManifest extends DefaultCommand {
 	/**
 	 * Activates a manifest.
 	 *	 */
-	public void execute() {
+	public void execute() throws CommandException {
 
 		// Select a manifest and store it in the command context
 		//
     try {
 		  getContext().changeCurrent(getCommandLine().getOptionValue("m"));
     } catch (ManifestException me) {
-      //todo proper exception handling
-      me.printStackTrace();
+      throw new CommandException(me.getErrorCode());
     }
 		new QueryCommandResponse();
 	}

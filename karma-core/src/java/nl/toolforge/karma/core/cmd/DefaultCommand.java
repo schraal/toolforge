@@ -148,9 +148,9 @@ public abstract class DefaultCommand implements Command {
 	/**
 	 * See {@link Command#execute}. Implementations must implement this method to get something out of the command.
 	 *
-	 * @throws KarmaException
+	 * @throws CommandException When executing of the command failed.
 	 */
-	public abstract void execute() throws KarmaException;
+//	public abstract void execute() throws CommandException;
 
 
 	/**

@@ -14,6 +14,7 @@ import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.CommandResponseHandler;
 import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
+import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.impl.SelectManifest;
 
 /**
@@ -33,7 +34,7 @@ public class SelectManifestImpl extends SelectManifest {
    * Execute the command in the CLI. When the execution was succesfull, a message is shown on the console.
    *
    */
-  public void execute() {
+  public void execute() throws CommandException {
 
     // Use stuff that's being done in the superclass.
     //

@@ -195,7 +195,7 @@ public class KarmaException extends Exception {
 	/**
 	 * @return The arguments that are to be filled in into the error codes' message.
 	 */
-	private Object[] getMessageArguments() {
+	public final Object[] getMessageArguments() {
 		return messageArguments;
 	}
 

@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import org.apache.commons.cli.Options;
 
 import java.util.Hashtable;
@@ -56,7 +57,7 @@ public final class CommandDescriptor {
 		try {
 			this.commandImpl = Class.forName(commandImpl);
 		} catch (ClassNotFoundException c) {
-			throw new KarmaException(KarmaException.COMMAND_IMPLEMENTATION_CLASS_NOT_FOUND, new Object[]{name}, c);
+			throw new KarmaRuntimeException(KarmaException.COMMAND_IMPLEMENTATION_CLASS_NOT_FOUND, new Object[]{name}, c);
 		}
 	}
 

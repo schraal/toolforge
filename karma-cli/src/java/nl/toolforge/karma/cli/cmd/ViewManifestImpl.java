@@ -10,6 +10,7 @@ import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.CommandResponseHandler;
 import nl.toolforge.karma.core.cmd.QueryCommandResponse;
 import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
+import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.impl.ViewManifest;
 
 /**
@@ -26,7 +27,7 @@ public class ViewManifestImpl extends ViewManifest {
 	/**
 	 * Shows the contents using simple rendering.
 	 */
-	public void execute() {
+	public void execute() throws CommandException {
 
 		super.execute(); // Ignore the response from the superclass
 

@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.w3c.dom.DOMException;
@@ -45,12 +46,11 @@ public final class CommandLoader {
 
 	/**
 	 * <p>Loads the default <code>XML</code> file containing command descriptors. The default command descriptor file is
-	 * located in the directory that is set with the {@link nl.toolforge.karma.core.prefs.Preferences#CONFIGURATION_DIRECTORY_PROPERTY}. The
-	 * default command descriptor <code>XML</code> file is designated with {@link Command#DEFAULT_COMMAND_FILE}.
+	 * located in <code>${user.home}/.karma</code>.
 	 *
 	 * @return A <code>Set</code> of {@link nl.toolforge.karma.core.cmd.CommandDescriptor} instances.
 	 */
-	Set load() throws KarmaException {
+	Set load() {
 
 		return load(Command.DEFAULT_COMMAND_FILE);
 	}
@@ -69,7 +69,7 @@ public final class CommandLoader {
 	 */
 
 
-	Set load(String resource) throws KarmaException {
+	Set load(String resource) {
 
 		Set descriptors = new HashSet();
 		Set uniqueAliasses = new HashSet();
@@ -157,14 +157,19 @@ public final class CommandLoader {
 					String alias = commandElement.getAttribute("alias");
 
 					if (!uniqueAliasses.add(alias)) {
-						throw new KarmaException(KarmaException.DUPLICATE_COMMAND_ALIAS);
+						throw new KarmaRuntimeException(KarmaException.DUPLICATE_COMMAND_ALIAS.getErrorCodeString());
 					}
 
 					String clazzName = commandElement.getElementsByTagName("classname").item(0).getFirstChild().getNodeValue();
 					String explanation = commandElement.getElementsByTagName("description").item(0).getFirstChild().getNodeValue();
 
-					CommandDescriptor descriptor = new CommandDescriptor(commandName, alias, clazzName);
-					if (options != null) {
+          CommandDescriptor descriptor = null;
+          try {
+            descriptor = new CommandDescriptor(commandName, alias, clazzName);
+          } catch (KarmaException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+          }
+          if (options != null) {
 						descriptor.setOptions(options);
 					} else {
 						descriptor.setOptions(new Options());
@@ -195,22 +200,22 @@ public final class CommandLoader {
 					if (!descriptors.contains(descriptor)) {
 						descriptors.add(descriptor);
 					} else {
-						throw new KarmaException(KarmaException.DUPLICATE_COMMAND);
+						throw new KarmaRuntimeException(KarmaException.DUPLICATE_COMMAND);
 					}
 				}
 			}
 		} catch (FactoryConfigurationError e) {
-			throw new KarmaException(KarmaException.COMMAND_DESCRIPTOR_XML_ERROR, e);
+			throw new KarmaRuntimeException(KarmaException.COMMAND_DESCRIPTOR_XML_ERROR, e);
 		} catch (ParserConfigurationException e) {
-			throw new KarmaException(KarmaException.COMMAND_DESCRIPTOR_XML_ERROR, e);
+			throw new KarmaRuntimeException(KarmaException.COMMAND_DESCRIPTOR_XML_ERROR, e);
 		} catch (SAXException e) {
-			throw new KarmaException(KarmaException.COMMAND_DESCRIPTOR_XML_ERROR, e);
+			throw new KarmaRuntimeException(KarmaException.COMMAND_DESCRIPTOR_XML_ERROR, e);
 		} catch (IOException e) {
-			throw new KarmaException(KarmaException.COMMAND_DESCRIPTOR_XML_ERROR, e);
+			throw new KarmaRuntimeException(KarmaException.COMMAND_DESCRIPTOR_XML_ERROR, e);
 		} catch (IllegalArgumentException e) {
-			throw new KarmaException(KarmaException.COMMAND_DESCRIPTOR_XML_ERROR, e);
+			throw new KarmaRuntimeException(KarmaException.COMMAND_DESCRIPTOR_XML_ERROR, e);
 		} catch (DOMException e) {
-			throw new KarmaException(KarmaException.COMMAND_DESCRIPTOR_XML_ERROR, e);
+			throw new KarmaRuntimeException(KarmaException.COMMAND_DESCRIPTOR_XML_ERROR, e);
 		}
 
 		return descriptors;

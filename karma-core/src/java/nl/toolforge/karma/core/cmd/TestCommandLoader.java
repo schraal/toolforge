@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.test.BaseTest;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -26,7 +27,7 @@ public class TestCommandLoader extends BaseTest {
 
 			assertEquals("There should be two commands loaded from the descriptor file", 2, l.size());
 
-		} catch (KarmaException k) {
+		} catch (KarmaRuntimeException k) {
 			k.printStackTrace();
 			fail(k.getMessage());
 		}

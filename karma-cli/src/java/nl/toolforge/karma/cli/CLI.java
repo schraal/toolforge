@@ -15,6 +15,7 @@ import nl.toolforge.karma.core.Manifest;
 import nl.toolforge.karma.core.bundle.BundleCache;
 import nl.toolforge.karma.core.cmd.CommandContext;
 import nl.toolforge.karma.core.cmd.CommandFactory;
+import nl.toolforge.karma.core.cmd.CommandException;
 
 /**
  * <p>The <code>CLI</code> is the command-line interface for Karma. The class presents a simple-to-use command-line
@@ -145,7 +146,7 @@ public class CLI {
 //              }
 //						}
 					}
-				} catch (KarmaException e) {
+				} catch (CommandException e) {
 					writer.writeln(e.getErrorMessage());
           logger.error(e.getMessage(), e);
 				}

@@ -19,7 +19,8 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 
 /**
- * This factory is the single resource of Command objects.
+ * This factory is the single resource of Command objects. <code>KarmaRuntimeException</code>s are thrown when
+ * something fails.
  *
  * @author W.H. Schraal
  * @version $Id$
@@ -29,10 +30,6 @@ public final class CommandFactory {
 	// Singleton
 	//
 	private static CommandFactory factory = null;
-
-	// Reference to all loaded commands
-	//
-//  private static Map commands = null;
 
 	// Reference ro all command names
 	//
@@ -44,11 +41,11 @@ public final class CommandFactory {
 	/**
 	 * Only static methods
 	 */
-	private CommandFactory() throws KarmaException {
+	private CommandFactory() {
 		init();
 	}
 
-	private synchronized void init() throws KarmaException {
+	private synchronized void init() {
 
 		Set descriptors = CommandLoader.getInstance().load();
 		//commands = new Hashtable();
@@ -76,10 +73,8 @@ public final class CommandFactory {
 
 	/**
 	 * Gets the singleton <code>CommandFactory</code>.
-	 *
-	 * @throws KarmaException When initialization failed for the singleton.
 	 */
-	public static CommandFactory getInstance() throws KarmaException {
+	public static CommandFactory getInstance() {
 		if (factory == null) {
 			factory = new CommandFactory();
 		}
@@ -109,9 +104,7 @@ public final class CommandFactory {
 		// Extract the command line options and arguments from the command line string
 		//                                              ring
 		String[] commandOptions = new String[tokenizer.countTokens()];
-//		String[] commandOptions = null;
 		if (tokenizer.hasMoreTokens()) {
-//			commandOptions = new String[tokenizer.countTokens()];
 			int i = 0;
 			while (tokenizer.hasMoreTokens()) {
 				commandOptions[i] = tokenizer.nextToken();
