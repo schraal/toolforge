@@ -175,7 +175,7 @@ public final class LocationLoader {
           AuthenticatorDescriptor authDescriptor = (AuthenticatorDescriptor) authenticators.get(d.getId());
 
           if (authDescriptor == null) {
-            throw new LocationException(LocationException.MISSING_AUTHENTICATOR_CONFIGURATION, new Object[]{d.getId()});
+            throw new LocationException(LocationException.INVALID_AUTHENTICATOR_CONFIGURATION, new Object[]{d.getId()});
           }
           locations.put(d.getId(), getLocation(d, authDescriptor));
         }
