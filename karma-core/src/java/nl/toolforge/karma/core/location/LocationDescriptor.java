@@ -63,15 +63,15 @@ public final class LocationDescriptor {
     this.repository = repository;
   }
 
-  public boolean equals(Object obj) {
-
-    if (obj instanceof LocationDescriptor) {
-      return ((LocationDescriptor) obj).getId().equals(getId());
-    }
-    return false;
-  }
-
-  public int hashCode() {
-    return getId().hashCode();
-  }
+//  public boolean equals(Object obj) {
+//
+//    if (obj instanceof LocationDescriptor) {
+//      return ((LocationDescriptor) obj).getId().equals(getId());
+//    }
+//    return false;
+//  }
+//
+//  public int hashCode() {
+//    return getId().hashCode();
+//  }
 }

@@ -75,7 +75,6 @@ public class PackageModule extends AbstractBuildCommand {
         project.setProperty(
             MODULE_INCLUDES_PROPERTY,
             "web/**, " +
-            "resources/**, " +
             "WEB-INF/lib/**, " +
             "WEB-INF/resources/**"
         );
@@ -151,14 +150,14 @@ public class PackageModule extends AbstractBuildCommand {
         }
 
         project.setProperty(MODULE_APPXML_PROPERTY, new File(getBuildDirectory(), "META-INF/application.xml".replace('/', File.separatorChar)).getPath());
-        project.setProperty(MODULE_INCLUDES_PROPERTY, "META-INF/**,resources/**");
+        project.setProperty(MODULE_INCLUDES_PROPERTY, "META-INF/**");
         project.setProperty(MODULE_EXCLUDES_PROPERTY, "*.ear,archives.*");
         project.executeTarget(BUILD_TARGET_EAR);
       } else {
         // Create a jar-file
         //
         project.setProperty(MODULE_EXCLUDES_PROPERTY, "*.jar");
-        project.setProperty(MODULE_INCLUDES_PROPERTY, "META-INF/**,resources/**");
+        project.setProperty(MODULE_INCLUDES_PROPERTY, "META-INF/**");
         project.executeTarget(BUILD_TARGET_JAR);
       }
 

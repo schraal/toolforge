@@ -68,6 +68,8 @@
       classpath="${module-classpath}"
       debug="true"/>
 
+    <echo message="classpath: ${module-classpath}:${module-build-dir}/${module-test-dir}:${module-source-dir}/../resources"/>
+    <available property="excludes-file-present" file="${module-source-dir}/excludes.properties"/>
     <junit
       printsummary="yes"
       showoutput="yes"
@@ -76,8 +78,9 @@
       failureproperty="unittestsfailed"
       reloading="false">
 
+      <!-- todo: pad moet anders -->
       <classpath>
-        <pathelement path="${module-classpath}:${module-build-dir}/${module-test-dir}"/>
+        <pathelement path="${module-classpath}:${module-build-dir}/${module-test-dir}:${module-source-dir}/../resources:${module-source-dir}/../../resources"/>
       </classpath>
 
       <formatter type="xml"/>
@@ -85,7 +88,7 @@
       <batchtest todir="${module-build-dir}/${module-test-dir}/xml">
         <fileset dir="${module-source-dir}">
           <include name="**/*.java"/>
-          <exclude name=""/>
+          <excludesfile name="${module-source-dir}/excludes.properties" if="excludes-file-present"/>
         </fileset>
       </batchtest>
     </junit>
@@ -113,8 +116,12 @@
     <echo message="${module-build-dir}, ${module-base-dir}, ${module-includes}"/>
 
     <!-- copy resources from the module src to the package dir -->
+    <!-- todo: refactor this so it works in a proper way. I really hate myself -->
     <copy todir="${module-build-dir}/${module-package-dir}" overwrite="true">
-      <fileset dir="${module-base-dir}" includes="${module-includes}"/>
+      <fileset dir="${module-base-dir}/resources" includes="**/*"/>
+    </copy>
+    <copy todir="${module-build-dir}/${module-package-dir}" overwrite="true">
+      <fileset dir="${module-base-dir}" includes="${module-includes}" excludes="resources"/>
     </copy>
 
     <!-- copy resources from the module build to the package dir -->
