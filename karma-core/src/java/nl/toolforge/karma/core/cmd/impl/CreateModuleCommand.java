@@ -4,7 +4,6 @@ import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.ModuleFactory;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
-import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
@@ -43,21 +42,23 @@ public class CreateModuleCommand extends DefaultCommand {
 
 		// The manifest itself is responsible for creating new modules.
 		//
-		Module module = null;
-		if (include) {
-			// Include the module in the manifest
-			//
-			if (!getContext().isManifestLoaded()) {
-				throw new CommandException(CommandException.NO_MANIFEST_SELECTED);
-			}
+//		Module module = null;
+//		if (include) {
+//			// Include the module in the manifest
+//			//
+//			if (!getContext().isManifestLoaded()) {
+//				throw new CommandException(CommandException.NO_MANIFEST_SELECTED);
+//			}
+//
+//			module = getContext().getCurrent().createModule(moduleName, locationAlias, true);
+//
+//		} else {
+//			// Just create the module
+//			//
+//			module = ModuleFactory.getInstance().createModule(Module.SOURCE_MODULE, moduleName, locationAlias);
+//		}
 
-			module = getContext().getCurrent().createModule(moduleName, locationAlias, true);
-
-		} else {
-			// Just create the module
-			//
-			module = ModuleFactory.getInstance().createModule(Module.SOURCE_MODULE, moduleName, locationAlias);
-		}
+    Module module = ModuleFactory.getInstance().createModule(moduleName, locationAlias);
 
 		// Part 2 of the transaction is the creation in a version control system.
 		//

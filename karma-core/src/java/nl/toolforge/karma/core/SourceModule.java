@@ -1,11 +1,8 @@
 package nl.toolforge.karma.core;
 
-import nl.toolforge.karma.core.expr.Expressions;
-import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.model.SourceModuleDescriptor;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.io.File;
 
 /**
@@ -20,85 +17,72 @@ import java.io.File;
  */
 public class SourceModule extends BaseModule {
 
-//	private static Preferences prefs = Preferences.getInstance();
-
-	/**
-	 * Element name for a source module in a manifest XML file
-	 */
-	public static final String ELEMENT_NAME = "sourcemodule";
-
-	/**
-	 * The <code>version</code>-attribute for a module.
-	 */
-	public static final String VERSION_ATTRIBUTE = "version";
-
-	/**
-	 * The <code>branch</code>-attribute for a module.
-	 */
-	public static final String BRANCH_ATTRIBUTE = "branch";
-
 	/**
 	 * The name of the mandatory file in a source module. A file with this name is created by Karma or should be created
 	 * manually and contain all data (symbolic names) that should be available for existing manifests.
 	 */
 	public static final String MODULE_INFO = "module.info";
 
-	private Version version = null; // TODO replace by a Version object ?
-	private DevelopmentLine developmentLine = null; // TODO replace by a Branch object ?
+	private Version version = null;
+	private DevelopmentLine developmentLine = null;
 
 	/**
 	 * Constructs a <code>SourceModule</code> instance.
 	 *
-	 * @param moduleName
-	 * @param location
-	 * @throws KarmaException When input parameters don't match their respective patterns
+//	 * @param moduleName
+//	 * @param location
+	 * @throws ManifestException
 	 */
-	protected SourceModule(String moduleName, Location location) throws KarmaException {
-		super(moduleName, location);
+	public SourceModule(SourceModuleDescriptor descriptor, File manifestDirectory) throws ManifestException {
+
+    super(descriptor, manifestDirectory);
+
+    this.version = descriptor.getVersion();
+    this.developmentLine = descriptor.getDevelopmentLine();
 	}
 
-	/**
-	 * Creates a <code>SourceModule</code> instance; the module contains a <code>version</code> attribute.
-	 *
-	 * @param moduleName The name of the module. Module names are matched against {@link Expressions#MODULE_NAME}.
-	 * @param location
-	 * @param version    The version of the module. Versionnumbers are matched against {@link Expressions#VERSION}.
-	 * @throws KarmaException When input parameters don't match their patterns.
-	 */
-	protected SourceModule(String moduleName, Location location, Version version) throws KarmaException {
+//	/**
+//	 * Creates a <code>SourceModule</code> instance; the module contains a <code>version</code> attribute.
+//	 *
+//	 * @param moduleName The name of the module. Module names are matched against {@link Expressions#MODULE_NAME}.
+//	 * @param location
+//	 * @param version    The version of the module. Versionnumbers are matched against {@link Expressions#VERSION}.
+//	 * @throws KarmaException When input parameters don't match their patterns.
+//	 */
+//	protected SourceModule(String moduleName, Location location, Version version) throws KarmaException {
+//
+//		super(moduleName, location);
+//
+//		Pattern pattern = Expressions.getPattern("VERSION");
+//		Matcher matcher = pattern.matcher(version.getVersionNumber());
+//
+//		if (matcher.matches()) {
+//			this.version = version;
+//		} else {
+//			throw new KarmaException(KarmaException.DATAFORMAT_ERROR);
+//		}
+//	}
 
-		super(moduleName, location);
+//	/**
+//	 * Sets the version property of this module
+//	 *
+//	 * @param version The <code>version</code> attribute of this module (wrapped in a Version instance) when it is available.
+//	 */
+//	public final void setVersion(Version version) {
+//
+//		// TODO validate before assigment
+//		//
+//		this.version = version;
+//	}
 
-		Pattern pattern = Expressions.getPattern("VERSION");
-		Matcher matcher = pattern.matcher(version.getVersionNumber());
-
-		if (matcher.matches()) {
-			this.version = version;
-		} else {
-			throw new KarmaException(KarmaException.DATAFORMAT_ERROR);
-		}
-	}
-
-	/**
-	 * Sets the version property of this module
-	 *
-	 * @param version The <code>version</code> attribute of this module (wrapped in a Version instance) when it is available.
-	 */
-	public final void setVersion(Version version) {
-
-		// TODO validate before assigment
-		//
-		this.version = version;
-	}
-
-	/**
-	 * Sets the branch property of this module
-	 *
-	 * @param developmentLine The <code>line</code> attribute of this module when it is available.
-	 */
-	public final void setDevelopmentLine(DevelopmentLine developmentLine) {
-		this.developmentLine = developmentLine;
-	}
+//	/**
+//	 * Sets the branch property of this module
+//	 *
+//	 * @param developmentLine The <code>line</code> attribute of this module when it is available.
+//	 */
+//	public final void setDevelopmentLine(DevelopmentLine developmentLine) {
+//		this.developmentLine = developmentLine;
+//	}
 
 	public final DevelopmentLine getDevelopmentLine() {
 		return developmentLine;
@@ -109,9 +93,8 @@ public class SourceModule extends BaseModule {
 	 * value of that attribute.
 	 *
 	 * @return The module version, or N/A, when no version number exists.
-	 * @throws KarmaException When a <code>version</code> attribute is not available for the module.
 	 */
-	public final Version getVersion() throws KarmaException {
+	public final Version getVersion() {
 		return version;
 	}
 
@@ -144,4 +127,16 @@ public class SourceModule extends BaseModule {
 		return developmentLine != null;
 	}
 
+
+  public String getDependencyName() {
+
+    if (getVersion() != null) {
+      return getName() + "_" + getVersionAsString() + ".jar";
+    } else
+    return getName() + "_" + WORKING;
+  }
+
+  public File getModuleDirectory() {
+    return new File(getManifestDirectory(), getName());
+  }
 }

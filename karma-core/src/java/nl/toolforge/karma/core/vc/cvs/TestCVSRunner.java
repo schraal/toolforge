@@ -1,10 +1,11 @@
 package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.SourceModule;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.test.FakeModule;
+import nl.toolforge.karma.core.model.SourceModuleDescriptor;
 import nl.toolforge.karma.core.test.LocalCVSInitializer;
 import nl.toolforge.karma.core.vc.Runner;
 
@@ -17,114 +18,119 @@ import nl.toolforge.karma.core.vc.Runner;
  */
 public class TestCVSRunner extends LocalCVSInitializer {
 
-	public void testConstructor() {
+  public void testConstructor() {
 
-		try {
-			Runner runner = getTestRunner();
+    try {
+      Runner runner = getTestRunner();
 
-			assertNotNull(runner);
+      assertNotNull(runner);
 
-		} catch (CVSException e) {
-			fail(e.getMessage());
-		}
-	}
+    } catch (CVSException e) {
+      fail(e.getMessage());
+    }
+  }
 
-	public void testAdd1() {
+  public void testAdd1() {
 
-		Runner runner = null;
-		try {
-			runner = getTestRunner();
-		} catch (CVSException e) {
-			fail(e.getMessage());
-		}
+    Runner runner = null;
+    try {
+      runner = getTestRunner();
+    } catch (CVSException e) {
+      fail(e.getMessage());
+    }
 
-		try {
+    try {
 
-			checkoutDefaultModule1();
+      checkoutDefaultModule1();
 
-			// Prepare a fake module. All set to work for JUnit testing.
-			//
-			FakeModule module = new FakeModule(DEFAULT_MODULE_1, getTestLocation());
-			module.setLocalPath(getModuleHome(DEFAULT_MODULE_1));
+//      // Prepare a fake module. All set to work for JUnit testing.
+//      //
+//      FakeModule module = new FakeModule(DEFAULT_MODULE_1, getTestLocation());
+//      module.setLocalPath(getModuleHome(DEFAULT_MODULE_1));
 
-			CommandResponse response = runner.add(module, getTestFileName());
+      Module module =
+        new SourceModule(new SourceModuleDescriptor(DEFAULT_MODULE_1, getTestLocation()), getDevelopmentHome());
 
-			assertTrue(response.hasStatus(CVSResponseAdapter.FILE_ADDED_OK));
+      CommandResponse response = runner.add(module, getTestFileName());
 
-		} catch (KarmaException e) {
-			fail(e.getMessage());
-		}
-	}
+      assertTrue(response.hasStatus(CVSResponseAdapter.FILE_ADDED_OK));
 
-	public void testUpdateWithInvalidVersion1() {
+    } catch (KarmaException e) {
+      fail(e.getMessage());
+    }
+  }
 
-		class SourceModuleFaker extends SourceModule {
-			public SourceModuleFaker() throws KarmaException {
-				super(DEFAULT_MODULE_1, getTestLocation());
-			}
-		}
+  public void testUpdateWithInvalidVersion1() {
 
-		Runner runner = null;
-		try {
-			runner = getTestRunner();
-		} catch (CVSException e) {
-			fail(e.getMessage());
-		}
+//		class SourceModuleFaker extends SourceModule {
+//			public SourceModuleFaker() throws KarmaException {
+//				super(DEFAULT_MODULE_1, getTestLocation());
+//			}
+//		}
 
-		CommandResponse response = null;
-		try {
+    Runner runner = null;
+    try {
+      runner = getTestRunner();
+    } catch (CVSException e) {
+      fail(e.getMessage());
+    }
 
-			checkoutDefaultModule1();
+    CommandResponse response = null;
+    try {
 
-			// Prepare a fake module. All set to work for JUnit testing.
-			//
-			SourceModuleFaker module = new SourceModuleFaker();
+      checkoutDefaultModule1();
 
-			response = runner.update(module, new Version("99-99"));
+      Module module =
+        new SourceModule(new SourceModuleDescriptor(DEFAULT_MODULE_1, getTestLocation()), getDevelopmentHome());
 
-			fail("Excepted a CVSException.");
+      response = runner.update(module, new Version("99-99"));
 
-			assertTrue(response.hasStatus(CVSResponseAdapter.FILE_ADDED_OK));
+      fail("Excepted a CVSException.");
 
-		} catch (CVSException c) {
-			assertTrue(c.getErrorCode().equals(CVSException.VERSION_NOT_FOUND));
-		} catch (KarmaException e) {
-			fail(e.getMessage());
-		}
-	}
+      assertTrue(response.hasStatus(CVSResponseAdapter.FILE_ADDED_OK));
 
-	public void testUpdateWithCorrectVersion() {
+    } catch (CVSException c) {
+      assertTrue(c.getErrorCode().equals(CVSException.VERSION_NOT_FOUND));
+    } catch (KarmaException e) {
+      fail(e.getMessage());
+    }
+  }
 
-		class SourceModuleFaker extends SourceModule {
-			public SourceModuleFaker() throws KarmaException {
-				super(DEFAULT_MODULE_1, getTestLocation());
-			}
-		}
+  public void testUpdateWithCorrectVersion() {
 
-		Runner runner = null;
-		try {
-			runner = getTestRunner();
-		} catch (CVSException e) {
-			fail(e.getMessage());
-		}
+//    class SourceModuleFaker extends SourceModule {
+//      public SourceModuleFaker() throws KarmaException {
+//        super(DEFAULT_MODULE_1, getTestLocation());
+//      }
+//    }
 
-		CommandResponse response = null;
-		try {
+    Runner runner = null;
+    try {
+      runner = getTestRunner();
+    } catch (CVSException e) {
+      fail(e.getMessage());
+    }
 
-			checkoutDefaultModule1();
+    CommandResponse response = null;
+    try {
 
-			// Prepare a fake module. All set to work for JUnit testing.
-			//
-			SourceModuleFaker module = new SourceModuleFaker();
+      checkoutDefaultModule1();
+//
+//			// Prepare a fake module. All set to work for JUnit testing.
+//			//
+//			SourceModuleFaker module = new SourceModuleFaker();
 
-			response = runner.update(module, new Version("0-1")); // On the mainline (HEAD)
+      Module module =
+        new SourceModule(new SourceModuleDescriptor(DEFAULT_MODULE_1, getTestLocation()), getDevelopmentHome());
 
-			assertTrue(response.hasStatus(CVSResponseAdapter.MODULE_UPDATED_OK));
+      response = runner.update(module, new Version("0-1")); // On the mainline (HEAD)
 
-		} catch (CVSException c) {
-			fail(c.getMessage());
-		} catch (KarmaException e) {
-			fail(e.getMessage());
-		}
-	}
+      assertTrue(response.hasStatus(CVSResponseAdapter.MODULE_UPDATED_OK));
+
+    } catch (CVSException c) {
+      fail(c.getMessage());
+    } catch (KarmaException e) {
+      fail(e.getMessage());
+    }
+  }
 }

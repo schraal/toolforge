@@ -2,10 +2,12 @@ package nl.toolforge.karma.core;
 
 import nl.toolforge.karma.core.location.Location;
 
+import java.io.File;
+
 
 /**
- * <p>A module is a collection of files, representing some block of functionality. This definition is probablt highlt
- * subjective, but for Karma, that's what it is. A module is a generally part of a container, called a
+ * <p>A module is a collection of files, representing some block of functionality. This definition is probably highly
+ * subjective, but for Karma, that's what it is. A module is part of a container, called a
  * <code>Manifest</code>. System's theory tells us that a system is separated into subsystems. Well, that's what we
  * do in the Karma context as well. An application system consists of one or more (generally more) modules.
  * <p/>
@@ -23,34 +25,37 @@ import nl.toolforge.karma.core.location.Location;
  */
 public interface Module {
 
+  //
+  // todo check documentation relating to the creation of modules.
+
 	public static final int SOURCE_MODULE = 0;
 	public static final int JAR_MODULE = 1;
-
-	/**
-	 * Element name for an include-element in a manifest XML file
-	 */
-	public static final String INCLUDE_ELEMENT_NAME = "include";
+//
+//	/**
+//	 * Element name for an include-element in a manifest XML file
+//	 */
+//	public static final String INCLUDE_ELEMENT_NAME = "include";
 
 	public static final State WORKING = new State("WORKING");
 	public static final State DYNAMIC = new State("DYNAMIC");
 	public static final State STATIC = new State("STATIC");
 
-	public static final String DESCRIPTION_ATTRIBUTE = "description";
-
-	/**
-	 * The <code>name</code>-attribute for a module.
-	 */
-	public static final String NAME_ATTRIBUTE = "name";
-
-	/**
-	 * The <code>location</code>-attribute for a module.
-	 */
-	public static final String LOCATION_ATTRIBUTE = "location";
-
-	/**
-	 * The <code>name</code>-attribute for an <code>include</code>-element.
-	 */
-	public static final String INCLUDE_NAME_ATTRIBUTE = "name";
+//	public static final String DESCRIPTION_ATTRIBUTE = "description";
+//
+//	/**
+//	 * The <code>name</code>-attribute for a module.
+//	 */
+//	public static final String NAME_ATTRIBUTE = "name";
+//
+//	/**
+//	 * The <code>location</code>-attribute for a module.
+//	 */
+//	public static final String LOCATION_ATTRIBUTE = "location";
+//
+//	/**
+//	 * The <code>name</code>-attribute for an <code>include</code>-element.
+//	 */
+//	public static final String INCLUDE_NAME_ATTRIBUTE = "name";
 
 	/**
 	 * ;
@@ -72,7 +77,22 @@ public interface Module {
 	 */
 	public void setState(State state);
 
-	/**
+  /**
+   * When a module has been built, it can be asked for its dependency name, usually its jar-name.
+   * 
+   * @return
+   */
+  public String getDependencyName();
+
+  /**
+   * Access to the modules' local directory. The <code>File</code> reference returns a reference to the directory on
+   * disk within the context of a manifest.
+   *
+   * @return
+   */
+  public File getModuleDirectory();
+
+  /**
 	 * <p>Inner class representing the 'state' of a module. Three states exist at the moment : <code>WORKING</code>,
 	 * <code>STATIC</code> and <code>DYNAMIC</code>.
 	 * <p/>

@@ -6,7 +6,6 @@ import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.location.LocationFactory;
-//import nl.toolforge.karma.core.prefs.Preferences;
 
 import java.io.File;
 import java.io.IOException;

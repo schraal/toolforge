@@ -21,8 +21,8 @@ import nl.toolforge.karma.core.vc.subversion.SubversionRunner;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.Set;
 import java.io.File;
+import java.util.Set;
 
 /**
  * <p>The command context is the class that provides a runtime for commands to run in. The command context maintains
@@ -166,7 +166,7 @@ public final class CommandContext {
 			if (location instanceof CVSLocationImpl) {
 				logger.debug("Getting new CVSRunner instance.");
 //				return new CVSRunner(location, new File(getCurrent().getLocalPath(), module.getName()));
-				return new CVSRunner(location, getCurrent().getLocalPath());
+				return new CVSRunner(location, getCurrent().getDirectory());
 			}
 		} catch (ManifestException m) {
 			throw new CVSException(VersionControlException.RUNNER_ERROR);
@@ -216,7 +216,7 @@ public final class CommandContext {
 	}
 
 	/**
-	 * <p>Gets the build target directory for <code>module</code>, creating it when not existing. The current default
+	 * <p>Gets the build target directory for <code>module</code>, creating it when non existing. The current default
 	 * location for a build target directory is determined as follows :
 	 *
 	 * <pre>{@link LocalEnvironment#DEVELOPMENT_HOME_DIRECTORY} + File.separator + {@link #getCurrent()} + File.separator

@@ -1,11 +1,8 @@
 package nl.toolforge.karma.core;
 
-import nl.toolforge.karma.core.expr.Expressions;
-import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.model.JarModuleDescriptor;
 
 import java.io.File;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * <p>A <code>JarModule</code> represents a Java <code>jar</code>-artifact. 
@@ -26,46 +23,48 @@ public class JarModule extends BaseModule {
 	 */
 	public static final String VERSION_ATTRIBUTE = "version";
 
-	private String version = null;
+	private Version version = null;
 
 	/**
 	 * Constructs a <code>SourceModule</code> instance.
 	 *
-	 * @param moduleName The name of the module.
-	 * @throws KarmaException When input parameters don't match their respective patterns
+	 * @param descriptor
+   * @param manifestDirectory
+	 * @throws ManifestException
 	 */
-	JarModule(String moduleName, Location location) throws KarmaException {
+	JarModule(JarModuleDescriptor descriptor, File manifestDirectory) throws ManifestException {
 
-		super(moduleName, location);
+		super(descriptor, manifestDirectory);
+    this.version = descriptor.getVersion();
 	}
 
+//	/**
+//	 * Creates a <code>Module</code> instance; the module contains a <code>version</code> attribute.
+//	 *
+//	 * @param moduleName The name of the module.
+//	 * @param location   The location of the jar module.
+//	 * @param version
+//	 * @throws KarmaException When input parameters don't match their respective patterns
+//	 */
+//	JarModule(String moduleName, Location location, String version) throws KarmaException {
+//
+//		super(moduleName, location);
+//
+//		Pattern pattern = Expressions.getPattern("VERSION");
+//		Matcher matcher = pattern.matcher(version);
+//
+//		if (matcher.matches()) {
+//			this.version = version;
+//		} else {
+//			// log.debug();
+//			throw new KarmaException(KarmaException.DATAFORMAT_ERROR);
+//		}
+//	}
+
 	/**
-	 * Creates a <code>Module</code> instance; the module contains a <code>version</code> attribute.
-	 *
-	 * @param moduleName The name of the module.
-	 * @param location   The location of the jar module.
-	 * @param version
-	 * @throws KarmaException When input parameters don't match their respective patterns
-	 */
-	JarModule(String moduleName, Location location, String version) throws KarmaException {
-
-		super(moduleName, location);
-
-		Pattern pattern = Expressions.getPattern("VERSION");
-		Matcher matcher = pattern.matcher(version);
-
-		if (matcher.matches()) {
-			this.version = version;
-		} else {
-			// log.debug();
-			throw new KarmaException(KarmaException.DATAFORMAT_ERROR);
-		}
-	}
-
-	/**
 	 *
 	 */
-	public String getVersion() {
+	public Version getVersion() {
 		return version;
 	}
 
@@ -77,12 +76,16 @@ public class JarModule extends BaseModule {
 	public void setState(State state) {
 	}
 
-	/**
+  public String getDependencyName() {
+    return null;  //To change body of implemented methods use File | Settings | File Templates.
+  }
+
+  /**
 	 * Not implemented for this type of module (<b>yet</b>).
 	 *
 	 * @return Nothing, will throw <code>KarmaRuntimeException</code>.
 	 */
-	public File getLocalPath() {
+	public File getModuleDirectory() {
 		throw new KarmaRuntimeException("Not implemented.");
 	}
 

@@ -49,7 +49,6 @@ public final class LocalEnvironment {
 	/** Property Object that stores the key-value pairs of the defined properties. */
 	private Properties configuration = new Properties();
 
-
 	/**
 	 * The one-and-only instance of this class.
 	 */
