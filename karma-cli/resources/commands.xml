@@ -30,6 +30,7 @@
       <option opt="m" longOpt="module" required="true" description="The module name">
         <arg name="module-name"/>
       </option>
+      <option opt="nt" longOpt="no-test" required="false" description="Do not run the unit-tests."/>
     </options>
 
     <classname>nl.toolforge.karma.core.cmd.impl.PackageModule</classname>
