@@ -1,11 +1,8 @@
 package nl.toolforge.karma.cli;
 
 import nl.toolforge.karma.cli.cmd.CLICommandResponseHandler;
-import nl.toolforge.karma.core.boot.Karma;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.boot.WorkingContextConfiguration;
-import nl.toolforge.karma.core.boot.ManifestStore;
-import nl.toolforge.karma.core.boot.LocationStore;
 import nl.toolforge.karma.core.boot.WorkingContextException;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandContext;
@@ -15,7 +12,6 @@ import nl.toolforge.karma.core.cmd.CommandLoadException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.File;
 import java.util.prefs.Preferences;
 
 /**
@@ -96,10 +92,8 @@ public final class CLI {
     WorkingContext workingContext =
         new WorkingContext(Preferences.userRoot().get(WorkingContext.WORKING_CONTEXT_PREFERENCE, WorkingContext.DEFAULT));
 
-    File configurationFile = Karma.getConfigurationFile(workingContext);
-    WorkingContextConfiguration configuration = new WorkingContextConfiguration(configurationFile);
-
-
+//    File configurationFile = Karma.getConfigurationFile(workingContext);
+    WorkingContextConfiguration configuration = new WorkingContextConfiguration(workingContext);
 
 
 
@@ -107,22 +101,22 @@ public final class CLI {
 //
     // todo : moet nog anders, alhoewel het inmiddels beter is.
     //
-    ManifestStore manifestStore = null;
-    LocationStore locationStore  = null;
+//    ManifestStore manifestStore = null;
+//    LocationStore locationStore  = null;
     try {
       configuration.load();
-      //
-      manifestStore = new ManifestStore(workingContext);
-      configuration.getManifestStoreLocation().setWorkingContext(workingContext);
-      manifestStore.setLocation(configuration.getManifestStoreLocation());
-      manifestStore.setModuleName("manifests");
-      workingContext.setManifestStore(manifestStore);
-      //
-      locationStore = new LocationStore(workingContext);
-      configuration.getLocationStoreLocation().setWorkingContext(workingContext);
-      locationStore.setLocation(configuration.getLocationStoreLocation());
-      locationStore.setModuleName("locations");
-      workingContext.setLocationStore(locationStore);
+//      //
+//      manifestStore = new ManifestStore(workingContext);
+//      configuration.getManifestStoreLocation().setWorkingContext(workingContext);
+//      manifestStore.setLocation(configuration.getManifestStoreLocation());
+//      manifestStore.setModuleName("manifests");
+//      workingContext.setManifestStore(manifestStore);
+//      //
+//      locationStore = new LocationStore(workingContext);
+//      configuration.getLocationStoreLocation().setWorkingContext(workingContext);
+//      locationStore.setLocation(configuration.getLocationStoreLocation());
+//      locationStore.setModuleName("locations");
+//      workingContext.setLocationStore(locationStore);
 
     } catch (WorkingContextException e) {
       //

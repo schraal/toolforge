@@ -131,54 +131,50 @@ public final class KarmaConsole {
       writeln("[ console ] Logging will be written to " + System.getProperty("karma.home") + File.separator + "logs.");
     }
 
-    writeln("[ console ] Checking working context configuration.");
+    writeln("[ console ] Checking working context configuration for `" + workingContext.getName() + "`.");
 
     WorkingContextConfiguration configuration = null;
 
     try {
-
-      File configurationFile = Karma.getConfigurationFile(workingContext);
-      configuration = new WorkingContextConfiguration(configurationFile);
-
-      //
-      // todo : moet nog anders, alhoewel het inmiddels beter is.
-      //
-      ManifestStore manifestStore = null;
-      LocationStore locationStore  = null;
+      configuration = new WorkingContextConfiguration(workingContext);
       try {
         configuration.load();
-        //
-        manifestStore = new ManifestStore(workingContext);
-        configuration.getManifestStoreLocation().setWorkingContext(workingContext);
-        manifestStore.setLocation(configuration.getManifestStoreLocation());
-        manifestStore.setModuleName("manifests");
-        workingContext.setManifestStore(manifestStore);
-        //
-        locationStore = new LocationStore(workingContext);
-        configuration.getLocationStoreLocation().setWorkingContext(workingContext);
-        locationStore.setLocation(configuration.getLocationStoreLocation());
-        locationStore.setModuleName("locations");
-        workingContext.setLocationStore(locationStore);
+      } catch (WorkingContextException e) {}
 
-      } catch (WorkingContextException e) {
-        //
-      } catch (RuntimeException r) {
-        //
-      }
-
-      // todo het feit dat dit eerst moet sucked.
-      //
       workingContext.configure(configuration);
-
-
-
 
       // Check the validity state of the configuration.
       //
 
       ErrorCode error = configuration.check();
+      ErrorCode error2 = null;
+      ErrorCode error3 = null;
 
-      while (error != null || manifestStore.checkConfiguration() != null || locationStore.checkConfiguration() != null ) {
+      if (error != null) {
+        writeln("[ console ] ** Error in working context configuration : " + error.getErrorMessage());
+      }
+      if (configuration.getManifestStore() == null) {
+        writeln("[ console ] ** Error in working context configuration : Missing configuration for manifest store.");
+      } else {
+        error2 = configuration.getManifestStore().checkConfiguration();
+        if (error2 != null) {
+          writeln("[ console ] ** Error in working context configuration : " + error2.getErrorMessage());
+        }
+      }
+      if (configuration.getLocationStore() == null) {
+        writeln("[ console ] ** Error in working context configuration : Missing configuration for location store.");
+      } else {
+        error3 = configuration.getLocationStore().checkConfiguration();
+        if (error3 != null) {
+          writeln("[ console ] ** Error in working context configuration : " + error3.getErrorMessage());
+        }
+      }
+
+      while (error != null || configuration.getManifestStore() == null || error2 != null || configuration.getLocationStore() == null || error3 != null ) {
+
+        // todo hier eerst de foutmelding tonen.
+
+        // todo offline-mode ?
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -194,7 +190,7 @@ public final class KarmaConsole {
         }
 
         if ("n".equals(start)) {
-          writeln("[ console ] Configuration incomplete. Cannot start Karma.");
+          writeln("[ console ] ** Configuration incomplete. Cannot start Karma.");
           writeln("[ console ] Check configuration manually.");
 
           System.exit(1);
@@ -203,8 +199,15 @@ public final class KarmaConsole {
           Configurator configurator = new Configurator(workingContext, configuration);
           configurator.checkConfiguration();
 
-          manifestStore = workingContext.getManifestStore();
-          locationStore = workingContext.getLocationStore();
+          // Run checks once more.
+          //
+          error = configuration.check();
+          if (configuration.getManifestStore() != null) {
+            error2 = configuration.getManifestStore().checkConfiguration();
+          }
+          if (configuration.getLocationStore() != null) {
+            error3 = configuration.getLocationStore().checkConfiguration();
+          }
         }
       }
 

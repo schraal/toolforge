@@ -39,8 +39,8 @@ import java.util.Random;
  */
 public final class MyFileUtils {
 
-	/** Randomizer for use by createTempDirectory() */
-	private static Random randomizer = new Random();
+  /** Randomizer for use by createTempDirectory() */
+  private static Random randomizer = new Random();
 
   /**
    * Creates a temporary directory with some random positive <code>long</code> as its name.
@@ -51,7 +51,7 @@ public final class MyFileUtils {
    */
   public static File createTempDirectory() throws IOException {
     File tmp = new File(System.getProperty("java.io.tmpdir") + File.separator + Math.abs(randomizer.nextLong()));
-		
+
     tmp.mkdirs();
 
     return tmp;
@@ -112,28 +112,28 @@ public final class MyFileUtils {
    * Writes <code>fileRef</code> to <code>dir</code>. <code>fileRef</code> should be available in the classpath of
    * <code>classLoader</code>.
    *
-   * @param dir
-   * @param fileRef
+   * @param dir         The directory to write to
+   * @param fileRef     The original filename (path)
    * @param classLoader The class loader that contains <code>fileRef</code>
    *
    * @throws IOException
    */
-  public static void writeFile(File dir, File fileRef, ClassLoader classLoader) throws IOException {
-    writeFile(dir, fileRef, fileRef.getName(), classLoader);
-  }
+//  public static void writeFile(File dir, File fileRef, ClassLoader classLoader) throws IOException {
+//    writeFile(dir, fileRef, fileRef, classLoader);
+//  }
 
   /**
    * Writes <code>fileRef</code> to <code>dir</code> as <code>newFileRef</code>. <code>fileRef</code> should be available in the classpath of
    * <code>classLoader</code>.
    *
-   * @param dir
-   * @param fileRef
-   * @param newFileName
+   * @param dir         The directory to write to
+   * @param fileRef     The original filename (path)
+   * @param newFileName The new filename
    * @param classLoader The class loader that contains <code>fileRef</code>
    *
    * @throws IOException
    */
-  public static void writeFile(File dir, File fileRef, String newFileName, ClassLoader classLoader) throws IOException {
+  public static void writeFile(File dir, File fileRef, File newFileName, ClassLoader classLoader) throws IOException {
 
     if (dir == null || fileRef == null || newFileName == null || "".equals(newFileName) || classLoader == null) {
       throw new NullPointerException("");
@@ -144,8 +144,13 @@ public final class MyFileUtils {
 
     dir.mkdirs();
 
+    if (newFileName.getPath().lastIndexOf("/") > 0) {
+      String subDir = newFileName.getPath().substring(0, newFileName.getPath().lastIndexOf("/"));
+      new File(dir, subDir).mkdirs();
+    }
+
     BufferedWriter out =
-        new BufferedWriter(new FileWriter(new File(dir, newFileName)));
+        new BufferedWriter(new FileWriter(new File(dir, newFileName.getPath())));
 
     String str;
     while ((str = in.readLine()) != null) {

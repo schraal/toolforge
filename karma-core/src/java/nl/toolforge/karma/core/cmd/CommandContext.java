@@ -23,6 +23,7 @@ import nl.toolforge.core.util.listener.ListenerManager;
 import nl.toolforge.core.util.listener.ListenerManagerException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.boot.WorkingContext;
+import nl.toolforge.karma.core.boot.WorkingContextConfiguration;
 import nl.toolforge.karma.core.cmd.event.CommandFailedEvent;
 import nl.toolforge.karma.core.cmd.event.CommandFinishedEvent;
 import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
@@ -128,7 +129,9 @@ public final class CommandContext implements ChangeListener {
 
     Manifest manifest = currentManifest;
 
-    Long lastMod = new Long(new File(workingContext.getManifestStore().getModule().getBaseDir(), manifest.getName() + ".xml").lastModified());
+    WorkingContextConfiguration config = workingContext.getConfiguration();
+
+    Long lastMod = new Long(new File(config.getManifestStore().getModule().getBaseDir(), manifest.getName() + ".xml").lastModified());
     modificationMap.put(manifest, lastMod);
 
     try {
@@ -137,7 +140,7 @@ public final class CommandContext implements ChangeListener {
 
         manifest = (Manifest) i.next();
 
-        lastMod = new Long(new File(workingContext.getManifestStore().getModule().getBaseDir(), manifest.getName() + ".xml").lastModified());
+        lastMod = new Long(new File(config.getManifestStore().getModule().getBaseDir(), manifest.getName() + ".xml").lastModified());
         modificationMap.put(manifest, lastMod);
       }
     } catch (Exception e) {
@@ -164,8 +167,10 @@ public final class CommandContext implements ChangeListener {
         Manifest m = (Manifest) i.next();
         long lastMod = ((Long) modificationMap.get(m)).longValue();
 
+        WorkingContextConfiguration config = workingContext.getConfiguration();
+
         // todo omslachtig. direct via een getmanifeststore()-achtige.
-        File f = new File(workingContext.getManifestStore().getModule().getBaseDir(), m.getName() + ".xml");
+        File f = new File(config.getManifestStore().getModule().getBaseDir(), m.getName() + ".xml");
         if (!f.exists()) {
           currentManifest = null;
           throw new ManifestException(ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[] {m.getName()});

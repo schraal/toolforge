@@ -83,13 +83,13 @@ public final class TestWorkingContext extends TestCase {
       MyFileUtils.writeFile(
           tmp,
           new File("test/test-working-context.xml"),
-          "working-context.xml",
+          new File(workingContext.getName() + File.separator + "working-context.xml"),
           this.getClass().getClassLoader());
     } catch (IOException e) {
       fail(e.getMessage());
     }
 
-    WorkingContextConfiguration config = new WorkingContextConfiguration(new File(tmp, "working-context.xml"));
+    WorkingContextConfiguration config = new WorkingContextConfiguration(workingContext);
     workingContext.configure(config);
 
     // Retrieve the configuration and change it a bit for testing purposes.
@@ -115,7 +115,6 @@ public final class TestWorkingContext extends TestCase {
   public void tearDown() {
     try {
       FileUtils.deleteDirectory(dotKarma);
-//      FileUtils.deleteDirectory(projectsDir);
     } catch (IOException e) {
       fail(e.getMessage());
     }

@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.boot.Karma;
+import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
@@ -48,7 +49,7 @@ public class ViewWorkingContexts extends DefaultCommand {
 
   public void execute() throws CommandException {
 
-    File workingContextBaseDir = new File(Karma.getConfigurationBaseDir(), "working-contexts");
+    File workingContextBaseDir = new File(WorkingContext.getConfigurationBaseDir(), "working-contexts");
 
     DirectoryScanner scanner = new DirectoryScanner();
     scanner.setBasedir(workingContextBaseDir);

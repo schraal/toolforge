@@ -113,7 +113,7 @@ public final class ManifestLoader {
       }
       fileName = fileName.substring(fileName.lastIndexOf(File.separator) + 1);
 
-      String mStorePath = workingContext.getManifestStore().getModule().getBaseDir().getPath();
+      String mStorePath = workingContext.getConfiguration().getManifestStore().getModule().getBaseDir().getPath();
 
       logger.debug("Loading manifest `" + fileName + "` from `" + mStorePath + File.separator + fileName + "`.");
 

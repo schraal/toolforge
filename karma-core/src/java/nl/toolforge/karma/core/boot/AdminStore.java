@@ -37,6 +37,12 @@ public abstract class AdminStore implements Store {
     this.workingContext = workingContext;
   }
 
+  public AdminStore(WorkingContext workingContext, String moduleName, Location location) {
+    this(workingContext);
+    this.moduleName = moduleName;
+    this.location = location;
+  }
+
   protected final WorkingContext getWorkingContext() {
     return workingContext;
   }

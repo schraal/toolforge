@@ -26,6 +26,10 @@ public final class ManifestStore extends AdminStore {
     super(workingContext);
   }
 
+  public ManifestStore(WorkingContext workingContext, String moduleName, Location location) {
+    super(workingContext, moduleName, location);
+  }
+
   /**
    *
    * @return

@@ -34,23 +34,11 @@ public class TestWorkingContextConfiguration extends TestCase {
   public void testConstructor() {
 
     try {
-      WorkingContextConfiguration w = new WorkingContextConfiguration(null);
+      new WorkingContextConfiguration(null);
       fail("Should have thrown an `IllegalArgumentException`");
     } catch (Exception e) { }
 
-    File tmp = null;
-
-    try {
-      tmp = MyFileUtils.createTempDirectory();
-      MyFileUtils.writeFile(tmp, new File("test/test-working-context.xml"), "working-context.xml", this.getClass().getClassLoader());
-
-      assertNotNull(new WorkingContextConfiguration(new File(tmp, "working-context.xml")));
-
-      FileUtils.deleteDirectory(tmp);
-
-    } catch (IOException e) {
-      fail(e.getMessage());
-    }
+    assertNotNull(new WorkingContextConfiguration(new WorkingContext("blaat")));
   }
 
   /**
@@ -58,8 +46,8 @@ public class TestWorkingContextConfiguration extends TestCase {
    *
    * <ul>
    *   <li>{@link WorkingContextConfiguration#getProperty(String)}</li>
-   *   <li>{@link WorkingContextConfiguration#getLocationStoreLocation()}</li>
-   *   <li>{@link WorkingContextConfiguration#getManifestStoreLocation()}</li>
+   *   <li>{@link WorkingContextConfiguration#getLocationStore()}</li>
+   *   <li>{@link WorkingContextConfiguration#getManifestStore()}</li>
    * </ul>
    */
   public void testLoad() {
@@ -68,17 +56,20 @@ public class TestWorkingContextConfiguration extends TestCase {
     try {
       tmp = MyFileUtils.createTempDirectory();
 
-      WorkingContextConfiguration config = new WorkingContextConfiguration(new File(tmp, "working-context.xml"));
+      WorkingContext ctx = new WorkingContext("blaat", tmp);
+
+      WorkingContextConfiguration config = new WorkingContextConfiguration(ctx);
 
       MyFileUtils.writeFile(
-          tmp,
+          WorkingContext.getConfigurationBaseDir(),
           new File("test/authenticators.xml"),
+          new File("authenticators.xml"),
           this.getClass().getClassLoader());
 
       MyFileUtils.writeFile(
-          tmp,
+          ctx.getWorkingContextConfigurationBaseDir(),
           new File("test/test-working-context.xml"),
-          "working-context.xml",
+          new File("working-context.xml"),
           this.getClass().getClassLoader());
 
       boolean b = config.load();
@@ -87,8 +78,8 @@ public class TestWorkingContextConfiguration extends TestCase {
       assertEquals(config.getProperty(WorkingContext.PROJECT_BASE_DIRECTORY_PROPERTY), "/tmp/");
       assertEquals(config.getProperty(WorkingContext.PROJECT_LOCAL_REPOSITORY_PROPERTY), "/home/asmedes/.repository");
 
-      assertNotNull(config.getLocationStoreLocation());
-      assertNotNull(config.getManifestStoreLocation());
+      assertNotNull(config.getLocationStore());
+      assertNotNull(config.getManifestStore());
 
       FileUtils.deleteDirectory(tmp);
     } catch (IOException e) {

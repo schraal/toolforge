@@ -80,10 +80,10 @@ public final class WorkingContextConfiguration {
 
   private static Log logger = LogFactory.getLog(WorkingContextConfiguration.class);
 
-  private File workingContextConfigurationFile = null;
+//  private File workingContextConfigurationFile = null;
 
-  private Location manifestStoreLocation = null;
-  private Location locationStoreLocation = null;
+  private ManifestStore manifestStore = null;
+  private LocationStore locationStore = null;
 
   private Properties configuration = null;
 
@@ -95,37 +95,57 @@ public final class WorkingContextConfiguration {
    * Creates a configuration object using <code>configFile</code> as the configuration file. The configuration is
    * loaded by calling {@link #load()}.
    *
-   * @param configFile A configuration file.
+   * @param workingContext The <code>WorkingContext</code> for this configuration.
    */
-  public WorkingContextConfiguration(File configFile) {
+  public WorkingContextConfiguration(WorkingContext workingContext) {
 
-    if (configFile == null) {
-      throw new IllegalArgumentException("Configuration file cannot be null.");
+    if (workingContext == null) {
+      throw new IllegalArgumentException("Working context cannot be null.");
     }
-    workingContextConfigurationFile = configFile;
+
+    this.workingContext = workingContext;
     configuration = new Properties();
   }
 
   private File getConfigFile() {
-    return workingContextConfigurationFile;
+    return new File(workingContext.getWorkingContextConfigurationBaseDir(), "working-context.xml");
   }
 
-  public Location getManifestStoreLocation() {
-    return manifestStoreLocation;
+  /**
+   * Returns the <code>LocationStore</code> for this configuration. Can be <code>null</code> if not configured properly.
+   *
+   * @return The <code>LocationStore</code> for this configuration. Can be <code>null</code> if not configured properly.
+   */
+  public LocationStore getLocationStore() {
+    return locationStore;
   }
 
-  public void setManifestStoreLocation(Location store) {
-    this.manifestStoreLocation = store;
+  /**
+   * Returns the <code>ManifestStore</code> for this configuration. Can be <code>null</code> if not configured properly.
+   *
+   * @return The <code>ManifestStore</code> for this configuration. Can be <code>null</code> if not configured properly.
+   */
+  public ManifestStore getManifestStore() {
+    return manifestStore;
   }
 
-  public void setLocationStoreLocation(Location store) {
-    this.locationStoreLocation = store;
+  /**
+   * Sets the manifest store for this configuration. <code>null</code>s are allowed.
+   *
+   * @param manifestStore The manifest store for this configuration.
+   */
+  public void setManifestStore(ManifestStore manifestStore) {
+    this.manifestStore = manifestStore;
   }
 
-  public Location getLocationStoreLocation() {
-    return locationStoreLocation;
+  /**
+   * Sets the location store for this configuration. <code>null</code>s are allowed.
+   *
+   * @param locationStore The location store for this configuration.
+   */
+  public void setLocationStore(LocationStore locationStore) {
+    this.locationStore = locationStore;
   }
-
 
 
   /**
@@ -253,12 +273,18 @@ public final class WorkingContextConfiguration {
         return false;
       }
 
+      location.setWorkingContext(workingContext);
+
       if ("manifest-store".equals(location.getId())) {
-        manifestStoreLocation = location;
-//        manifestStoreLocation.setWorkingContext(workingContext);
+
+        String moduleName = (String) configuration.get(WorkingContext.MANIFEST_STORE_MODULE);
+        manifestStore = new ManifestStore(workingContext, moduleName, location);
+
       } else if ("location-store".equals(location.getId())) {
-        locationStoreLocation = location;
-//        locationStoreLocation.setWorkingContext(workingContext);
+
+        String moduleName = (String) configuration.get(WorkingContext.LOCATION_STORE_MODULE);
+        locationStore = new LocationStore(workingContext, moduleName, location);
+
       } else {
         logger.error(
             "Invalid location element in `working-context.xml`. " +
@@ -267,7 +293,7 @@ public final class WorkingContextConfiguration {
       }
     }
 
-    if (locationStoreLocation == null || manifestStoreLocation == null) {
+    if (manifestStore == null || locationStore == null) {
       return false;
     }
 
@@ -318,17 +344,17 @@ public final class WorkingContextConfiguration {
     //
     // </properties>-element
 
-    if (manifestStoreLocation == null && locationStoreLocation == null) {
+    if (manifestStore == null && locationStore == null) {
       //
     } else {
 
       buffer.append("  <loc:locations>\n");
 
-      if (manifestStoreLocation != null) {
-        buffer.append(manifestStoreLocation.asXML());
+      if (manifestStore != null) {
+        buffer.append(manifestStore.getLocation().asXML());
       }
-      if (locationStoreLocation != null) {
-        buffer.append(locationStoreLocation.asXML());
+      if (locationStore != null) {
+        buffer.append(locationStore.getLocation().asXML());
       }
 
       buffer.append("  </loc:locations>\n");

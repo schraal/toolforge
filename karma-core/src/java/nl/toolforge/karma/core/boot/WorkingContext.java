@@ -20,7 +20,6 @@ package nl.toolforge.karma.core.boot;
 
 import nl.toolforge.karma.core.ErrorCode;
 import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.LocationLoader;
 import nl.toolforge.karma.core.manifest.ManifestCollector;
@@ -111,6 +110,10 @@ public final class WorkingContext {
     }
   }
 
+  public static final String CONFIGURATION_BASE_DIRECTORY = System.getProperty("user.home") + File.separator + ".karma";
+
+//  private static File configurationBaseDir = null;
+
   /**
    * Property indicating the base directory for development projects. All manifests will be checked out under this
    * directory, and the manifest store and location store are checked out at this location as well.
@@ -149,8 +152,8 @@ public final class WorkingContext {
   private ManifestLoader manifestLoader = null;
   private LocationLoader locationLoader = null;
 
-  private ManifestStore manifestStore = null;
-  private LocationStore locationStore = null;
+//  private ManifestStore manifestStore = null;
+//  private LocationStore locationStore = null;
 
   private WorkingContextConfiguration configuration = null;
 
@@ -164,7 +167,7 @@ public final class WorkingContext {
    *                       pattern, {@link DEFAULT} is assumed.
    */
   public WorkingContext(String workingContext) {
-    this(workingContext, new File(Karma.CONFIGURATION_BASE_DIRECTORY));
+    this(workingContext, new File(CONFIGURATION_BASE_DIRECTORY));
   }
 
   /**
@@ -188,6 +191,23 @@ public final class WorkingContext {
     }
     configurationBaseDir = configBaseDir;
     configurationBaseDir.mkdirs();
+  }
+
+  /**
+   * Returns a <code>File</code> reference to the default base directory for Karma configuration files. When the
+   * directory does not exist, it is created.
+   *
+   * @return A <code>File</code> reference to the default base directory for Karma configuration files.
+   */
+  public static File getConfigurationBaseDir() {
+
+    if (configurationBaseDir == null) {
+      throw new KarmaRuntimeException(
+          "For all practical purposes, the configuration base directory has to " +
+          "be initialized. The static call you made should be preceded once by calling the " +
+          "WorkingContext constructor (will be replaced by a better solution in later releases).");
+    }
+    return configurationBaseDir;
   }
 
   public void configure(WorkingContextConfiguration configuration) {
@@ -251,13 +271,13 @@ public final class WorkingContext {
   }
 
 
-  public Location getLocationStoreLocation() {
-    return getConfiguration().getLocationStoreLocation();
-  }
-
-  public Location getManifestStoreLocation() {
-    return getConfiguration().getManifestStoreLocation();
-  }
+//  public Location getLocationStoreLocation() {
+//    return getConfiguration().getLocationStoreLocation();
+//  }
+//
+//  public Location getManifestStoreLocation() {
+//    return getConfiguration().getManifestStoreLocation();
+//  }
 
 
   /**
@@ -319,49 +339,49 @@ public final class WorkingContext {
   }
 
 
-  /**
-   * Gets the module name from the value of the <code>MANIFEST_STORE_MODULE</code> property by grabbing the bit after
-   * the last <code>"/"</code>.
-   *
-   * @return The module name for the manifest store or <code>null</code> if the property is not set.
-   *
-   * @deprecated To be refactored out.
-   */
-  public String getManifestStoreModule() {
+//  /**
+//   * Gets the module name from the value of the <code>MANIFEST_STORE_MODULE</code> property by grabbing the bit after
+//   * the last <code>"/"</code>.
+//   *
+//   * @return The module name for the manifest store or <code>null</code> if the property is not set.
+//   *
+//   * @deprecated To be refactored out.
+//   */
+//  public String getManifestStoreModule() {
+//
+//    String module = getConfiguration().getProperty(MANIFEST_STORE_MODULE);
+//
+//    if (module == null) {
+//      return null;
+//    }
+//
+//    while (module.endsWith("/")) {
+//      module.substring(0, module.length());
+//    }
+//    return module;
+//  }
 
-    String module = getConfiguration().getProperty(MANIFEST_STORE_MODULE);
-
-    if (module == null) {
-      return null;
-    }
-
-    while (module.endsWith("/")) {
-      module.substring(0, module.length());
-    }
-    return module;
-  }
-
-  /**
-   * Gets the module name from the value of the <code>LOCATION_STORE_MODULE</code> property by grabbing the bit after
-   * the last <code>"/"</code>.
-   *
-   * @return The module name for the location store or <code>null</code> if the property is not set.
-   *
-   * @deprecated To be refactored out.
-   */
-  public String getLocationStoreModule() {
-
-    String module = getConfiguration().getProperty(LOCATION_STORE_MODULE);
-
-    if (module == null) {
-      return null;
-    }
-
-    while (module.endsWith("/")) {
-      module.substring(0, module.length());
-    }
-    return module;
-  }
+//  /**
+//   * Gets the module name from the value of the <code>LOCATION_STORE_MODULE</code> property by grabbing the bit after
+//   * the last <code>"/"</code>.
+//   *
+//   * @return The module name for the location store or <code>null</code> if the property is not set.
+//   *
+//   * @deprecated To be refactored out.
+//   */
+//  public String getLocationStoreModule() {
+//
+//    String module = getConfiguration().getProperty(LOCATION_STORE_MODULE);
+//
+//    if (module == null) {
+//      return null;
+//    }
+//
+//    while (module.endsWith("/")) {
+//      module.substring(0, module.length());
+//    }
+//    return module;
+//  }
 
 
   /**
@@ -471,27 +491,27 @@ public final class WorkingContext {
     return getName();
   }
 
-  public LocationStore getLocationStore() {
-
-    if (locationStore == null) {
-      locationStore = new LocationStore(this);
-    }
-    return locationStore;
-  }
-
-  public void setLocationStore(LocationStore locationStore) {
-    this.locationStore = locationStore;
-  }
-
-  public ManifestStore getManifestStore() {
-
-    if (manifestStore == null) {
-      manifestStore = new ManifestStore(this);
-    }
-    return manifestStore;
-  }
-
-  public void setManifestStore(ManifestStore mStore) {
-    this.manifestStore = mStore;
-  }
+//  public LocationStore getLocationStore() {
+//
+//    if (locationStore == null) {
+//      locationStore = new LocationStore(this);
+//    }
+//    return locationStore;
+//  }
+//
+//  public void setLocationStore(LocationStore locationStore) {
+//    this.locationStore = locationStore;
+//  }
+//
+//  public ManifestStore getManifestStore() {
+//
+//    if (manifestStore == null) {
+//      manifestStore = new ManifestStore(this);
+//    }
+//    return manifestStore;
+//  }
+//
+//  public void setManifestStore(ManifestStore mStore) {
+//    this.manifestStore = mStore;
+//  }
 }

@@ -68,7 +68,7 @@ public class ListManifests extends DefaultCommand {
    */
   public void execute() throws CommandException {
 
-    File baseDir = getWorkingContext().getManifestStore().getModule().getBaseDir();
+    File baseDir = getWorkingContext().getConfiguration().getManifestStore().getModule().getBaseDir();
 
     DirectoryScanner scanner = new DirectoryScanner();
     scanner.setBasedir(baseDir);

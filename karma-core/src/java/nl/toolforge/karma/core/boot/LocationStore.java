@@ -18,6 +18,10 @@ public final class LocationStore extends AdminStore {
     super(workingContext);
   }
 
+  public LocationStore (WorkingContext workingContext, String moduleName, Location location) {
+    super(workingContext, moduleName, location);
+  }
+
   public final Module getModule() {
 
     if (module != null) {
@@ -37,7 +41,7 @@ public final class LocationStore extends AdminStore {
     if (name.lastIndexOf(File.separator) > 0) {
       name = name.substring(name.lastIndexOf(File.separator) + 1);
     }
-    
+
     module = new LocationModule(name, getLocation());
     module.setBaseDir(new File(getWorkingContext().getLocationStoreBasedir(), getModuleName()));
 

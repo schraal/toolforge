@@ -78,7 +78,7 @@ public final class KarmaInitializationCommand implements Command {
 
         try {
           
-          ManifestStore mStore = commandContext.getWorkingContext().getManifestStore();
+          ManifestStore mStore = commandContext.getWorkingContext().getConfiguration().getManifestStore();
 
           if (!mStore.getLocation().isAvailable()) {
             commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Manifest store location unreachable!")));
@@ -87,7 +87,7 @@ public final class KarmaInitializationCommand implements Command {
             mStore.update();
           }
 
-          LocationStore lStore = commandContext.getWorkingContext().getLocationStore();
+          LocationStore lStore = commandContext.getWorkingContext().getConfiguration().getLocationStore();
 
           if (!lStore.getLocation().isAvailable()) {
             commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Location store location unreachable!")));

@@ -73,6 +73,8 @@ public abstract class BaseLocation implements Location {
     return getId().hashCode();
   }
 
+  // todo hmm, not happy with the workingcontext dependency.
+  //
   public final void setWorkingContext(WorkingContext workingContext) {
     this.workingContext = workingContext;
   }

@@ -18,19 +18,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.test;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.apache.commons.io.FileUtils;
-
 import junit.framework.TestCase;
 import nl.toolforge.core.util.file.MyFileUtils;
-import nl.toolforge.karma.core.boot.Karma;
-import nl.toolforge.karma.core.boot.LocationStore;
-import nl.toolforge.karma.core.boot.ManifestStore;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.boot.WorkingContextConfiguration;
 import nl.toolforge.karma.core.boot.WorkingContextException;
+import org.apache.commons.io.FileUtils;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * This testclass is highly recommended when writing JUnit testclasses for Karma. It initializes some basic stuff. Just
@@ -58,11 +54,17 @@ public class BaseTest extends TestCase {
       projectBaseDir = MyFileUtils.createTempDirectory();
       localRepo = MyFileUtils.createTempDirectory();
 
-      ctx = new WorkingContext("test", wcBaseDir);
+      String wc = "test";
+      ctx = new WorkingContext(wc, wcBaseDir);
 
-      MyFileUtils.writeFile(wcBaseDir, new File("test/test-working-context.xml"), "working-context.xml", this.getClass().getClassLoader());
+      MyFileUtils.writeFile(
+          ctx.getWorkingContextConfigurationBaseDir(),
+          new File("test/test-working-context.xml"),
+          new File("working-context.xml"),
+          this.getClass().getClassLoader()
+      );
 
-      WorkingContextConfiguration config = new WorkingContextConfiguration(new File(wcBaseDir, "working-context.xml"));
+      WorkingContextConfiguration config = new WorkingContextConfiguration(ctx);
       try {
         config.load();
       } catch (WorkingContextException e) {
@@ -70,51 +72,22 @@ public class BaseTest extends TestCase {
       }
       ctx.configure(config);
 
-
-
-
-
-
-      //
-      // todo : moet nog anders, alhoewel het inmiddels beter is.
-      //
-      ManifestStore manifestStore = null;
-      LocationStore locationStore  = null;
-      //
-      manifestStore = new ManifestStore(ctx);
-      config.getManifestStoreLocation().setWorkingContext(ctx);
-      manifestStore.setLocation(config.getManifestStoreLocation());
-      manifestStore.setModuleName("manifests");
-      ctx.setManifestStore(manifestStore);
-      //
-      locationStore = new LocationStore(ctx);
-      config.getLocationStoreLocation().setWorkingContext(ctx);
-      locationStore.setLocation(config.getLocationStoreLocation());
-      locationStore.setModuleName("locations");
-      ctx.setLocationStore(locationStore);
-
-
-
-
-
-
-
       config.setProperty(WorkingContext.PROJECT_BASE_DIRECTORY_PROPERTY, projectBaseDir.getPath());
 
-      MyFileUtils.writeFile(Karma.getConfigurationBaseDir(), new File("test/authenticators.xml"), this.getClassLoader());
+      MyFileUtils.writeFile(WorkingContext.getConfigurationBaseDir(), new File("test/authenticators.xml"), new File("authenticators.xml"), this.getClassLoader());
 
-      File mStore = ctx.getManifestStore().getModule().getBaseDir();
-      File lStore = ctx.getLocationStore().getModule().getBaseDir();
+      File mStore = ctx.getConfiguration().getManifestStore().getModule().getBaseDir();
+      File lStore = ctx.getConfiguration().getLocationStore().getModule().getBaseDir();
 
-      MyFileUtils.writeFile(lStore, new File("test/test-locations.xml"), this.getClassLoader());
-      MyFileUtils.writeFile(lStore, new File("test/test-locations-2.xml"), this.getClassLoader());
+      MyFileUtils.writeFile(lStore, new File("test/test-locations.xml"), new File("test-locations.xml"), this.getClassLoader());
+      MyFileUtils.writeFile(lStore, new File("test/test-locations-2.xml"), new File("test-locations-2.xml"), this.getClassLoader());
 
-      MyFileUtils.writeFile(mStore, new File("test/test-manifest-1.xml"), this.getClassLoader());
-      MyFileUtils.writeFile(mStore, new File("test/test-manifest-2.xml"), this.getClassLoader());
-      MyFileUtils.writeFile(mStore, new File("test/test-manifest-3.xml"), this.getClassLoader());
+      MyFileUtils.writeFile(mStore, new File("test/test-manifest-1.xml"), new File("test-manifest-1.xml"), this.getClassLoader());
+      MyFileUtils.writeFile(mStore, new File("test/test-manifest-2.xml"), new File("test-manifest-2.xml"), this.getClassLoader());
+      MyFileUtils.writeFile(mStore, new File("test/test-manifest-3.xml"), new File("test-manifest-3.xml"), this.getClassLoader());
 
-      MyFileUtils.writeFile(mStore, new File("test/included-test-manifest-1.xml"), this.getClassLoader());
-      MyFileUtils.writeFile(mStore, new File("test/included-test-manifest-2.xml"), this.getClassLoader());
+      MyFileUtils.writeFile(mStore, new File("test/included-test-manifest-1.xml"), new File("included-test-manifest-1.xml"), this.getClassLoader());
+      MyFileUtils.writeFile(mStore, new File("test/included-test-manifest-2.xml"), new File("included-test-manifest-2.xml"), this.getClassLoader());
 
 
     } catch (IOException e) {
@@ -129,9 +102,9 @@ public class BaseTest extends TestCase {
 
   public void tearDown() {
     try {
-      MyFileUtils.makeWriteable(wcBaseDir, true);
-      MyFileUtils.makeWriteable(projectBaseDir, true);
-      MyFileUtils.makeWriteable(localRepo, true);
+      MyFileUtils.makeWriteable(wcBaseDir);
+      MyFileUtils.makeWriteable(projectBaseDir);
+      MyFileUtils.makeWriteable(localRepo);
 
       FileUtils.deleteDirectory(wcBaseDir);
       FileUtils.deleteDirectory(projectBaseDir);

@@ -1,6 +1,5 @@
 package nl.toolforge.karma.cli.cmd;
 
-import nl.toolforge.karma.core.boot.Karma;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.boot.WorkingContextConfiguration;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
@@ -14,7 +13,6 @@ import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 
-import java.io.File;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -44,8 +42,8 @@ public class SetWorkingContext extends DefaultCommand {
 
       WorkingContext w = new WorkingContext(workingContextName);
 
-      File configurationFile = Karma.getConfigurationFile(w);
-      WorkingContextConfiguration configuration = new WorkingContextConfiguration(configurationFile);
+//      File configurationFile = Karma.getConfigurationFile(w);
+      WorkingContextConfiguration configuration = new WorkingContextConfiguration(w);
 
       w.configure(configuration);
 

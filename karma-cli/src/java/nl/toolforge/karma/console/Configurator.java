@@ -47,7 +47,6 @@ final class Configurator {
 
     this.config = config;
     this.context = context;
-
   }
 
   /**
@@ -72,44 +71,45 @@ final class Configurator {
 
     } catch (IOException e) {
       logger.error(e);
-      writeln("[ configurator ] Error configurating working context : " + e.getMessage());
+      writeln("[ configurator ] ** Error configurating working context : " + e.getMessage());
       System.exit(1);
     }
 
     if (mChecked) {
-      config.setProperty(WorkingContext.MANIFEST_STORE_MODULE, manifestStore.getModuleName());
-      config.setManifestStoreLocation(manifestStore.getLocation());
-      context.setManifestStore(manifestStore);
 
+      config.setProperty(WorkingContext.MANIFEST_STORE_MODULE, manifestStore.getModuleName());
+      config.setManifestStore(manifestStore);
       try {
 
         boolean lChecked = checkLocationStoreConfiguration(locationStore);
 
         if (lChecked) {
+
           config.setProperty(WorkingContext.LOCATION_STORE_MODULE, locationStore.getModuleName());
-          config.setLocationStoreLocation(locationStore.getLocation());
-          context.setLocationStore(locationStore);
+          config.setLocationStore(locationStore);
+
         } else {
           logger.error("Could not configure location store.");
-          writeln("[ configurator ] Failed to configure the working context properly. Contact your administrator");
+          writeln("[ configurator ] ** Failed to configure the working context properly. Contact your administrator");
           System.exit(1);
         }
       } catch (IOException e) {
         logger.error(e);
-        writeln("[ configurator ] Error configurating working context : " + e.getMessage());
+        writeln("[ configurator ] ** Error configurating working context : " + e.getMessage());
         System.exit(1);
       }
     } else {
       logger.error("Could not configure manifest store.");
-      writeln("[ configurator ] Failed to configure the working context properly. Contact your administrator");
+      writeln("[ configurator ] ** Failed to configure the working context properly. Contact your administrator");
       System.exit(1);
     }
 
     try {
 
       config.store();
+
     } catch (WorkingContextException e) {
-      logger.error("[ configurator ] Failed to write configuration to `working-context.xml`.");
+      logger.error("[ configurator ] ** Failed to write configuration to `working-context.xml`.");
       System.exit(1);
     }
 
@@ -138,7 +138,7 @@ final class Configurator {
           ok = true;
           break;
         } else {
-          write("[ configurator-error ] '" + projectBaseDir + "' is write protected.");
+          write("[ configurator ] ** Error, '" + projectBaseDir + "' is write protected.");
         }
       }
 
@@ -158,12 +158,11 @@ final class Configurator {
   /**
    * Checks the ManifestStore configuration until it is correct.
    *
-   * @return The actual number of retries
    * @throws IOException
    */
   private boolean checkManifestStoreConfiguration(ManifestStore mStore) throws IOException {
 
-    ErrorCode error = mStore.checkConfiguration();
+    ErrorCode error = mStore.checkConfiguration();;
 
     int retries = 0; // Breaks the loop after three entry runs.
     boolean quit = false;
@@ -177,8 +176,6 @@ final class Configurator {
         }
       }
 
-      writeln("[ configurator ] Error in manifest store configuration : " + error.getErrorMessage());
-
       CVSRepository cvs = null;
 
       try {
@@ -187,7 +184,7 @@ final class Configurator {
           cvs = new CVSRepository("manifest-store");
         }
       } catch (ClassCastException c) {
-        write("[ configurator ] Sorry, only CVS is supported in this release.");
+        write("[ configurator ] ** Sorry, only CVS is supported in this release.");
         cvs = new CVSRepository("manifest-store");
       }
 
@@ -203,6 +200,8 @@ final class Configurator {
 
       if (error == null) {
         break;
+      } else {
+        writeln("[ configurator ] ** Error in manifest store configuration : " + error.getErrorMessage());
       }
     }
 
@@ -228,8 +227,6 @@ final class Configurator {
         }
       }
 
-      writeln("[ configurator ] Error in location store configuration : " + error.getErrorMessage());
-
       CVSRepository cvs = null;
 
       try {
@@ -238,7 +235,7 @@ final class Configurator {
           cvs = new CVSRepository("location-store");
         }
       } catch (ClassCastException c) {
-        write("[ configurator ] Sorry, only CVS is supported in this release.");
+        write("[ configurator ] ** Sorry, only CVS is supported in this release.");
         cvs = new CVSRepository("location-store");
       }
 
@@ -254,6 +251,8 @@ final class Configurator {
 
       if (error == null) {
         break;
+      } else {
+        writeln("[ configurator ] ** Error in location store configuration : " + error.getErrorMessage());
       }
     }
 
@@ -295,8 +294,8 @@ final class Configurator {
       }
       cvs.setHost(hostName);
 
-// Port
-//
+      // Port
+      //
       String port = (cvs.getPort() == -1 ? "2401" : "" + cvs.getPort());
 
       write("[ configurator ] What is your server port ? (" + port + ") : ");
@@ -307,8 +306,8 @@ final class Configurator {
       cvs.setPort(("".equals(port) ? "2401" : port));
     }
 
-// Repository
-//
+    // Repository
+    //
     String repository = cvs.getRepository();
     repository = (repository == null ? "/home/cvs" : repository);
 
@@ -319,8 +318,8 @@ final class Configurator {
     }
     cvs.setRepository(repository);
 
-// manifest-store.module
-//
+    // manifest-store.module
+    //
     String moduleName = store.getModuleName();
 
     if (store instanceof ManifestStore) {
@@ -336,22 +335,32 @@ final class Configurator {
       moduleName = newValue;
     }
 
+    String name = null;
+    while (moduleName.endsWith(File.separator)) {
+      moduleName.substring(0, name.length());
+    }
+    if (moduleName.lastIndexOf(File.separator) > 0) {
+      store.setModuleName(moduleName.substring(moduleName.lastIndexOf(File.separator) + 1));
+      cvs.setOffset(moduleName.substring(0, moduleName.lastIndexOf(File.separator)));
+    } else {
+      store.setModuleName(moduleName);
+      cvs.setOffset("");
+    }
+
     try {
       checkAuthentication(cvs);
     } catch (ConfigurationException e) {
       write("[ configurator ] Error : " + e.getMessage());
     }
 
-// Assign the properties that were asked to the user to the ManifestStore instance.
-//
+    // Assign the properties that were asked to the user to the ManifestStore instance.
+    //
     store.setLocation(cvs);
-    store.setModuleName(moduleName);
 
     return store;
   }
 
 
-//  private void checkAuthentication(WorkingContext ctx, VersionControlSystem cvs) throws IOException, ConfigurationException {
   private void checkAuthentication(VersionControlSystem cvs) throws IOException, ConfigurationException {
 
     Authenticator authenticator = null;
