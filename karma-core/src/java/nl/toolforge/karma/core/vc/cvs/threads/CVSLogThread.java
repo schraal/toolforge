@@ -18,17 +18,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.vc.cvs.threads;
 
+import org.netbeans.lib.cvsclient.command.log.LogInformation;
+
 import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.vc.cvs.CVSModuleStatus;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
 import nl.toolforge.karma.core.vc.threads.RunnerThread;
-import org.netbeans.lib.cvsclient.command.log.LogInformation;
-
-import java.io.File;
 
 /**
  * A <code>CVSLogThread</code> runs a <code>cvs log</code> command on a modules' <code>.module.info</code> file and
