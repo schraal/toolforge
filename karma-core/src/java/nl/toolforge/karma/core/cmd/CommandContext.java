@@ -1,10 +1,12 @@
 package nl.toolforge.karma.core.cmd;
 
-import nl.toolforge.karma.core.exception.ErrorCode;
 import nl.toolforge.karma.core.KarmaException;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.Options;
 import org.apache.commons.cli.PosixParser;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  *
@@ -12,13 +14,15 @@ import org.apache.commons.cli.PosixParser;
  */
 public class CommandContext {
 
-	private static Options options = null;
+	// Reference to all loaded commands
+	//
+	private Set commands = null;
+
+	// Reference ro all command names
+	//
+	private Set commandNames = null;
 
 	private boolean initialized = false;
-
-	public CommandContext() {
-
-	}
 
 	/**
 	 * <p>Checks if this <code>CommandContext</code> has been initialized. A non-initialized context cannot be used and
@@ -39,9 +43,16 @@ public class CommandContext {
 	public synchronized void init() throws KarmaException {
 
 		if (!initialized) {
+			commands = CommandLoader.getInstance().load();
 
-
-
+			// Create a set of all command names.
+			//
+            commandNames = new HashSet();
+			for (Iterator i = commands.iterator(); i.hasNext();) {
+				CommandDescriptor descriptor = (CommandDescriptor) i.next();
+				commandNames.add(descriptor.getName());
+				commandNames.add(descriptor.getAlias());
+			}
 		}
 		initialized = true;
 	}
@@ -49,11 +60,12 @@ public class CommandContext {
 	/**
 	 * Executes a command. Interface applications should use this method to actually execute a command.
 	 *
+	 * @param commandName
 	 * @param commandLine The command to execute. A full command line is passed as a parameter.
 	 * @return The result of the execution run of the command.
 	 * @throws KarmaException When the context was not initialized ({@link #isInitialized}).
 	 */
-	public CommandResponse execute(String commandLine) throws KarmaException {
+	public CommandResponse execute(String commandName, String commandLine) throws KarmaException {
 
 		if (!isInitialized()) {
 			throw new KarmaException(KarmaException.COMMAND_CONTEXT_NOT_INITIALIZED);
@@ -77,4 +89,19 @@ public class CommandContext {
 		return new CommandResponse();
 	}
 
+	public Set commands() {
+
+		return commands;
+	}
+
+	/**
+	 * Checks if some string is a command within this context.
+	 *
+	 * @param name
+	 * @return
+	 */
+	public boolean isCommand(String name) {
+
+       return commandNames.contains(name);
+	}
 }

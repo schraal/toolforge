@@ -4,20 +4,16 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
-import java.io.InputStream;
-import java.io.FileInputStream;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.util.Set;
+import java.io.FileInputStream;
 import java.util.HashSet;
-
-import nl.toolforge.karma.core.exception.ErrorCode;
+import java.util.Set;
 
 /**
- * <p>The manifest loader is responsible for loading a manifest from disk in memory.
- * Manifests are stored on disk in a directory identified by a property
- * <code>manifest.dir</code>.
+ * <p>The manifest loader is responsible for loading a manifest from disk in memory. Manifests are stored on disk in
+ * a directory identified by the property <code>manifest.dir</code>.
  *
  * @author D.A. Smedes
  */
@@ -30,6 +26,35 @@ public final class ManifestLoader {
 			instance = new ManifestLoader();
 		}
 		return instance;
+	}
+
+	/**
+	 * When a manifest has been used before, this method will try and load it. A property
+	 * <code>manifest.saved.id</code> in the <code>karma.properties</code> is used as the identifier for the manifest
+	 * name.
+	 *
+	 * @return
+	 * @throws ManifestException
+	 */
+	public static Manifest loadFromHistory() throws ManifestException {
+
+        Manifest manifest = null;
+        String historyId = null;
+
+		try {
+			// Try to resolve the manifest name from the history
+			//
+		} catch (Exception e) {
+			throw new ManifestException(ManifestException.NO_HISTORY_AVAILABLE);
+		}
+
+		// Try to load it
+		//
+
+        manifest = getInstance().load(historyId);
+
+        return manifest;
+
 	}
 
     /**
@@ -95,6 +120,9 @@ public final class ManifestLoader {
 					// Duplicate modules are not allowed
 					//
 					throw new ManifestException(ManifestException.DUPLICATE_MODULE_IN_MANIFEST);
+				} else {
+
+					duplicates.add(sourceModule);
 				}
 
 			}
@@ -121,7 +149,7 @@ public final class ManifestLoader {
 			throw new ManifestException();
 		}
 
-        return null;
+        return manifest;
     }
 
 }

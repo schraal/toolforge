@@ -2,7 +2,6 @@ package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.UserEnvironment;
-import nl.toolforge.karma.core.exception.ErrorCode;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
@@ -12,10 +11,9 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.File;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * <p>Loads command-descriptors from an <code>XML</code>-file. The default filename
@@ -43,33 +41,33 @@ public final class CommandLoader {
 	}
 
 	/**
-	 * Parses the default <code>XML</code> file containing command descriptors. The default command descriptor file is
+	 * <p>Loads the default <code>XML</code> file containing command descriptors. The default command descriptor file is
 	 * located in the directory that is set with the {@link UserEnvironment#CONFIGURATION_DIRECTORY_PROPERTY}. The
 	 * default command descriptor <code>XML</code> file is designated with {@link Command#DEFAULT_COMMAND_FILE}.
 	 *
-	 * @return A <code>List</code> of {@link nl.toolforge.karma.core.cmd.DefaultCommand} instances.
+	 * @return A <code>Set</code> of {@link nl.toolforge.karma.core.cmd.DefaultCommand} instances.
 	 */
-	List parse() throws KarmaException {
+	Set load() throws KarmaException {
 
-		return parse(
-			UserEnvironment.getConfigurationDirectory().getPath() +
-			File.separator +
-			Command.DEFAULT_COMMAND_FILE);
+		return load(Command.DEFAULT_COMMAND_FILE);
 	}
 
 	/**
-	 * <p>Parses the <code>XML</code> file containing command descriptors.
+	 * <p>Loads the <code>XML</code> file containing command descriptors.
 	 *
 	 * @param resource The resource filename (relative to the classpath) to the <code>XML</code> file. Use
-	 *                 {@link #parse} to use the default settings.
+	 *                 {@link #load} to use the default settings.
 	 *
-	 * @return A <code>List</code> of {@link nl.toolforge.karma.core.cmd.DefaultCommand} instances.
+	 * @return A <code>Set</code> of {@link nl.toolforge.karma.core.cmd.DefaultCommand} instances.
 	 */
-	List parse(String resource) throws KarmaException {
+	Set load(String resource) throws KarmaException {
+
+		System.out.println(resource);
 
 		// TODO : I would like to parse this thing using a Digester, yet my first attempts failed.
 
-		List descriptors = new ArrayList();
+		Set descriptors = new HashSet();
+        Set uniqueAliasses = new HashSet();
 
 		try {
 			// We do need to load the configuration file from the classpath.
@@ -141,6 +139,11 @@ public final class CommandLoader {
 
 					String commandName = commandElement.getAttribute("name");
 					String alias = commandElement.getAttribute("alias");
+
+					if (!uniqueAliasses.add(alias)) {
+						throw new KarmaException(KarmaException.DUPLICATE_ALIAS);
+					}
+
 					String clazzName = commandElement.getElementsByTagName("classname").item(0).getFirstChild().getNodeValue();
 					String explanation = commandElement.getElementsByTagName("description").item(0).getFirstChild().getNodeValue();
 
@@ -164,10 +167,19 @@ public final class CommandLoader {
 					// can use the Options object.
 					//
 
-					descriptors.add(descriptor);
+					// Check if the command has not yet been added.
+					//
+					// TODO : Check if the alias has not been used before either.
+					if (!descriptors.contains(descriptor)) {
+						descriptors.add(descriptor);
+					} else {
+                        throw new KarmaException(KarmaException.DUPLICATE_COMMAND);
+					}
 				}
 			}
 		} catch (Exception e) {
+			// TODO Important NOT to catch KarmaException at this place
+			e.printStackTrace();
 			throw new KarmaException(KarmaException.COMMAND_DESCRIPTOR_XML_ERROR, e);
 		}
 		return descriptors;

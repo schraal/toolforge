@@ -11,34 +11,23 @@
       <root type="composite">
         <root type="jdk" rootType="sourcePath" name="java version &quot;1.4.1_02&quot;" />
         <root type="simple" url="file://$PROJECT_DIR$/karma-cli/src/java" />
-        <root type="simple" url="file://$PROJECT_DIR$/karma-core/src/java" />
         <root type="simple" url="file://$PROJECT_DIR$/toolforge-core/src/java" />
+        <root type="simple" url="file://$PROJECT_DIR$/karma-core/src/java" />
       </root>
     </sourcePath>
     <classPath>
       <root type="composite">
         <root type="jdk" rootType="classPath" name="java version &quot;1.4.1_02&quot;" />
         <root type="output" />
-        <root type="simple" url="jar:///home/asmedes/.maven/repository/log4j/jars/log4j-1.2.7.jar!/" />
-        <root type="simple" url="jar:///home/asmedes/.maven/repository/netbeans/jars/netbeans-cvs.jar!/" />
-        <root type="simple" url="jar:///home/asmedes/.maven/repository/commons-lang/jars/commons-lang-1.0.1.jar!/" />
-        <root type="simple" url="jar:///home/asmedes/.maven/repository/xerces/jars/xerces-2.3.0.jar!/" />
-        <root type="simple" url="jar:///home/asmedes/.maven/repository/regexp/jars/regexp-1.2.jar!/" />
-        <root type="simple" url="jar:///home/asmedes/.maven/repository/xerces/jars/xercesImpl-2.3.0.jar!/" />
-        <root type="simple" url="jar:///home/asmedes/.maven/repository/xerces/jars/xmlParserAPIs-2.2.1.jar!/" />
-        <root type="simple" url="jar:///home/asmedes/.maven/repository/commons-logging/jars/commons-logging-1.0.3.jar!/" />
         <root type="simple" url="jar:///home/asmedes/.maven/repository/commons-cli/jars/commons-cli-1.0.jar!/" />
         <root type="simple" url="jar:///home/asmedes/.maven/repository/junit/jars/junit-3.8.1.jar!/" />
-        <root type="simple" url="jar:///home/asmedes/.maven/repository/commons-digester/jars/commons-digester-1.5.jar!/" />
-        <root type="simple" url="jar:///home/asmedes/.maven/repository/commons-collections/jars/commons-collections-2.1.jar!/" />
-        <root type="simple" url="jar:///home/asmedes/.maven/repository/commons-beanutils/jars/commons-beanutils-1.6.1.jar!/" />
+        <root type="simple" url="jar:///home/asmedes/.maven/repository/regexp/jars/regexp-1.2.jar!/" />
+        <root type="simple" url="jar:///home/asmedes/.maven/repository/commons-lang/jars/commons-lang-1.0.1.jar!/" />
         <root type="simple" url="file://$PROJECT_DIR$/karma-core/resources" />
       </root>
     </classPath>
     <excludePath>
-      <root type="composite">
-        <root type="excludedOutput" />
-      </root>
+      <root type="composite" />
     </excludePath>
     <javadocPath>
       <root type="composite">
@@ -46,13 +35,23 @@
       </root>
     </javadocPath>
     <assert_keyword enabled="no" />
-    <exclude_output enabled="yes" />
+    <exclude_output enabled="no" />
   </component>
   <component name="CompilerConfiguration">
     <option name="DEFAULT_COMPILER" value="Javac" />
     <option name="SYNCHRONIZE_OUTPUT_DIRECTORY" value="false" />
     <option name="DEFAULT_OUTPUT_PATH" value="$PROJECT_DIR$/build" />
     <option name="OUTPUT_MODE" value="single" />
+    <excludeFromCompile>
+      <file url="file://$PROJECT_DIR$/karma-core/src/java/nl/toolforge/karma/core/cmd/manifest-example.xml" />
+      <file url="file://$PROJECT_DIR$/karma-cli/src/java/nl/toolforge/karma/cli/package.html" />
+      <file url="file://$PROJECT_DIR$/karma-core/src/java/nl/toolforge/karma/core/package.html" />
+      <file url="file://$PROJECT_DIR$/karma-core/src/java/nl/toolforge/karma/core/vc/package.html" />
+      <file url="file://$PROJECT_DIR$/karma-core/src/java/nl/toolforge/karma/core/vc/subversion/package.html" />
+      <file url="file://$PROJECT_DIR$/karma-core/src/java/nl/toolforge/karma/core/vc/cvs/package.html" />
+      <file url="file://$PROJECT_DIR$/karma-core/src/java/nl/toolforge/karma/core/expr/package.html" />
+      <file url="file://$PROJECT_DIR$/toolforge-core/src/java/nl/toolforge/core/package.html" />
+    </excludeFromCompile>
     <resourceExtensions>
       <entry name=".+\.(properties|xml|html)" />
       <entry name=".+\.(gif|png|jpeg|jpg)" />
@@ -66,7 +65,7 @@
     <option name="MAXIMUM_HEAP_SIZE" value="128" />
   </component>
   <component name="JikesSettings">
-    <option name="JIKES_PATH" value="" />
+    <option name="JIKES_PATH" value="/usr/bin/jikes" />
     <option name="DEBUGGING_INFO" value="true" />
     <option name="DEPRECATION" value="true" />
     <option name="GENERATE_NO_WARNINGS" value="false" />
@@ -80,20 +79,20 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="JavadocGenerationManager">
-    <option name="OUTPUT_DIRECTORY" value="$PROJECT_DIR$/tmp" />
+    <option name="OUTPUT_DIRECTORY" />
     <option name="OPTION_SCOPE" value="protected" />
     <option name="OPTION_HIERARCHY" value="true" />
     <option name="OPTION_NAVIGATOR" value="true" />
     <option name="OPTION_INDEX" value="true" />
     <option name="OPTION_SEPARATE_INDEX" value="true" />
     <option name="OPTION_DOCUMENT_TAG_USE" value="false" />
-    <option name="OPTION_DOCUMENT_TAG_AUTHOR" value="true" />
+    <option name="OPTION_DOCUMENT_TAG_AUTHOR" value="false" />
     <option name="OPTION_DOCUMENT_TAG_VERSION" value="false" />
     <option name="OPTION_DOCUMENT_TAG_DEPRECATED" value="true" />
     <option name="OPTION_DEPRECATED_LIST" value="true" />
-    <option name="OTHER_OPTIONS" />
+    <option name="OTHER_OPTIONS" value="" />
     <option name="HEAP_SIZE" />
-    <option name="OPEN_IN_BROWSER" value="false" />
+    <option name="OPEN_IN_BROWSER" value="true" />
   </component>
   <component name="WebManager">
     <option enabled="false" />

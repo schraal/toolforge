@@ -11,11 +11,11 @@ import org.apache.regexp.RESyntaxException;
  */
 public final class Pattern
 {
-    private String regexp = null;
+    //private String regexp = null;
     private RE re = null;
 
     private Pattern(String regexp) {
-		this.regexp = regexp;
+		//this.regexp = regexp;
 
 		try {
 			re = new RE(regexp);

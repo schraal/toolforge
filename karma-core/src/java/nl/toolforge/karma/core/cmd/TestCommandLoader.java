@@ -3,7 +3,7 @@ package nl.toolforge.karma.core.cmd;
 import junit.framework.TestCase;
 import nl.toolforge.karma.core.KarmaException;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -16,7 +16,7 @@ public class TestCommandLoader extends TestCase {
 		CommandLoader cl = CommandLoader.getInstance();
 
 		try {
-			List l = cl.parse("commands-example.xml");
+			Set l = cl.load("commands-example.xml");
 
 			assertEquals("There should be two commands loaded from the descriptor file", 2, l.size());
 

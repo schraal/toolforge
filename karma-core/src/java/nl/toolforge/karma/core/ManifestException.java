@@ -26,10 +26,11 @@ public final class ManifestException extends KarmaException {
 	 */
 	public static final ErrorCode MANIFEST_FILE_NOT_FOUND = new ErrorCode("MNFS-00002");
 
-	/**
-	 * Duplicate module name in manifest file.
-	 */
+	/** Duplicate module name in manifest file. */
 	public static final ErrorCode DUPLICATE_MODULE_IN_MANIFEST = new ErrorCode("MNFS-00003");
+
+	/** No history item could be found for a manifest. */
+	public static final ErrorCode NO_HISTORY_AVAILABLE = new ErrorCode("MNFS-00010");
 
  	public ManifestException() {}
 

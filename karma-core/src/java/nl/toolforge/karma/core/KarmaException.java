@@ -54,6 +54,12 @@ public class KarmaException extends Exception {
 	/** No configuration directory could be referenced to. This is panic, because without it, nothing will work. */
 	public static final ErrorCode NO_CONFIGURATION_DIRECTORY = new ErrorCode("CORE-00006");
 
+	/** Duplicate command descriptor name in commands XML file */
+	public static final ErrorCode DUPLICATE_COMMAND = new ErrorCode("CORE-00007");
+
+	/** Duplicate command descriptor alias in commands XML file */
+	public static final ErrorCode DUPLICATE_ALIAS = new ErrorCode("CORE-00008");
+
     /** Data format errors (errors during pattern matching, etc). */
 	public static final ErrorCode DATAFORMAT_ERROR = new ErrorCode("CORE-00020");
 

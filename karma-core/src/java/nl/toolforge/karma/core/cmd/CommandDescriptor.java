@@ -96,4 +96,29 @@ public final class CommandDescriptor {
 	public String getHelp() {
 		return this.helpText;
 	}
+
+	/**
+	 * Commands are equal when their names are equal.
+	 *
+	 * @param o
+	 * @return
+	 */
+	public boolean equals(Object o) {
+
+		if (o instanceof CommandDescriptor) {
+			if (this.getName().equals(((CommandDescriptor) o).getName())) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
+	public int hashCode() {
+		// Volgens mij gaat het volgende hartstikke fout !
+		//
+		return name.hashCode();
+	}
 }
