@@ -101,7 +101,7 @@ public class KarmaLauncher {
         String[] classPathEntries = null;
         String karmaClassPath = System.getProperty(KARMA_CLASSPATH);
         if (karmaClassPath != null) {
-            StringTokenizer tokenizer = new StringTokenizer(karmaClassPath, ";:");
+            StringTokenizer tokenizer = new StringTokenizer(karmaClassPath, File.pathSeparator);
 
             int n = tokenizer.countTokens();
             classPathEntries = new String[n];
