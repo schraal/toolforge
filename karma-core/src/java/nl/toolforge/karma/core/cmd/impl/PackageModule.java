@@ -419,7 +419,7 @@ e.printStackTrace();
       //copy the module dependencies from the application.xml
       fileSet = new FileSet();
 
-      fileSet.setDir(getBuildEnvironment().getModuleBuildDirectory());
+      fileSet.setDir(getBuildEnvironment().getManifestBuildDirectory());
       fileSet.setIncludesfile(new File(getBuildEnvironment().getModuleBuildDirectory(), ARCHIVES_INCLUDES));
       copy.addFileset(fileSet);
       copy.execute();
@@ -431,9 +431,10 @@ e.printStackTrace();
       copy.setFlatten(true);
 
       fileSet = new FileSet();
-System.out.println("repo root: "+ WorkingContext.getLocalRepository());
+//System.out.println("repo root: "+ WorkingContext.getLocalRepository());
       fileSet.setDir(WorkingContext.getLocalRepository());
-      fileSet.setIncludes(CollectionUtil.concat(helper.getJarDependencies(getCurrentModule()), ','));
+//System.out.println("jar deps: "+CollectionUtil.concat(helper.getJarDependencies(getCurrentModule()), ','));
+      fileSet.setIncludes(CollectionUtil.concat(helper.getJarDependencies(getCurrentModule(), true), ','));
       copy.addFileset(fileSet);
       copy.execute();
 
@@ -443,7 +444,7 @@ System.out.println("repo root: "+ WorkingContext.getLocalRepository());
       ear.setProject(getProjectInstance());
       ear.setDestFile(packageName);
       ear.setBasedir(getBuildEnvironment().getModulePackageDirectory());
-      ear.setAppxml(new File(getBuildEnvironment().getModuleBuildDirectory(), "META-INF/application.xml".replace('/', File.separatorChar)));
+      ear.setAppxml(new File(getBuildEnvironment().getModulePackageDirectory(), "META-INF/application.xml".replace('/', File.separatorChar)));
 
       ear.execute();
 

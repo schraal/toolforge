@@ -95,7 +95,7 @@ public class TestModule extends AbstractBuildCommand {
     if (!getBuildEnvironment().getModuleTestSourceDirectory().exists()) {
       // No point in building a module, if no test/java is available.
       //
-      throw new CommandException(CommandException.NO_TEST_DIR, new Object[] {getCurrentModule().getName(), "test"});
+      throw new CommandException(CommandException.NO_TEST_DIR, new Object[] {getCurrentModule().getName(), "test/java"});
     }
 
     // Configure the Ant project
