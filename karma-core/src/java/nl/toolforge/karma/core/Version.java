@@ -36,7 +36,7 @@ public class Version implements Cloneable, Comparable {
   public static final String VERSION_SEPARATOR_CHAR = "-";
 
   /** The initial version for a module. */
-  public static Version INITIAL_VERSION = new Version("0-0");
+  public static Version INITIAL_VERSION = new Version("0"+VERSION_SEPARATOR_CHAR+"0");
 
   public static final int FIRST_DIGIT = 0;
   public static final int SECOND_DIGIT = 1;
@@ -81,7 +81,7 @@ public class Version implements Cloneable, Comparable {
    * @return
    */
   protected static Version getInitialVersion() {
-    return new Version("0-0");
+    return new Version("0"+VERSION_SEPARATOR_CHAR+"0");
   }
 
   /**
