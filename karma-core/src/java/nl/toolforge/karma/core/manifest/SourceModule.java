@@ -1,22 +1,20 @@
 package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
-
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.io.File;
-import java.io.IOException;
-import java.io.FileNotFoundException;
-import java.net.URL;
-
 import org.apache.commons.digester.Digester;
-import org.apache.commons.digester.xmlrules.DigesterLoader;
 import org.apache.maven.project.Dependency;
 import org.xml.sax.SAXException;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * <p>A <code>SourceModule</code> represents a module for which the developer wants to have the sources available to
@@ -141,41 +139,28 @@ public class SourceModule extends BaseModule {
     return baseDir;
   }
 
+  /**
+   * Constructs
+   */
   public String getDependencies() throws ManifestException {
 
     // For now, we assume each module has a project.xml, modelled as per the Maven definition.
     //
     Set deps = new HashSet();
 
-//    URL rules = this.getClass().getClassLoader().getResource("maven-project-rules.xml");
-//    Digester digester = DigesterLoader.createDigester(rules);
-
     // Read in the base dependency structure of a Maven project.xml file
     //
     Digester digester = new Digester();
 
     digester.addObjectCreate("*/dependencies", "java.util.HashSet");
-
-    digester.addObjectCreate("*/dependency", "org.apache.maven.project.Dependency");
-
-    digester.addCallMethod("*/dependency/groupId", "setGroupId", 1);
-    digester.addCallParam("*/dependency/groupId", 0);
-
-    digester.addCallMethod("*/dependency/id", "setId", 1);
-    digester.addCallParam("*/dependency/id", 0);
-
-    digester.addCallMethod("*/dependency/version", "setVersion", 1);
-    digester.addCallParam("*/dependency/version", 0);
-
-    digester.addCallMethod("*/dependency/artifactId", "setArtifactId", 1);
-    digester.addCallParam("*/dependency/artifactId", 0);
-
-    digester.addSetNext("*/dependency", "add", "org.apache.maven.project.Dependency");
+    digester.addObjectCreate("*/dependency", "nl.toolforge.karma.core.scm.ModuleDependency");
+    digester.addSetProperties("*/dependency"); // new String[]{"id", "groupId", "artifactId", "version", "module", "jar"};
+    digester.addSetNext("*/dependency", "add");
 
     try {
-      // Load 'project.xml'
+      // Load 'dependencies.xml'
       //
-      deps = (Set) digester.parse(new File(getBaseDir(), "project.xml"));
+      deps = (Set) digester.parse(new File(getBaseDir(), "dependencies.xml"));
     } catch (IOException e) {
       if (e instanceof FileNotFoundException) {
         throw new ManifestException(e, ManifestException.DEPENDENCY_FILE_NOT_FOUND, new Object[]{getName()});
@@ -195,16 +180,18 @@ public class SourceModule extends BaseModule {
     String userHome = System.getProperty("user.home");
 
     for (Iterator iterator = deps.iterator(); iterator.hasNext();) {
-      Dependency dep = (Dependency) iterator.next();
+      ModuleDependency dep = (ModuleDependency) iterator.next();
 
-      String jar = userHome + File.separator + ".maven" + File.separator + "repository" + File.separator;
+      if (!dep.isModuleDependency()) {
+        String jar = userHome + File.separator + ".maven" + File.separator + "repository" + File.separator;
+        jar += dep.getJarDependency();
 
-      jar += dep.getArtifactId() + "-" + dep.getVersion() + ".jar";
-
-      buffer.append(jar);
-      if (iterator.hasNext()) {
-        buffer.append(";");
+        buffer.append(jar);
+        if (iterator.hasNext()) {
+          buffer.append(";");
+        }
       }
+      // todo support module deps as well ...
     }
 
     return buffer.toString();

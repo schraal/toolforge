@@ -1,8 +1,6 @@
 package nl.toolforge.karma.core.scm.maven;
 
 import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.scm.SourceModuleDependencyReader;
 import org.apache.commons.digester.Digester;
 import org.xml.sax.SAXException;
 
@@ -20,7 +18,7 @@ import java.util.List;
  *
  * @author D.A. Smedes
  */
-public class MavenDependencyReader extends SourceModuleDependencyReader {
+public class MavenDependencyReader {
 
   // todo name the correct maven dependency
   //

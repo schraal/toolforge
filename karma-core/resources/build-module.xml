@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="karma" default="none">
+
+  <target name="none">
+
+    <!-- Nothing -->
+
+  </target>
+
+  <target name="compile">
+
+    <mkdir dir="${destdir}"/> 
+
+    <javac destdir="${destdir}" srcdir="${srcdir}"/>
+
+  </target>
+
+</project>
