@@ -79,7 +79,7 @@ public class CreateModuleCommand extends DefaultCommand {
     try {
       digester = new ModuleDigester(moduleName, locationAlias);
     } catch (PatternSyntaxException e) {
-      throw new CommandException(CommandException.INVALID_ARGUMENT, new Object[]{moduleName});
+      throw new CommandException(CommandException.INVALID_ARGUMENT, new Object[]{moduleName, e.getMessage()});
     }
 
     Module module = null;
