@@ -93,34 +93,50 @@
 
   <p>
     The remaining configuration is done as needed when Karma is started. The
-    next step is to start Karma. Karma R1.0 comes with to flavours of user
-    interfaces. One is the command-line interface, the other is the console. 
+    next step is to start Karma. Karma R1.0 comes with two flavours of user
+    interfaces. One is the command-line interface, the other is the console. We'll
+    start with the console
   </p>
 
-  <h4>The Karma binary</h4>
+  <h4>The Karma console</h4>
 
   <p>
-    Karma can be started in the following ways:
+    Karma shows its usage information when you enter:
   </p>
 
   <source>karma</source>
 
   <p>
-    Prints usage information. Just using <code>karma</code> without anything
+    Just using <code>karma</code> without anything
     means nothing to Karma, as we are not Ant or Maven and for clarity we
-    don't perform a default startup procedure.
+    don't perform a default startup procedure. The output looks like:
   </p>
 
+  <source>
+
+usage: karma [options] console | &lt;command&gt; &lt;command options&gt;
+
+Options:
+  -u                         Update the location- and manifest store.
+  -w &lt;working context&gt;       Load the given working context.
+
+console                      Start the Karma console.
+&lt;command&gt; &lt;command options&gt;  Run the given command with the given options.
+                             Use the 'help' command for the list of commands.
+
+  </source>
+
+  <p>
+    We'll choose for the option of starting the console, which also start the
+    configuration process.
+  </p>
   <source>karma [-u] [-w &lt;working-context&gt;] console</source>
 
   <p>
-    Starts the Karma console, which is the command shell for Karma. The
-    <code>-u</code> option updates the manifest store and location store (see
-    the <a href="administration-guide.html">Administration Guide</a> for
-    in-depth coverage of these two terms). <code>-w</code> sets another
-    working context (see the <a href="#wc">Working Context Configuration</a>
-    section). If ommitted, the last used working context (stored as a Java
-    preference) is used.
+    The <code>-u</code> option updates the manifest store and location store (see
+    the <a href="administration-guide.html">Administration guide</a> for
+    in-depth coverage of these two terms). <code>-w</code> specifies the
+    <a href="#wc">working context</a>. If ommitted, the last used working context is selected.
   </p>
 
   <p>
@@ -129,46 +145,94 @@
     <code>-</code>).
   </p>
 
-  <source>karma [-u] [-w &lt;working-context&gt;] &lt;command&gt; &lt;command-options&gt;</source>
-
   <p>
-    Much like <code>karma [-u] [-w &lt;working-context&gt;] console</code>,
-    but this variant executes one command, then quits, which is usefull for
-    batch processing of commands.
+    Just do a <strong>karma console</strong> for the moment. This starts up the console, which
+    is going to complain about missing configuration:
   </p>
 
-  <p>
-    During startup, the following output will be shown:
-  </p>
- 
   <source>
+
       _________________________________
-      Welcome to Karma (R1.0)       !!!
+      Welcome to Karma (R1.0 BETA6) !!!
 
       K     A     R        M        A
       .     .     .        .        .
       Karma Ain't Remotely Maven or Ant
       _________________________________
 
-[ console ] Logging will be written to /home/asmedes/dev/toolforge/karma-cli/logs.
+[ console ] Logging will be written to /home/user/Karma/logs.
 [ console ] Checking working context configuration for `default`.
-[ console ] Configuration complete. Loading working context `default` ...
-[ console ] Configuration can be manually updated in `/home/asmedes/.karma/working-contexts/default`
+[ console ] ** Error in working context configuration : WCC-00001 : Could not load `working-context.xml`.
+[ console ] ** Error in working context configuration : Missing configuration for manifest store.
+[ console ] ** Error in working context configuration : Missing configuration for location store.
+[ console ] Working context not initialized properly, start configurator ? [Y|N] (Y) :
 
-[ console ] Starting up console ...
-
-[ init ] Updating manifests ...
-[ init ] Updating locations ...
-[ init ] Loading manifest from history ...
-[ init ] Manifest `something` has been activated.
   </source>
 
   <p>
-    Karma will start and try and locate the settings for the working context
-    specified with the <code>-w</code> argument. If the working context does
-    not yet exist, Karma will create the working context and start a
-    configurator, which will guide you through the working context setup.
+    Just say <strong>Y</strong> here, or else you wont get much further.
+    The configurator is going to start to ask you questions. The first one is for your
+    <strong>project base directory</strong>. This is the directory into which all your
+    project's source code and configuration is stored. Choose your own location or just stick
+    with the default by pressing enter:
   </p>
+
+    <source>[ configurator ] What is your project base directory (/home/user/karma/default) :</source>
+
+    <p>
+      Now, you're asked to specify your manifest store. The information needed for this step
+      should be obtained from your Karma administrator, or if you're the Karma administrator
+      yourself you should read the <a href="administration-guide.html">Administration guide</a>
+      for more details.
+    </p>
+
+    <p>
+      So, fill in the requested information, e.g. like below:
+    </p>
+
+    <source>
+[ configurator ] Please configure the manifest-store !
+[ configurator ] What is your server protocol ? [ local | pserver ] (pserver) : local
+[ configurator ] What is your server repository ? (/home/cvs) : /home/user/cvs
+[ configurator ] What is the cvs module for the manifest store ? (manifests)
+[ configurator ] What is your username ?  : user
+    </source>
+
+    <p>
+      And do the same for the location store:
+    </p>
+
+    <source>
+[ configurator ] Please configure the location-store !
+[ configurator ] What is your server protocol ? [ local | pserver ] (pserver) : local
+[ configurator ] What is your server repository ? (/home/cvs) : /home/user/cvs
+[ configurator ] What is the cvs module for the location store ? (locations)
+[ configurator ] What is your username ?  : user
+    </source>
+
+    <p>
+      If the information you provided is correct, Karma will reward you with:
+    </p>
+
+    <source>
+[ console ] Configuration complete. Loading working context `default` ...
+[ console ] Configuration can be manually updated in `/home/user/.karma/working-contexts/default`
+
+[ console ] Starting up console ...
+
+[ init ] Loading manifest from history ...
+[ init ] No manifest stored in history ...
+21:40:03 [ default::Karma ] >
+    </source>
+
+    <p>
+      Now your Karma is up-and-running. You can try some commands (like
+      <strong>list-manifests</strong> or <strong>help</strong> ;).
+      <br/>
+      Also, once you have configured your working context via the console, you can
+      start using the command-line interface.
+    </p>
+
 
   </subsection>
 
@@ -178,7 +242,7 @@
 
   <p>
     In the <a href="basics.html#working-context-support">Basics</a> section, the
-    working context concept was defined.
+    working context concept is defined.
   </p>
 
   <p>
