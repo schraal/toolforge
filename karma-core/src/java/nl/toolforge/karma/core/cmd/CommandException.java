@@ -77,6 +77,9 @@ public class CommandException extends Exception {
   public static final ErrorCode MODULE_TYPE_MUST_BE_BASEMODULE = new ErrorCode(EXCEPTION_PREFIX + "00042");
   /** Promote command is not allowed on static and dynamic modules. */
   public static final ErrorCode PROMOTE_ONLY_ALLOWED_ON_WORKING_MODULE = new ErrorCode(EXCEPTION_PREFIX + "00043");
+  /** Promote command is not allowed on static and dynamic modules. */
+  public static final ErrorCode PROMOTE_WITH_INCREASE_MAJOR_VERSION_NOT_ALLOWED_ON_RELEASE_MANIFEST = new ErrorCode(EXCEPTION_PREFIX + "00075");
+  
 
   /**
    * <p>The dependency that is referenced does not exists. This could happen when:
