@@ -21,7 +21,6 @@ package nl.toolforge.karma.core;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -50,7 +49,7 @@ public final class ErrorCode {
 
   private String errorCode = null;
 
-  public static final ErrorCode NO_ERROR = new ErrorCode("XXX-00000");
+//  public static final ErrorCode NO_ERROR = new ErrorCode("XXX-00000");
 
   /**
    * Creates an error code. Error codes must comply to the following pattern : <code>[A-Z]{3}-\d{5}</code>. Examples are:

@@ -211,19 +211,6 @@ public abstract class AbstractManifest implements Manifest {
   }
 
   /**
-   * Checks (in parallel) if modules have a PatchLine associated.
-   *
-   * @param manifest
-   */
-
-  // TODO should be included elsewhere ...
-  //
-  private void checkForPatchLines(Manifest manifest) {
-    ParallelRunner runner = new ParallelRunner(manifest, PatchLineThread.class);
-    runner.execute();
-  }
-
-  /**
    * Gets all modules defined in this manifest (excluding includedManifests).
    *
    * @see #getAllModules()

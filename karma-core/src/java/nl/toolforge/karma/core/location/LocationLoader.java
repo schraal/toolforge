@@ -75,7 +75,8 @@ public final class LocationLoader {
   /**
    * Loads all location xml files from the path specified by the {@link WorkingContext#getLocationStore()}
    * property. Location objects are matched against authenticator objects, which should be available in the Karma
-   * configuration directory and should start with '<code>authentication</code>' and have an <code>xml</code>-extension.
+   * configuration directory {@link WorkingContext#getConfigurationBaseDir()} and should be named
+   * '<code>authenticators.xml</code>'.
    *
    * @throws LocationException
    */
@@ -85,7 +86,7 @@ public final class LocationLoader {
 
     Map authenticators = new Hashtable();
 
-    File authenticatorsFile = new File(workingContext.getConfigurationDirectory(), "authenticators.xml");
+    File authenticatorsFile = new File(workingContext.getConfigurationBaseDir(), "authenticators.xml");
 
     if (authenticatorsFile == null) {
       throw new LocationException(LocationException.MISSING_AUTHENTICATOR_CONFIGURATION);
@@ -113,7 +114,7 @@ public final class LocationLoader {
       if (authenticators.containsKey(authDescriptor.getId())) {
         throw new LocationException(
             LocationException.DUPLICATE_AUTHENTICATOR_KEY,
-            new Object[] {authDescriptor.getId(), workingContext.getConfigurationDirectory().getPath()}
+            new Object[] {authDescriptor.getId(), workingContext.getConfigurationBaseDir().getPath()}
         );
       }
       authenticators.put(authDescriptor.getId(), authDescriptor);

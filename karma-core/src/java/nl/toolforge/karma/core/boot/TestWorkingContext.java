@@ -25,29 +25,32 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.List;
 
 /**
  * @version $Id$
  */
 public final class TestWorkingContext extends TestCase {
 
-  private File dotKarma;
+  private File dotKarma, projectsDir;
   private Properties p;
 
   public void setUp() {
     try {
       dotKarma = MyFileUtils.createTempDirectory();
+      projectsDir = MyFileUtils.createTempDirectory();
 
       p = new Properties();
 
-      p.put(WorkingContext.MANIFEST_STORE_HOST, "one");
+      p.put(WorkingContext.MANIFEST_STORE_PROTOCOL, "local");
       p.put(WorkingContext.MANIFEST_STORE_REPOSITORY, "two");
-      p.put(WorkingContext.MANIFEST_STORE_PROTOCOL, "three");
-      p.put(WorkingContext.MANIFEST_STORE_PORT, "four");
+//      p.put(WorkingContext.MANIFEST_STORE_HOST, "one");
+//      p.put(WorkingContext.MANIFEST_STORE_PORT, "four");
       p.put(WorkingContext.MANIFEST_STORE_USERNAME, "five");
+
+      p.put(WorkingContext.LOCATION_STORE_PROTOCOL, "pserver");
       p.put(WorkingContext.LOCATION_STORE_HOST, "one");
       p.put(WorkingContext.LOCATION_STORE_REPOSITORY, "two");
-      p.put(WorkingContext.LOCATION_STORE_PROTOCOL, "three");
       p.put(WorkingContext.LOCATION_STORE_PORT, "four");
       p.put(WorkingContext.LOCATION_STORE_USERNAME, "five");
 
@@ -58,10 +61,28 @@ public final class TestWorkingContext extends TestCase {
 
   public void testConstructor() {
 
-    WorkingContext ctx = new WorkingContext("blaat", dotKarma, p);
-    assertTrue(ctx.getInvalidConfiguration().size() == 0);
+    WorkingContext ctx = new WorkingContext("blaat", dotKarma, projectsDir, p);
 
-    assertEquals(new File(dotKarma, "blaat"), ctx.getWorkingContextDirectory());
+    assertEquals(2, ctx.getInvalidConfiguration().size());
+
+    assertEquals(0, ((List) ctx.getInvalidConfiguration().get("MANIFEST-STORE")).size());
+    assertEquals(0, ((List) ctx.getInvalidConfiguration().get("LOCATION-STORE")).size());
+  }
+
+  public void testDirectories() {
+
+    WorkingContext ctx = new WorkingContext("blaat", dotKarma, projectsDir, p);
+
+    assertEquals(dotKarma, ctx.getConfigurationBaseDir());
+    assertEquals(new File(dotKarma, "blaat"), ctx.getWorkingContextConfigDir());
+    assertEquals(new File(dotKarma, "blaat/workingcontext.properties"), ctx.getConfigurationFile());
+    assertEquals(new File(dotKarma, "blaat"), ctx.getWorkingContextConfigDir());
+
+    assertEquals(projectsDir, ctx.getProjectBaseDirectory());
+    assertEquals(new File(projectsDir, "blaat"), ctx.getWorkingContextProjectDir());
+    assertEquals(new File(projectsDir, "blaat/manifests"), ctx.getManifestStore());
+    assertEquals(new File(projectsDir, "blaat/locations"), ctx.getLocationStore());
+    assertEquals(new File(projectsDir, "blaat/projects"), ctx.getDevelopmentHome());
   }
 
   /**
@@ -71,6 +92,7 @@ public final class TestWorkingContext extends TestCase {
   public void tearDown() {
     try {
       FileUtils.deleteDirectory(dotKarma);
+      FileUtils.deleteDirectory(projectsDir);
     } catch (IOException e) {
       fail(e.getMessage());
     }

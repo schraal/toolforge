@@ -19,6 +19,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * A <code>WorkingContext</code> is used by Karma to determine the environment in which the user wants to use Karma. A
@@ -31,7 +34,7 @@ import java.util.Properties;
  */
 public final class WorkingContext {
 
-    private  static final String DEFAULT_CONVERSION_PATTERN = "%d{HH:mm:ss} [%5p] - %m%n";
+  private  static final String DEFAULT_CONVERSION_PATTERN = "%d{HH:mm:ss} [%5p] - %m%n";
 
   static {
 
@@ -88,7 +91,7 @@ public final class WorkingContext {
   /**
    * Base directory
    */
-  public static final String BASE_DIRECTORY_PROPERTY = System.getProperty("user.home") + File.separator + "karma";
+  public static final String PROJECT_BASE_DIRECTORY = System.getProperty("user.home") + File.separator + "karma";
 
   public static final String MANIFEST_STORE_HOST = "manifest-store.cvs.host";
   public static final String MANIFEST_STORE_PORT = "manifest-store.cvs.port";
@@ -111,9 +114,13 @@ public final class WorkingContext {
   public static final String JAR_REPOSITORY = "jar.repository";
 
   private String workingContext = null;
-  private File defaultConfigurationDirectory = null;
+
+  private File configBaseDir = null;
+  private File projectBaseDir = null;
+
+//  private File defaultConfigurationDirectory = null;
   private Properties configuration = null;
-  private List invalidConfiguration = null;
+  private Map invalidConfiguration = null;
 
   private ManifestCollector manifestCollector = null;
   private ManifestLoader manifestLoader = null;
@@ -134,7 +141,11 @@ public final class WorkingContext {
    *   <code>default</code> context.
    */
   public WorkingContext(String workingContext) {
-    this(workingContext, new File(System.getProperty("user.home"), ".karma"), null);
+    this(
+        workingContext,
+        new File(System.getProperty("user.home"), ".karma"),  // Default configuration base directory
+        new File(System.getProperty("user.home"), "karma"),
+        null);
   }
 
   /**
@@ -144,21 +155,29 @@ public final class WorkingContext {
    * <code>KarmaRuntimeException</code> is thrown. A call to {@link #initialize} can be used to check if the
    * configuration is complete.
    *
-   * @param defaultConfigurationDirectory
-   * @param workingContext
-   * @param configuration
+   * @param workingContext A name for the working context.
+   * @param configBaseDir  The directory where configuration is stored. This directory will be used to create
+   *                       configuration on a per-context basis. Each context will have its own subdirectory.
+   * @param projectBaseDir The directory where projects are stored. This directory will be used to create
+   *                       projectdirectories on a per-context basis. Each context will have its own subdirectory.
+   * @param configuration  Alternative to reading configuration from the working context configuration directory.
    */
-  public WorkingContext(String workingContext, File defaultConfigurationDirectory, Properties configuration) {
+  public WorkingContext(String workingContext, File configBaseDir, File projectBaseDir, Properties configuration) {
 
     if (workingContext == null || "".equals(workingContext)) {
       workingContext = "default";
     }
     this.workingContext = workingContext;
 
-    if (defaultConfigurationDirectory == null) {
-      throw new IllegalArgumentException("Default configuration directory cannot be null.");
+    if (configBaseDir == null) {
+      throw new IllegalArgumentException("Configuration base directory cannot be null.");
     }
-    this.defaultConfigurationDirectory = defaultConfigurationDirectory;
+    this.configBaseDir = configBaseDir;
+
+    if (projectBaseDir == null) {
+      throw new IllegalArgumentException("Project base directory cannot be null.");
+    }
+    this.projectBaseDir = projectBaseDir;
 
     this.configuration = (configuration == null ? new Properties() : configuration);
 
@@ -172,42 +191,11 @@ public final class WorkingContext {
    */
   private void initialize() {
 
-    // Create $HOME/.karma or the manual location.
-    //
-    if (getConfigurationDirectory().exists()) {
-      if (!getConfigurationDirectory().isDirectory()) {
-        throw new KarmaRuntimeException(getConfigurationDirectory().getPath() + " is not a directory.");
-      }
-    } else {
-      if (!getConfigurationDirectory().mkdirs()) {
-        throw new KarmaRuntimeException(
-            "Could not create default configuration directory " + getConfigurationDirectory().getPath() + " for Karma.");
-      }
-    }
-    if (getDefaultConfigurationFile().exists()) {
-      // todo Inlezen 'karma.properties'; currently not supported.
-      //
-    } else {
-      // todo report about missing default configuration
-      //
-    }
-
-    // Check the working context
-    //
-    File dir = new File(getConfigurationDirectory(), workingContext);
-    if (dir.exists()) {
-      if (!dir.isDirectory()) {
-        throw new KarmaRuntimeException(dir.getPath() + " is not a directory.");
-      }
-    } else {
-      dir.mkdir();
-    }
-
-    if (getWorkingContextConfigurationFile().exists()) {
+    if (getWorkingContextConfigDir().exists()) {
       try {
-        configuration.load(new FileInputStream(getWorkingContextConfigurationFile()));
+        configuration.load(new FileInputStream(getConfigurationFile()));
       } catch (IOException e) {
-        throw new KarmaRuntimeException(e.getMessage());
+        // too bad .. we'll ask the user.
       }
     }
     // Existing or not existing, check it ...
@@ -217,54 +205,96 @@ public final class WorkingContext {
 
   private void checkConfiguration() {
 
-    invalidConfiguration = new ArrayList();
+    invalidConfiguration = new HashMap();
 
-    if ((String) configuration.get(MANIFEST_STORE_HOST) == null) {
-      invalidConfiguration.add(new ConfigurationItem(MANIFEST_STORE_HOST, "Manifest store host", "127.0.0.1"));
+    checkManifestStoreConfiguration();
+    checkLocationStoreConfiguration();
+  }
+
+  private void checkManifestStoreConfiguration() {
+
+    List invalids = new ArrayList();
+
+    String protocol = (String) configuration.getProperty(MANIFEST_STORE_PROTOCOL);
+
+    if (protocol == null) {
+      invalids.add(
+          new ConfigurationItem(MANIFEST_STORE_PROTOCOL, "What is your CVS server protocol ? (pserver|local)", "local")
+      );
+    } else {
+      if (CVSLocationImpl.PSERVER.equals(protocol)) {
+        if ((String) configuration.getProperty(MANIFEST_STORE_HOST) == null) {
+          invalids.add(
+              new ConfigurationItem(MANIFEST_STORE_HOST, "At which host is your CVS server located ?", "127.0.0.1")
+          );
+        }
+        if ((String) configuration.getProperty(MANIFEST_STORE_PORT) == null) {
+          invalids.add(
+              new ConfigurationItem(MANIFEST_STORE_PORT, "What is your CVS server port ?", "2401")
+          );
+        }
+        if ((String) configuration.getProperty(MANIFEST_STORE_REPOSITORY) == null) {
+          invalids.add(
+              new ConfigurationItem(MANIFEST_STORE_REPOSITORY, "Which repository is used for the 'manifests' module ?", "/home/cvs")
+          );
+        }
+      } else {
+        if ((String) configuration.getProperty(MANIFEST_STORE_REPOSITORY) == null) {
+          invalids.add(
+              new ConfigurationItem(MANIFEST_STORE_REPOSITORY, "Which repository is used for the 'manifests' module ?", "/home/cvs")
+          );
+        }
+      }
+      if ((String) configuration.getProperty(MANIFEST_STORE_USERNAME) == null) {
+        invalids.add(new ConfigurationItem(MANIFEST_STORE_USERNAME, "What is your login username ?", null));
+      }
     }
-    if ((String) configuration.get(MANIFEST_STORE_PORT) == null) {
-      invalidConfiguration.add(new ConfigurationItem(MANIFEST_STORE_PORT, "Manifest store port", "2401"));
+    invalidConfiguration.put("MANIFEST-STORE", invalids);
+  }
+
+  private void checkLocationStoreConfiguration() {
+
+    List invalids = new ArrayList();
+
+    String protocol = (String) configuration.getProperty(LOCATION_STORE_PROTOCOL);
+
+    if (protocol == null) {
+      invalids.add(
+          new ConfigurationItem(LOCATION_STORE_PROTOCOL, "What is your CVS server protocol ? (pserver|local)", "local")
+      );
+    } else {
+      if (CVSLocationImpl.PSERVER.equals(protocol)) {
+        if ((String) configuration.getProperty(LOCATION_STORE_HOST) == null) {
+          invalids.add(
+              new ConfigurationItem(LOCATION_STORE_HOST, "At which host is your CVS server located ?", "127.0.0.1")
+          );
+        }
+        if ((String) configuration.getProperty(LOCATION_STORE_PORT) == null) {
+          invalids.add(
+              new ConfigurationItem(LOCATION_STORE_PORT, "What is your CVS server port ?", "2401")
+          );
+        }
+        if ((String) configuration.getProperty(LOCATION_STORE_REPOSITORY) == null) {
+          invalids.add(
+              new ConfigurationItem(LOCATION_STORE_REPOSITORY, "Which repository is used for the 'locations' module ?", "/home/cvs")
+          );
+        }
+      } else {
+        if ((String) configuration.getProperty(LOCATION_STORE_REPOSITORY) == null) {
+          invalids.add(
+              new ConfigurationItem(LOCATION_STORE_REPOSITORY, "Which repository is used for the 'locations' module ?", "/home/cvs")
+          );
+        }
+      }
+      if ((String) configuration.getProperty(LOCATION_STORE_USERNAME) == null) {
+        invalids.add(new ConfigurationItem(LOCATION_STORE_USERNAME, "What is your login username ?", null));
+      }
     }
-    if ((String) configuration.get(MANIFEST_STORE_PROTOCOL) == null) {
-      invalidConfiguration.add(new ConfigurationItem(MANIFEST_STORE_PROTOCOL, "Manifest store protocol", "local"));
-    }
-    if ((String) configuration.get(MANIFEST_STORE_REPOSITORY) == null) {
-      invalidConfiguration.add(new ConfigurationItem(MANIFEST_STORE_REPOSITORY, "Manifest store repository", "/cvs"));
-    }
-    if ((String) configuration.get(MANIFEST_STORE_USERNAME) == null) {
-      invalidConfiguration.add(new ConfigurationItem(MANIFEST_STORE_USERNAME, "Manifest store username", null));
-    }
-    if ((String) configuration.get(LOCATION_STORE_HOST) == null) {
-      invalidConfiguration.add(new ConfigurationItem(LOCATION_STORE_HOST, "Location store host", "127.0.0.1"));
-    }
-    if ((String) configuration.get(LOCATION_STORE_PORT) == null) {
-      invalidConfiguration.add(new ConfigurationItem(LOCATION_STORE_PORT, "Location store port", "2401"));
-    }
-    if ((String) configuration.get(LOCATION_STORE_PROTOCOL) == null) {
-      invalidConfiguration.add(new ConfigurationItem(LOCATION_STORE_PROTOCOL, "Location store protocol", "local"));
-    }
-    if ((String) configuration.get(LOCATION_STORE_REPOSITORY) == null) {
-      invalidConfiguration.add(new ConfigurationItem(LOCATION_STORE_REPOSITORY, "Location store repository", "/cvs"));
-    }
-    if ((String) configuration.get(LOCATION_STORE_USERNAME) == null) {
-      invalidConfiguration.add(new ConfigurationItem(LOCATION_STORE_USERNAME, "Location store username", null));
-    }
+    invalidConfiguration.put("LOCATION-STORE", invalids);
   }
 
   public String getName() {
     return workingContext;
-  }
-
-  public File getConfigurationDirectory() {
-    return this.defaultConfigurationDirectory;
-  }
-
-  private File getDefaultConfigurationFile() {
-    return new File(getConfigurationDirectory(), "karma.properties");
-  }
-
-  private File getWorkingContextConfigurationFile() {
-    return new File(getWorkingContextDirectory(), "workingcontext.properties");
   }
 
   /**
@@ -272,7 +302,7 @@ public final class WorkingContext {
    * set by the user for the working context. Together with a call to {@link #getConfiguration} clients can process
    * all missing properties.
    */
-  public List getInvalidConfiguration() {
+  public Map getInvalidConfiguration() {
     checkConfiguration();
     return invalidConfiguration;
   }
@@ -284,12 +314,14 @@ public final class WorkingContext {
     return configuration;
   }
 
-  public File getWorkingContextDirectory() {
-    return new File(getConfigurationDirectory(), workingContext);
-  }
-
+  /**
+   * Stores the current configuration in <code>workingcontext.properties</code>, which is located in
+   * {@link #getWorkingContextConfigDir()}.
+   *
+   * @throws IOException When the configuration could not be stored.
+   */
   public void storeConfiguration() throws IOException {
-    getConfiguration().store(new FileOutputStream(getWorkingContextConfigurationFile()), "");
+    getConfiguration().store(new FileOutputStream(getConfigurationFile()), "");
   }
 
   public class ConfigurationItem {
@@ -318,7 +350,8 @@ public final class WorkingContext {
   }
 
   /**
-   * Gets a reference to the location where manifests can be retrieved. Supports only CVS for now.
+   * Gets a reference to the location where manifests can be retrieved. Supports only CVS for now (a
+   * <code>CVSLocationImpl</code> is returned).
    */
   public Location getManifestStoreLocation() throws LocationException {
 
@@ -327,11 +360,7 @@ public final class WorkingContext {
     }
 
     CVSLocationImpl location = new CVSLocationImpl("manifest-store");
-    try {
-      location.setHost(configuration.getProperty(MANIFEST_STORE_HOST));
-    } catch (Exception e) {
-      throw new LocationException(LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_HOST+"'"});
-    }
+
     try {
       location.setRepository(configuration.getProperty(MANIFEST_STORE_REPOSITORY));
     } catch (Exception e) {
@@ -343,6 +372,11 @@ public final class WorkingContext {
       throw new LocationException(LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_PROTOCOL+"'"});
     }
     if (!location.getProtocol().equals(CVSLocationImpl.LOCAL)) {
+      try {
+        location.setHost(configuration.getProperty(MANIFEST_STORE_HOST));
+      } catch (Exception e) {
+        throw new LocationException(LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_HOST+"'"});
+      }
       try {
         location.setPort(new Integer(configuration.getProperty(MANIFEST_STORE_PORT)).intValue());
       } catch (Exception e) {
@@ -358,7 +392,8 @@ public final class WorkingContext {
   }
 
   /**
-   * Gets a reference to the location where <code>location.xml</code> can be retrieved. Supports only CVS for now.
+   * Gets a reference to the location where <code>location.xml</code> can be retrieved. Supports only CVS for now (a
+   * <code>CVSLocationImpl</code> is returned).
    */
   public Location getLocationStoreLocation() throws LocationException {
 
@@ -367,11 +402,6 @@ public final class WorkingContext {
     }
 
     CVSLocationImpl location = new CVSLocationImpl("location-store");
-    try {
-      location.setHost(configuration.getProperty(LOCATION_STORE_HOST));
-    } catch (Exception e) {
-      throw new LocationException(LocationException.INVALID_LOCATION_STORE_LOCATION, new Object[]{"'"+LOCATION_STORE_HOST+"'"});
-    }
     try {
       location.setRepository(configuration.getProperty(LOCATION_STORE_REPOSITORY));
     } catch (Exception e) {
@@ -383,7 +413,11 @@ public final class WorkingContext {
       throw new LocationException(LocationException.INVALID_LOCATION_STORE_LOCATION, new Object[]{"'"+LOCATION_STORE_PROTOCOL+"'"});
     }
     if (!location.getProtocol().equals(CVSLocationImpl.LOCAL)) {
-
+      try {
+        location.setHost(configuration.getProperty(LOCATION_STORE_HOST));
+      } catch (Exception e) {
+        throw new LocationException(LocationException.INVALID_LOCATION_STORE_LOCATION, new Object[]{"'"+LOCATION_STORE_HOST+"'"});
+      }
       try {
         location.setPort(new Integer(configuration.getProperty(LOCATION_STORE_PORT)).intValue());
       } catch (Exception e) {
@@ -398,44 +432,129 @@ public final class WorkingContext {
     return location;
   }
 
+
   /**
-   * Retrieve a valid reference to the manifest store directory. The available manifests
-   * are stored here.
+   * Returns a <code>File</code> reference to the default base directory for Karma configuration files. When the
+   * directory does not exist, it is created.
    *
-   * @return A valid reference to the manifest store directory.
+   * @return A <code>File</code> reference to the default base directory for Karma configuration files.
+   */
+  public File getConfigurationBaseDir() {
+    // Create something like $USER_HOME/.karma/
+    //
+    if (!configBaseDir.exists()) {
+      configBaseDir.mkdir();
+    }
+    return configBaseDir;
+  }
+
+
+  /**
+   * Returns a <code>File</code> reference to the configuration directory for the current working context. When the
+   * directory does not exist, it is created.
+   *
+   * @return a <code>File</code> reference to the configuration directory for the current working context.
+   */
+  public File getWorkingContextConfigDir() {
+
+    File file = new File(getConfigurationBaseDir(), workingContext);
+    if (!file.exists()) {
+      file.mkdir();
+    }
+    return file;
+  }
+
+  /**
+   * Returns a <code>File</code> reference to <code>workingcontext.properties</code> for the current working context.
+   *
+   * @return A <code>File</code> reference to <code>workingcontext.properties</code> for the current working context.
+   */
+  public File getConfigurationFile() {
+    return new File(getWorkingContextConfigDir(), "workingcontext.properties");
+  }
+
+  /**
+   * Returns a <code>File</code> reference to the project base directory. In this directory, each working context has
+   * its own directory. When the directory does not exist, it is created.
+   *
+   * @return a <code>File</code> reference to the project base directory.
+   */
+  public File getProjectBaseDirectory() {
+
+    // Create something like $USER_HOME/karma/
+    //
+    if (!projectBaseDir.exists()) {
+      projectBaseDir.mkdir();
+    }
+
+    return projectBaseDir;
+  }
+
+  /**
+   * Returns a <code>File</code> reference to the project base directory. In this directory, all project work is
+   * stored by Karma, withing the current working context. When the directory does not exist, it is created.
+   *
+   * @return a <code>File</code> reference to the project base directory.
+   */
+  public File getWorkingContextProjectDir() {
+
+    // Create something like $USER_HOME/karma/<working-context>
+    //
+    File file = new File(getProjectBaseDirectory(), getName());
+    if (!file.exists()) {
+      file.mkdir();
+    }
+
+    return file;
+  }
+
+  /**
+   * Returns a <code>File</code> reference to the manifest store directory for the working context. When the directory
+   * does not exist, it will be created. This directory is a direct subdirectory for
+   * {@link #getWorkingContextProjectDir}.
+   *
+   * @return A reference to the manifest store directory.
    */
   public  File getManifestStore() {
 
-    File m = new File(getWorkingContextDirectory(), "manifests");
-    m.mkdir();
+    File m = new File(getWorkingContextProjectDir(), "manifests");
+    if (!m.exists()) {
+      m.mkdir();
+    }
 
     return m;
   }
 
   /**
-   * Retrieve a valid reference to the location store directory. The available locations
-   * are stored here.
+   * Returns a <code>File</code> reference to the location store directory for the working context. When the directory
+   * does not exist, it will be created. This directory is a direct subdirectory for
+   * {@link #getWorkingContextProjectDir}.
    *
-   * @return A valid reference to the location store directory.
+   * @return A reference to the location store directory.
    */
   public File getLocationStore() {
 
-    File l = new File(getWorkingContextDirectory(), "locations");
-    l.mkdir();
+    File l = new File(getWorkingContextProjectDir(), "locations");
+    if (!l.exists()) {
+      l.mkdir();
+    }
 
     return l;
   }
 
   /**
-   * Retrieve a valid reference to the developer home directory. This is the directory where
-   * the manifest instances are checked out from the version control system.
+   * Returns a <code>File</code> reference to the development home directory for the working context. When the directory
+   * does not exist, it will be created. This directory is a direct subdirectory for
+   * {@link #getWorkingContextProjectDir} and is used by Karma to store a local copy of the manifest and its modules.
    *
-   * @return A valid reference to the development home directory.
+   * @return A reference to the developmet home directory.
    */
   public File getDevelopmentHome() {
 
-    File p = new File(getWorkingContextDirectory(), "projects");
-    p.mkdir();
+    File p = new File(getWorkingContextProjectDir(), "projects");
+    if (!p.exists()) {
+      p.mkdir();
+    }
 
     return p;
   }

@@ -94,9 +94,9 @@ public class ManifestException extends Exception {
     this(errorCode, null);
   }
 
-  public ManifestException(Throwable t, ErrorCode errorCode) {
-    this(t, errorCode, null);
-  }
+//  public ManifestException(Throwable t, ErrorCode errorCode) {
+//    this(t, errorCode, null);
+//  }
 
   public ManifestException(ErrorCode errorCode, Object[] messageArguments) {
     super();
@@ -137,4 +137,5 @@ public class ManifestException extends Exception {
   public final Object[] getMessageArguments() {
     return messageArguments;
   }
+
 }

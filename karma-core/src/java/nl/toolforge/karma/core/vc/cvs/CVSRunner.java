@@ -718,7 +718,7 @@ public final class CVSRunner implements Runner {
       try {
         client.getConnection().close();
       } catch (IOException e) {
-        throw new CVSException(CVSException.INTERNAL_ERROR);
+        throw new CVSException(CVSException.INTERNAL_ERROR, new Object[]{globalOptions.getCVSRoot()});
       }
     }
   }

@@ -30,11 +30,10 @@ import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.ManifestFactory;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.SourceModule;
-import nl.toolforge.karma.core.manifest.ManifestLoader;
 import nl.toolforge.karma.core.manifest.ManifestLoader;
 import nl.toolforge.karma.core.manifest.ManifestStructure;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
@@ -107,7 +106,7 @@ public final class CommandContext implements ChangeListener {
 
       handler.commandResponseChanged(new CommandResponseEvent(new SuccessMessage("Updating manifests from CVS location `" + manifestModule.getLocation().toString() + "`")));
 
-      if (workingContext.getWorkingContextDirectory().exists()) {
+      if (workingContext.getManifestStore().exists()) {
 
         // Check if the locally existing manifest module has the same location (cvsroot e.g.) as the
         // requested update.
@@ -148,7 +147,7 @@ public final class CommandContext implements ChangeListener {
 
       handler.commandResponseChanged(new CommandResponseEvent(new SuccessMessage("Updating locations from CVS location `" + locationModule.getLocation().toString() + "`")));
 
-      if (workingContext.getWorkingContextDirectory().exists()) {
+      if (workingContext.getLocationStore().exists()) {
 
         AdminHandler adminHandler = new AdminHandler();
         if (!adminHandler.isEqualLocation(locationModule)) {
@@ -175,10 +174,6 @@ public final class CommandContext implements ChangeListener {
     } else {
       handler.commandResponseChanged(new CommandResponseEvent(new ErrorMessage("Location store location unreachable!")));
     }
-//
-//    // Read in all location data
-//    //
-//    LocationLoader loader = workingContext.getLocationLoader();
 
     // Try reloading the last manifest that was used.
     //

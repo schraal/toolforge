@@ -150,21 +150,6 @@ public class UpdateModuleCommand extends DefaultCommand {
           throw new CommandException(VersionControlException.MODULE_NOT_IN_REPOSITORY, new Object[]{module.getName(), module.getLocation().getId()});
         }
 
-
-
-
-
-
-        try {
-          Set blaat = Utils.getAllEntries(module);
-          int a =0;
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-
-
-
-
         //todo check whether the requested version does exist for the module.
 
         runner.checkout(module, version);

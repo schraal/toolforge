@@ -41,13 +41,14 @@ import java.util.StringTokenizer;
  * is <code>commands.xml</code>, which should be available in the classpath. It should have been shipped with
  * the Karma Core release jar-file.
  * <p/>
- * <p>TODO the xml instance should be checked by a DTD or XML Schema document.
  *
  * @author W.M. Oosterom
  * @author D.A. Smedes
  * @version $Id$
  */
 public final class CommandLoader {
+
+  //TODO the xml instance should be checked by a DTD or XML Schema document.
 
   private static Log logger = LogFactory.getLog(CommandLoader.class);
 
@@ -70,7 +71,6 @@ public final class CommandLoader {
 	 * @return A <code>Set</code> of {@link nl.toolforge.karma.core.cmd.CommandDescriptor} instances.
 	 */
 	Set load() {
-
 		return load(Command.DEFAULT_COMMAND_FILE);
 	}
 
@@ -99,8 +99,13 @@ public final class CommandLoader {
 
 			// We need to load the configuration file from the classpath.
 			//
-			InputStream in = this.getClass().getClassLoader().getResourceAsStream(resource);
-			// Now some xml parsing stuff needs to be done
+      InputStream in = null;
+      try {
+        in = this.getClass().getClassLoader().getResourceAsStream(resource);
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+      // Now some xml parsing stuff needs to be done
 			//
 			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();

@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.vc.threads.ParallelRunner;
+import nl.toolforge.karma.core.vc.cvs.threads.PatchLineThread;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.location.LocationException;
 
@@ -36,6 +38,18 @@ public final class ReleaseManifest extends AbstractManifest {
 
   public ReleaseManifest(WorkingContext context, ManifestStructure structure) throws LocationException {
     super(context, structure);
+
+    // For a release manifest, we need to know if patch lines are available.
+    //
+    checkForPatchLines();
+  }
+
+  /**
+   * Checks (in parallel) if modules have a <code>PatchLine</code> associated.
+   */
+  private void checkForPatchLines() {
+    ParallelRunner runner = new ParallelRunner(this, PatchLineThread.class);
+    runner.execute();
   }
 
   public String getType() {

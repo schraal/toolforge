@@ -42,13 +42,11 @@ public class BaseTest extends TestCase {
 
   private Properties p = null;
 
-  private File wcDir = null;
+  private File wcBaseDir = null;
+  private File projectBaseDir = null;
   private WorkingContext ctx = null;
 
   public void setUp() {
-
-    // Fake some parameters that would have been passed to the JVM
-    //
 
     // The following is required to allow the Preferences class to use the test-classpath
     //
@@ -56,7 +54,8 @@ public class BaseTest extends TestCase {
     System.setProperty("locale", "en");
 
     try {
-      wcDir = MyFileUtils.createTempDirectory();
+      wcBaseDir = MyFileUtils.createTempDirectory();
+      projectBaseDir = MyFileUtils.createTempDirectory();
     } catch (IOException e) {
       fail(e.getMessage());
     }
@@ -75,11 +74,10 @@ public class BaseTest extends TestCase {
     p.put(WorkingContext.LOCATION_STORE_REPOSITORY, "/tmp/test-CVSROOT");
     p.put(WorkingContext.LOCATION_STORE_USERNAME, "asmedes");
 
-    ctx = new WorkingContext("test", wcDir, p);
-//    KarmaRuntime.init(ctx);
+    ctx = new WorkingContext("test", wcBaseDir, projectBaseDir, p);
 
     try {
-      writeFile(ctx.getConfigurationDirectory(), new File("test/authenticators.xml"));
+      writeFile(ctx.getConfigurationBaseDir(), new File("test/authenticators.xml"));
 
       writeFile(ctx.getLocationStore(), new File("test/test-locations.xml"));
       writeFile(ctx.getLocationStore(), new File("test/test-locations-2.xml"));
@@ -103,7 +101,8 @@ public class BaseTest extends TestCase {
 
   public void tearDown() {
     try {
-      FileUtils.deleteDirectory(wcDir);
+      FileUtils.deleteDirectory(wcBaseDir);
+      FileUtils.deleteDirectory(projectBaseDir);
     } catch (IOException e) {
       fail(e.getMessage());
     }

@@ -38,28 +38,33 @@ import java.io.InputStreamReader;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
  * <p>The <code>CLI</code> is the command-line interface for Karma. The class presents a simple-to-use command-line
  * terminal, where developers can type in their commands and if you're lucky, stuff works.
  *
+ * <p>Haven't fully tested it, but should be 'singleton'.
+ *
  * @author D.A. Smedes
  *
  * @version $Id$
  */
-public class CLI {
+public final class CLI {
 
   // Logging system should be initialized by now ...
   //
-  private static Log logger = LogFactory.getLog(CLI.class);
+  private Log logger = LogFactory.getLog(CLI.class);
 
-  private static final ResourceBundle FRONTEND_MESSAGES =
-      BundleCache.getInstance().getBundle(BundleCache.FRONTEND_MESSAGES_KEY);
+  private final ResourceBundle FRONTEND_MESSAGES = BundleCache.getInstance().getBundle(BundleCache.FRONTEND_MESSAGES_KEY);
 
-  private static String lastLine = "";
+  private String lastLine = "";
+  private boolean immediate = true;
+  private ConsoleWriter writer = new ConsoleWriter(true);
+  private WorkingContext workingContext = null;
 
-  private static boolean immediate = true;
+  public CLI() {}
 
   /**
    * Startup class for the command line interface.
@@ -67,6 +72,17 @@ public class CLI {
    * @param args As per the contract; we don't use it.
    */
   public static void main(String[] args) {
+    CLI cli = new CLI();
+    cli.runKarmaCLI(args);
+  }
+
+
+  /**
+   * This one does the trick. Requires one (optional) argument : a working workingContext identifier.
+   *
+   * @param args Arguments passed to Karma.
+   */
+  public void runKarmaCLI(String[] args) {
 
     Runtime.getRuntime().addShutdownHook(new Thread() {
 
@@ -90,17 +106,15 @@ public class CLI {
       }
     });
 
-    String workingContext = null;
+    String workingContextName = null;
 
     try {
-      workingContext = args[0];
+      workingContextName = args[0];
     } catch (IndexOutOfBoundsException i) {
-      workingContext = null;
+      workingContextName = null;
     }
 
-    ConsoleWriter writer = new ConsoleWriter(true);
-
-    // Initialize the command context
+    // Initialize the command workingContext
     //
     CommandContext commandContext = null;
 
@@ -109,70 +123,28 @@ public class CLI {
         "Welcome to Karma !!!\n" +
         "********************\n");
 
-    if (workingContext == null) {
-      writer.writeln("Loading `default` working context ...\n");
+    if (workingContextName == null) {
+      writer.writeln("Loading working context `default` ...");
     } else {
-      writer.writeln("Loading `" + workingContext + "` working context ...\n");
+      writer.writeln("Loading working context `" + workingContextName + "` ...");
     }
 
-    WorkingContext context = new WorkingContext(workingContext);
-    Collection invalid = context.getInvalidConfiguration();
+    workingContext = new WorkingContext(workingContextName);
 
-    if (invalid.size() > 0) {
-      writer.writeln("Configuration for working context `" + context.getName() + "` incomplete !\n");
-    } else {
-      writer.writeln("Configuration for working context `" + context.getName() + "` complete !\n");
-    }
+    writer.writeln("Checking manifest store configuration ...");
+    checkConfiguration("MANIFEST-STORE");
+    writer.writeln("Complete ...");
 
-    while (invalid.size() > 0) {
-
-      // Warning, modifies the configuration ...
-      //
-      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-      Iterator i = invalid.iterator();
-
-      while (i.hasNext()) {
-
-        WorkingContext.ConfigurationItem key = (WorkingContext.ConfigurationItem) i.next();
-
-        if (key.getDefaultValue() == null) {
-          System.out.print(key.getLabel() + " : ");
-        } else {
-          System.out.print(key.getLabel() + " (" + key.getDefaultValue() + ") : ");
-        }
-
-        String value = null;
-        try {
-          value = reader.readLine().trim();
-        } catch (IOException e) {
-          // todo moet anders ........
-          //
-          e.printStackTrace();
-        }
-
-        if (value == null || "".equals(value)) {
-          value = (key.getDefaultValue() == null ? "" : key.getDefaultValue());
-        }
-        context.getConfiguration().setProperty(key.getProperty(), value);
-      }
-
-      invalid =  context.getInvalidConfiguration();
-    }
-
-    try {
-      context.storeConfiguration();
-    } catch (IOException e) {
-      logger.error(e.getMessage(), e);
-      throw new KarmaRuntimeException(e.getMessage());
-    }
+    writer.writeln("Checking location store configuration ...");
+    checkConfiguration("LOCATION-STORE");
+    writer.writeln("Complete ...");
 
     writer.writeln("Starting up ...\n");
 
     //
     //
 
-//    KarmaRuntime.init(context);
-    commandContext = new CommandContext(context);
+    commandContext = new CommandContext(workingContext);
     try {
       commandContext.init(new CLICommandResponseHandler(writer));
     } catch (LocationException e) {
@@ -251,4 +223,53 @@ public class CLI {
       System.exit(1);
     }
   }
+
+
+  private void checkConfiguration(String configKey) {
+
+    Collection config = (List) workingContext.getInvalidConfiguration().get(configKey);
+
+    while (config.size() > 0) {
+
+      // Warning, modifies the configuration ...
+      //
+      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+      Iterator i = config.iterator();
+
+      while (i.hasNext()) {
+
+        WorkingContext.ConfigurationItem key = (WorkingContext.ConfigurationItem) i.next();
+
+        if (key.getDefaultValue() == null) {
+          System.out.print(key.getLabel() + " : ");
+        } else {
+          System.out.print(key.getLabel() + " [" + key.getDefaultValue() + "] : ");
+        }
+
+        String value = null;
+        try {
+          value = reader.readLine().trim();
+        } catch (IOException e) {
+          // todo moet anders ........
+          //
+          e.printStackTrace();
+        }
+
+        if (value == null || "".equals(value)) {
+          value = (key.getDefaultValue() == null ? "" : key.getDefaultValue());
+        }
+        workingContext.getConfiguration().setProperty(key.getProperty(), value);
+      }
+      config = (List) workingContext.getInvalidConfiguration().get(configKey);
+    }
+
+    try {
+      workingContext.storeConfiguration();
+    } catch (IOException e) {
+      logger.error(e.getMessage(), e);
+      throw new KarmaRuntimeException(e.getMessage());
+    }
+
+  }
+
 }
