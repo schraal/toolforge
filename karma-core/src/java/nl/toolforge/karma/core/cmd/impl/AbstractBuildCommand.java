@@ -9,6 +9,8 @@ import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.vc.cvs.Utils;
+import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.core.util.file.MyFileUtils;
 
 import java.io.File;
@@ -71,6 +73,12 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
   protected static final String MODULE_BUILD_DIR_PROPERTY = "module-build-dir";
 
   /**
+   * Property describing the <strong>relative</strong> path-name (to {@link #MODULE_BUILD_DIR_PROPERTY} to the directory
+   * where compiled classes will be stored.
+   */
+  protected static final String MODULE_COMPILE_DIR_PROPERTY = "module-compile-dir";
+
+  /**
    * Property containing the compile classpath while building a module.
    */
   protected static final String MODULE_CLASSPATH_PROPERTY = "module-classpath";
@@ -107,11 +115,14 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
       module = currentManifest.getModule(moduleName);
       if (!currentManifest.isLocal(module)) {
+//      if (!currentManifest.isLocal(module) && Utils.existsInRepository(module)) {
         throw new CommandException(ManifestException.MODULE_NOT_LOCAL, new Object[]{module.getName()});
       }
 
     } catch (ManifestException m) {
       throw new CommandException(m.getErrorCode(), m.getMessageArguments());
+//    } catch (VersionControlException e) {
+//      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
   }
 
@@ -152,7 +163,29 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
     }
+
+    // the rest, for the time being.
+    //
     return new File(new File(getCurrentManifest().getDirectory(), "build"), getCurrentModule().getName());
+  }
+
+  /**
+   * Returns the compile directory for a module.
+   *
+   * @return
+   * @throws ManifestException
+   */
+  protected File getCompileDirectory() throws ManifestException {
+
+    if (module == null) {
+      throw new IllegalArgumentException("Module cannot be null.");
+    }
+
+    if (module.getName().startsWith(Module.WEBAPP_PREFIX)) {
+      return new File("WEB-INF/classes");
+    } else {
+      return new File("");
+    }
   }
 
   protected File getSourceDirectory() throws ManifestException {
@@ -170,7 +203,6 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
     StringBuffer buffer = new StringBuffer();
     String userHome = System.getProperty("user.home");
 
-//    Manifest currentManifest = getContext().getCurrentManifest();
     File baseDir = getCurrentManifest().getDirectory();
 
     for (Iterator iterator = dependencies.iterator(); iterator.hasNext();) {

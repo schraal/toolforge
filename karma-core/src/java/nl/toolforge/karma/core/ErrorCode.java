@@ -101,10 +101,6 @@ public final class ErrorCode {
         MessageFormat messageFormat = new MessageFormat(message);
         message = messageFormat.format(getMessageArguments());
       }
-//      else {
-//        return message;
-//      }
-
     } catch (RuntimeException r) {
       logger.error("No message found for errorcode : " + getErrorCodeString());
       message = getErrorCodeString();

@@ -59,11 +59,18 @@ public class PackageModule extends AbstractBuildCommand {
       project.setProperty(MODULE_BASEDIR_PROPERTY, getCurrentModule().getBaseDir().getPath());
 
       if (getCurrentModule().getName().startsWith(Module.WEBAPP_PREFIX)) {
+
         // Create a war-file
         //
         project.setProperty(MODULE_WEBXML_PROPERTY, new File(getCurrentModule().getBaseDir(), "WEB-INF/web.xml".replace('/', File.separatorChar)).getPath());
+
+        // We always assume that 'web' and 'resources' exist.
+        // todo this should be solved like Maven does ???
+        project.setProperty(MODULE_INCLUDES_PROPERTY, "web/**,resources/**");
+
         project.setProperty(MODULE_EXCLUDES_PROPERTY, "*.war");
         project.executeTarget(BUILD_TARGET_WAR);
+
       } else if (getCurrentModule().getName().startsWith(Module.EAPP_PREFIX)) {
         // Create an ear-file
         //
@@ -82,7 +89,6 @@ public class PackageModule extends AbstractBuildCommand {
 
         try {
           List moduleNames = (List) digester.parse(new File(getCurrentModule().getBaseDir(), "META-INF/application.xml"));
-System.out.println(moduleNames);
 
           Map map = new Hashtable();
           for (Iterator it = moduleNames.iterator(); it.hasNext(); ) {
@@ -99,7 +105,6 @@ System.out.println(moduleNames);
               //todo: throw new Exception();
             }
           }
-System.out.println(map);
           FileWriter write1 = new FileWriter(new File(getBuildDirectory(), "archives.properties"));
           FileWriter write2 = new FileWriter(new File(getBuildDirectory(), "archives.includes"));
 

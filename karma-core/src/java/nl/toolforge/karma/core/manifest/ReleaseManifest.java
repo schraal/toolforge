@@ -46,6 +46,9 @@ public final class ReleaseManifest extends AbstractManifest {
     // todo duidelijk beschrijven hoe het state mechanisme wordt aangestuurd door dit ding.
     //
 
+    // todo if module has no version --> throw an exception. Release manifests can only contain versioned modules.
+    //
+
     Module module = moduleFactory.create(descriptor);
 
     if (((SourceModule)module).hasVersion()) {

@@ -9,10 +9,14 @@ import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.ModuleComparator;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.PatchLine;
+import nl.toolforge.karma.core.vc.RunnerFactory;
+import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.model.MainLine;
 import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
+import nl.toolforge.karma.core.vc.cvs.Utils;
 import nl.toolforge.karma.core.Version;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,6 +26,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Collection;
+import java.util.Collections;
+import java.io.File;
 
 /**
  * This command gets the active manifest and presents it in the UI. UI implementations are responsible for the rendering
@@ -49,14 +56,38 @@ public class ViewManifest extends DefaultCommand {
     }
     Manifest manifest = getContext().getCurrentManifest();
 
-    Map sourceModules = manifest.getAllModules();
+    List sourceModules = new ArrayList();
 
-    for (Iterator i = sourceModules.values().iterator(); i.hasNext();) {
+    // Transform and sort
+    //
+
+    // todo hmm kan dit niet simpeler ?
+    //
+    Collection c = manifest.getAllModules().values();
+
+    for (Iterator i = c.iterator(); i.hasNext();) {
+      sourceModules.add(i.next());
+    }
+
+    Collections.sort(sourceModules, new ModuleComparator());
+
+
+    for (Iterator i = sourceModules.iterator(); i.hasNext();) {
 
       SourceModule module = (SourceModule) i.next();
 
       String[] moduleData = new String[7];
       moduleData[0] = module.getName();
+
+      boolean existsInRepository = false;
+      try {
+        Runner runner = RunnerFactory.getRunner(module.getLocation(), new File(""));
+        existsInRepository = runner.existsInRepository(module);
+      } catch (VersionControlException v) {
+        // Version for the module is non-existing in the repository.
+        //
+        throw new CommandException(v.getErrorCode(), v.getMessageArguments());
+      }
 
       try {
 
@@ -66,23 +97,33 @@ public class ViewManifest extends DefaultCommand {
           Version localVersion = (CVSVersionExtractor.getInstance().getLocalVersion(manifest, module));
           moduleData[1] = (localVersion == null ? "   " : localVersion.getVersionNumber());
         }
-        moduleData[2] = "(" + (CVSVersionExtractor.getInstance().getLastVersion(module)).getVersionNumber() + ")";
+
+        if (existsInRepository) {
+          moduleData[2] = "(" + (CVSVersionExtractor.getInstance().getLastVersion(module)).getVersionNumber() + ")";
+        } else {
+          moduleData[2] = "";
+        }
 
       } catch (VersionControlException v) {
         // Version for the module is non-existing in the repository.
         //
         throw new CommandException(v.getErrorCode(), v.getMessageArguments());
       }
+
       if (module.getState().equals(Module.STATIC)) {
         moduleData[3] = "(" + module.getVersionAsString() + ")";
       } else {
         moduleData[3] = "";
       }
-//      moduleData[4] = (module.getDevelopmentLine() == null ? MainLine.NAME_PREFIX : module.getDevelopmentLine().getName());
       moduleData[4] = (module.hasPatchLine() ? "!!!" : "");
-      moduleData[5] = module.getStateAsString();
-      moduleData[6] = module.getLocation().getId();
 
+      if (existsInRepository) {
+        moduleData[5] = module.getStateAsString();
+        moduleData[6] = module.getLocation().getId();
+      } else {
+        moduleData[5] = "";
+        moduleData[6] = "** Not in repository **";
+      }
       renderedList.add(moduleData);
     }
   }

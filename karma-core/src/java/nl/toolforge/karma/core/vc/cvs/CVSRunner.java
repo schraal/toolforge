@@ -196,9 +196,6 @@ public final class CVSRunner implements Runner {
 
     checkout(module, tmp);
 
-    // todo create directory structure via template.
-    //
-//    add(module, SourceModule.MODULE_INFO, tmp);
     add(module, template.getFileElements(), template.getDirectoryElements(), tmp);
 
     //module has been created. Now, create the module history.

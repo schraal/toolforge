@@ -6,10 +6,7 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
-import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.SourceModule;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 
@@ -53,17 +50,18 @@ public class BuildModule extends AbstractBuildCommand {
       //
       project.setProperty(MODULE_SOURCE_DIR_PROPERTY, srcBase.getPath());
       project.setProperty(MODULE_BUILD_DIR_PROPERTY, getBuildDirectory().getPath());
+      project.setProperty(MODULE_COMPILE_DIR_PROPERTY, getCompileDirectory().getPath());
       project.setProperty(MODULE_CLASSPATH_PROPERTY, getDependencies(getCurrentModule().getDependencies()));
 
     } catch (ManifestException e) {
-      e.printStackTrace();
+//      e.printStackTrace();
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
 
     try {
       project.executeTarget(BUILD_MODULE_TARGET);
     } catch (BuildException e) {
-      e.printStackTrace();
+//      e.printStackTrace();
       throw new CommandException(CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
     }
 

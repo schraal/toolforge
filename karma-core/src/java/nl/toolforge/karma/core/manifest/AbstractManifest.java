@@ -1,33 +1,30 @@
 package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
-import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.cvs.CVSException;
-import nl.toolforge.core.util.file.MyFileUtils;
+import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
+import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.xmlrules.DigesterLoader;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.io.FileUtils;
-import org.xml.sax.SAXException;
 import org.netbeans.lib.cvsclient.CVSRoot;
+import org.xml.sax.SAXException;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,7 +34,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * <p>
@@ -130,10 +126,9 @@ public abstract class AbstractManifest implements Manifest {
    *
    * @param loader The classloader to use to locate manifest files.
    *
-   * @throws LocationException
    * @throws ManifestException When loading the manifest failed.
    */
-  public final void load(ClassLoader loader) throws LocationException, ManifestException {
+  public final void load(ClassLoader loader) throws ManifestException {
 
     setClassLoader(loader);
     load(env);
@@ -465,9 +460,7 @@ public abstract class AbstractManifest implements Manifest {
       fileName = fileName.substring(fileName.lastIndexOf(File.separator) + 1);
 
       if (getClassLoader() == null) {
-        logger.debug(
-            "Loading manifest " + fileName + " from " + getLocalEnvironment().getManifestStore().getPath() + File.separator + fileName);
-        FileInputStream fis = null;
+        logger.debug("Loading manifest " + fileName + " from " + getLocalEnvironment().getManifestStore().getPath() + File.separator + fileName);
         return new FileInputStream(getLocalEnvironment().getManifestStore().getPath() + File.separator + fileName);
       } else {
         logger.debug("Loading manifest " + fileName + " from classpath ...");
@@ -627,10 +620,9 @@ public abstract class AbstractManifest implements Manifest {
 
     // todo this method is not abstract ! handles CVS only.
 
-    if (isLocal(module)) {
+    if (isLocal(module))  {
 
       File rootFile = new File(module.getBaseDir(), "CVS/Root");
-
 
       String cvsRootString = null;
       try {
@@ -640,7 +632,9 @@ public abstract class AbstractManifest implements Manifest {
         in.close();
 
       } catch (FileNotFoundException e) {
-        throw new KarmaRuntimeException("Panic ! CVS/Root file missing for module " + module.getName());
+        // We guess the user has created a module and not stored in a version control repository.
+        //
+        return false;
       } catch (IOException e) {
         throw new KarmaRuntimeException(e.getMessage());
       }
@@ -650,7 +644,7 @@ public abstract class AbstractManifest implements Manifest {
       Location loc = module.getLocation();
       try {
         if (loc instanceof CVSLocationImpl) {
-          if (!cvsRoot.toString().equals(((CVSLocationImpl)loc).getCVSRootAsString())) {
+          if (!cvsRoot.toString().equals(((CVSLocationImpl) loc).getCVSRootAsString())) {
             FileUtils.deleteDirectory(module.getBaseDir());
             logger.info("Mismatch between local module and definition in manifest solved (manifest:" + this.getName() + ", module:" + module.getName() + ")");
           }
@@ -663,7 +657,6 @@ public abstract class AbstractManifest implements Manifest {
       } catch (IOException e) {
         throw new KarmaRuntimeException(e.getMessage());
       }
-
     }
     return false;
   }

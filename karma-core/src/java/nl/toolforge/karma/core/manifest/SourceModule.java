@@ -159,10 +159,13 @@ public class SourceModule extends BaseModule {
       //
       deps = (Set) digester.parse(new File(getBaseDir(), "dependencies.xml"));
     } catch (IOException e) {
-      if (e instanceof FileNotFoundException) {
-        throw new ManifestException(e, ManifestException.DEPENDENCY_FILE_NOT_FOUND, new Object[]{getName()});
-      }
-      throw new ManifestException(e, ManifestException.DEPENDENCY_FILE_NOT_FOUND, new Object[]{getName()});
+//      if (e instanceof FileNotFoundException) {
+//        throw new ManifestException(e, ManifestException.DEPENDENCY_FILE_NOT_FOUND, new Object[]{getName()});
+//      }
+//      throw new ManifestException(e, ManifestException.DEPENDENCY_FILE_NOT_FOUND, new Object[]{getName()});
+
+      logger.info("No dependencies found for module : " + getName());
+
     } catch (SAXException e) {
       throw new ManifestException(e, ManifestException.DEPENDENCY_FILE_LOAD_ERROR, new Object[]{getName()});
     }

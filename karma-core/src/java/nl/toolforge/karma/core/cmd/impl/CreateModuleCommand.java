@@ -21,6 +21,8 @@ import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import org.apache.commons.cli.CommandLine;
 
+import java.util.regex.PatternSyntaxException;
+
 /**
  * Creates a module in a repository. Modules are created using a layout template (instances of 
  * <code>ModuleLayoutTemplate</code>). 
@@ -49,7 +51,14 @@ public class CreateModuleCommand extends DefaultCommand {
 
     // Part 1 of the transaction is the creation of a Module instance.
     //
-    ModuleDescriptor descriptor = new ModuleDescriptor(moduleName, "src", locationAlias);
+
+    ModuleDescriptor descriptor = null;
+    try {
+      descriptor = new ModuleDescriptor(moduleName, "src", locationAlias);
+    } catch (PatternSyntaxException e) {
+      throw new CommandException(CommandException.INVALID_ARGUMENT, new Object[]{moduleName});
+    }
+
     Module module = null;
     try {
       module = ModuleFactory.getInstance().create(descriptor);
