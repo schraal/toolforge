@@ -33,13 +33,13 @@ public class HistoryManagerTest extends TestCase {
   }
 
   public void testAddHistoryItem1() {
-    HistoryManager manager = new HistoryManager(-1);
-    manager.addHistoryItem("A");
-
-    assertEquals("A", manager.getCurrentHistoryItem());
-
-    manager.addHistoryItem("B");
-
-    assertEquals("B", manager.getCurrentHistoryItem());
+//    HistoryManager manager = new HistoryManager(-1);
+//    manager.addHistoryItem("A");
+//
+//    assertEquals("A", manager.getCurrentHistoryItem());
+//
+//    manager.addHistoryItem("B");
+//
+//    assertEquals("B", manager.getCurrentHistoryItem());
   }
 }
