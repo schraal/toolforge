@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.Patch;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
@@ -124,8 +123,8 @@ public class PromoteCommand extends DefaultCommand {
         if (getCommandLine().hasOption("v")) {
           if (! (manifest instanceof DevelopmentManifest)) {
             throw new CommandException(CommandException.PROMOTE_WITH_INCREASE_MAJOR_VERSION_NOT_ALLOWED_ON_RELEASE_MANIFEST);
-          } 
-          
+          }
+
           nextVersion = status.getNextMajorVersion();
         } else {
           nextVersion = status.getNextVersion();
