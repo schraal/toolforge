@@ -213,7 +213,7 @@
   </command>
 
 
-  <command name="view-manifest" alias="vm">
+  <command name="view-manifest" alias="vm dir ls">
     <description lang="en">Views the active manifest.</description>
 
     <options/>
