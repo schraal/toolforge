@@ -2,8 +2,11 @@ package nl.toolforge.karma.core.process.common;
 
 import nl.toolforge.karma.core.Manifest;
 import nl.toolforge.karma.core.Module;
+import nl.toolforge.karma.core.MavenModule;
+import nl.toolforge.karma.core.SourceModule;
 import org.apache.tools.ant.types.FileList;
 
+import javax.xml.transform.Source;
 import java.io.File;
 
 /**
@@ -53,15 +56,9 @@ public class DependencyBuilder {
     this.localPath = localPath;
     this.module = module;
 
-    
-
-
-//    StringBuffer buf = new StringBuffer();
-//    buf.append();
-
-//    fileList.setFiles(buf.toString());
-
-//    fileList.setFiles(localPath + File.separator + "build" + File.separator + module.getDependencyName());
+    // Determine this modules' dependencies
+    //
+    setDependencies();
   }
 
   /**
@@ -71,5 +68,24 @@ public class DependencyBuilder {
    */
   public FileList getDependencies() {
     return fileList;
+  }
+
+  private void setDependencies() {
+
+    // 1. Get the correct module type. If type == maven, get project.xml, else get module.xml.
+    //
+
+    if (this.module instanceof MavenModule) {
+
+    } else if (this.module instanceof SourceModule) {
+
+    }
+//
+//
+//    fileList.setFiles(buf.toString());
+//
+//    fileList.setFiles(localPath + File.separator + "build" + File.separator + module.getDependencyName());
+
+
   }
 }

@@ -4,8 +4,9 @@ import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.SourceModule;
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.SourceModuleDescriptor;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.model.SourceModuleDescriptor;
+import nl.toolforge.karma.core.SourceModuleDescriptor;
 import nl.toolforge.karma.core.test.LocalCVSInitializer;
 import nl.toolforge.karma.core.vc.Runner;
 

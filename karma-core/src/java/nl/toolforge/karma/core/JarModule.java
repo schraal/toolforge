@@ -1,7 +1,5 @@
 package nl.toolforge.karma.core;
 
-import nl.toolforge.karma.core.model.JarModuleDescriptor;
-
 import java.io.File;
 
 /**
@@ -37,29 +35,6 @@ public class JarModule extends BaseModule {
 		super(descriptor, manifestDirectory);
     this.version = descriptor.getVersion();
 	}
-
-//	/**
-//	 * Creates a <code>Module</code> instance; the module contains a <code>version</code> attribute.
-//	 *
-//	 * @param moduleName The name of the module.
-//	 * @param location   The location of the jar module.
-//	 * @param version
-//	 * @throws KarmaException When input parameters don't match their respective patterns
-//	 */
-//	JarModule(String moduleName, Location location, String version) throws KarmaException {
-//
-//		super(moduleName, location);
-//
-//		Pattern pattern = Expressions.getPattern("VERSION");
-//		Matcher matcher = pattern.matcher(version);
-//
-//		if (matcher.matches()) {
-//			this.version = version;
-//		} else {
-//			// log.debug();
-//			throw new KarmaException(KarmaException.DATAFORMAT_ERROR);
-//		}
-//	}
 
 	/**
 	 *

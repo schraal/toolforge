@@ -1,8 +1,5 @@
 package nl.toolforge.karma.core;
 
-import nl.toolforge.karma.core.model.JarModuleDescriptor;
-import nl.toolforge.karma.core.model.ModuleDescriptor;
-import nl.toolforge.karma.core.model.SourceModuleDescriptor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -78,39 +75,6 @@ public class ManifestImpl implements Manifest {
     modules.add(module);
   }
 
-
-//
-//	public final Module createModule(String moduleName, String locationAlias) throws KarmaException {
-//		return createModule(Module.SOURCE_MODULE, moduleName, locationAlias, false);
-//	}
-//
-//	public final Module createModule(String moduleName, String locationAlias, boolean include) throws KarmaException {
-//		return createModule(Module.SOURCE_MODULE, moduleName, locationAlias, include);
-//	}
-//
-//	public final Module createModule(int typeIdentifier, String moduleName, String locationAlias) throws KarmaException {
-//		return createModule(typeIdentifier, moduleName, locationAlias, false);
-//	}
-//
-//	public final synchronized Module createModule(int typeIdentifier, String moduleName, String locationAlias, boolean include) throws KarmaException {
-//
-//		Module module = ModuleFactory.getInstance().createModule(typeIdentifier, moduleName, locationAlias);
-//
-//		addModule(module);
-//
-//		if (include) {
-//
-////      try {
-//			flush(module);
-////      } catch (IOException i) {
-////        throw new ManifestException(ManifestException.MANIFEST_FLUSH_ERROR, i);
-////      }
-//			logger.info("Module " + module.getName() + " has been added to manifest " + getName());
-//		}
-//
-//		return module;
-//	}
-
 	public int countSourceModules() {
 		return getModules().getSourceModules().size();
 	}
@@ -126,24 +90,7 @@ public class ManifestImpl implements Manifest {
 	public String getName() {
 		return manifestName;
 	}
-//
-//	private void flush(Module module) throws ManifestException {
-//
-//		if (module instanceof SourceModule) {
-//			Element moduleElement = root.createElement(SourceModule.ELEMENT_NAME);
-//			moduleElement.setAttribute(SourceModule.NAME_ATTRIBUTE, module.getName());
-//			moduleElement.setAttribute(SourceModule.LOCATION_ATTRIBUTE, module.getLocation().getId());
-//		}
-//
-////		catch (IOException i) {
-////        throw new ManifestException(ManifestException.MANIFEST_FLUSH_ERROR, i);
-////      }
-//
-//		// Serialize DOM
-//		//
-//		throw new KarmaRuntimeException("Has to be implemented");
-//	}
-//
+  
 	public boolean isLocal(Module module) throws KarmaException {
 
 		File moduleDirectory = new File(new File(env.getDevelopmentHome(), getName()), module.getName());

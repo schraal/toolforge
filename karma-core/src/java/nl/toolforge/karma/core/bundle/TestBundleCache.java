@@ -22,6 +22,7 @@ public class TestBundleCache extends BaseTest {
 	}
 
 	public void tearDown() {
+    super.tearDown();
 		cache.flush();
 	}
 

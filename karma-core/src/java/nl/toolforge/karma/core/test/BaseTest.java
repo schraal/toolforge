@@ -22,6 +22,10 @@ public class BaseTest extends TestCase {
 
 	private Properties p = null;
 
+  private File f1 = null;
+  private File f2 = null;
+  private File f3 = null;
+
 	public void setUp() {
 
 		// Fake some parameters that would have been passed to the JVM
@@ -31,15 +35,6 @@ public class BaseTest extends TestCase {
 		//
 		System.setProperty("TESTMODE", "true");
 		System.setProperty("locale", "en");
-
-		// Overrides karma.properties for Junit testing.
-		//
-//		System.setProperty(LocalEnvironment.BOOTSTRAP_CONFIGURATION_DIRECTORY, "test/test-karma.properties");
-//todo remove
-
-		File f1 = null;
-		File f2 = null;
-		File f3 = null;
 
 		try {
 			f1 = MyFileUtils.createTempDirectory();
@@ -65,6 +60,16 @@ public class BaseTest extends TestCase {
 			throw new KarmaRuntimeException("BaseTest setup error", e);
 		}
 	}
+
+  public void tearDown() {
+    try {
+      org.apache.commons.io.FileUtils.deleteDirectory(f1);
+      org.apache.commons.io.FileUtils.deleteDirectory(f2);
+      org.apache.commons.io.FileUtils.deleteDirectory(f3);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
 
 	public final Properties getProperties() {
 		return p;

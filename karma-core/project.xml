@@ -131,6 +131,12 @@
 			<version>beta3.6</version>
 		</dependency>
 
+		<dependency>
+			<groupId>maven</groupId>
+			<artifactId>maven</artifactId>
+			<version>1.0-rc2</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

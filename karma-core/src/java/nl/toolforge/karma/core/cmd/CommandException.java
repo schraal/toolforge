@@ -41,10 +41,10 @@ public class CommandException extends KarmaException {
 	 * Argument for a command option is missing.
 	 */
 	public static ErrorCode MISSING_ARGUMENT = new ErrorCode("CMD-00032");
-	/**
-	 * No manifest has been assigned to the <code>CommandContext</code>
-	 */
+	/** No manifest has been assigned to the <code>CommandContext</code> */
 	public static final ErrorCode NO_MANIFEST_SELECTED = new ErrorCode("CORE-00031");
+
+//  public static final ErrorCode BUILD_FAILURE_ = new ErrorCode("CORE-00040");
 
 //  public static ErrorCode
 

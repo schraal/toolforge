@@ -486,6 +486,9 @@ public final class CVSRunner implements Runner {
 		executeOnCVS(checkoutCommand, tmp);
 
 		File moduleDirectory = new File(tmp, module.getName());
+
+    // todo het volgende is ronduit kutcode ....
+    //
 		if (moduleDirectory.exists()) {
 			try {
 				FileUtils.deleteDirectory(tmp);

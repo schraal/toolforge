@@ -20,8 +20,10 @@ import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
 import nl.toolforge.karma.core.vc.subversion.SubversionRunner;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Set;
 
 /**
@@ -227,11 +229,20 @@ public final class CommandContext {
 	 */
 	public final File getBuildTarget(Module module) throws KarmaException {
 
-		File localPath = new File(new File(getBase(), "build"), module.getName());
+    File localPath = new File(new File(getBase(), "build"), module.getName());
+
+    if (localPath.exists()) {
+      try {
+        FileUtils.deleteDirectory(new File(localPath.getParent()));
+      } catch (IOException e) {
+      // todo implement this properly
+      }
+    }
 
 		if (localPath.mkdirs()) {
 			return localPath;
 		}
+    logger.error("Could not create build directory for module " + module.getName());
 		throw new KarmaException(KarmaException.LAZY_BASTARD); // todo proper exception
 	}
 

@@ -3,7 +3,8 @@ package nl.toolforge.karma.core.test;
 import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.SourceModule;
-import nl.toolforge.karma.core.model.SourceModuleDescriptor;
+import nl.toolforge.karma.core.SourceModuleDescriptor;
+import nl.toolforge.karma.core.SourceModuleDescriptor;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
@@ -88,6 +89,8 @@ public class LocalCVSInitializer extends BaseTest {
    * Deletes the temporary directory.
    */
   public void tearDown() {
+
+    super.tearDown();
 
     try {
       FileUtils.deleteDirectory(getDevelopmentHome());

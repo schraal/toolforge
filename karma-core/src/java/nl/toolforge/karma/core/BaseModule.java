@@ -1,7 +1,6 @@
 package nl.toolforge.karma.core;
 
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.model.ModuleDescriptor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

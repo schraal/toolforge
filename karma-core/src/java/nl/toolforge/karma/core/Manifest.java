@@ -1,7 +1,5 @@
 package nl.toolforge.karma.core;
 
-import nl.toolforge.karma.core.model.ModuleDescriptor;
-
 import java.io.File;
 
 /**
@@ -48,61 +46,6 @@ public interface Manifest {
    * @param module A module descriptor for this manifest.
    */
   public void addModule(ModuleDescriptor module) throws ManifestException;
-
-//	/**
-//	 * Creates a <code>SourceModule</code>.
-//	 *
-//	 * @param name          The (unique) name of the module within a <code>vcs</code>.
-//	 * @param locationAlias The version control system in which this module should be created.
-//	 */
-//	public Module createModule(String name, String locationAlias) throws KarmaException;
-//
-//	/**
-//	 * <p>Creates a module and includes the module in the manifest instance. If the module
-//	 * does not yet exist in the version control system provided, this method will try and
-//	 * create the module in the version control system. If the module already exists in the
-//	 * version control system, a <code>KarmaException</code> will be thrown. When the module
-//	 * should be added to the manifest anyway, the {@link #createModule(int, String, String, boolean)} should be used.
-//	 * <p/>
-//	 * <p>This method is not intended to load modules from a manifest file into the Manifest
-//	 * instance. See {@link nl.toolforge.karma.core.ManifestLoader}.
-//	 *
-//	 * @param name          See {@link #createModule(java.lang.String, java.lang.String)}.
-//	 * @param locationAlias See {@link #createModule(java.lang.String, java.lang.String)}
-//	 * @return A <code>Module</code> instance.
-//	 * @throws KarmaException TODO to be documented; should be manifest exception ??
-//	 */
-//	public Module createModule(String name, String locationAlias, boolean include) throws KarmaException;
-//
-//	/**
-//	 * <p>Creates a module and includes the module in the manifest instance. If the module
-//	 * does not yet exist in the version control system provided, this method will try and
-//	 * create the module in the version control system. If the module already exists in the
-//	 * version control system, a <code>KarmaException</code> will be thrown. When the module
-//	 * should be added to the manifest anyway, the {@link #createModule(int, String, String, boolean)} should be used.
-//	 * <p/>
-//	 * <p>This method is not intended to load modules from a manifest file into the Manifest
-//	 * instance. See {@link nl.toolforge.karma.core.ManifestLoader}.
-//	 *
-//	 * @param typeIdentifier See {@link Module}. A type identifier should be provided.
-//	 * @param name           See {@link #createModule(java.lang.String, java.lang.String)}.
-//	 * @param locationAlias  See {@link #createModule(java.lang.String, java.lang.String)}
-//	 * @return A <code>Module</code> instance.
-//	 * @throws KarmaException TODO to be documented; should be manifest exception ??
-//	 */
-//	public Module createModule(int typeIdentifier, String name, String locationAlias) throws KarmaException;
-//
-//	/**
-//	 * @param typeIdentifier See {@link Module}. A type identifier should be provided. <b>NOTE:</b> unused at this moment.
-//	 * @param locationAlias  {@link #createModule(java.lang.String, java.lang.String)}.
-//	 * @param name           {@link #createModule(java.lang.String, java.lang.String)}.
-//	 * @param include        <code>true</code> when the module should be added to the manifest file
-//	 *                       irrespective of succesfull creation in the version control system. Defaults to <code>false</code>.
-//	 * @return A <code>Module</code> instance.
-//	 * @throws KarmaException When the new module manifest file could not be written
-//	 *                        ({@link nl.toolforge.karma.core.ManifestException#MANIFEST_FLUSH_ERROR}
-//	 */
-//	public Module createModule(int typeIdentifier, String name, String locationAlias, boolean include) throws KarmaException;
 
 	public int countSourceModules();
 

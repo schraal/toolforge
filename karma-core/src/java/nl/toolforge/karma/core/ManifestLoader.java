@@ -3,9 +3,6 @@ package nl.toolforge.karma.core;
 import nl.toolforge.core.util.file.XMLFilenameFilter;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationFactory;
-import nl.toolforge.karma.core.model.JarModuleDescriptor;
-import nl.toolforge.karma.core.model.ModuleDescriptor;
-import nl.toolforge.karma.core.model.SourceModuleDescriptor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -26,8 +23,7 @@ import java.util.Set;
 import java.util.prefs.Preferences;
 
 /**
- * <p>The manifest loader is responsible for loading a manifest from disk in memory. Manifests are stored on disk in
- * a directory identified by the property <code>manifest.dir</code>.
+ * <p>The manifest loader is responsible for loading a manifest from disk in memory.
  *
  * @author D.A. Smedes
  * @version $Id$

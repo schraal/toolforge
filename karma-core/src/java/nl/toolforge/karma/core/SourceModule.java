@@ -1,6 +1,5 @@
 package nl.toolforge.karma.core;
 
-import nl.toolforge.karma.core.model.SourceModuleDescriptor;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
 
 import java.io.File;
@@ -29,8 +28,6 @@ public class SourceModule extends BaseModule {
 	/**
 	 * Constructs a <code>SourceModule</code> instance.
 	 *
-//	 * @param moduleName
-//	 * @param location
 	 * @throws ManifestException
 	 */
 	public SourceModule(SourceModuleDescriptor descriptor, File manifestDirectory) throws ManifestException {
@@ -40,49 +37,6 @@ public class SourceModule extends BaseModule {
     this.version = descriptor.getVersion();
     this.developmentLine = descriptor.getDevelopmentLine();
 	}
-
-//	/**
-//	 * Creates a <code>SourceModule</code> instance; the module contains a <code>version</code> attribute.
-//	 *
-//	 * @param moduleName The name of the module. Module names are matched against {@link Expressions#MODULE_NAME}.
-//	 * @param location
-//	 * @param version    The version of the module. Versionnumbers are matched against {@link Expressions#VERSION}.
-//	 * @throws KarmaException When input parameters don't match their patterns.
-//	 */
-//	protected SourceModule(String moduleName, Location location, Version version) throws KarmaException {
-//
-//		super(moduleName, location);
-//
-//		Pattern pattern = Expressions.getPattern("VERSION");
-//		Matcher matcher = pattern.matcher(version.getVersionNumber());
-//
-//		if (matcher.matches()) {
-//			this.version = version;
-//		} else {
-//			throw new KarmaException(KarmaException.DATAFORMAT_ERROR);
-//		}
-//	}
-
-//	/**
-//	 * Sets the version property of this module
-//	 *
-//	 * @param version The <code>version</code> attribute of this module (wrapped in a Version instance) when it is available.
-//	 */
-//	public final void setVersion(Version version) {
-//
-//		// TODO validate before assigment
-//		//
-//		this.version = version;
-//	}
-
-//	/**
-//	 * Sets the branch property of this module
-//	 *
-//	 * @param developmentLine The <code>line</code> attribute of this module when it is available.
-//	 */
-//	public final void setDevelopmentLine(DevelopmentLine developmentLine) {
-//		this.developmentLine = developmentLine;
-//	}
 
 	public final DevelopmentLine getDevelopmentLine() {
 		return developmentLine;
