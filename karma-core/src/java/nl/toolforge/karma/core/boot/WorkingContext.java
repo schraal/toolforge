@@ -255,7 +255,7 @@ public final class WorkingContext {
     try {
       properties.load(new FileInputStream(new File(getProjectBaseDirectory(), "karma.properties")));
     } catch (FileNotFoundException fnfe) {
-      logger.info("karma.properties not found for working context '"+getName()+"'", fnfe);
+      logger.info("karma.properties not found for working context '"+getName()+"'.");
     } catch (IOException ioe) {
       logger.error("karma.properties could not be loaded for working context '"+getName()+"'", ioe);
     }
