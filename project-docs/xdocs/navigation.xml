@@ -22,7 +22,7 @@
 
     <menu name="Questions and Concerns">
       <item name="Frequently Asked Questions" href="faq.html"/>
-      <item name="Ant?, Maven?" href="ant-or-maven.html"/>
+      <item name="Ant and Maven vs Karma" href="ant-or-maven.html"/>
     </menu>
 
     <menu name="Component Reference">
@@ -34,6 +34,8 @@
         <item name="Refcard generator" href="../plugins/karma-plugin-refcard/"/>
       </item>
     </menu>
+<!--
+NOTE : no text, no links ...
 
     <menu name="User Interfaces">
       <item name="Command Line Interface"  href="/ui/cli.html"/>
@@ -44,6 +46,7 @@
       </item>
 
     </menu>
+-->
 
     <menu name="Reference Manual">
       <item name="Working Context" href="/reference/working-context/index.html" collapse="false">

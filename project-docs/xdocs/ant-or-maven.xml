@@ -1,3 +1,62 @@
 <?xml version="1.0"?>
 
-<document/>
+<document>
+
+<body>
+
+  <section name="blaat">
+
+  <p>
+    Without an exception : if one knows Maven, that one will ask us the
+    question : "Why don't you use Maven for this ?". Well, the basic answer is
+    simple : "The purpose of Karma is different."
+  </p>
+
+  <p>
+    The following list describes the main differences between the two. We're
+    not trying to prove that Karma is better here. We're just pointing out the
+    differences for you so you make your own choice. We value your comments.
+  </p>
+
+  <ol>
+
+    <li>In essence, Maven is a build tool, whereas <strong>Karma</strong>
+    focusses on <emp>managing</emp> software components.</li>
+
+    <li>Maven's dependency management is based on binary dependencies. Karma
+    works primarily with source dependencies so a developer always has the
+    sources available. </li>
+
+    <li>Karma is multi-project, multi-module, etc, whereas Maven supports it
+    with Maven reactor.</li>
+
+    <li>Ah, and we don't have memory leaks ... (just kidding here).</li>
+
+  </ol>
+
+  <p>
+    There's a lot more to be said about this. Coming soon.
+  </p>
+
+  </section>
+
+  <section name="Integrate with them ?">
+
+  <p>
+    Ok, since we convinced you that <strong>Karma</strong> is indeed different
+    from Maven and Ant, one could ask the question : "Why don't you integrate
+    with them?". In fact, that's what <strong>Karma</strong> does. Without a
+    doubt, Ant and Maven are great in what they do, and we don't intend to
+    beat them in that. <strong>Karma</strong> uses Ant a great deal in the
+    build and package proces. We've tried to integrate with Maven, but the
+    integration level is - in our opinion - a bit meagre. We've been told that
+    integration on the Java level will improve from Maven 2.0 onwards, so who
+    knows what will happen in the near future with Karma, but for now, we
+    stick to Ant.
+  </p>
+
+  </section>
+
+</body>
+
+</document>
