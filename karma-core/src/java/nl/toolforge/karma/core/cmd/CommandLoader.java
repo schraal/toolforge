@@ -18,20 +18,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd;
 
-import nl.toolforge.core.util.file.XMLFilenameFilter;
-import nl.toolforge.karma.core.boot.WorkingContext;
-import nl.toolforge.karma.core.cmd.digester.CommandDescriptorCreationFactory;
-import nl.toolforge.karma.core.cmd.digester.OptionDescriptorCreationFactory;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.cli.Options;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xml.sax.SAXException;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import nl.toolforge.karma.core.cmd.digester.CommandDescriptorCreationFactory;
+import nl.toolforge.karma.core.cmd.digester.OptionDescriptorCreationFactory;
 
 /**
  * <p>Loads command-descriptors from an <code>XML</code>-file. The default filename
@@ -75,28 +75,30 @@ public final class CommandLoader {
    */
   Set load() throws CommandLoadException {
 
-    //
+    // load the default commands
     //
     Set commandSet = loadDefaultCommands();
 
-    File pluginBaseDir =
-        new File(WorkingContext.getKarmaHome(), "resources" + File.separator + "commands" + File.separator + "plugins");
-
-    if (pluginBaseDir.exists()) {
-
-      String[] files = pluginBaseDir.list(new XMLFilenameFilter());
-      for (int i = 0; i < files.length; i++) {
+    // load the plugin commands
+    //
+    try {
+      String commands = DEFAULT_COMMANDS_BASEDIR+"/"+COMMAND_PLUGINS_DIR+"/"+DEFAULT_COMMAND_FILE;
+      Enumeration enum = this.getClass().getClassLoader().getResources(commands);
+      while (enum.hasMoreElements()) {
+        URL url = (URL) enum.nextElement();
 
         try {
-          commandSet.addAll((Set) getCommandDigester().parse(new File(pluginBaseDir, files[i])));
+          commandSet.addAll((Set) getCommandDigester().parse(url.openStream()));
         } catch (IOException e) {
           logger.error(e);
-          throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_COMMAND_FILE, new Object[]{files[i]});
+          throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_COMMAND_FILE, new Object[]{url});
         } catch (SAXException e) {
           logger.error(e);
-          throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_COMMAND_FILE, new Object[]{files[i]});
+          throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_COMMAND_FILE, new Object[]{url});
         }
       }
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
     }
     return commandSet;
   }
@@ -132,7 +134,8 @@ public final class CommandLoader {
   private Set loadDefaultCommands() throws CommandLoadException {
 
     try {
-      return (Set) getCommandDigester().parse(this.getClass().getClassLoader().getResourceAsStream(DEFAULT_COMMANDS_BASEDIR + "/" + DEFAULT_COMMAND_FILE));
+      String defaultCommands = DEFAULT_COMMANDS_BASEDIR+ "/" +DEFAULT_COMMAND_FILE;
+      return (Set) getCommandDigester().parse(this.getClass().getClassLoader().getResourceAsStream(defaultCommands));
     } catch (IOException e) {
       logger.error(e);
       throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_DEFAULT_COMMANDS);
