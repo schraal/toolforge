@@ -47,8 +47,14 @@ public class CommandException extends Exception {
   /** The build of a module failed. */
   public static final ErrorCode BUILD_FAILED = new ErrorCode(EXCEPTION_PREFIX + "00040");
 
+  /** The build of a module failed. */
+  public static final ErrorCode BUILD_FAILED_TOO_MANY_MISSING_DEPENDENCIES = new ErrorCode(EXCEPTION_PREFIX + "00046");
+
   /** The test of a module failed. */
   public static final ErrorCode TEST_FAILED = new ErrorCode(EXCEPTION_PREFIX + "00050");
+
+  /** The test of a module failed. */
+  public static final ErrorCode CLEAN_FAILED = new ErrorCode(EXCEPTION_PREFIX + "00060");
 
   /**
    * When the module has a version-attribute and is therefor STATIC. Not allowed to start work on this module.
@@ -84,6 +90,12 @@ public class CommandException extends Exception {
    * <code>test/java</code> (the default directory for a module where test java sources are located) is missing.
    */
   public static final ErrorCode NO_TEST_DIR = new ErrorCode(EXCEPTION_PREFIX + "00051");
+
+  /**
+   * <code>build</code> (the default directory for a module where built files are located) is missing.
+   */
+  public static final ErrorCode NO_BUILD_DIR = new ErrorCode(EXCEPTION_PREFIX + "00061");
+
 
   public CommandException(ErrorCode errorCode) {
     this(errorCode, null);
