@@ -18,6 +18,24 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import org.apache.commons.io.FileUtils;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.ProjectHelper;
+import org.apache.tools.ant.helper.ProjectHelperImpl;
+import org.apache.tools.ant.taskdefs.Delete;
+import org.apache.tools.ant.taskdefs.Mkdir;
+import org.apache.tools.ant.types.FileSet;
 import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
@@ -29,22 +47,6 @@ import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.module.ModuleTypeException;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.ProjectHelper;
-import org.apache.tools.ant.helper.ProjectHelperImpl;
-import org.apache.tools.ant.taskdefs.Delete;
-import org.apache.tools.ant.taskdefs.Mkdir;
-import org.apache.tools.ant.types.FileSet;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 /**
  * Superclass for all commands dealing with building modules. This class provides all basic property mappers and methods
@@ -193,6 +195,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
       // todo hmm, this mechanism doesn't integrate with the commandresponse mechanism
       //
       logger.setOutputPrintStream(System.out);
+      logger.setErrorPrintStream(System.err);
 
       //todo: this has to be configurable
       String logLevel = System.getProperty("antloglevel");

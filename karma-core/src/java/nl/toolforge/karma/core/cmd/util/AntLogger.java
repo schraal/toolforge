@@ -53,6 +53,7 @@ public class AntLogger extends DefaultLogger {
     // "<javac> Compiling ..."
     //
     messagePrefixes.add("Compiling");
+    messagePrefixes.add("TEST");
 
     taskNames = new HashSet();
     taskNames.add("javadoc"); // <javadoc>
@@ -75,6 +76,7 @@ public class AntLogger extends DefaultLogger {
         return true;
       }
     }
+    
     return false;
   }
 
