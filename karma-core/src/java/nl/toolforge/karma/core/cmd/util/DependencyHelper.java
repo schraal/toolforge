@@ -26,6 +26,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.netbeans.lib.cvsclient.commandLine.command.log;
+
 import net.sf.sillyexceptions.OutOfTheBlueException;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.boot.WorkingContext;
@@ -165,21 +167,21 @@ public final class DependencyHelper {
 	              throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getModule()});
 	            }
 	            
-	            if ((!doPackage || dep.doPackage()) &&
-	                (moduleType == null || moduleType.equals(depModule.getType())) ) {
+	            if (dep.doPackage() && (moduleType == null || moduleType.equals(depModule.getType())) ) {
 	              s.add(path);
 	            }
-	          } else {	            
+	          } else {
 	            Set subSet = getModuleDependencies(depModule, doTest, doPackage, moduleType, history);
 	            
-	            path = new DependencyPath(manifest.getBuildBaseDirectory(), new File(dep.getModule(), "build"));
-	            
-	            if (!path.exists() && ! Module.OTHER_MODULE.equals(depModule.getType())) {
-	              throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getModule()});
+	            if (Module.OTHER_MODULE.equals(depModule.getType())) {
+                path = new DependencyPath(manifest.getModule(dep.getModule()).getBaseDir(), new File("contents"));
+	            } else {
+	              path = new DependencyPath(manifest.getBuildBaseDirectory(), new File(dep.getModule(), "build"));
 	            }
 	            
-	            if ((!doPackage || dep.doPackage()) &&
-	                (moduleType == null || moduleType.equals(depModule.getType())) ) {
+	            if (!path.exists()) {
+	              throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getModule()});
+	            } else if (moduleType == null || moduleType.equals(depModule.getType())) {
 	              subSet.add(path);
 	            }
 	            
@@ -188,21 +190,20 @@ public final class DependencyHelper {
 	              //In case of a test dependency the test classes are needed, as well as
 	              //the resources for running the tests.
 	              //for the time being only do this for the java source modules.
-	              path = new DependencyPath(manifest.getBuildBaseDirectory(), new File(dep.getModule(), "test/classes"));
-	              
-	              if (moduleType == null || moduleType.equals(depModule.getType()) ) {
-	                subSet.add(path);
-	              }
-	              
-	              if (moduleType != null && moduleType.equals(depModule.getType()) &&
-	                      moduleType.equals(Module.JAVA_SOURCE_MODULE)) {
-	                path = new DependencyPath(manifest.getBaseDirectory(), new File(module.getBaseDir().getPath(), "src/resources"));
+	              if (Module.JAVA_SOURCE_MODULE.equals(depModule.getType())) {
+	                path = new DependencyPath(manifest.getBuildBaseDirectory(), new File(dep.getModule(), "test/classes"));
+		              
+	                if (path.exists()) {
+		                subSet.add(path);
+		              }
+	                
+	                path = new DependencyPath(manifest.getModule(dep.getModule()).getBaseDir(), new File("src/resources"));
 	                
 	                if (path.exists()) {
 	                  subSet.add(path);
 	                }
 	                
-	                path = new DependencyPath(manifest.getBaseDirectory(), new File(module.getBaseDir().getPath(), "test/resources"));
+	                path = new DependencyPath(manifest.getModule(dep.getModule()).getBaseDir(), new File("test/resources"));
 	                
 	                if (path.exists()) {
 	                  subSet.add(path);
