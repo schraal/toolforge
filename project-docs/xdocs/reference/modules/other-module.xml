@@ -27,11 +27,11 @@
             <th>Description</th>
           </tr>
           <tr>
-            <td>/*</td>
+            <td>/contents/**/*</td>
             <td>-</td>
-            <td>/*</td>
+            <td>/**/*</td>
             <td>
-              All files, except the Karma system files, are included 1-to-1 into
+              All files stored under the "contents" folder are included 1-to-1 into
               the <code>.zip</code> file that is generated when packaging a module
               of this type.
             </td>

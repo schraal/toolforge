@@ -21,13 +21,12 @@ package nl.toolforge.karma.core.cmd.util;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import net.sf.sillyexceptions.OutOfTheBlueException;
-
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.manifest.Manifest;
@@ -83,7 +82,11 @@ public final class DependencyHelper {
    *   <li>The test resources of the module's dependencies.
    * </ul>
    * @param module The module for which the test classpath should be determined.
+   * 
    * @return See method description.
+   * 
+   * @throws ModuleTypeException
+   * @throws DependencyException
    */
   public String getTestClassPath(Module module) throws ModuleTypeException, DependencyException {
 
@@ -92,12 +95,31 @@ public final class DependencyHelper {
   }
 
   public Set getAllDependencies(Module module, boolean doTest, boolean doPackage) throws ModuleTypeException, DependencyException {
-    Set all = new LinkedHashSet();
+    Set all = new HashSet();
+    
     all.addAll(getModuleDependencies(module, doTest, doPackage));
     all.addAll(getJarDependencies(module, doPackage));
+    
     return all;
   }
 
+  /**
+   * Gets a <code>Set</code> of {@link DependencyPath}s, each one identifying the path to a module dependency (a
+   * dependency of <code>module</code> to another <code>Module</code>).
+   * <p>
+   * This method calls the recursive version of itself with a null type and an empty history set. 
+   *
+   * @param module     The module for which a dependency-path should be determined.
+   * @param doTest     Whether to include test resources for all deps.
+   * @param doPackage  Whether to include only the deps that are to be packaged or all deps.
+   *
+   * @return See method description.
+   * @throws DependencyException  When a dependency for a module is not available.
+   */
+  public Set getModuleDependencies(Module module, boolean doTest, boolean doPackage) throws ModuleTypeException, DependencyException {
+    return getModuleDependencies(module, doTest, doPackage, null, new HashSet());
+  }
+  
   /**
    * Gets a <code>Set</code> of {@link DependencyPath}s, each one identifying the path to a module dependency (a
    * dependency of <code>module</code> to another <code>Module</code>).
@@ -109,95 +131,99 @@ public final class DependencyHelper {
    * @param doTest      Whether to include test resources for all deps.
    * @param doPackage   Whether to include only the deps that are to be packaged or all deps.
    * @param moduleType  Only return modules of the specified type. Return all types when null.
+   * @param history     A set of module dependencies that have already been examined and which
+   *                     don't need to be recursively checked again.
    *
    * @return See method description.
    * @throws DependencyException  When a dependency for a module is not available.
    */
-  public Set getModuleDependencies(Module module, boolean doTest, boolean doPackage, Module.Type moduleType) throws ModuleTypeException, DependencyException {
+  public Set getModuleDependencies(Module module, boolean doTest, boolean doPackage, Module.Type moduleType, Set history) throws ModuleTypeException, DependencyException {
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
     }
 
-    Set s = new LinkedHashSet();
+    Set s = new HashSet();
 
     for (Iterator iterator = module.getDependencies().iterator(); iterator.hasNext();) {
       ModuleDependency dep = (ModuleDependency) iterator.next();
-      if (dep.isModuleDependency()) {
-
-        try {
-          Module depModule = manifest.getModule(dep.getModule());
-          DependencyPath path;
-
-          //when packaging we want to have the archive
-          //when we are not packaging, i.e. building or testing, then we want the classes.
-          //todo: refactor the code below to minimize duplicate code.
-          if (doPackage) {
-            path = new DependencyPath(manifest.getBuildBaseDirectory(), new File(dep.getModule(), resolveArchiveName(depModule)));
-            if (!path.exists()) {
-              throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getModule()});
-            }
-            if ((!doPackage || dep.doPackage()) &&
-                (moduleType == null || moduleType.equals(depModule.getType())) ) {
-              s.add(path);
-            }
-          } else {
-            Set subSet = getModuleDependencies(depModule, doTest, doPackage, moduleType);
-            path = new DependencyPath(manifest.getBuildBaseDirectory(), new File(dep.getModule(), "build"));
-            if (!path.exists()) {
-              throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getModule()});
-            }
-            if ((!doPackage || dep.doPackage()) &&
-                (moduleType == null || moduleType.equals(depModule.getType())) ) {
-              subSet.add(path);
-            }
-            if (doTest) {
-              //todo: in case of tests we need the resources as well.
-              //In case of a test dependency the test classes are needed, as well as
-              //the resources for running the tests.
-              //for the time being only do this for the java source modules.
-              path = new DependencyPath(manifest.getBuildBaseDirectory(), new File(dep.getModule(), "test/classes"));
-              if (moduleType == null || moduleType.equals(depModule.getType()) ) {
-                subSet.add(path);
-              }
-              if (moduleType != null && moduleType.equals(depModule.getType()) &&
-                      moduleType.equals(Module.JAVA_SOURCE_MODULE)) {
-                path = new DependencyPath(manifest.getBaseDirectory(), new File(module.getBaseDir().getPath(), "src/resources"));
-                if (path.exists()) {
-                  subSet.add(path);
-                }
-                path = new DependencyPath(manifest.getBaseDirectory(), new File(module.getBaseDir().getPath(), "test/resources"));
-                if (path.exists()) {
-                  subSet.add(path);
-                }
-              }
-            }
-            s.addAll(subSet);
-          }
-        } catch (ManifestException me) {
-          if (me.getErrorCode().equals(ManifestException.MODULE_NOT_FOUND)) {
-            throw new DependencyException(DependencyException.MODULE_NOT_IN_MANIFEST, me.getMessageArguments());
-          } else {
-            throw new DependencyException(me.getErrorCode(), me.getMessageArguments());
-          }
-        }
+      
+      if (! history.contains(dep)) {
+	      history.add(dep);
+	      
+	      if (dep.isModuleDependency()) {
+	        try {
+	          Module depModule = manifest.getModule(dep.getModule());
+	          DependencyPath path = null;
+	
+	          //when packaging we want to have the archive
+	          //when we are not packaging, i.e. building or testing, then we want the classes.
+	          //todo: refactor the code below to minimize duplicate code.
+	          if (doPackage) {
+	            path = new DependencyPath(manifest.getBuildBaseDirectory(), new File(dep.getModule(), resolveArchiveName(depModule)));
+              
+	            if (!path.exists()) {
+	              throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getModule()});
+	            }
+	            
+	            if ((!doPackage || dep.doPackage()) &&
+	                (moduleType == null || moduleType.equals(depModule.getType())) ) {
+	              s.add(path);
+	            }
+	          } else {	            
+	            Set subSet = getModuleDependencies(depModule, doTest, doPackage, moduleType, history);
+	            
+	            path = new DependencyPath(manifest.getBuildBaseDirectory(), new File(dep.getModule(), "build"));
+	            
+	            if (!path.exists() && ! Module.OTHER_MODULE.equals(depModule.getType())) {
+	              throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getModule()});
+	            }
+	            
+	            if ((!doPackage || dep.doPackage()) &&
+	                (moduleType == null || moduleType.equals(depModule.getType())) ) {
+	              subSet.add(path);
+	            }
+	            
+	            if (doTest) {
+	              //todo: in case of tests we need the resources as well.
+	              //In case of a test dependency the test classes are needed, as well as
+	              //the resources for running the tests.
+	              //for the time being only do this for the java source modules.
+	              path = new DependencyPath(manifest.getBuildBaseDirectory(), new File(dep.getModule(), "test/classes"));
+	              
+	              if (moduleType == null || moduleType.equals(depModule.getType()) ) {
+	                subSet.add(path);
+	              }
+	              
+	              if (moduleType != null && moduleType.equals(depModule.getType()) &&
+	                      moduleType.equals(Module.JAVA_SOURCE_MODULE)) {
+	                path = new DependencyPath(manifest.getBaseDirectory(), new File(module.getBaseDir().getPath(), "src/resources"));
+	                
+	                if (path.exists()) {
+	                  subSet.add(path);
+	                }
+	                
+	                path = new DependencyPath(manifest.getBaseDirectory(), new File(module.getBaseDir().getPath(), "test/resources"));
+	                
+	                if (path.exists()) {
+	                  subSet.add(path);
+	                }
+	              }
+	            }
+	            
+	            s.addAll(subSet);
+	          }
+	        } catch (ManifestException me) {
+	          if (me.getErrorCode().equals(ManifestException.MODULE_NOT_FOUND)) {
+	            throw new DependencyException(DependencyException.MODULE_NOT_IN_MANIFEST, me.getMessageArguments());
+	          } else {
+	            throw new DependencyException(me.getErrorCode(), me.getMessageArguments());
+	          }
+	        }
+	      }
       }
     }
+    
     return s;
-  }
-
-  /**
-   * Gets a <code>Set</code> of {@link DependencyPath}s, each one identifying the path to a module dependency (a
-   * dependency of <code>module</code> to another <code>Module</code>).
-   *
-   * @param module     The module for which a dependency-path should be determined.
-   * @param doTest     Whether to include test resources for all deps.
-   * @param doPackage  Whether to include only the deps that are to be packaged or all deps.
-   *
-   * @return See method description.
-   * @throws DependencyException  When a dependency for a module is not available.
-   */
-  public Set getModuleDependencies(Module module, boolean doTest, boolean doPackage) throws ModuleTypeException, DependencyException {
-    return getModuleDependencies(module, doTest, doPackage, null);
   }
 
   /**
@@ -274,6 +300,8 @@ public final class DependencyHelper {
    * up Maven-style (see {@link ModuleDependency}.
    * <p>Unless doPackage is true the method recursively descents the dependency tree looking
    * for jar dependencies. This recursive step is obviously only taken for module dependencies.
+   * <p>
+   * This method calls the recursive version of itself with a null type and an empty history set.
    *
    * @param module         The module for which jar dependencies should be determined.
    * @param doPackage      Indicate if the dependencies that are to be packaged (<code>&lt;package="true"&gt;</code>)
@@ -288,48 +316,77 @@ public final class DependencyHelper {
    *   the lib module that is specified as being part of the manifest.
    */
   public Set getJarDependencies(Module module, boolean doPackage) throws DependencyException {
-
+    return getJarDependencies(module, doPackage, new HashSet());
+  }
+  
+  /**
+   * <p>Gets a <code>Set</code> of {@link DependencyPath}s, each one identifying a <code>jar</code>-file. Jar files are looked
+   * up Maven-style (see {@link ModuleDependency}.
+   * <p>Unless doPackage is true the method recursively descents the dependency tree looking
+   * for jar dependencies. This recursive step is obviously only taken for module dependencies.
+   *
+   * @param module      The module for which jar dependencies should be determined.
+   * @param doPackage   Indicate if the dependencies that are to be packaged (<code>&lt;package="true"&gt;</code>)
+   *                    should be included (<code>true</code>) or all dependencies should be included
+   *                    (<code>false</code>).
+   * @param history     A set of module dependencies that have already been examined and which
+   *                    don't need to be recursively checked again.
+   *
+   * @return            A <code>Set</code> containing {@link DependencyPath}s
+   *
+   * @throws DependencyException
+   *   When a jar dependency is not phsyically available on disk. A check is performed on the
+   *   existence of the jar file in either the local jar repository ({@link WorkingContext#getLocalRepository()}) or in
+   *   the lib module that is specified as being part of the manifest.
+   */
+  private Set getJarDependencies(Module module, boolean doPackage, Set history) throws DependencyException {
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
     }
 
-    Set s = new LinkedHashSet();
+    Set s = new HashSet();
 
     for (Iterator iterator = module.getDependencies().iterator(); iterator.hasNext();) {
-
       ModuleDependency dep = (ModuleDependency) iterator.next();
 
-      if (dep.isLibModuleDependency() || !dep.isModuleDependency()) {
-        DependencyPath path;
-        if (dep.isLibModuleDependency()) {
-          //dep on jar in lib module. This one is relative to the base dir of the manifest.
-          path = new DependencyPath(manifest.getModuleBaseDirectory(), new File(dep.getJarDependency()));
-        } else {
-          //dep on jar in Maven-style repo.
-          path = new DependencyPath(WorkingContext.getLocalRepository(), new File(dep.getJarDependency()));
-        }
-        if (!path.exists()) {
-          // todo this bit could have to download the dependency, like maven does.
-          throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getJarDependency()});
-        }
-
-        if (!doPackage || dep.doPackage()) {
-          s.add(path);
-        }
-      } else if (dep.isModuleDependency() && !doPackage) {
-        try {
-          Module depModule = manifest.getModule(dep.getModule());
-          Set subset = getJarDependencies(depModule, doPackage);
-          s.addAll(subset);
-        } catch (ManifestException me) {
-          if (me.getErrorCode().equals(ManifestException.MODULE_NOT_FOUND)) {
-            throw new DependencyException(DependencyException.MODULE_NOT_IN_MANIFEST, me.getMessageArguments());
-          } else {
-            throw new DependencyException(me.getErrorCode(), me.getMessageArguments());
-          }
-        }
+      if (! history.contains(dep)) {
+	      history.add(dep);
+      
+	      if (dep.isLibModuleDependency() || !dep.isModuleDependency()) {
+	        DependencyPath path;
+	        
+	        if (dep.isLibModuleDependency()) {
+	          //dep on jar in lib module. This one is relative to the base dir of the manifest.
+	          path = new DependencyPath(manifest.getModuleBaseDirectory(), new File(dep.getJarDependency()));
+	        } else {
+	          //dep on jar in Maven-style repo.
+	          path = new DependencyPath(WorkingContext.getLocalRepository(), new File(dep.getJarDependency()));
+	        }
+	        
+	        if (!path.exists()) {
+	          // todo this bit could have to download the dependency, like maven does.
+	          throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getJarDependency()});
+	        }
+	
+	        if (!doPackage || dep.doPackage()) {
+	          s.add(path);
+	        }
+	      } else if (dep.isModuleDependency() && !doPackage) {
+	        try {
+	          Module depModule = manifest.getModule(dep.getModule());
+	          Set subset = getJarDependencies(depModule, doPackage, history);
+	          s.addAll(subset);
+	        } catch (ManifestException me) {
+	          if (me.getErrorCode().equals(ManifestException.MODULE_NOT_FOUND)) {
+	            throw new DependencyException(DependencyException.MODULE_NOT_IN_MANIFEST, me.getMessageArguments());
+	          } else {
+	            throw new DependencyException(me.getErrorCode(), me.getMessageArguments());
+	          }
+	        }
+	      }
       }
     }
+    
     return s;
   }
 

@@ -43,7 +43,9 @@ public final class OtherModuleLayoutTemplate extends BaseModuleLayoutTemplate {
   }
 
   public String[] getDirectoryElements() {
-    return new String[] { };
+    return new String[] {
+        "contents"
+      };
   }
 
 }
