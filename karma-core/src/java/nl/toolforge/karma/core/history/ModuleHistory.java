@@ -41,7 +41,7 @@ import java.util.List;
 public class ModuleHistory {
   private static final Log logger = LogFactory.getLog(ModuleHistoryFactory.class);
 
-  final static String MODULE_HISTORY_FILE_NAME = "history.xml";
+  public final static String MODULE_HISTORY_FILE_NAME = "history.xml";
 
   private List events = new ArrayList();
   private File historyLocation = null;

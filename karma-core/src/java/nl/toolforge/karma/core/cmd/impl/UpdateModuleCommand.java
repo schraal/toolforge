@@ -38,6 +38,8 @@ import nl.toolforge.karma.core.vc.cvs.Utils;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
 
 import java.util.regex.PatternSyntaxException;
+import java.util.Set;
+import java.io.IOException;
 
 /**
  * <p>This command updates a module on a developers' local system. When the module has not been updated before, the
@@ -130,7 +132,7 @@ public class UpdateModuleCommand extends DefaultCommand {
     }
 
     try {
-      if (version != null && version.equals(Utils.getLocalVersion(module))) {
+      if (version != null && !manifest.getState(module).equals(Module.WORKING) && version.equals(Utils.getLocalVersion(module))) {
         // todo message to be internationalized.
         //
 
@@ -147,6 +149,21 @@ public class UpdateModuleCommand extends DefaultCommand {
         if (!Utils.existsInRepository(module)) {
           throw new CommandException(VersionControlException.MODULE_NOT_IN_REPOSITORY, new Object[]{module.getName(), module.getLocation().getId()});
         }
+
+
+
+
+
+
+        try {
+          Set blaat = Utils.getAllEntries(module);
+          int a =0;
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+
+
+
 
         //todo check whether the requested version does exist for the module.
 

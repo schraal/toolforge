@@ -234,7 +234,7 @@ public final class CVSRunner implements Runner {
     //module has been created. Now, create the module history.
     try {
       String author = ((CVSLocationImpl) module.getLocation()).getUsername();
-      addModuleHistoryEvent(module.getBaseDir(), module, ModuleHistoryEvent.CREATE_MODULE_EVENT, Version.INITIAL_VERSION, new Date(), author, comment);
+      addModuleHistoryEvent(null, module, ModuleHistoryEvent.CREATE_MODULE_EVENT, Version.INITIAL_VERSION, new Date(), author, comment);
 
       tag(module, Version.INITIAL_VERSION);
     } catch (ModuleHistoryException mhe) {
@@ -450,12 +450,29 @@ public final class CVSRunner implements Runner {
     executeOnCVS(commitCommand, module.getBaseDir(), null);
   }
 
+  private void commit(Module module, File file, String message) throws CVSException {
+    commit(null, module, file, message);
+  }
+
+  private void commit(DevelopmentLine developmentLine, Module module, File file, String message) throws CVSException {
+
+    CommitCommand commitCommand = new CommitCommand();
+
+    commitCommand.setFiles(new File[]{file});
+    if (developmentLine != null) {
+      commitCommand.setToRevisionOrBranch(developmentLine.getName());
+    }
+    commitCommand.setMessage(message);
+
+    executeOnCVS(commitCommand, module.getBaseDir(), null);
+  }
+
   public void promote(Module module, String comment, Version version) throws CVSException {
 
     try {
       //Add an event to the module history.
       String author = ((CVSLocationImpl) module.getLocation()).getUsername();
-      addModuleHistoryEvent(module.getBaseDir(), module, ModuleHistoryEvent.PROMOTE_MODULE_EVENT, version, new Date(), author, comment);
+      addModuleHistoryEvent(null, module, ModuleHistoryEvent.PROMOTE_MODULE_EVENT, version, new Date(), author, comment);
 
       tag(module, version);
     } catch (ModuleHistoryException mhe) {
@@ -561,9 +578,10 @@ public final class CVSRunner implements Runner {
     try {
       //Add an event to the module history.
       String author = ((CVSLocationImpl) module.getLocation()).getUsername();
-      addModuleHistoryEvent(module.getBaseDir(), module, ModuleHistoryEvent.CREATE_PATCH_LINE_EVENT, module.getVersion(), new Date(), author, "Patch line created by Karma");
-
       tag(module, new CVSTag(module.getPatchLine().getName()), true);
+
+      addModuleHistoryEvent(module.getPatchLine(), module, ModuleHistoryEvent.CREATE_PATCH_LINE_EVENT, module.getVersion(), new Date(), author, "Patch line created by Karma");
+
     } catch (ModuleHistoryException mhe) {
       logger.error("Writing the history.xml failed", mhe);
       throw new CVSException(CVSException.MODULE_HISTORY_ERROR, new Object[]{mhe.getMessage()});
@@ -711,7 +729,7 @@ public final class CVSRunner implements Runner {
    * exist yet (in case of a new module) it is newly created. When the history does exist
    * the event is added to the history.
    *
-   * @param moduleCheckoutLocation  The location on disk where the module has been checked out.
+   * @param developmentLine  The location on disk where the module has been checked out.
    * @param module                  The module involved.
    * @param eventType               The type of {@link ModuleHistoryEvent}.
    * @param version                 The version that the module is promoted to.
@@ -721,7 +739,7 @@ public final class CVSRunner implements Runner {
    * @throws CVSException           Thrown in case something goes wrong with CVS
    */
   private void addModuleHistoryEvent(
-      File moduleCheckoutLocation,
+      DevelopmentLine developmentLine,
       Module module,
       String eventType,
       Version version,
@@ -729,7 +747,7 @@ public final class CVSRunner implements Runner {
       String author,
       String comment) throws CVSException, ModuleHistoryException
   {
-    ModuleHistoryFactory factory = ModuleHistoryFactory.getInstance(moduleCheckoutLocation);
+    ModuleHistoryFactory factory = ModuleHistoryFactory.getInstance(module.getBaseDir());
     ModuleHistory history = factory.getModuleHistory(module);
     if (history != null) {
       ModuleHistoryEvent event = new ModuleHistoryEvent();
@@ -742,7 +760,8 @@ public final class CVSRunner implements Runner {
       if (history.getHistoryLocation().exists()) {
         //history already exists. commit changes.
         history.save();
-        commit(module, "History updated by Karma");
+//        commit(module, "History updated by Karma");
+        commit(developmentLine, module, new File(module.getBaseDir(), ModuleHistory.MODULE_HISTORY_FILE_NAME), "History updated by Karma");
       } else {
         //history did not exist yet. add to CVS and commit it.
         history.save();

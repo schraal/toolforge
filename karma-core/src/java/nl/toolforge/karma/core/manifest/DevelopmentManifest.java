@@ -77,6 +77,8 @@ public final class DevelopmentManifest extends AbstractManifest {
       setState(module, Module.STATIC);
     } else {
       if (isLocal(module)) {
+        setState(module, getState(module));
+      } else {
         setState(module, Module.DYNAMIC);
       }
     }
