@@ -36,6 +36,7 @@ import nl.toolforge.karma.core.vc.PatchLine;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.VersionControlSystem;
+import nl.toolforge.karma.core.vc.Authenticator;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.io.FileUtils;
@@ -278,7 +279,8 @@ public abstract class BaseModule implements Module {
 
     // Is a requirement.
     //
-    ((VersionControlSystem) getLocation()).authenticate();
+    Authenticator a = ((VersionControlSystem) getLocation()).authenticate();
+    ((VersionControlSystem) getLocation()).setUsername(a.getUsername());
 
     event.setAuthor(((VersionControlSystem) getLocation()).getUsername());
 

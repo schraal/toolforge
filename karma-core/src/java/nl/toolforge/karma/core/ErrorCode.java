@@ -27,7 +27,7 @@ import java.util.ResourceBundle;
 import java.text.MessageFormat;
 
 /**
- * <p>Class representing a Karma errorcode. These error codes are localized to support different languages. Errorcodes
+ * <p>Class representing a Karma errorcode. These errorcodes are localized to support different languages. Errorcodes
  * are defined in ranges. Exceptions that are supported by Karma, define these ranges.</p>
  *
  * @author D.A. Smedes

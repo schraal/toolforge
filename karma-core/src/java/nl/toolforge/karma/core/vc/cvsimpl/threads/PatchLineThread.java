@@ -21,6 +21,7 @@ package nl.toolforge.karma.core.vc.cvsimpl.threads;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
 import nl.toolforge.karma.core.vc.threads.RunnerThread;
 import org.apache.commons.logging.Log;
@@ -50,13 +51,22 @@ public class PatchLineThread extends RunnerThread {
 
     CVSRunner runner = null;
     try {
+      if (logger.isDebugEnabled()) {
+        logger.debug("Checking module `" + getModule() + "` for patchline on version `" + getModule().getVersion() + "`.");
+      }
       runner = (CVSRunner) RunnerFactory.getRunner(getModule().getLocation());
 
       if (runner.hasPatchLine(getModule())) {
+        if (logger.isDebugEnabled()) {
+          logger.debug("Module `" + getModule() + "` has a patchline on version `" + getModule().getVersion() + "`.");
+        }
         getModule().markPatchLine(true);
       }
 
     } catch (VersionControlException e) {
+      logger.error(e.getMessage());
+      exception = e;
+    } catch (AuthenticationException e) {
       logger.error(e.getMessage());
       exception = e;
     } finally {

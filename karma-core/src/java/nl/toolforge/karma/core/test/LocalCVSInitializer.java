@@ -24,6 +24,7 @@ import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSException;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSRepository;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
@@ -199,7 +200,7 @@ public class LocalCVSInitializer extends BaseTest {
    * @return A Runner instance.
    * @throws CVSException When initializing the runner failed.
    */
-  protected final Runner getTestRunner() throws CVSException {
+  protected final Runner getTestRunner() throws CVSException, AuthenticationException {
     return getTestRunner(new CommandResponseFaker(null));
   }
 
@@ -210,7 +211,7 @@ public class LocalCVSInitializer extends BaseTest {
    * @return
    * @throws CVSException When initializing the runner failed.
    */
-  protected final Runner getTestRunner(CommandResponse response) throws CVSException {
+  protected final Runner getTestRunner(CommandResponse response) throws CVSException, AuthenticationException {
 
     CVSRunner runner = new CVSRunner(getTestLocation());
 
