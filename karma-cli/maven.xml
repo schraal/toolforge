@@ -2,6 +2,25 @@
 
 <project xmlns:ant="jelly:ant">
 
+  <preGoal name="xdoc:register-reports">
+    <attainGoal name="maven-javadoc-plugin:register" />
+    <attainGoal name="maven-jxr-plugin:register" />
+    <attainGoal name="maven-junit-report-plugin:register" />
+    <attainGoal name="maven-jcoverage-plugin:register" />
+    <attainGoal name="maven-checkstyle-plugin:register" />
+    <attainGoal name="maven-linkcheck-plugin:register" />
+    <attainGoal name="maven-changelog-plugin:register" />
+    <attainGoal name="maven-changes-plugin:register" />
+    <attainGoal name="maven-developer-activity-plugin:register" />
+    <attainGoal name="maven-file-activity-plugin:register" />
+    <attainGoal name="maven-tasklist-plugin:register" />
+    <attainGoal name="maven-license-plugin:register" />
+  </preGoal>
+
+  <postGoal name="xdoc:register-reports">
+    <attainGoal name="maven-jdepend-plugin:deregister" />
+  </postGoal>
+	  
   <postGoal name="jar:install">
 
     <delete>
