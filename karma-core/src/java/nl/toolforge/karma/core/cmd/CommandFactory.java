@@ -231,17 +231,17 @@ public final class CommandFactory {
         cmd.setCommandLine(parser.parse(parserOptions, arguments));
 
       } catch (NoSuchMethodException e) {
-        throw new KarmaRuntimeException(e.getLocalizedMessage());
+        throw new KarmaRuntimeException(e.getLocalizedMessage(), e);
       } catch (SecurityException e) {
-        throw new KarmaRuntimeException(e.getLocalizedMessage());
+        throw new KarmaRuntimeException(e.getLocalizedMessage(), e);
       } catch (InstantiationException e) {
-        throw new KarmaRuntimeException(e.getLocalizedMessage());
+        throw new KarmaRuntimeException(e.getLocalizedMessage(), e);
       } catch (IllegalAccessException e) {
-        throw new KarmaRuntimeException(e.getLocalizedMessage());
+        throw new KarmaRuntimeException(e.getLocalizedMessage(), e);
       } catch (IllegalArgumentException e) {
-        throw new KarmaRuntimeException(e.getLocalizedMessage());
+        throw new KarmaRuntimeException(e.getLocalizedMessage(), e);
       } catch (InvocationTargetException e) {
-        throw new KarmaRuntimeException(e.getLocalizedMessage());
+        throw new KarmaRuntimeException(e.getLocalizedMessage(), e);
       } catch (ParseException e) {
         if (e instanceof MissingOptionException) {
           throw new CommandException(e, CommandException.MISSING_OPTION, new Object[]{arguments});
