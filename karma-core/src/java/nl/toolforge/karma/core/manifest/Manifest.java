@@ -92,4 +92,6 @@ public interface Manifest {
    * @return
    */
   public boolean isLocal(Module module);
+
+  public String getType();
 }

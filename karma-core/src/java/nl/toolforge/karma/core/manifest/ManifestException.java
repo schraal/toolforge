@@ -65,6 +65,11 @@ public class ManifestException extends Exception {
    */
   public static final ErrorCode MODULE_WITHOUT_VERSION = new ErrorCode(EXCEPTION_PREFIX + "00016");
 
+  /**
+   * The manifest should be a development manifest.
+   */
+  public static final ErrorCode NOT_A_DEVELOPMENT_MANIFEST = new ErrorCode(EXCEPTION_PREFIX + "00017");
+
   public ManifestException(ErrorCode errorCode) {
     this(errorCode, null);
   }
