@@ -49,9 +49,20 @@ public class ModuleHistory {
 
   public ModuleHistory() {
   }
-  
+
   public void addEvent(ModuleHistoryEvent moduleHistoryEvent) {
     events.add(moduleHistoryEvent);
+  }
+
+  /**
+   * Gets all history events. The method returns a <code>List</code> of <code>ModuleHistoryEvent</code>s.
+   *
+   * @return
+   *   A <code>List</code> of <code>ModuleHistoryEvent</code>s or an empty <code>List</code>, when no events are
+   *   available.
+   */
+  public List getEvents() {
+    return events;
   }
 
   public void setHistoryLocation(File historyLocation) {

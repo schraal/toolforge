@@ -79,6 +79,27 @@ public class ModuleHistoryEvent {
     this.comment = comment;
   }
 
+
+  public String getType() {
+    return type;
+  }
+
+  public Version getVersion() {
+    return version;
+  }
+
+  public Date getDatetime() {
+    return datetime;
+  }
+
+  public String getAuthor() {
+    return author;
+  }
+
+  public String getComment() {
+    return comment;
+  }
+
   public String toXml() {
     String s = "\t<event";
 

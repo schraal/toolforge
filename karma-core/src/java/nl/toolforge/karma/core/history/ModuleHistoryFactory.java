@@ -97,10 +97,10 @@ public class ModuleHistoryFactory {
 
     } catch (IOException ioe) {
       logger.error(ioe);
-      throw new ModuleHistoryException("history.xml could not be read");
+      throw new ModuleHistoryException(ModuleHistoryException.HISTORY_FILE_DOES_NOT_EXIST, new Object[]{module.getName()});
     } catch (SAXException se) {
       logger.error(se);
-      throw new ModuleHistoryException("history.xml is invalid");
+      throw new ModuleHistoryException(ModuleHistoryException.INVALID_HISTORY_FILE, new Object[]{module.getName()});
     }
     return moduleHistory;
   }

@@ -25,8 +25,8 @@ import junit.framework.TestCase;
  */
 public class TestModuleHistory extends TestCase {
 
-    public void testReadModuleHistory() {
-            assertTrue(true);
-    }
+  public void testReadModuleHistory() {
+    assertTrue(true);
+  }
 
 }

@@ -220,7 +220,12 @@
 
   <command name="view-module-history" alias="vmh">
     <description lang="en">Shows the module's history.</description>
-    <classname>nl.toolforge.karma.core.cmd.impl.ViewModuleHistory</classname>
+    <options>
+      <option opt="m" longOpt="module" hasArgs="true" required="true" description="A module from the current manifest">
+        <arg>module-name</arg>
+      </option>
+    </options>
+    <classname>nl.toolforge.karma.cli.cmd.ViewModuleHistory</classname>
     <help lang="en"/>
   </command>
 
