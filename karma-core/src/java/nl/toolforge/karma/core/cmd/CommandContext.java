@@ -18,17 +18,26 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import nl.toolforge.core.util.listener.ChangeListener;
 import nl.toolforge.core.util.listener.ListenerManager;
 import nl.toolforge.core.util.listener.ListenerManagerException;
-import nl.toolforge.core.util.net.Ping;
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
+import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.LocationLoader;
-import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestCollector;
 import nl.toolforge.karma.core.manifest.ManifestException;
@@ -39,15 +48,6 @@ import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.AdminHandler;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * <p>The command context is the class that provides a runtime for commands to run in. The command context maintains
@@ -240,13 +240,13 @@ public final class CommandContext implements ChangeListener {
 
       if (reload) {
 
-        // One of the manifetss in the tree has been changed on disk, reload the full structure.
+        // One of the manifests in the tree has been changed on disk, reload the full structure.
         //
         currentManifest.load();
 
         setFileModificationTimes();
 
-        String message = "Manifest " + getCurrentManifest().getName() + " has changed on disk. Reloaded automatically.";
+        String message = "\nManifest " + getCurrentManifest().getName() + " has changed on disk. Reloaded automatically.\n";
         logger.info(message);
 
         responseHandler.commandResponseChanged(new CommandResponseEvent(new SuccessMessage(message)));
