@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.cmd.util;
 
 import java.io.File;
+
 import java.util.Iterator;
 import java.util.Set;
 
@@ -96,5 +97,34 @@ public class DependencyPath {
     }
     return s;
   }
+
+  /**
+   * @see java.lang.Object#hashCode()
+   */
+  public int hashCode() {
+    int result = 17;
+    
+    result = (37 * result) + pathPrefix.hashCode();
+    result = (37 * result) + relativePath.hashCode();
+    
+    return result;
+  }
   
+  /**
+   * @see java.lang.Object#equals(Object)
+   */
+  public boolean equals(Object object) {
+    if (object == this) {
+      return true;
+    }
+    
+    if (!(object instanceof DependencyPath)) {
+      return false;
+    }
+    
+    DependencyPath rhs = (DependencyPath) object;
+    
+    return pathPrefix.equals(rhs.pathPrefix) && relativePath.equals(rhs.relativePath);
+  }
+
 }
