@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<document>
+
+<properties>
+  <title>Todo</title>
+</properties>
+
+<body>
+
+  <section name="What is left in this Karma R1.0 ?">
+
+  <p>
+    We are currently developing `Karma R1.0 Beta 2`. There's a bit of
+    functionality with bugs, and we are trying our best to get rid of them as
+    soon as possible.
+  </p>
+
+  <p>
+    When we are out of bugs, we'll release `Karma R1.0 RC1`. Check our <a
+    href="http://sourceforge.net/projects/toolforge">latest file releases</a>
+    regularly or better, monitor file releases so you are notified by email
+    when a new release is available.
+  </p>
+
+  </section>
+
+</body>
+
+</document>

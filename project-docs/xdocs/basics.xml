@@ -11,7 +11,7 @@
   <section name="Modules, Manifests and Components">
 
   <p>
-    The smallest unit that is managed by Karma is a <b>module</b>. A module is
+    The smallest unit that is managed by Karma is a <b>Module</b>. A module is
     a directory structure, containing source code, unit tests, documentation,
     configuration and the like. Nothing new here. Modules are stored in a
     version control repository (like CVS, Subversion, Clearcase and Perforce)
@@ -66,7 +66,8 @@
 
   <p>
     Obviously, Karma has not implemented its own version control system. Karma
-    uses version control systems like CVS, Subversion, etc.
+    uses version control systems like CVS, Subversion, etc. Note that Karma
+    R1.0 only supports CVS.
   </p>
 
   <p>
@@ -147,17 +148,33 @@
   <section name="Build Management">
 
   <p>
-    Build management is   
+    Modules as collections of files mean nothing much. By building them, we
+    can create artifacts that can be used : applications, components,
+    libraries. A good example is a Java web application that can be deployed
+    as a <code>war</code>-file to a web application server and run to do
+    something usefull.
   </p>
 
   <p>
-    Karma R1.0 will only support Java development. In later versions, other
-    programming languages will be supported as well.
+    Karma is capable of building modules. Karma R1.0 only supports the Java
+    programming language. Ant is used to implement the build system. Modules
+    can be packaged as <code>jar</code>-files, <code>war</code>-files or
+    <code>ear</code>-files.
   </p>
 
   </section>
 
   <section name="Release Management">
+
+  <p>
+    Improving efficiency of the software release process is an area where
+    Karma can be very helpfull. Next to the promotion strategy for modules,
+    manifests can be 'released' by automatically creating 'release
+    manifests'. This type of manifest only contains <code>STATIC</code>
+    modules, increasing the chances of stable software. A release manager has
+    full control over the module versions that should be released.
+  </p>
+
   </section>
 
   <section name="Working Context Support">

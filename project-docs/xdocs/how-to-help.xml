@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<document>
+
+<properties>
+  <title>How to help</title>
+</properties>
+
+<body>
+
+  <section name="Share your views">
+
+  <p>
+    We are always open for critical notes, but they have to be founded. We
+    will seriously consider implemented good ideas in new versions of Karma
+    (or related tools under the Toolforge project).
+  </p>
+
+  <p>
+    Please share your views on the <a
+    href="http://sourceforge.net/forum/?group_id=98766">public forums</a> on
+    Sourceforge.
+  </p>
+
+  </section>
+
+  <section name="Donations">
+
+  <p>
+    The tools we build under the Toolforge project at Sourceforge are open
+    source and totally free to use. However, to be able to spread our vision
+    and build even better tools, we need your support. You can help by
+    donating to the Toolforge Foundation.
+  </p>
+
+  <p>
+    We are currently in the process of setting up the Toolforge
+    Foundation. Please keep an eye on this page. We will keep you posted.
+  </p>
+
+  </section>
+
+</body>
+
+</document>

@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<document>
+
+  <properties>
+    <title>Toolforge</title>
+    <author email="hippe@users.sourceforge.net">Hilbert Schraal</author>
+  </properties>
+
+  <body>
+
+    <section name="Module states">
+      <p>
+        A module can have three states:
+        <ul>
+          <li>Static: the module's version and development line are fixed.</li>
+          <li>Dynamic: the module's version is not fixed, the development line is (either main-line
+            or a development line). The module is kept up to date with the development line's latest tagged version.</li>
+          <li>Working: the module's version is not fixed. The module is kept up-to-date with the development-line's head.</li>
+        </ul>
+      </p>
+
+      <p>
+        Initially, a module is defined in the manifest either as Static or Dynamic. After an update
+        of the manifest, static modules are checked out with the version as specified in the manifest. Dynamic modules
+        are checked out with the latest available version.
+      </p>
+
+    </section>
+
+    <section name="State changes">
+      <p>
+        As static specifies, the version of a static module can't change. And therefor its state can't change.
+      </p>
+      <p>
+        <img src="images/module_state_changes.png"/>
+      </p>
+      <p>
+        A dynamic module
+        changes version automatically when a new version becomes available. Besides that its state can change to working. This
+        means that the developer is working on the module, i.e. making changes to the contents of the module.
+        When the developer is finished developing the state of the module can be changed back to dynamic. However at this
+        moment the changes that were made are not visible to the rest of the developers. To do this the developer has to promote
+        the module *before* changing the state to dynamic. A promote basically increases the version number of a module.
+      </p>
+    </section>
+
+  </body>
+
+</document>

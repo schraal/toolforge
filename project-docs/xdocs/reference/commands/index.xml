@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<document>
+
+<properties>
+  <title>Reference Documentation</title>
+</properties>
+
+<body>
+
+  <section name="Notes">
+
+  <p>
+    This page describes all commands, grouped together for readability. The
+    Karma Console application provides help functionality showing merely the
+    same stuff as is shown here. (A nice feature (no time for that now) is to
+    integrate the help texts from the command definition in this
+    documentation; proper reuse).
+  </p>
+
+  </section>
+
+  <section name="General Commands">
+
+  <p>
+  </p>
+
+  </section>
+
+  <section name="Build Management Commands">
+
+  <p>
+  </p>
+
+  </section>
+
+  <section name="Version Management Commands">
+
+  <p>
+  </p>
+
+  </section>
+
+  <section name="Release Management Commands">
+
+  <p>
+  </p>
+
+  </section>
+
+</body>
+
+</document>

@@ -35,7 +35,7 @@
   <section name="Installation">
 
   <p>
-    Karma can easily be installed. All releases are distributed with an <a
+    Karma is easy to install. All releases are distributed with an <a
     href="http://www.izforge.com/izpack/">IzPack</a> installer.
   </p>
 
@@ -45,179 +45,120 @@
     href="http://sourceforge.net/projects/toolforge">Sourceforge</a>
 
     <li/>Ensure you have a JDK 1.4.2+ installed and your
-    <code>JAVA_HOME</code> is set the correct JDK.
+    <code>JAVA_HOME</code> environment variable is set the correct JDK.
 
     <li/>Run <code>java -jar
     karma-cli-&lt;version&gt;-INSTALLER.jar</code>. This will start a GUI
     installer. Just follow the instructions.
 
-    <li/>After installation, set an environment variable
-    <code>KARMA_HOME</code> to the location where you installed Karma.
-
-    <li/>Add <code>$KARMA_HOME/bin</code> to your <code>PATH</code>.
-
-    <li/>Unix dudes, make sure you make <code>$KARMA_HOME/bin/karma</code>
-    executable (will be automated soon).
-
   </ul>
 
+  </section>
+
+  <section name="Configuration">
+  
+  <subsection name="Administrative Requirements">
+
   <p>
-    Start Karma ....
+    The power of Karma is in managing manifests and modules. Part of the
+    management task is the storage of those manifests and modules. Storing
+    modules in a version control system is common practice in development
+    organizations. Karma uses a 'manifest store' to store manifest files. A
+    manifest store can (not mandatory) to be
   </p>
 
+  <p>
+    Please refer to the <a href="administration-guide.html">administration
+    guide</a> for further information about the manifest store configuration.
+  </p>
+
+  </subsection>
+
+  <subsection name="User Environment Configuration">
+
+  <p>
+    After installation, a little bit of configuration is required:
+
+    <ul>
+
+    <li/>Karma requires a <code>KARMA_HOME</code> environment variable, which
+    should point to the same location you used during the installation process
+    (yep, we owe you this one as a default from the installation process
+    itself, but haven't implemented this as yet in the installation script).
+
+    <li/>Add <code>$KARMA_HOME/bin</code> (Windows- or Unix-style) to your
+    <code>PATH</code> environment variable.
+
+    </ul>
+  </p>
+
+  <p>
+    The remaining configuration is done as needed when Karma is started. The
+    next step is to start Karma. Karma R1.0 comes with to flavours of user
+    interfaces. One is the command-line interface, the other is the console. 
+  </p>
+
+  <h4>Linux users (and similar operation systems)</h4>
+
+  <p>
+    Karma can be started in the following ways:
+  </p>
+
+  <source>karma console -w &lt;working-context&gt;</source>
+
+  <source>karma &lt;command&gt; &lt;command-options&gt;</source>
+
+  <p>
+    The first one starts the Karma console application for the specified
+    working context (see the <a href="#wc">Working Context Configuration</a>
+    section). The second one runs the specified command only.
+  </p>
+
+  <h4>Windows users</h4>
+
+  <p>
+    Karma can be started in the following ways:
+  </p>
+
+  <source>karma.bat console -w &lt;working-context&gt;</source>
+
+  <source>karma.bat &lt;command&gt; &lt;command-options&gt;</source>
+
+  <p>
+    Karma will start up and check its environment. The following output should
+    be shown:
+  </p>
+ 
   <source>
-    karma[.bat] console -w &lt;working-context&gt;
+********************
+Welcome to Karma !!!
+********************
+
+Loading working context `default` ...
+Checking manifest store configuration ...
   </source>
 
   <p>
-    Karma will start and try to locate the settings for the working context
+    Karma will start and try and locate the settings for the working context
     specified with the <code>-w</code> argument. If the working context does
     not yet exist, Karma will create the working context and ask the user for
-    some configuration settings.
+    some configuration settings. Please read the <a href="#wc">Working Context
+    Configuration</a> section for further reference. 
   </p>
+
+  </subsection>
+
+  <a name="wc"/>
 
   <subsection name="Working Context Configuration">
 
   <p>
-    [ To be filled in. ]
-  </p>
-
-  </subsection>
-
-  </section>
-
-  <section name="Administration Stuff">
-
-  <subsection name="The manifest store">
-
-  <p>
-    Software modules are grouped in a so-called manifests. These manifests are
-    xml files, following the
-    http://www.toolforge.org/specifications/karma/manifest.dtd
-    definition. Karma is capable of checking out these manifest files from a
-    (CVS) repository. The local checkout of this module (which must be named :
-    manifests) is called the 'manifest-store'. During startup of Karma, the
-    manifest-store configuration will be checked and asked for if missing. You
-    have to provide these properties to Karma which will be written in
-    <code>$USER_HOME/.karma/&lt;working-context&gt;/workingcontext.properties.</code>
-    A local CVS repository works as well.
+    The working context is the set of manifests
   </p>
 
   <p>
-   Create a file <code>helloworld.xml</code> and add it to your
-   <code>manifest</code> module in the CVS repository :
-  </p>
-
-  <source>
-  <![CDATA[
-  <?xml version="1.0"?>
-
-  <manifest name="helloworld" type="development" version="1-0">
-    <modules>
-      <module name="helloworld" location="local"/>
-    </modules>
-  </manifest>
-  ]]>
-  </source>
-  
-  </subsection>
-
-  <subsection name="The location store">
-
-  <p>
-     Each module has a location. Right now, all modules have a location
-     identifying a CVS repository. Locations are configured in xml files,
-     following the http://www.toolforge.org/specifications/karma/location.dtd
-     definition. Karma is capable of checking out these location files from a
-     (CVS) repository. The local checkout of this module (which must be named
-     : locations) is called the 'location-store'. During startup of Karma, the
-     location-store configuration will be checked and asked for if
-     missing. You have to provide these properties to Karma which will be
-     written in
-     <code>$USER_HOME/.karma/&lt;working-context&gt;/workingcontext.properties</code>. A
-     local CVS repository works as well.
-  </p>
-
-  <p>
-    The following could be your starter location. Create a file
-    <code>locations.xml</code> and add it to your <code>locations</code>
-    module in the CVS repository :
-  </p>
-
-  <source>
-
-  <![CDATA[
-  <?xml version="1.0"?>
-
-  <locations>
-
-    <location type="cvs-repository" id="local">
-      <protocol>local</protocol>
-      <host>localhost</host>
-      <port>2401</port>
-      <repository>/home/cvs</repository>
-    </location>
-
-  </locations>
-  ]]>
-  </source>
-
-  <p>
-    The mapping between the manifest and the location is made via
-    <code>id="local"</code>.
-  </p>
-
-  </subsection>
-
-  <subsection name="Authentication configuration">
-
-  <p>
-    Version control repositories, such as CVS, can be behind an authentication
-    layer. If so, you will need a username and password. Karma maps each
-    location to authentication data. This authentication data is (Karma R1.0)
-    required to be in a file called <code>$USER_HOME/.cvspass</code>. If you
-    have ever used CVS command-line tools, you might have it on your system
-    already. For each location (a CVS location will create a CVSROOT from it),
-    a line should be created in the <code>.cvspass</code> file. This includes
-    the location configuration for the manifest-store and the
-    location-store. A general <code>.cvspass</code> file looks like:
-  </p>
-
-  <source>
-    /1 :pserver:asmedes@cvs.toolforge.nl:2401/cvs/karma B$#H er_9
-    /1 :pserver:asmedes@cvs.toolforge.nl:2418/cvs/cli B$^G er_9
-  </source>
-
-  <p>
-    The scrambled password is stored in this file as well. Ask your
-    administrator (or send us an email <a
-    href="mailto:support@toolforge.org">support@toolforge.org</a> for more
-    info if you haven't got a clue...).
-  </p>
-
-  <p> 
-    The authentication data that Karma requires has to be available in
-    <code>$USER_HOME/.karma</code>, in a file called
-    <code>authenticators.xml</code>. The following snippet shows the
-    <code>authenticators.xml</code> that maps to the location you configured
-    above :
-  </p>
-
-  <source>
-  <![CDATA[
-  <?xml version="1.0"?>
-
-  <authenticators>
-    <authenticator id="local" username="asmedes"/>
-  </authenticators>
-  ]]>
-  </source>
-  
-  <p>
-    Note that <code>asmedes</code> is the username in the CVS repository,
-    although it is not required for a CVS repository that is local (the
-    <code>:local:</code> protocol), Karma still needs it to be maintain
-    history.
+    Using Karma directly with a command requires that a working context has
+    been set already. Using any command 
   </p>
 
   </subsection>

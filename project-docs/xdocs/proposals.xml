@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<document>
+
+<properties>
+  <title>Proposals</title>
+</properties>
+
+<body>
+
+  <section name="Karma R1.1">
+
+  <p>
+    This release is primarily meant to implement left-overs from Karma R1.0 (the
+    non-blocking ones), such as fine tuning documentation, performance tuning,
+    stuff that users have come up with and is considered usefull as well as
+    high priority, etc.
+  </p>
+
+  <p>
+    Most likely, we'll implement Subversion support as well.
+  </p>
+
+  </section>
+
+  <section name="Karma R2.0">
+
+  <p>
+    No doubt this release will be bursting with new functionality. To start
+    with, we are already thinking about a much better way of handling commands
+    and the events they can generate. Also, there is much to gain from 
+  </p>
+
+  </section>
+
+</body>
+
+</document>

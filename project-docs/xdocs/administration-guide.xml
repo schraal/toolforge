@@ -1,0 +1,155 @@
+<?xml version="1.0"?>
+
+<document>
+
+  <properties>
+    <title>Toolforge User Documentation</title>
+  </properties>
+
+  <body>
+
+  <section name="Administration Stuff">
+
+  <p>
+    ...
+  </p>
+
+  <subsection name="The manifest store">
+
+  <p>
+    Software modules are grouped in a so-called manifests. These manifests are
+    xml files, following the
+    http://www.toolforge.org/specifications/karma/manifest.dtd
+    definition. Karma is capable of checking out these manifest files from a
+    (CVS) repository. The local checkout of this module (which must be named :
+    manifests) is called the 'manifest-store'. During startup of Karma, the
+    manifest-store configuration will be checked and asked for if missing. You
+    have to provide these properties to Karma which will be written in
+    <code>$USER_HOME/.karma/&lt;working-context&gt;/workingcontext.properties.</code>
+    A local CVS repository works as well.
+  </p>
+
+  <p>
+   Create a file <code>helloworld.xml</code> and add it to your
+   <code>manifest</code> module in the CVS repository :
+  </p>
+
+  <source>
+  <![CDATA[
+  <?xml version="1.0"?>
+
+  <manifest name="helloworld" type="development" version="1-0">
+    <modules>
+      <module name="helloworld" location="local"/>
+    </modules>
+  </manifest>
+  ]]>
+  </source>
+  
+  </subsection>
+
+  <subsection name="The location store">
+
+  <p>
+     Each module has a location. Right now, all modules have a location
+     identifying a CVS repository. Locations are configured in xml files,
+     following the http://www.toolforge.org/specifications/karma/location.dtd
+     definition. Karma is capable of checking out these location files from a
+     (CVS) repository. The local checkout of this module (which must be named
+     : locations) is called the 'location-store'. During startup of Karma, the
+     location-store configuration will be checked and asked for if
+     missing. You have to provide these properties to Karma which will be
+     written in
+     <code>$USER_HOME/.karma/&lt;working-context&gt;/workingcontext.properties</code>. A
+     local CVS repository works as well.
+  </p>
+
+  <p>
+    The following could be your starter location. Create a file
+    <code>locations.xml</code> and add it to your <code>locations</code>
+    module in the CVS repository :
+  </p>
+
+  <source>
+
+  <![CDATA[
+  <?xml version="1.0"?>
+
+  <locations>
+
+    <location type="cvs-repository" id="local">
+      <protocol>local</protocol>
+      <host>localhost</host>
+      <port>2401</port>
+      <repository>/home/cvs</repository>
+    </location>
+
+  </locations>
+  ]]>
+  </source>
+
+  <p>
+    The mapping between the manifest and the location is made via
+    <code>id="local"</code>.
+  </p>
+
+  </subsection>
+
+  <subsection name="Authentication configuration">
+
+  <p>
+    Version control repositories, such as CVS, can be behind an authentication
+    layer. If so, you will need a username and password. Karma maps each
+    location to authentication data. This authentication data is (Karma R1.0)
+    required to be in a file called <code>$USER_HOME/.cvspass</code>. If you
+    have ever used CVS command-line tools, you might have it on your system
+    already. For each location (a CVS location will create a CVSROOT from it),
+    a line should be created in the <code>.cvspass</code> file. This includes
+    the location configuration for the manifest-store and the
+    location-store. A general <code>.cvspass</code> file looks like:
+  </p>
+
+  <source>
+    /1 :pserver:asmedes@cvs.toolforge.nl:2401/cvs/karma B$#H er_9
+    /1 :pserver:asmedes@cvs.toolforge.nl:2418/cvs/cli B$^G er_9
+  </source>
+
+  <p>
+    The scrambled password is stored in this file as well. Ask your
+    administrator (or send us an email <a
+    href="mailto:support@toolforge.org">support@toolforge.org</a> for more
+    info if you haven't got a clue...).
+  </p>
+
+  <p> 
+    The authentication data that Karma requires has to be available in
+    <code>$USER_HOME/.karma</code>, in a file called
+    <code>authenticators.xml</code>. The following snippet shows the
+    <code>authenticators.xml</code> that maps to the location you configured
+    above :
+  </p>
+
+  <source>
+  <![CDATA[
+  <?xml version="1.0"?>
+
+  <authenticators>
+    <authenticator id="local" username="asmedes"/>
+  </authenticators>
+  ]]>
+  </source>
+  
+  <p>
+    Note that <code>asmedes</code> is the username in the CVS repository,
+    although it is not required for a CVS repository that is local (the
+    <code>:local:</code> protocol), Karma still needs it to be maintain
+    history.
+  </p>
+
+  </subsection>
+
+  </section>
+
+  </body>
+
+</document>

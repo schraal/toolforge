@@ -29,61 +29,47 @@
 
     <menu name="End User Applications">
       <item name="Command Line Interface"  href="../karma-cli"/>
-      <item name="GUI" />
+      <item name="Console" href="../karma-cli/"/>
 
-      <item name="Plugins">
+      <item name="IDE Plugins">
         <item name="Intelli-J" href="/plugins/intelli-j.html"/>
-        <!--        <item name="Eclipse" href="/plugins/eclipse.html"/>-->
-        <!--        <item name="JDeveloper" href="/plugins/jdeveloper.html"/>-->
-        <!--        <item name="Maven Plugin" href=""/>-->
+        <item name="Eclipse" href="/plugins/eclipse.html"/>
       </item>
-
     </menu>
 
-    <menu name="Documentation">
-      <item name="Reference" href="/reference/index.html" collapse="true">
-        <item name="Introduction"/>
-        <item name="Karma - What about it ?"/>
-        <item name="Concepts" href="/reference/concepts/index.html" collapse="true">
-          <item name="Manifests">
-            <item name="Types"/>
-          </item>
-          <item name="Components"/>
-          <item name="Modules" href="/reference/concepts/modules/index.html" collapse="true">
-            <item name="Types"/>
-            <item name="States"/>
-            <item name="Layout" href="/reference/concepts/modules/layout.html"/>
-          </item>
-        </item>
-        <item name="Command Line Interface : karma-cli" collapse="true">
-          <item name="Build management commands"/>
-          <item name="Version management commands"/>
-          <item name="Release management commands"/>
-        </item>
-        <item name="Version control aspects" collapse="true">
-          <item name="CVS support"/>
-          <item name="Future support"/>
-        </item>
-        <item name="Implementing Karma in your organisation" collapse="true">
-          <item name="Modularize, then componentize"/>
-          <item name="Implementation roadmap"/>
-        </item>
-        <item name="Integration with tools" collapse="true">
-          <item name="IDE support / plugins"/>
-        </item>
+    <menu name="Reference Manual">
+      <item name="Working Context" href="/reference/working-context/index.html"/>
+      <item name="Manifests" href="/reference/manifests/index.html"/>
+
+      <item name="Modules" href="/reference/modules/index.html" collapse="false">
+        <item name="Library Module" href="/reference/modules/index.html" />
+        <item name="Java Source Module" href="/reference/modules/index.html" />
+        <item name="Java Web Application" href="/reference/modules/index.html" />
+        <item name="Java Enterprise Application" href="/reference/modules/index.html" />
       </item>
 
-      <item name="Commands"              href="/commands.html"/>
-      <item name="Version Management"    href="/version-management.html"/>
-      <item name="State Management"      href="/state-management.html"/>
-      <item name="How-To's"              href="/howto/index.html"/>
-      <item name="JavaDocs"	             href="/apidocs/index.html"/>
+      <item name="Configuration Management" href="/reference/configuration-management/index.html" collapse="true">
+        <item name="Build Management" href="/reference/configuration-management/build-management.html" collapse="true">
+	  <item name="Dependency Management" href="/reference/configuration-management/dependency-management.html"/>
+	</item>
+        <item name="State Management" href="/reference/configuration-management/state-management.html"/>
+        <item name="Version Management" href="/reference/configuration-management/version-control.html"  collapse="true">
+          <item name="Version Control" href="/reference/configuration-management/version-control.html"/>
+          <item name="Promotion Model" href="/reference/configuration-management/promotion-model.html"/>
+        </item>  
+        <item name="Release Management" href="/reference/configuration-management/release-management.html"/>
+      </item>
+
+      <item name="Command Reference" href="/reference/commands/index.html"/>
+
     </menu>
 
     <menu name="Development">
-      <item name="Proposals"             href="/proposals.html"/>
-      <item name="How To Help"           href="/how-to-help.html"/>
-      <item name="Todo"                  href="/todo.html"/>
+      <item name="Proposals" href="/proposals.html"/>
+      <item name="How To Help" href="/how-to-help.html" collapse="true">
+        <item name="Toolforge Foundation" href="/foundation.html"/>
+      </item>
+      <item name="Todo" href="/todo.html"/>
     </menu>
 
   </body>
