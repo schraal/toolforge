@@ -47,6 +47,9 @@ public class CommandException extends Exception {
   /** The build of a module failed. */
   public static final ErrorCode BUILD_FAILED = new ErrorCode(EXCEPTION_PREFIX + "00040");
 
+  /** The test of a module failed. */
+  public static final ErrorCode TEST_FAILED = new ErrorCode(EXCEPTION_PREFIX + "00050");
+
   /**
    * When the module has a version-attribute and is therefor STATIC. Not allowed to start work on this module.
    */
@@ -76,6 +79,11 @@ public class CommandException extends Exception {
    * <code>src/java</code> (the default directory for a module where java sources are located) is missing.
    */
   public static final ErrorCode NO_SRC_DIR = new ErrorCode(EXCEPTION_PREFIX + "00045");
+
+  /**
+   * <code>test/java</code> (the default directory for a module where test java sources are located) is missing.
+   */
+  public static final ErrorCode NO_TEST_DIR = new ErrorCode(EXCEPTION_PREFIX + "00051");
 
   public CommandException(ErrorCode errorCode) {
     this(errorCode, null);
