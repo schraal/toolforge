@@ -21,8 +21,12 @@ public class BuildEnvironment {
     this.module = module;
   }
 
+  /**
+   * @deprecated Use {@link Manifest#getBuildBaseDirectory()} instead.
+   */
   public File getBuildRootDirectory() {
-    return new File(manifest.getBaseDirectory(), "build");
+//    return new File(manifest.getBaseDirectory(), "build");
+    return manifest.getBuildBaseDirectory();
   }
 
   /**
@@ -69,8 +73,12 @@ public class BuildEnvironment {
     return new File(module.getBaseDir(), "test" + File.separator + "java");
   }
 
+  /**
+   * @deprecated Use {@link Manifest#getBuildBaseDirectory()} instead.
+   */
   public File getManifestBuildDirectory() {
-    return new File(manifest.getBaseDirectory(), "build");
+//    return new File(manifest.getBaseDirectory(), "build");
+    return manifest.getBuildBaseDirectory();
   }
   
 }

@@ -37,6 +37,7 @@ import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.VersionControlSystem;
 import nl.toolforge.karma.core.vc.Authenticator;
+import nl.toolforge.karma.core.vc.Authenticators;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.io.FileUtils;
@@ -279,14 +280,11 @@ public abstract class BaseModule implements Module {
 
     // Is a requirement.
     //
-    Authenticator a = ((VersionControlSystem) getLocation()).authenticate();
-    ((VersionControlSystem) getLocation()).setUsername(a.getUsername());
+    Authenticator a = Authenticators.getAuthenticator((VersionControlSystem)getLocation());
 
-    event.setAuthor(((VersionControlSystem) getLocation()).getUsername());
-
+    event.setAuthor(a.getUsername());
     event.setComment(createComment);
     history.addEvent(event);
-
     history.save();
 
     CVSRunner runner = (CVSRunner) RunnerFactory.getRunner(getLocation());

@@ -24,39 +24,17 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Properties;
 
 /**
  * @version $Id$
  */
 public final class TestWorkingContext extends TestCase {
 
-  private File dotKarma, projectsDir;
-  private Properties p;
+  private File dotKarma;
 
   public void setUp() {
     try {
       dotKarma = MyFileUtils.createTempDirectory();
-      projectsDir = MyFileUtils.createTempDirectory();
-
-      p = new Properties();
-
-      p.put(WorkingContext.MANIFEST_STORE_PROTOCOL, "local");
-      p.put(WorkingContext.MANIFEST_STORE_REPOSITORY, "two");
-//      p.put(WorkingContext.MANIFEST_STORE_HOST, "one");
-//      p.put(WorkingContext.MANIFEST_STORE_PORT, "four");
-      p.put(WorkingContext.MANIFEST_STORE_USERNAME, "five");
-      p.put(WorkingContext.MANIFEST_STORE_MODULE, "six");
-
-      p.put(WorkingContext.LOCATION_STORE_PROTOCOL, "pserver");
-      p.put(WorkingContext.LOCATION_STORE_HOST, "one");
-      p.put(WorkingContext.LOCATION_STORE_REPOSITORY, "two");
-      p.put(WorkingContext.LOCATION_STORE_PORT, "four");
-      p.put(WorkingContext.LOCATION_STORE_USERNAME, "five");
-      p.put(WorkingContext.LOCATION_STORE_MODULE, "six");
-
-
     } catch (IOException e) {
       fail(e.getMessage());
     }
@@ -64,28 +42,50 @@ public final class TestWorkingContext extends TestCase {
 
   public void testConstructor() {
 
-    WorkingContext ctx = new WorkingContext("blaat", dotKarma, projectsDir, p);
-
-    assertEquals(2, ctx.getInvalidConfiguration().size());
-
-    assertEquals(1, ((List) ctx.getInvalidConfiguration().get("MANIFEST-STORE")).size());
-    assertEquals(1, ((List) ctx.getInvalidConfiguration().get("LOCATION-STORE")).size());
+    WorkingContext ctx = new WorkingContext("blaat", dotKarma);
+    assertNotNull(ctx);
   }
 
   public void testDirectories() {
 
-    WorkingContext ctx = new WorkingContext("blaat", dotKarma, projectsDir, p);
+    File tmp = null;
+    try {
+      tmp = MyFileUtils.createTempDirectory();
+
+    } catch (IOException e) {
+      fail(e.getMessage());
+    }
+
+    WorkingContext ctx = new WorkingContext("arjen", dotKarma);
+
+    try {
+      MyFileUtils.writeFile(
+          ctx.getWorkingContextConfigurationBaseDir(),
+          new File("test/test-working-context.xml"),
+          "working-context.xml",
+          this.getClass().getClassLoader());
+      ctx.init();
+    } catch (IOException e) {
+      fail(e.getMessage());
+    }
+
+    // Retrieve the configuration and change it a bit for testing purposes.
+    //
+    WorkingContextConfiguration config = ctx.getConfiguration();
+    config.setProperty(WorkingContext.PROJECT_BASE_DIRECTORY_PROPERTY, tmp.getPath());
+
+    assertEquals(config.getProperty(WorkingContext.PROJECT_BASE_DIRECTORY_PROPERTY), tmp.getPath());
+    assertEquals(tmp, ctx.getProjectBaseDirectory());
+    assertEquals(new File(tmp, ".admin"), ctx.getAdminDir());
 
     assertEquals(dotKarma, WorkingContext.getConfigurationBaseDir());
-    assertEquals(new File(dotKarma, "blaat"), ctx.getWorkingContextConfigDir());
-    assertEquals(new File(dotKarma, "blaat/workingcontext.properties"), ctx.getConfigurationFile());
-    assertEquals(new File(dotKarma, "blaat"), ctx.getWorkingContextConfigDir());
+    assertEquals(new File(dotKarma, "working-contexts/arjen"), ctx.getWorkingContextConfigurationBaseDir());
 
-    assertEquals(projectsDir, ctx.getProjectBaseDirectory());
-    assertEquals(new File(projectsDir, "blaat"), ctx.getWorkingContextProjectDir());
-    assertEquals(new File(projectsDir, "blaat/.admin/manifest-store/six"), ctx.getManifestStore());
-    assertEquals(new File(projectsDir, "blaat/.admin/location-store/six"), ctx.getLocationStore());
-    assertEquals(new File(projectsDir, "blaat/projects"), ctx.getDevelopmentHome());
+    try {
+      FileUtils.deleteDirectory(tmp);
+    } catch (IOException e) {
+      fail(e.getMessage());
+    }
   }
 
   /**
@@ -95,7 +95,7 @@ public final class TestWorkingContext extends TestCase {
   public void tearDown() {
     try {
       FileUtils.deleteDirectory(dotKarma);
-      FileUtils.deleteDirectory(projectsDir);
+//      FileUtils.deleteDirectory(projectsDir);
     } catch (IOException e) {
       fail(e.getMessage());
     }

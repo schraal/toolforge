@@ -62,6 +62,22 @@ public interface Manifest {
    */
   public File getBaseDirectory();
 
+   /**
+   * The <code>build</code> default child directory of the {@link #getBaseDirectory}. This location stores a
+   * manifests' build output.
+   *
+   * @return The <code>build</code> default child directory of the {@link #getBaseDirectory}.
+   */
+  public File getBuildBaseDirectory();
+
+  /**
+   * The <code>modules</code> default child directory of the {@link #getBaseDirectory}. This location stores a
+   * manifests' modules.
+   *
+   * @return The <code>modules</code> default child directory of the {@link #getBaseDirectory}.
+   */
+  public File getModuleBaseDirectory();
+
   /**
    * The base location of a temp directory the manifest within the current working context. This location is used
    * extensively by Karma as a temporary location and should not be removed for as long as the manifest has a presence

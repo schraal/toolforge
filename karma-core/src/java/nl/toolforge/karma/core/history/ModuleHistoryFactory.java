@@ -48,7 +48,7 @@ public class ModuleHistoryFactory {
   /**
    * Retrieve the one and only instance of this class, given the specified manifest home.
    *
-   * @param manifestHome  The fysical location of the local copies of the current manifest's module
+   * @param manifestHome  The physical location of the local copies of the current manifest's module
    * @return ModuleHistoryFactory
    */
   public static ModuleHistoryFactory getInstance(File manifestHome) {

@@ -52,7 +52,8 @@ public class CleanAll extends AbstractBuildCommand {
 
     try {
 
-      FileUtils.deleteDirectory(new File(getCurrentManifest().getBaseDirectory(), "build"));
+//      FileUtils.deleteDirectory(new File(getCurrentManifest().getBaseDirectory(), "build"));
+      FileUtils.deleteDirectory(getCurrentManifest().getBuildBaseDirectory());
 
       // todo internationalization
       //

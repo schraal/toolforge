@@ -3,6 +3,8 @@ package nl.toolforge.karma.core.location;
 import org.netbeans.lib.cvsclient.connection.StandardScrambler;
 import org.netbeans.lib.cvsclient.connection.Scrambler;
 
+import javax.swing.*;
+
 /**
  *
  * @author D.A. Smedes
@@ -19,9 +21,7 @@ public final class PasswordScrambler {
    * @return
    */
   public static String scramble(String password) {
-
     Scrambler scrambler = StandardScrambler.getInstance();
-
     return scrambler.scramble(password);
   }
 }

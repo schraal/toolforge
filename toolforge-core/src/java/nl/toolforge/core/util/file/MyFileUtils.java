@@ -20,6 +20,10 @@ package nl.toolforge.core.util.file;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.util.Random;
 
 import org.apache.tools.ant.DirectoryScanner;
@@ -29,6 +33,7 @@ import org.apache.tools.ant.DirectoryScanner;
  * File utilities. Stuff that is not implemented by <code>org.apache.commons.io.FileUtils</code>.
  *
  * @author D.A. Smedes
+ * @author A. Mooy
  *
  * @version $Id:
  */
@@ -95,4 +100,49 @@ public final class MyFileUtils {
       new File(dir, dirs[i]).setReadOnly();
     }
   }
+
+  /**
+   * Writes <code>fileRef</code> to <code>dir</code>. <code>fileRef</code> should be available in the classpath of
+   * <code>classLoader</code>.
+   *
+   * @param dir
+   * @param fileRef
+   * @param classLoader The class loader that contains <code>fileRef</code>
+   *
+   * @throws IOException
+   */
+  public static void writeFile(File dir, File fileRef, ClassLoader classLoader) throws IOException {
+    writeFile(dir, fileRef, fileRef.getName(), classLoader);
+  }
+
+  /**
+   * Writes <code>fileRef</code> to <code>dir</code> as <code>newFileRef</code>. <code>fileRef</code> should be available in the classpath of
+   * <code>classLoader</code>.
+   *
+   * @param dir
+   * @param fileRef
+   * @param newFileName
+   * @param classLoader The class loader that contains <code>fileRef</code>
+   *
+   * @throws IOException
+   */
+  public static void writeFile(File dir, File fileRef, String newFileName, ClassLoader classLoader) throws IOException {
+
+    if (dir == null || fileRef == null || newFileName == null || "".equals(newFileName) || classLoader == null) {
+      throw new NullPointerException("");
+    }
+
+    BufferedReader in =
+        new BufferedReader(new InputStreamReader(classLoader.getResourceAsStream(fileRef.getPath())));
+    BufferedWriter out =
+        new BufferedWriter(new FileWriter(new File(dir, newFileName)));
+
+    String str;
+    while ((str = in.readLine()) != null) {
+      out.write(str);
+    }
+    out.close();
+    in.close();
+  }
+
 }

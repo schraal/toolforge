@@ -129,7 +129,7 @@ public class TestCVSRunner extends LocalCVSInitializer {
 
       Module module = checkoutDefaultModule1();
 
-      assertTrue(new File(getWorkingContext().getDevelopmentHome(), module.getName()).exists());
+      assertTrue(new File(getWorkingContext().getProjectBaseDirectory(), module.getName()).exists());
 
       ((CVSRunner) runner).add(module, new String[]{"blaat-file"}, new String[]{"blaat-dir"});
 
@@ -211,7 +211,7 @@ public class TestCVSRunner extends LocalCVSInitializer {
     try {
 
       Module module = checkoutDefaultModuleWithVersion();
-      module.setBaseDir(new File(getWorkingContext().getDevelopmentHome(), module.getName()));
+      module.setBaseDir(new File(getWorkingContext().getProjectBaseDirectory(), module.getName()));
       module.markPatchLine(true);
 
       runner.createPatchLine(module);

@@ -18,20 +18,22 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Set;
-
+import nl.toolforge.karma.core.cmd.digester.CommandDescriptorCreationFactory;
+import nl.toolforge.karma.core.cmd.digester.OptionDescriptorCreationFactory;
 import org.apache.commons.cli.Options;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xml.sax.SAXException;
 
-import nl.toolforge.karma.core.cmd.digester.CommandDescriptorCreationFactory;
-import nl.toolforge.karma.core.cmd.digester.OptionDescriptorCreationFactory;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 /**
  * <p>Loads command-descriptors from an <code>XML</code>-file. The default filename
@@ -87,11 +89,11 @@ public final class CommandLoader {
    * @return The full set of commands for Karma.
    * @throws CommandLoadException
    */
-  Set load() throws CommandLoadException {
+  CommandDescriptorMap load() throws CommandLoadException {
 
     // Load the core commands
     //
-    Set commandSet = loadCoreCommands();
+    CommandDescriptorMap commandSet = loadCoreCommands();
 
     // Load the plugin commands
     //
@@ -104,7 +106,15 @@ public final class CommandLoader {
     }
 
     while (enum.hasMoreElements()) {
-      commandSet.addAll(load((URL) enum.nextElement()));
+      commandSet.addAll((CommandDescriptorMap) load((URL) enum.nextElement()));
+//      List l = (List) load((URL) enum.nextElement());
+//      for (Iterator i = l.iterator(); i.hasNext();) {
+//         Object o = i.next();
+//        if (commandSet.contains(o)) {
+//          throw new CommandLoadException(CommandLoadException.DUPLICATE_COMMAND, new Object[]{o});
+//        }
+//        commandSet.add(o);
+//      }
     }
 
     return commandSet;
@@ -115,14 +125,14 @@ public final class CommandLoader {
    *
    * @param resource         The resource url to a command <code>xml</code> file. Use
    *                         {@link #load} to use the default settings.
-   * @return                 A <code>Set</code> of {@link CommandDescriptor} instances.
+   * @return                 A <code>List</code> of {@link CommandDescriptor} instances.
    * 
    * @throws CommandLoadException
    */
-  Set load(URL resource) throws CommandLoadException {
+  CommandDescriptorMap load(URL resource) throws CommandLoadException {
 
     try {
-      return (Set) getCommandDigester().parse(resource.openStream());
+      return (CommandDescriptorMap) getCommandDigester().parse(resource.openStream());
     } catch (IOException e) {
       logger.error(e);
       throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_PLUGIN_COMMANDS_FILE, new Object[]{PLUGIN_COMMANDS_FILE});
@@ -137,11 +147,25 @@ public final class CommandLoader {
    *
    * @throws CommandLoadException
    */
-  private Set loadCoreCommands() throws CommandLoadException {
+  private CommandDescriptorMap loadCoreCommands() throws CommandLoadException {
 
     try {
       String defaultCommands = DEFAULT_COMMANDS_BASEDIR + "/" + CORE_COMMANDS_FILE;
-      return (Set) getCommandDigester().parse(this.getClass().getClassLoader().getResourceAsStream(defaultCommands));
+
+//      Set newSet = new HashSet();
+
+      CommandDescriptorMap cds = (CommandDescriptorMap) getCommandDigester().parse(this.getClass().getClassLoader().getResourceAsStream(defaultCommands));
+//      for (Iterator i = cds.iterator(); i.hasNext();) {
+//        Object o = i.next();
+//        if (newSet.contains(o)) {
+//          throw new CommandLoadException(CommandLoadException.DUPLICATE_COMMAND, new Object[]{o});
+//        }
+//        newSet.add(o);
+//      }
+
+      return cds;
+
+//      return (Set) getCommandDigester().parse(this.getClass().getClassLoader().getResourceAsStream(defaultCommands));
     } catch (IOException e) {
       logger.error(e);
       throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_DEFAULT_COMMANDS, new Object[]{CORE_COMMANDS_FILE});
@@ -155,7 +179,8 @@ public final class CommandLoader {
 
     Digester digester = new Digester();
 
-    digester.addObjectCreate("commands", HashSet.class);
+//    digester.addObjectCreate("commands", ArrayList.class);
+    digester.addObjectCreate("commands", CommandDescriptorMap.class);
 
     digester.addFactoryCreate("*/command", CommandDescriptorCreationFactory.class);
     digester.addCallMethod("*/command/description", "setDescription", 0);

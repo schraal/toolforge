@@ -61,8 +61,6 @@ public class ViewManifest extends DefaultCommand {
 
   public void execute() throws CommandException {
 
-    // todo most of it is actually part of cli meuk ...
-
     if (!getContext().isManifestLoaded()) {
       throw new CommandException(ManifestException.NO_ACTIVE_MANIFEST);
     }
@@ -147,11 +145,11 @@ public class ViewManifest extends DefaultCommand {
       } else {
         moduleData[6] = "";
         if (moduleStatus.connectionFailure()) {
-          moduleData[7] = "Connection failed.";
+          moduleData[7] = "<Connection failed>";
         } else if (moduleStatus.authenticationFailure()) {
-          moduleData[7] = "Authentication failed.";
+          moduleData[7] = "<Authentication failed>";
         } else {
-          moduleData[7] = "** Not in repository **";
+          moduleData[7] = "<Not in repository>";
         }
       }
       renderedList.add(moduleData);

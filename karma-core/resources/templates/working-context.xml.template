@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+
+<wc:working-context
+  xmlns:wc="http://www.toolforge.org/specifications/working-context"
+  xmlns:loc="http://www.toolforge.org/specifications/location">
+
+  <wc:properties>
+
+    <!-- 
+
+      `project.basedir` indicates the root directory for all development
+      projects 
+
+    -->
+
+    <wc:property name="project.basedir" value="/home/asmedes/karma/projects"/>
+
+    <!-- 
+
+      `project.local.repository` indicates the repository directory where
+      Karma can find binary dependencies, Maven style. This means that a
+      reference to your local Maven repository will do just fine.  
+
+    -->
+
+    <wc:property name="project.local.repository" value="/home/asmedes/.repository"/>
+
+  </wc:properties>
+
+  <loc:locations>
+
+    <loc:location type="cvs" id="manifest-store">
+      <loc:protocol></loc:protocol>
+      <loc:host></loc:host>
+      <loc:port></loc:port>
+      <loc:repository></loc:repository>
+      <loc:module-offset/>
+    </loc:location>
+
+    <loc:location type="cvs" id="location-store">
+      <loc:protocol></loc:protocol>
+      <loc:host></loc:host>
+      <loc:port></loc:port>
+      <loc:repository></loc:repository>
+      <loc:module-offset/>
+    </loc:location>
+
+  </loc:locations>
+
+</wc:working-context>

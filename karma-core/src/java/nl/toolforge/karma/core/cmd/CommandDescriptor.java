@@ -23,8 +23,12 @@ import org.apache.commons.cli.Options;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.Iterator;
 
 /**
+ * A <code>CommandDescriptor</code> is the object representation of a command as it is specified in a
+ * <code>command.xml</code> file.
+ *
  * @author D.A. Smedes
  * @version $Id$
  */
@@ -42,10 +46,18 @@ public final class CommandDescriptor {
   public CommandDescriptor(String name, String aliasString) {
     this.name = name;
     this.aliasString = aliasString;
+
     aliasList = new HashSet();
+    aliasList.add(name);
+
     createAliasList(aliasString);
   }
 
+  /**
+   * Returns the name of the command represented by this <code>CommandDescriptor</code>.
+   *
+   * @return The name of the command represented by this <code>CommandDescriptor</code>
+   */
   public String getName() {
     return this.name;
   }
@@ -110,7 +122,8 @@ public final class CommandDescriptor {
   }
 
   /**
-   * Commands are equal when their names are equal.
+   * Commands are equal when their names are equal or any alias equals an alias from <code>o</code> or the other way
+   * around.
    *
    * @param o The object instance that should be compared with <code>this</code>.
    * @return <code>true</code> if this command descriptor is equal to <code>o</code> or <code>null</code> when
@@ -119,20 +132,43 @@ public final class CommandDescriptor {
   public boolean equals(Object o) {
 
     if (o instanceof CommandDescriptor) {
-      if (name.equals(((CommandDescriptor) o).name) && aliasList.equals(((CommandDescriptor) o).aliasList)) {
-        return true;
-      } else {
-        return false;
+
+      Set s1 = aliasList;
+      Set s2 = ((CommandDescriptor) o).aliasList;
+
+      for (Iterator i = s1.iterator(); i.hasNext();) {
+        if (s2.contains((String) i.next())) {
+          return true;
+        }
       }
+
+      for (Iterator i = s2.iterator(); i.hasNext();) {
+        if (s1.contains((String) i.next())) {
+          return true;
+        }
+      }
+      return false;
     } else {
       return false;
     }
   }
+  
+//
+//  public int hashCode() {
+//    return (aliasList == null ? 0 : aliasList.hashCode());
+//  }
 
-  public int hashCode() {
-    return name.hashCode();
+  public String toString() {
+
+    String a = "";
+    for (Iterator i = aliasList.iterator(); i.hasNext();) {
+      a += (String) i.next();
+      if (i.hasNext()) {
+        a += ", ";
+      }
+    }
+    return name + " (" + a + ")";
   }
-
 }
 
 

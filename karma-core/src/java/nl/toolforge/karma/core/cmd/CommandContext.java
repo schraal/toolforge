@@ -109,16 +109,15 @@ public final class CommandContext implements ChangeListener {
     command.registerCommandResponseListener(getHandler());
 
     CommandStartedEvent startEvent = new CommandStartedEvent(command);
-//    commandResponse.addEvent(startEvent);
+    //commandResponse.addEvent(startEvent);
 
     try {
       command.execute();
     } catch (CommandException c) {
       commandResponse.addEvent(new ErrorEvent(command, c.getErrorCode(), c.getMessageArguments()));
-//      commandResponse.addEvent(new CommandFailedEvent(command, c));
+      //commandResponse.addEvent(new CommandFailedEvent(command, c));
       throw c;
     }
-//    commandResponse.addEvent(new CommandFinishedEvent(command, startEvent.getTime()));
 
     command.deregisterCommandResponseListener(handler);
     command.cleanUp();
@@ -389,7 +388,7 @@ public final class CommandContext implements ChangeListener {
    * Helper to get the module base for the current manifest.
    */
   private File getBase() {
-    return new File(workingContext.getDevelopmentHome(), getCurrentManifest().getName());
+    return new File(workingContext.getProjectBaseDirectory(), getCurrentManifest().getName());
   }
 
   /**

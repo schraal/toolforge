@@ -20,10 +20,8 @@ public class TestAuthenticator extends BaseTest {
 
       VersionControlSystem cvs = (VersionControlSystem) loader.get("test-id-1");
 
-      Authenticator a = new Authenticator();
-      a.authenticate(cvs);
-
-      assertEquals(cvs.getUsername(), "asmedes");
+      Authenticator a = Authenticators.getAuthenticator(cvs);
+      assertEquals(a.getUsername(), "asmedes");
 
     } catch (LocationException e) {
       fail(e.getMessage());

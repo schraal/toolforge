@@ -240,7 +240,8 @@ public final class DependencyHelper {
         DependencyPath path;
         if (dep.isLibModuleDependency()) {
           //dep on jar in lib module. This one is relative to the base dir of the manifest.
-          path = new DependencyPath(manifest.getBaseDirectory(), new File(dep.getJarDependency()));
+//          path = new DependencyPath(manifest.getBaseDirectory(), new File(dep.getJarDependency()));
+          path = new DependencyPath(manifest.getModuleBaseDirectory(), new File(dep.getJarDependency()));
         } else {
           //dep on jar in Maven-style repo.
           path = new DependencyPath(WorkingContext.getLocalRepository(), new File(dep.getJarDependency()));

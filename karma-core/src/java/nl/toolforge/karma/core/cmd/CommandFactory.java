@@ -71,7 +71,7 @@ public final class CommandFactory {
 
   private synchronized void init() throws CommandLoadException {
 
-    Set descriptors = CommandLoader.getInstance().load();
+    CommandDescriptorMap descriptors = CommandLoader.getInstance().load();
 
     commandsByName = new TreeMap();
     commandsByAlias = new TreeMap();
@@ -80,7 +80,7 @@ public final class CommandFactory {
     // Store all commands by name in a hash
     // Create a set of all command names.
     //
-    for (Iterator i = descriptors.iterator(); i.hasNext();) {
+    for (Iterator i = descriptors.values().iterator(); i.hasNext();) {
       CommandDescriptor descriptor = (CommandDescriptor) i.next();
 
       commandsByName.put(descriptor.getName(), descriptor);

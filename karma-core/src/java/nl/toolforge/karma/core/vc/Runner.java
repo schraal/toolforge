@@ -80,7 +80,7 @@ public interface Runner {
 
 	/**
 	 * Checks out a module from a version control system with the specified <code>version</code>. The module is checked
-   * out relative to {@link nl.toolforge.karma.core.manifest.Manifest#getBaseDirectory()}.
+   * out relative to {@link nl.toolforge.karma.core.manifest.Manifest#getModuleBaseDirectory()}.
 	 *
 	 * @param module The module that should be checked out from the version control system.
 	 * @param version The version of the module that should be checked out.
@@ -91,7 +91,8 @@ public interface Runner {
 
 	/**
 	 * Checks out a module from a version control system with the specified <code>version</code> and from a development
-   * line. The module is checked out relative to {@link nl.toolforge.karma.core.manifest.Manifest#getBaseDirectory()}.
+   * line. The module is checked out relative to
+   * {@link nl.toolforge.karma.core.manifest.Manifest#getModuleBaseDirectory()}.
 	 *
 	 * @param module The module that should be checked out from the version control system.
    * @param developmentLine The development line for the module.

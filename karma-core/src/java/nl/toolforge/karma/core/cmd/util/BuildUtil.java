@@ -73,7 +73,7 @@ public final class BuildUtil {
       // No interdependencies found for the dependency, so we remove its build-directory.
       //
       try {
-        File buildDir = new File(new File(currentManifest.getBaseDirectory(), "build"), dep.getName());
+        File buildDir = new File(currentManifest.getBuildBaseDirectory(), dep.getName());
 
         FileUtils.deleteDirectory(buildDir);
 

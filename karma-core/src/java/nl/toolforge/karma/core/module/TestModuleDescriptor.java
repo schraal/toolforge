@@ -9,6 +9,8 @@ import nl.toolforge.karma.core.test.BaseTest;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
+
 /**
  * @author D.A. Smedes
  * @version $Id$
@@ -29,7 +31,6 @@ public class TestModuleDescriptor extends BaseTest {
   public void testCreateFile() {
 
     File tmp = null;
-
     try {
       tmp = MyFileUtils.createTempDirectory();
     } catch (IOException e) {
@@ -38,13 +39,19 @@ public class TestModuleDescriptor extends BaseTest {
 
     ModuleDescriptor d = null;
     try {
-      d = new ModuleDescriptor(new SourceModule("A", locationFactory.get("test-id-1")));
+      SourceModule s = new SourceModule("A", locationFactory.get("test-id-1"));
+      d = new ModuleDescriptor(s);
+
+      d.createFile(tmp);
+
     } catch (LocationException e) {
+      fail();
+    } catch (IOException e) {
       fail();
     }
 
     try {
-      d.createFile(tmp);
+      FileUtils.deleteDirectory(tmp);
     } catch (IOException e) {
       fail();
     }

@@ -18,6 +18,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.location;
 
+import nl.toolforge.karma.core.vc.AuthenticationException;
+import nl.toolforge.karma.core.vc.VersionControlException;
+
+import java.text.MessageFormat;
+
 /**
  * <p>A <code>Location</code> describes a location aspect of a module. Source modules are kept in a version control
  * system, binary (third party) modules are kept in libraries. These locations are maintained in
@@ -37,19 +42,31 @@ public interface Location {
    */
   public boolean isAvailable();
 
-	/**
-	 * The locations' type descriptor.
-	 *
-	 * @return A <code>Location.Type</code> instance.
-	 */
-	public LocationType getType();
+  /**
+   * The locations' type descriptor.
+   *
+   * @return A <code>Location.Type</code> instance.
+   */
+  public LocationType getType();
 
-	/**
-	 * A locations' identifier. Should be unique over all <code>location</code>-elements. This id is
-	 * matched against the <code>id</code>-attribute of a <code>location</code>-element in the
-	 * <code>location-authentication.xml</code> file (see class documentation {@link nl.toolforge.karma.core.location.Location}.
-	 *
-	 * @return An identifier string for a location.
-	 */
-	public String getId();
+  /**
+   * A locations' identifier. Should be unique over all <code>location</code>-elements. This id is
+   * matched against the <code>id</code>-attribute of a <code>location</code>-element in the
+   * <code>location-authentication.xml</code> file (see class documentation {@link nl.toolforge.karma.core.location.Location}.
+   *
+   * @return An identifier string for a location.
+   */
+  public String getId();
+
+  /**
+   * Returns a &lt;location&gt-element for the specific type of location.
+   */
+  public StringBuffer asXML();
+
+  /**
+   * <p>Tries to open a connection to the server if the protocol is a remote protocol.
+   *
+   * @throws LocationException When connection failed. The ErrorCode will tell the reason.
+   */
+  void connect() throws LocationException;
 }

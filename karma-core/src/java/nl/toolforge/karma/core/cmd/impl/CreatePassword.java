@@ -18,25 +18,27 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
+import net.sf.sillyexceptions.OutOfTheBlueException;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
+import nl.toolforge.karma.core.cmd.event.MessageEvent;
+import nl.toolforge.karma.core.cmd.event.SimpleMessage;
+import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.karma.core.location.PasswordScrambler;
+import nl.toolforge.karma.core.location.LocationLoader;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationFactory;
-import nl.toolforge.karma.core.location.LocationLoader;
-import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.vc.Authenticator;
-import nl.toolforge.karma.core.vc.VersionControlSystem;
 import nl.toolforge.karma.core.vc.AuthenticationException;
-import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.vc.Authenticator;
+import nl.toolforge.karma.core.vc.Authenticators;
+import nl.toolforge.karma.core.vc.VersionControlSystem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.sql.Timestamp;
-
 /**
- * Creates a password for a location.
+ * Creates or changes authentication information for a location.
  *
  * @author D.A. Smedes
  * @version $Id$
@@ -55,9 +57,13 @@ public class CreatePassword extends DefaultCommand {
     super(descriptor);
   }
 
+  /**
+   * @throws CommandException
+   */
   public void execute() throws CommandException {
 
     String locationAlias = getCommandLine().getOptionValue("l");
+    String username = getCommandLine().getOptionValue("u");
     String password = getCommandLine().getOptionValue("p");
 
     VersionControlSystem location = null;
@@ -65,15 +71,54 @@ public class CreatePassword extends DefaultCommand {
       location = (VersionControlSystem) getWorkingContext().getLocationLoader().get(locationAlias);
     } catch (LocationException e) {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
-    } catch (ClassCastException c) {
-      throw new CommandException(CommandException.INVALID_LOCATION_TYPE, new Object[]{});
+    } catch (ClassCastException e) {
+      response.addEvent(new MessageEvent(this, new SimpleMessage("Location type incorrect. Cannot proceed.")));
+      return;
     }
 
-    Authenticator authenticator = new Authenticator();
+    boolean changed = false;
+    Authenticator authenticator = null;
     try {
-      authenticator.changePassword(location, password);
+      authenticator = Authenticators.getAuthenticator(location);
+      changed = true;
     } catch (AuthenticationException e) {
-      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+
+      if (username == null) {
+        throw new CommandException(AuthenticationException.MISSING_USERNAME);
+      }
+      response.addEvent(new MessageEvent(this, new SimpleMessage("Location `" + locationAlias + "` does not exist. It will be created.")));
+    }
+
+    if (username == null) {
+      // Only password change.
+      //
+      try {
+        Authenticators.changePassword(location, password);
+      } catch (AuthenticationException e) {
+        throw new OutOfTheBlueException("Impossible, we have just checked the location. It should be there.");
+      }
+
+    } else {
+
+      if (changed) {
+        try {
+          Authenticators.deleteAuthenticator(authenticator);
+        } catch (AuthenticationException e) {
+          throw new OutOfTheBlueException("Impossible, we have just selected the correct authenticator. It should be there.");
+        }
+      }
+
+      authenticator = new Authenticator(locationAlias);
+      authenticator.setUsername(username);
+      authenticator.setPassword(PasswordScrambler.scramble(password));
+
+      Authenticators.addAuthenticator(authenticator);
+    }
+
+    if (changed) {
+      response.addEvent(new MessageEvent(this, new SimpleMessage("Authenticator changed for location '" + locationAlias + "'")));
+    } else {
+      response.addEvent(new MessageEvent(this, new SimpleMessage("Authenticator created for location '" + locationAlias + "'")));
     }
   }
 

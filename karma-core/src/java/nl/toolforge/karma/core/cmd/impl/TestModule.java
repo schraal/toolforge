@@ -133,7 +133,7 @@ public class TestModule extends AbstractBuildCommand {
         deps = helper.getClassPath(getCurrentModule()) + ";";
       }
 
-      File f = new File(getCurrentManifest().getBaseDirectory(), "build");
+      File f = getCurrentManifest().getBuildBaseDirectory();
       f = new File(f, getCurrentModule().getName());
       f = new File(f, "build");
 

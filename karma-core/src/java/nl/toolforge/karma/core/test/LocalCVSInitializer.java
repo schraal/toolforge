@@ -162,8 +162,8 @@ public class LocalCVSInitializer extends BaseTest {
       Runner runner = getTestRunner();
 
       Module module = new SourceModule(DEFAULT_MODULE_1, location);
-      module.setBaseDir(new File(getWorkingContext().getDevelopmentHome(), module.getName()));
-      module.setCheckoutDir(getWorkingContext().getDevelopmentHome());
+      module.setBaseDir(new File(getWorkingContext().getProjectBaseDirectory(), module.getName()));
+      module.setCheckoutDir(getWorkingContext().getProjectBaseDirectory());
 
       runner.checkout(module);
 
@@ -181,8 +181,8 @@ public class LocalCVSInitializer extends BaseTest {
       Runner runner = getTestRunner();
 
       Module module = new SourceModule(DEFAULT_MODULE_1, location, new Version("0-0"));
-      module.setBaseDir(new File(getWorkingContext().getDevelopmentHome(), module.getName()));
-      module.setCheckoutDir(getWorkingContext().getDevelopmentHome());
+      module.setBaseDir(new File(getWorkingContext().getProjectBaseDirectory(), module.getName()));
+      module.setCheckoutDir(getWorkingContext().getProjectBaseDirectory());
 
       runner.checkout(module);
 

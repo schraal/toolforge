@@ -21,6 +21,7 @@ package nl.toolforge.karma.core.vc.svnimpl;
 import nl.toolforge.karma.core.location.BaseLocation;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationType;
+import nl.toolforge.karma.core.location.LocationException;
 
 /**
  * @author D.A. Smedes
@@ -52,5 +53,13 @@ public final class SubversionLocationImpl extends BaseLocation {
    */
   public boolean isAvailable() {
     return true;
+  }
+
+  public void connect() throws LocationException {
+    //
+  }
+
+  public StringBuffer asXML() {
+    return null;
   }
 }

@@ -40,6 +40,8 @@ public class AuthenticationException extends Exception {
   public static final ErrorCode AUTHENTICATOR_NOT_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00005");
   /** Could not write <code>authenticators.xml</code> */
   public static final ErrorCode AUTHENTICATOR_WRITE_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00006");
+  /** Username is missing while configuring a new authenticator. */
+  public static final ErrorCode MISSING_USERNAME = new ErrorCode(EXCEPTION_PREFIX + "00007");
 
   public AuthenticationException(ErrorCode errorCode) {
     this(errorCode, null);

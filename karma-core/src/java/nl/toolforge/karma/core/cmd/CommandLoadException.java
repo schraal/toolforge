@@ -20,6 +20,8 @@ public class CommandLoadException extends Exception {
   public static final ErrorCode LOAD_FAILURE_FOR_DEFAULT_COMMANDS = new ErrorCode(EXCEPTION_PREFIX + "00001");
 
   public static final ErrorCode LOAD_FAILURE_FOR_PLUGIN_COMMANDS_FILE = new ErrorCode(EXCEPTION_PREFIX + "00002");
+  
+  public static final ErrorCode DUPLICATE_COMMAND = new ErrorCode(EXCEPTION_PREFIX + "00003");
 
   public CommandLoadException(ErrorCode errorCode) {
     this(errorCode, null);

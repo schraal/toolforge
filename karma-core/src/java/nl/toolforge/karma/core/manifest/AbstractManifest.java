@@ -152,7 +152,7 @@ public abstract class AbstractManifest implements Manifest {
   //
   private void applyWorkingContext() {
 
-    manifestBaseDirectory = new File(workingContext.getDevelopmentHome(), getName());
+    manifestBaseDirectory = new File(workingContext.getProjectBaseDirectory(), getName());
     manifestTempDirectory = new File(getBaseDirectory(), "tmp");
 
     for (Iterator i = moduleCache.values().iterator(); i.hasNext();) {
@@ -179,6 +179,26 @@ public abstract class AbstractManifest implements Manifest {
       manifestBaseDirectory.mkdir();
     }
     return manifestBaseDirectory;
+  }
+
+  public File getBuildBaseDirectory() {
+    
+    File f = new File(getBaseDirectory(), "build");
+
+    if (!f.exists()) {
+      f.mkdir();
+    }
+    return f;
+  }
+
+  public File getModuleBaseDirectory() {
+
+    File f = new File(getBaseDirectory(), "modules");
+
+    if (!f.exists()) {
+      f.mkdir();
+    }
+    return f;
   }
 
   public final File getTempDirectory() {
@@ -300,7 +320,7 @@ public abstract class AbstractManifest implements Manifest {
   }
 
   public final boolean isLocal(Module module) {
-    return new File(getBaseDirectory(), module.getName()).exists();
+    return new File(getModuleBaseDirectory(), module.getName()).exists();
   }
 
   /**
@@ -450,11 +470,11 @@ public abstract class AbstractManifest implements Manifest {
 
     try {
       if (((VersionControlSystem)module.getLocation()).getModuleOffset() == null) {
-        module.setBaseDir(new File(getBaseDirectory(), module.getName()));
+        module.setBaseDir(new File(getModuleBaseDirectory(), module.getName()));
       } else {
-        module.setBaseDir(new File(new File(getBaseDirectory(), ((VersionControlSystem)module.getLocation()).getModuleOffset()), module.getName()));
+        module.setBaseDir(new File(new File(getModuleBaseDirectory(), ((VersionControlSystem)module.getLocation()).getModuleOffset()), module.getName()));
       }
-      module.setCheckoutDir(getBaseDirectory());
+      module.setCheckoutDir(getModuleBaseDirectory());
     } catch(Exception e) {
       // Basically, if we can't do this, we have nothing ... really a RuntimeException
       //

@@ -18,16 +18,21 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.vc.cvsimpl;
 
-import nl.toolforge.karma.core.manifest.SourceModule;
-import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.LibModule;
+import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ModuleTypeException;
-import nl.toolforge.karma.core.test.LocalCVSInitializer;
-import nl.toolforge.karma.core.vc.RunnerFactory;
-import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.AuthenticationException;
+import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.module.JavaEnterpriseApplicationModule;
 import nl.toolforge.karma.core.module.JavaWebApplicationModule;
+import nl.toolforge.karma.core.test.LocalCVSInitializer;
+import nl.toolforge.karma.core.vc.AuthenticationException;
+import nl.toolforge.karma.core.vc.RunnerFactory;
+import nl.toolforge.karma.core.vc.VersionControlException;
+
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
 
 /**
  * @author D.A. Smedes
@@ -38,6 +43,7 @@ public class TestModuleCreation extends LocalCVSInitializer {
   public void testCreateRemote() {
 
     Module module = null;
+    File tmp = null;
     try {
 
       module = new SourceModule("A", getTestLocation());
@@ -47,12 +53,24 @@ public class TestModuleCreation extends LocalCVSInitializer {
       RunnerFactory.getRunner(getTestLocation()).checkout(module);
       assertEquals(module.getType(), Module.JAVA_SOURCE_MODULE);
 
+      try {
+        FileUtils.deleteDirectory(module.getCheckoutDir());
+      } catch (IOException e) {
+        fail();
+      }
+
       module = new JavaEnterpriseApplicationModule("B", getTestLocation());
       module.createRemote("Unit testing ...");
       assertTrue(RunnerFactory.getRunner(getTestLocation()).existsInRepository(module));
 
       RunnerFactory.getRunner(getTestLocation()).checkout(module);
       assertEquals(module.getType(), Module.JAVA_ENTERPRISE_APPLICATION);
+
+      try {
+        FileUtils.deleteDirectory(module.getCheckoutDir());
+      } catch (IOException e) {
+        fail();
+      }
 
       module = new JavaWebApplicationModule("C", getTestLocation());
       module.createRemote("Unit testing ...");
@@ -61,12 +79,24 @@ public class TestModuleCreation extends LocalCVSInitializer {
       RunnerFactory.getRunner(getTestLocation()).checkout(module);
       assertEquals(module.getType(), Module.JAVA_WEB_APPLICATION);
 
+      try {
+        FileUtils.deleteDirectory(module.getCheckoutDir());
+      } catch (IOException e) {
+        fail();
+      }
+
       module = new LibModule("D", getTestLocation());
       module.createRemote("Unit testing ...");
       assertTrue(RunnerFactory.getRunner(getTestLocation()).existsInRepository(module));
 
       RunnerFactory.getRunner(getTestLocation()).checkout(module);
       assertEquals(module.getType(), Module.LIBRARY_MODULE);
+
+      try {
+        FileUtils.deleteDirectory(module.getCheckoutDir());
+      } catch (IOException e) {
+        fail();
+      }
 
     } catch (VersionControlException e) {
       fail();

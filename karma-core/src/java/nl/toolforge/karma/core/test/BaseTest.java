@@ -21,14 +21,11 @@ package nl.toolforge.karma.core.test;
 import junit.framework.TestCase;
 import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.boot.WorkingContext;
+import nl.toolforge.karma.core.boot.WorkingContextConfiguration;
 import org.apache.commons.io.FileUtils;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.Properties;
 
 /**
@@ -39,8 +36,6 @@ import java.util.Properties;
  * @version $Id$
  */
 public class BaseTest extends TestCase {
-
-  private Properties p = null;
 
   private File wcBaseDir = null;
   private File projectBaseDir = null;
@@ -62,39 +57,38 @@ public class BaseTest extends TestCase {
       fail(e.getMessage());
     }
 
-    p = new Properties();
-
-    p.put(WorkingContext.LOCAL_REPOSITORY, localRepo);
-
-    p.put(WorkingContext.MANIFEST_STORE_HOST, "localhost");
-    p.put(WorkingContext.MANIFEST_STORE_PORT, "2401");
-    p.put(WorkingContext.MANIFEST_STORE_PROTOCOL, "local");
-    p.put(WorkingContext.MANIFEST_STORE_REPOSITORY, "/tmp/test-CVSROOT");
-    p.put(WorkingContext.MANIFEST_STORE_USERNAME, "asmedes");
-    p.put(WorkingContext.MANIFEST_STORE_MODULE, "");
-
-    p.put(WorkingContext.LOCATION_STORE_HOST, "localhost");
-    p.put(WorkingContext.LOCATION_STORE_PORT, "2401");
-    p.put(WorkingContext.LOCATION_STORE_PROTOCOL, "local");
-    p.put(WorkingContext.LOCATION_STORE_REPOSITORY, "/tmp/test-CVSROOT");
-    p.put(WorkingContext.LOCATION_STORE_USERNAME, "asmedes");
-    p.put(WorkingContext.LOCATION_STORE_MODULE, "");
-
-
-    ctx = new WorkingContext("test", wcBaseDir, projectBaseDir, p);
-
     try {
-      writeFile(WorkingContext.getConfigurationBaseDir(), new File("test/authenticators.xml"));
 
-      writeFile(ctx.getLocationStore(), new File("test/test-locations.xml"));
-      writeFile(ctx.getLocationStore(), new File("test/test-locations-2.xml"));
+      ctx = new WorkingContext("test", wcBaseDir);
 
-      writeFile(ctx.getManifestStore(), new File("test/test-manifest-1.xml"));
-      writeFile(ctx.getManifestStore(), new File("test/test-manifest-2.xml"));
-      writeFile(ctx.getManifestStore(), new File("test/test-manifest-3.xml"));
+      try {
+        MyFileUtils.writeFile(
+            ctx.getWorkingContextConfigurationBaseDir(),
+            new File("test/test-working-context.xml"),
+            "working-context.xml",
+            this.getClass().getClassLoader());
+        ctx.init();
+      } catch (IOException e) {
+        fail(e.getMessage());
+      }
 
-      writeFile(ctx.getManifestStore(), new File("test/included-test-manifest-1.xml"));
-      writeFile(ctx.getManifestStore(), new File("test/included-test-manifest-2.xml"));
+      ctx.init();
+
+      WorkingContextConfiguration config = ctx.getConfiguration();
+
+      config.setProperty(WorkingContext.PROJECT_BASE_DIRECTORY_PROPERTY, projectBaseDir.getPath());
+
+      MyFileUtils.writeFile(WorkingContext.getConfigurationBaseDir(), new File("test/authenticators.xml"), this.getClassLoader());
+
+      MyFileUtils.writeFile(ctx.getLocationStore(), new File("test/test-locations.xml"), this.getClassLoader());
+      MyFileUtils.writeFile(ctx.getLocationStore(), new File("test/test-locations-2.xml"), this.getClassLoader());
+
+      MyFileUtils.writeFile(ctx.getManifestStore(), new File("test/test-manifest-1.xml"), this.getClassLoader());
+      MyFileUtils.writeFile(ctx.getManifestStore(), new File("test/test-manifest-2.xml"), this.getClassLoader());
+      MyFileUtils.writeFile(ctx.getManifestStore(), new File("test/test-manifest-3.xml"), this.getClassLoader());
+
+      MyFileUtils.writeFile(ctx.getManifestStore(), new File("test/included-test-manifest-1.xml"), this.getClassLoader());
+      MyFileUtils.writeFile(ctx.getManifestStore(), new File("test/included-test-manifest-2.xml"), this.getClassLoader());
 
 
     } catch (IOException e) {
@@ -123,30 +117,11 @@ public class BaseTest extends TestCase {
     }
   }
 
-  public final Properties getProperties() {
-    return p;
-  }
-
   /**
    * Helper method to retrieve the this class' classloader.
    */
   public ClassLoader getClassLoader() {
     return this.getClass().getClassLoader();
-  }
-
-  private synchronized void writeFile(File dir, File fileRef) throws IOException {
-
-    BufferedReader in =
-        new BufferedReader(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(fileRef.getPath())));
-    BufferedWriter out =
-        new BufferedWriter(new FileWriter(new File(dir, fileRef.getName())));
-
-    String str;
-    while ((str = in.readLine()) != null) {
-      out.write(str);
-    }
-    out.close();
-    in.close();
   }
 
   /**

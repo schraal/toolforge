@@ -24,7 +24,17 @@
 
   </command>
 
+  <command name="list-locations" alias="ll">
 
+    <description lang="en">Shows all locations from the local locations-store</description>
+
+    <classname>nl.toolforge.karma.cli.cmd.ListLocations</classname>
+
+    <help lang="en">
+      Lists all locations as they were loaded from the location-store.
+    </help>
+
+  </command>
 
   <command name="start-work" alias="start">
 

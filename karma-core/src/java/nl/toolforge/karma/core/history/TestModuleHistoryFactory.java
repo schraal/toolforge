@@ -33,7 +33,7 @@ public class TestModuleHistoryFactory extends LocalCVSInitializer {
       try {
           checkoutDefaultModule1();
 
-          File projectRoot = getWorkingContext().getDevelopmentHome();
+          File projectRoot = getWorkingContext().getProjectBaseDirectory();
           ModuleHistoryFactory factory = ModuleHistoryFactory.getInstance(projectRoot);
           assertNotNull(factory);
 

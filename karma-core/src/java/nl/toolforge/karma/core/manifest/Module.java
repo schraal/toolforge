@@ -189,8 +189,6 @@ public interface Module {
    */
   public ModuleLayoutTemplate getLayoutTemplate();
 
-//  public void create() throws IOException;
-
   public void createRemote(String createComment) throws VersionControlException, AuthenticationException ;
 
   /**

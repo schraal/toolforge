@@ -1,15 +1,18 @@
 /*
- * Copyright (c) 2004 Your Corporation. All Rights Reserved.
- */
+* Copyright (c) 2004 Your Corporation. All Rights Reserved.
+*/
 package nl.toolforge.karma.core.location;
 
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSRepository;
 import nl.toolforge.karma.core.vc.svnimpl.SubversionRepository;
 import nl.toolforge.karma.core.KarmaRuntimeException;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 
 public class LocationFactory {
 
+  private static Log logger = LogFactory.getLog(LocationFactory.class);
   private static LocationFactory instance = null;
 
   /**
@@ -34,29 +37,72 @@ public class LocationFactory {
       throw new LocationException(LocationException.INVALID_LOCATION_TYPE, new Object[]{descriptor.getType(), descriptor.getId()});
     }
 
-    if (type.equals(LocationType.CVS)) {
+    try {
+      if (type.equals(LocationType.CVS)) {
 
-      CVSRepository cvsLocation = new CVSRepository(descriptor.getId());
+        CVSRepository location = new CVSRepository(descriptor.getId());
 
-      cvsLocation.setProtocol(descriptor.getProtocol());
-      cvsLocation.setHost(descriptor.getHost());
-      cvsLocation.setPort(new Integer(descriptor.getPort()).intValue());
-      cvsLocation.setRepository(descriptor.getRepository());
-      cvsLocation.setOffset(descriptor.getModuleOffset());
+        try {
+          location.setProtocol(descriptor.getProtocol());
+        } catch (RuntimeException r) {
+          throw new LocationException(LocationException.INVALID_ELEMENT_VALUE, new Object[]{"protocol"});
+        }
+        try {
+          location.setHost(descriptor.getHost());
+        } catch (RuntimeException r) {
+          throw new LocationException(LocationException.INVALID_ELEMENT_VALUE, new Object[]{"host"});
+        }
+        try {
+          location.setPort(descriptor.getPort());
+        } catch (RuntimeException r) {
+          throw new LocationException(LocationException.INVALID_ELEMENT_VALUE, new Object[]{"port"});
+        }
+        try {
+          location.setRepository(descriptor.getRepository());
+        } catch (RuntimeException r) {
+          throw new LocationException(LocationException.INVALID_ELEMENT_VALUE, new Object[]{"repository"});
+        }
+        try {
+          location.setOffset(descriptor.getModuleOffset());
+        } catch (RuntimeException r) {
+          throw new LocationException(LocationException.INVALID_ELEMENT_VALUE, new Object[]{"module-offset"});
+        }
+        return location;
 
-      return cvsLocation;
+      } else if (type.equals(LocationType.SUBVERSION)) {
 
-    } else if (type.equals(LocationType.SUBVERSION)) {
+        SubversionRepository location = new SubversionRepository(descriptor.getId());
 
-      SubversionRepository cvsLocation = new SubversionRepository(descriptor.getId());
-
-      cvsLocation.setProtocol(descriptor.getProtocol());
-      cvsLocation.setHost(descriptor.getHost());
-      cvsLocation.setPort(new Integer(descriptor.getPort()).intValue());
-      cvsLocation.setRepository(descriptor.getRepository());
-      cvsLocation.setOffset(descriptor.getModuleOffset());
-
-      return cvsLocation;
+        try {
+          location.setProtocol(descriptor.getProtocol());
+        } catch (RuntimeException r) {
+          throw new LocationException(LocationException.INVALID_ELEMENT_VALUE, new Object[]{"protocol"});
+        }
+        try {
+          location.setHost(descriptor.getHost());
+        } catch (RuntimeException r) {
+          throw new LocationException(LocationException.INVALID_ELEMENT_VALUE, new Object[]{"host"});
+        }
+        try {
+          location.setPort(descriptor.getPort());
+        } catch (RuntimeException r) {
+          throw new LocationException(LocationException.INVALID_ELEMENT_VALUE, new Object[]{"port"});
+        }
+        try {
+          location.setRepository(descriptor.getRepository());
+        } catch (RuntimeException r) {
+          throw new LocationException(LocationException.INVALID_ELEMENT_VALUE, new Object[]{"repository"});
+        }
+        try {
+          location.setOffset(descriptor.getModuleOffset());
+        } catch (RuntimeException r) {
+          throw new LocationException(LocationException.INVALID_ELEMENT_VALUE, new Object[]{"module-offset"});
+        }
+        return location;
+      }
+    } catch (RuntimeException r) {
+      logger.error(r);
+      throw new LocationException(LocationException.INVALID_ELEMENT_VALUE);
     }
     throw new KarmaRuntimeException("Not implemented for other types than '"+LocationType.CVS+"' and '"+LocationType.SUBVERSION+"' ");
   }

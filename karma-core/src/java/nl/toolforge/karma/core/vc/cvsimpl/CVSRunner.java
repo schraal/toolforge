@@ -31,13 +31,14 @@ import nl.toolforge.karma.core.history.ModuleHistoryFactory;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.vc.Authenticator;
+import nl.toolforge.karma.core.vc.Authenticators;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
 import nl.toolforge.karma.core.vc.PatchLine;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.SymbolicName;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.VersionControlSystem;
-import nl.toolforge.karma.core.vc.Authenticator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.Client;
@@ -98,7 +99,7 @@ public final class CVSRunner implements Runner {
    * <code>location</code> and a <code>manifest</code>. The location must be a <code>CVSLocationImpl</code> instance,
    * reprenting a CVS repository. The manifest is required because it determines the base point from where CVS commands
    * will be run; modules are checked out in a directory structure, relative to
-   * {@link nl.toolforge.karma.core.manifest.Manifest#getBaseDirectory()}.
+   * {@link nl.toolforge.karma.core.manifest.Manifest#getModuleBaseDirectory()}.
    *
    * @param location       A <code>Location</code> instance (typically a <code>CVSLocationImpl</code> instance), containing
    *                       the location and connection details of the CVS repository.
@@ -117,13 +118,12 @@ public final class CVSRunner implements Runner {
 
     //
     //
-    Authenticator a = cvsLocation.authenticate();
+    Authenticator a = Authenticators.getAuthenticator(cvsLocation);
     cvsLocation.setUsername(a.getUsername());
-    cvsLocation.setPassword(a.getPassword());
 
     connection = ConnectionFactory.getConnection(cvsLocation.getCVSRoot());
     if (connection instanceof PServerConnection) {
-      ((PServerConnection) connection).setEncodedPassword(cvsLocation.getPassword());
+      ((PServerConnection) connection).setEncodedPassword(a.getPassword());
     }
     // The default ...
     //

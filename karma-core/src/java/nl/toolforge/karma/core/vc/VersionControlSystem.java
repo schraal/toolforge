@@ -20,6 +20,7 @@ package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.location.BaseLocation;
 import nl.toolforge.karma.core.location.LocationType;
+import nl.toolforge.karma.core.vc.cvsimpl.CVSRepository;
 
 /**
  * <p>A reference for a VCS (Version Control System). Everybody knows what a version
@@ -45,13 +46,7 @@ public abstract class VersionControlSystem extends BaseLocation {
     super(id, type);
   }
 
-  public abstract Authenticator authenticate() throws AuthenticationException;
-
   public void setHost(String host) {
-
-    if ((host == null) || (host.length() == 0)) {
-      throw new IllegalArgumentException("Host cannot be null.");
-    }
     this.host = host;
   }
 
@@ -60,6 +55,11 @@ public abstract class VersionControlSystem extends BaseLocation {
     return host;
   }
 
+  /**
+   * The protocol determines the way a client can communicate to a version control system.
+   *
+   * @param protocol The protocol for the version control system.
+   */
   public void setProtocol(String protocol) {
     this.protocol = protocol;
   }
@@ -74,6 +74,19 @@ public abstract class VersionControlSystem extends BaseLocation {
     this.port = port;
   }
 
+  /**
+   * Sets the server port. When <code>port</code> is not a number, <code>-1</code> is set.
+   *
+   * @param port
+   */
+  public void setPort(String port) {
+
+    try {
+      setPort(Integer.parseInt(port));
+    } catch (NumberFormatException n) {
+      setPort(-1);
+    }
+  }
 
   public int getPort() {
     return port;
@@ -117,4 +130,6 @@ public abstract class VersionControlSystem extends BaseLocation {
   public String getUsername() {
     return username;
   }
+
+
 }

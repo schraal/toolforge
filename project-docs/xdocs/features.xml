@@ -22,8 +22,8 @@
   </p>
 
   <ul>
-	  <li>Source code compilation with <code>javac</code> and <code>jikes</code>.</li>
-	  <li>Modules determine their dependencies and compile them when necessary.</li>
+    <li>Source code compilation with <code>javac</code> and <code>jikes</code>.</li>
+    <li>Modules determine their dependencies and compile them when necessary.</li>
   </ul>
 
   </subsection>
@@ -54,9 +54,10 @@
   </p>
 
   <ul>
-	  <li>Help system; each command is well-documented.</li>
+    <li>Help system; each command is well-documented.</li>
+
     <li>Commands can have any number of aliasses; users can implement their
-	    own favourites.</li>
+        own favourites.</li>
   </ul>
 
   </subsection>
@@ -64,8 +65,8 @@
   <subsection name="Developer Features">
 
   <ul>
-	  <li>Clearly documented Java API allowing extensions to </li>
-	  <li>Easy to create plugins to extend Karma with commands</li>
+    <li>Clearly documented Java API allowing extensions to </li>
+    <li>Easy to create plugins to extend Karma with commands</li>
   </ul>
 
   </subsection>

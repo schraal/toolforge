@@ -55,6 +55,16 @@
     </developer>
   </developers>
 
+
+  <contributor>
+    <name>Tjeerd Verhagen</name>
+    <email>t.verhagen02@kpn.com</email>
+    <organization>Contrado Technologies BV, The Netherlands</organization>
+    <roles>
+      <role>End User</role>
+    </roles>
+  </contributor>
+
   <repository>
     <connection>scm:cvs:pserver:anonymous@cvs.sourceforge.net:/cvsroot/toolforge:karma-core</connection>
     <url>http://cvs.sourceforge.net/viewcvs.py/toolforge/toolforge/</url>

@@ -184,18 +184,14 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
     if (project == null) {
 
-//      DefaultLogger logger = new DefaultLogger();
+      // DefaultLogger logger = new DefaultLogger();
       AntLogger logger = new AntLogger(this);
 
       // todo hmm, this mechanism doesn't integrate with the commandresponse mechanism
       //
       logger.setOutputPrintStream(System.out);
-      logger.setErrorPrintStream(System.err);
 
-      logger.setMessageOutputLevel(Project.MSG_INFO); // Always handy ...
-//    logger.setMessageOutputLevel(Project.MSG_VERBOSE); // Always handy ...
-//    logger.setMessageOutputLevel(Project.MSG_DEBUG); // Always handy ...
-
+      logger.setMessageOutputLevel(Project.MSG_INFO);
       // Configure underlying ant to run a command.
       //
       project = new Project();

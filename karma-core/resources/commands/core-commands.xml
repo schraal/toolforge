@@ -4,26 +4,46 @@
 
 <commands>
 
+  <command name="delete-working-context" alias="dwc">
+    <description lang="en">Removes a working context configuration (not the project data).</description>
 
-  <command name="create-password" alias="passwd">
-    <description lang="en">Creates an (encrypted) password for a location.</description>
+    <options>
+      <option opt="w" longOpt="working-context" hasArgs="true" required="true" description="The location alias.">
+        <arg>working-context</arg>
+      </option>
+    </options>
+
+    <classname>nl.toolforge.karma.core.cmd.impl.DeleteWorkingContext</classname>
+
+    <help lang="en">
+      Removes a working contexts' configuration. All project data is contained.
+    </help>
+
+  </command>
+
+
+  <command name="authenticate" alias="auth passwd">
+    <description lang="en">Create or changes an authenticator entry in `authenticators.xml` for a location.</description>
 
     <options>
       <option opt="l" longOpt="location" hasArgs="true" required="true" description="The location alias.">
         <arg>location</arg>
       </option>
-      <option opt="p" longOpt="password" hasArgs="true" required="true" description="The (CLEARTEXT) password.">
+      <option opt="p" longOpt="password" hasArgs="true" required="true" description="The password for the location">
         <arg>password</arg>
+      </option>
+      <option opt="u" longOpt="username" hasArgs="true" required="false" description="The username for the location">
+        <arg>username</arg>
       </option>
     </options>
 
     <classname>nl.toolforge.karma.core.cmd.impl.CreatePassword</classname>
+
     <help lang="en">
-      Creates a password for a certain location. The password is stored in $HOME/.karma/.authenticators in an
-      encrypted manner. NOTE : the password is entered as cleartext if the command is used in the Karma console or
-      command-line-interface. An 'offline' tool is available, which can do the same as the command, but then the
-      password info is not shown in the console.
+      Create or changes an authenticator entry in `authenticators.xml` for a location. Username is optional. When
+      username is provided as an argument and it is different than the old username, the username will also be changed.
     </help>
+
   </command>
 
 

@@ -90,7 +90,8 @@ public final class LocationException extends Exception {
   //
 
   public static final ErrorCode INVALID_LOCATION_TYPE = new ErrorCode(EXCEPTION_PREFIX + "00020");
-
+  
+  public static final ErrorCode INVALID_ELEMENT_VALUE = new ErrorCode(EXCEPTION_PREFIX + "00021");
 
 
   public LocationException(ErrorCode errorCode) {

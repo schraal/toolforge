@@ -137,7 +137,7 @@ public class UpdateModuleCommand extends DefaultCommand {
         // No need to update.
         //
         response.addEvent(
-            new MessageEvent(this, new SimpleMessage("Module " + module.getName() + " is already up-to-date with version " + version.toString())));
+            new MessageEvent(this, new SimpleMessage("Module `" + module.getName() + "` is already up-to-date with version `" + version.toString() + "`.")));
 
       } else {
 
@@ -161,19 +161,19 @@ public class UpdateModuleCommand extends DefaultCommand {
         if (version == null) {
           // No state change.
           //
-          message = new SimpleMessage("Module " + module.getName() + " updated.");
+          message = new SimpleMessage("Module `" + module.getName() + "` updated.");
         } else {
           if (manifest instanceof ReleaseManifest) {
             manifest.setState(module, Module.STATIC);
-            message = new SimpleMessage("Module " + module.getName() + " updated with version " + version.toString() + "; state set to STATIC.");
+            message = new SimpleMessage("Module `" + module.getName() + "` updated with version `" + version.toString() + "`; state set to STATIC.");
           } else {
             if (manifest.getState(module).equals(Module.STATIC)) {
               // The module was static.
               //
-              message = new SimpleMessage("Module " + module.getName() + " updated.");
+              message = new SimpleMessage("Module `" + module.getName() + "` updated.");
             } else {
               manifest.setState(module, Module.DYNAMIC);
-              message = new SimpleMessage("Module " + module.getName() + " updated with version " + version.toString() + "; state set to DYNAMIC.");
+              message = new SimpleMessage("Module `" + module.getName() + "` updated with version `" + version.toString() + "`; state set to DYNAMIC.");
             }
           }
         }

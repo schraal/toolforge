@@ -21,8 +21,6 @@ public class LocationDescriptor {
   private String moduleOffset = null;
   private String protocol = null;
 
-  private String directory = null;
-
   public String getId() {
     return id;
   }
@@ -79,14 +77,6 @@ public class LocationDescriptor {
     this.protocol = protocol;
   }
 
-  public String getDirectory() {
-    return directory;
-  }
-
-  public void setDirectory(String directory) {
-    this.directory = directory;
-  }
-
   /**
    * Creates a <code>Digester</code> to read xml structures for locations. This digester will create an
    * <code>ArrayList</code> of <code>LocationDescriptor</code> instances.
@@ -96,18 +86,20 @@ public class LocationDescriptor {
   public static Digester getDigester() {
 
     Digester digester = new Digester();
-    digester.addObjectCreate("locations", ArrayList.class);
-    
-    digester.addObjectCreate("locations/location", LocationDescriptor.class);
-    digester.addSetProperties("locations/location");
 
-    digester.addCallMethod("locations/location/protocol", "setProtocol", 0);
-    digester.addCallMethod("locations/location/host", "setHost", 0);
-    digester.addCallMethod("locations/location/port", "setPort", 0);
-    digester.addCallMethod("locations/location/repository", "setRepository", 0);
-    digester.addCallMethod("locations/location/module-offset", "setModuleOffset", 0);
-    digester.addCallMethod("locations/location/directory", "setDirectory", 0);
-    digester.addSetNext("locations/location", "add");
+    digester.setNamespaceAware(true);
+
+    digester.addObjectCreate("*/locations", ArrayList.class);
+    
+    digester.addObjectCreate("*/locations/location", LocationDescriptor.class);
+    digester.addSetProperties("*/locations/location");
+
+    digester.addCallMethod("*/locations/location/protocol", "setProtocol", 0);
+    digester.addCallMethod("*/locations/location/host", "setHost", 0);
+    digester.addCallMethod("*/locations/location/port", "setPort", 0);
+    digester.addCallMethod("*/locations/location/repository", "setRepository", 0);
+    digester.addCallMethod("*/locations/location/module-offset", "setModuleOffset", 0);
+    digester.addSetNext("*/locations/location", "add");
 
     return digester;
   }

@@ -39,7 +39,12 @@ public class SetWorkingContext extends DefaultCommand {
 
       response.addEvent(new MessageEvent(this, new SimpleMessage("Loading new working context `" + workingContextName + "` ...")));
 
-      getContext().setWorkingContext(new WorkingContext(workingContextName));
+      WorkingContext w = new WorkingContext(workingContextName);
+      if (!w.init()) {
+        throw new CommandException(CommandException.CANNOT_INITIALIZE_WORKING_CONTEXT, new Object[]{w});
+      }
+
+      getContext().setWorkingContext(w);
 
       response.addEvent(new MessageEvent(this, new SimpleMessage("Working context set to `" + workingContextName + "`")));
 
@@ -54,11 +59,12 @@ public class SetWorkingContext extends DefaultCommand {
       Manifest manifest = getContext().getWorkingContext().getManifestCollector().loadManifestFromHistory();
       if (manifest != null) {
 
-        getContext().changeCurrentManifest(manifest);
+      getContext().changeCurrentManifest(getContext().getWorkingContext().getManifestCollector().loadManifestFromHistory());
 
-        SimpleMessage message =
-            new SimpleMessage(getFrontendMessages().getString("message.MANIFEST_ACTIVATED"), new Object[]{getContext().getCurrentManifest()});
-        response.addEvent(new MessageEvent(message));
+      SimpleMessage message =
+          new SimpleMessage(getFrontendMessages().getString("message.MANIFEST_ACTIVATED"), new Object[]{getContext().getCurrentManifest()});
+      response.addEvent(new MessageEvent(this, message));
+
       } else {
         response.addEvent(new MessageEvent(this, new SimpleMessage(getFrontendMessages().getString("message.NO_MANIFEST_IN_HISTORY"))));
       }

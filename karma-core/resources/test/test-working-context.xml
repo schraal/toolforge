@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<wc:working-context
+  xmlns:wc="http://www.toolforge.org/specifications/working-context"
+  xmlns:loc="http://www.toolforge.org/specifications/location">
+
+  <wc:properties>
+    <wc:property name="project.basedir" value="/tmp/"/>
+    <wc:property name="project.local.repository" value="/home/asmedes/.repository"/>
+    <wc:property name="manifest-store.module" value="manifests"/>
+    <wc:property name="location-store.module" value="locations"/>
+  </wc:properties>
+
+  <loc:locations>
+
+    <loc:location type="cvs" id="manifest-store">
+      <loc:protocol>local</loc:protocol>
+      <loc:host>127.0.0.1</loc:host>
+      <loc:port>2401</loc:port>
+      <loc:repository>/tmp/test-CVSROOT</loc:repository>
+      <loc:module-offset/>
+    </loc:location>
+
+    <loc:location type="cvs" id="location-store">
+      <loc:protocol>local</loc:protocol>
+      <loc:host>127.0.0.1</loc:host>
+      <loc:port>2401</loc:port>
+      <loc:repository>/tmp/test-CVSROOT</loc:repository>
+      <loc:module-offset/>
+    </loc:location>
+
+  </loc:locations>
+
+</wc:working-context>

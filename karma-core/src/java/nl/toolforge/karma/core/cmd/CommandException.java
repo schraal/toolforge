@@ -115,6 +115,8 @@ public class CommandException extends Exception {
   public static final ErrorCode MODULE_NOT_LOCAL = new ErrorCode(EXCEPTION_PREFIX + "00103");
   /** The location type is invalid. Happens when another type of location is required than is specified. */
   public static final ErrorCode INVALID_LOCATION_TYPE = new ErrorCode(EXCEPTION_PREFIX + "00104");
+  /** The working context could not be initialized. */
+  public static final ErrorCode CANNOT_INITIALIZE_WORKING_CONTEXT = new ErrorCode(EXCEPTION_PREFIX + "00105");
 
   public CommandException(ErrorCode errorCode) {
     this(errorCode, null);

@@ -9,4 +9,7 @@
   <authenticator id="test-id-5" username="asmedes"/>
   <authenticator id="test-id-6" username="asmedes"/>
 
+  <authenticator id="manifest-store" username="asmedes" password="brabble"/>
+  <authenticator id="location-store" username="asmedes" password="brabble"/>
+
 </authenticators>

@@ -60,7 +60,11 @@ public final class ManifestStructure {
     return name;
   }
 
-  public void setName(String name) {
+  public void setName(String name)  {
+
+    if (name.trim().startsWith(".")) {
+      throw new IllegalArgumentException("A manifest name cannot start with a `.`.");
+    }
     this.name = name;
   }
 

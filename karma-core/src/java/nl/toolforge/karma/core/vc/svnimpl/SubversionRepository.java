@@ -18,12 +18,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.vc.svnimpl;
 
+import nl.toolforge.karma.core.location.LocationType;
+import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.vc.ManagedFile;
 import nl.toolforge.karma.core.vc.VersionControlSystem;
-import nl.toolforge.karma.core.vc.AuthenticationException;
-import nl.toolforge.karma.core.vc.Authenticator;
-import nl.toolforge.karma.core.location.LocationType;
 
 /**
  * <p>Subversion implementation of the version control system.
@@ -40,23 +39,15 @@ public class SubversionRepository extends VersionControlSystem {
     super(id, LocationType.SUBVERSION);
   }
 
-  public Authenticator authenticate() throws AuthenticationException {
-    return null;
-  }
-
   public boolean isAvailable() {
     return false;
   }
 
-  public void checkout(Module module) {
+  public void connect() throws LocationException {
+
   }
 
-  public void update(Module module) {
-  }
-
-  public void commit(ManagedFile file) {
-  }
-
-  public void commit(Module module) {
+  public StringBuffer asXML() {
+    return new StringBuffer("<location type=\"subversion\" id=\"\"");
   }
 }

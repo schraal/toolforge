@@ -33,7 +33,7 @@ public class TestLocationLoader extends BaseTest {
     LocationLoader loader = null;
 
     try {
-      loader = getWorkingContext().getLocationLoader();
+      loader = new LocationLoader(getWorkingContext());
       loader.load();
 
     } catch (LocationException e) {
