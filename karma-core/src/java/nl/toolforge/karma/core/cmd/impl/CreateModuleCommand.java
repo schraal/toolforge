@@ -31,6 +31,7 @@ import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ModuleDigester;
 import nl.toolforge.karma.core.manifest.ModuleFactory;
 import nl.toolforge.karma.core.manifest.util.EappModuleLayoutTemplate;
+import nl.toolforge.karma.core.manifest.util.LibModuleLayoutTemplate;
 import nl.toolforge.karma.core.manifest.util.SourceModuleLayoutTemplate;
 import nl.toolforge.karma.core.manifest.util.WebappModuleLayoutTemplate;
 import nl.toolforge.karma.core.vc.Runner;
