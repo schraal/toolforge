@@ -1,19 +1,17 @@
 package nl.toolforge.karma.core.vc.cvs;
 
-import nl.toolforge.karma.core.vc.Runner;
-import nl.toolforge.karma.core.vc.ManagedFile;
-import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.Command;
-import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.Module;
-import org.netbeans.lib.cvsclient.command.GlobalOptions;
-import org.netbeans.lib.cvsclient.command.CommandException;
-import org.netbeans.lib.cvsclient.Client;
-import org.netbeans.lib.cvsclient.connection.AuthenticationException;
-import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
+import nl.toolforge.karma.core.cmd.Command;
+import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.vc.ManagedFile;
+import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.vc.SymbolicName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.netbeans.lib.cvsclient.Client;
+import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
+import org.netbeans.lib.cvsclient.command.GlobalOptions;
 
 /**
  * <p>Runner class for CVS. Executes stuff on a CVS repository.
@@ -144,6 +142,21 @@ public final class CVSRunner implements Runner {
 	 * @return The CVS response wrapped in a <code>CommandResponse</code>.
 	 */
 	public CommandResponse commit(Module module) {
+		return null;
+	}
+
+	public CommandResponse branch(Module module, SymbolicName branch) {
+		return null;
+	}
+
+	/**
+	 * Creates a sticky tag on all files in a module.
+	 *
+	 * @param module
+	 * @param tag
+	 * @return
+	 */
+	public CommandResponse tag(Module module, SymbolicName tag) {
 		return null;
 	}
 

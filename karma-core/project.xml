@@ -77,31 +77,37 @@
 			<version>1.0-dev</version>
 		</dependency>
 
+		<dependency>
+			<groupId>netbeans</groupId>
+			<artifactId>netbeans-cvs</artifactId>
+			<jar>netbeans-cvs.jar</jar>
+		</dependency>
+
 	</dependencies>
 
 	<build>
 
 		<sourceDirectory>src/java/</sourceDirectory>
-<!--		<unitTestSourceDirectory>src/java</unitTestSourceDirectory>-->
+		<!--		<unitTestSourceDirectory>src/java</unitTestSourceDirectory>-->
 
-<!--		<unitTest>-->
-<!--			<includes>-->
-<!--				<include>**/Test*.java</include>-->
-<!--			</includes>-->
-<!---->
-<!--			<resources>-->
-<!--				<resource>-->
-<!--					<directory>resources/test</directory>-->
-<!--					<targetPath>resources/test</targetPath>-->
-<!--					<includes>-->
-<!--						<include>**/*.xml</include>-->
-<!--						<include>**/*.dtd</include>-->
-<!--						<include>**/*.properties</include>-->
-<!--					</includes>-->
-<!--				</resource>-->
-<!--			</resources>-->
-<!---->
-<!--		</unitTest>-->
+		<!--		<unitTest>-->
+		<!--			<includes>-->
+		<!--				<include>**/Test*.java</include>-->
+		<!--			</includes>-->
+		<!---->
+		<!--			<resources>-->
+		<!--				<resource>-->
+		<!--					<directory>resources/test</directory>-->
+		<!--					<targetPath>resources/test</targetPath>-->
+		<!--					<includes>-->
+		<!--						<include>**/*.xml</include>-->
+		<!--						<include>**/*.dtd</include>-->
+		<!--						<include>**/*.properties</include>-->
+		<!--					</includes>-->
+		<!--				</resource>-->
+		<!--			</resources>-->
+		<!---->
+		<!--		</unitTest>-->
 
 		<resources>
 			<resource>

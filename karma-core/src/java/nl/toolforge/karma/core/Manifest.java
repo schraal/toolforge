@@ -1,7 +1,5 @@
 package nl.toolforge.karma.core;
 
-import nl.toolforge.karma.core.vc.VersionControlSystem;
-
 import java.io.File;
 
 /**

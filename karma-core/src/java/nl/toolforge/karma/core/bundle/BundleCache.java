@@ -2,11 +2,13 @@ package nl.toolforge.karma.core.bundle;
 
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.prefs.Preferences;
-
-import java.util.*;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  * <p>Helper class initializing <code>ResourceBundle</code> and caching instances to enable localized messages.

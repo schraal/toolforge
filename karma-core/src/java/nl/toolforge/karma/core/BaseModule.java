@@ -1,8 +1,8 @@
 package nl.toolforge.karma.core;
 
-import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.expr.ModuleNameExpression;
 import nl.toolforge.core.regexp.Pattern;
+import nl.toolforge.karma.core.expr.ModuleNameExpression;
+import nl.toolforge.karma.core.location.Location;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

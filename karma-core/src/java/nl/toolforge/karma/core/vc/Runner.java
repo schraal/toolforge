@@ -1,8 +1,7 @@
 package nl.toolforge.karma.core.vc;
 
-import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.Module;
+import nl.toolforge.karma.core.cmd.CommandResponse;
 
 /**
  * This interface defines methods for runner classes that perform actions on a physical version control system.
@@ -45,5 +44,24 @@ public interface Runner {
 	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>.
 	 */
 	public CommandResponse commit(Module module);
+
+	/**
+	 * Creates a branch on the module.
+	 *
+	 * @param module
+	 * @param branch A symbolic name, representing the branch name.
+	 *
+	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>
+	 */
+	public CommandResponse branch(Module module, SymbolicName branch);
+
+	/**
+	 * Tags a module with a symbolic name.
+	 *
+	 * @param module
+	 * @param tag
+	 * @return
+	 */
+	public CommandResponse tag(Module module, SymbolicName tag);
 
 }

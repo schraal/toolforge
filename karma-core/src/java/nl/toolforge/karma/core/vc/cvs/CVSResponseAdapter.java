@@ -1,11 +1,10 @@
 package nl.toolforge.karma.core.vc.cvs;
 
-import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.CommandMessage;
-import nl.toolforge.karma.core.BaseModule;
-import org.netbeans.lib.cvsclient.event.*;
+import nl.toolforge.karma.core.cmd.CommandResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.netbeans.lib.cvsclient.event.*;
 
 
 /**

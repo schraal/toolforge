@@ -13,4 +13,8 @@ import nl.toolforge.karma.core.exception.ErrorCode;
 public abstract class VersionControlException extends KarmaException {
 
 	public static final ErrorCode BLA = new ErrorCode("VC-00001");
+
+	/** Generated when a branch was created on a module which already existed. */
+	public static final ErrorCode DUPLICATE_BRANCH = new ErrorCode("VC-00010");
+
 }

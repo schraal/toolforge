@@ -1,13 +1,13 @@
 package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.*;
+import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.location.LocationFactory;
 import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
+import nl.toolforge.karma.core.vc.cvs.CVSRunner;
 import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
 import nl.toolforge.karma.core.vc.subversion.SubversionRunner;
-import nl.toolforge.karma.core.vc.cvs.CVSRunner;
-import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
-import nl.toolforge.karma.core.location.LocationFactory;
-import nl.toolforge.karma.core.location.Location;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.PosixParser;
 import org.apache.commons.logging.Log;
