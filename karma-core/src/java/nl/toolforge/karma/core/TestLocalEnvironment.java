@@ -16,7 +16,8 @@ public final class TestLocalEnvironment extends TestCase {
   private static Properties p;
   private static LocalEnvironment localEnvironment;
 
-  static {
+  public void setUp() {
+//  static {
     try {
       workingContext = MyFileUtils.createTempDirectory();
 //			f2 = MyFileUtils.createTempDirectory();
@@ -34,7 +35,7 @@ public final class TestLocalEnvironment extends TestCase {
       p.put(LocalEnvironment.LOCATION_STORE_PROTOCOL, "three");
 
       try {
-        localEnvironment = LocalEnvironment.getInstance(p);
+        LocalEnvironment.initialize(p);
       } catch(KarmaException k) {
         fail(k.getMessage());
       }
@@ -45,47 +46,47 @@ public final class TestLocalEnvironment extends TestCase {
   }
 
   public void testGetWorkingContext() {
-    try {
-      assertEquals(workingContext, localEnvironment.getWorkingContext());
-
-    } catch (KarmaException e) {
-      fail(e.getMessage());
-    }
+//    try {
+      assertEquals(workingContext, LocalEnvironment.getWorkingContext());
+//
+//    } catch (KarmaException e) {
+//      fail(e.getMessage());
+//    }
   }
 
   public void testGetDevelopmentHome() {
-    try {
-      assertEquals(new File(workingContext, "projects"), localEnvironment.getDevelopmentHome());
-    } catch (KarmaException e) {
-      fail(e.getMessage());
-    }
+//    try {
+      assertEquals(new File(workingContext, "projects"), LocalEnvironment.getDevelopmentHome());
+//    } catch (KarmaException e) {
+//      fail(e.getMessage());
+//    }
 
   }
 
   public void testGetManifestStore() {
-    try {
-      assertEquals(new File(workingContext, "manifests"), localEnvironment.getManifestStore());
+//    try {
+      assertEquals(new File(workingContext, "manifests"), LocalEnvironment.getManifestStore());
 
-    } catch (KarmaException e) {
-      fail(e.getMessage());
-    }
+//    } catch (KarmaException e) {
+//      fail(e.getMessage());
+//    }
 
   }
 
   public void testGetLocationStore() {
-    try {
-      assertEquals(new File(workingContext, "locations"), localEnvironment.getLocationStore());
-
-    } catch (KarmaException e) {
-      fail(e.getMessage());
-    }
+//    try {
+      assertEquals(new File(workingContext, "locations"), LocalEnvironment.getLocationStore());
+//
+//    } catch (KarmaException e) {
+//      fail(e.getMessage());
+//    }
   }
 
   /**
    * Leave as last ...
    */
 
-  public void testZZZZZZZZZZ() {
+  public void tearDown() {
     boolean b = workingContext.delete();
   }
 }

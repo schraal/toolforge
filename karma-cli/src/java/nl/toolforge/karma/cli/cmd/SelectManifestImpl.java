@@ -1,7 +1,6 @@
 package nl.toolforge.karma.cli.cmd;
 
 import nl.toolforge.karma.cli.ConsoleConfiguration;
-import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
@@ -9,12 +8,8 @@ import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.impl.SelectManifest;
-import nl.toolforge.karma.core.manifest.ManifestException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
 
 /**
  * @author W.H. Schraal

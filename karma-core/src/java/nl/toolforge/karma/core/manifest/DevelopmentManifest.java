@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.location.LocationException;
 
 import java.io.File;
@@ -24,7 +25,7 @@ public final class DevelopmentManifest extends AbstractManifest {
   /**
    * <p>Adds a module to the <code>DevelopmentManifest</code>. The module is matched with This method is called by
    * <a href="http://jakarta.apache.org/commons/digester">Digester</a> during the
-   * {@link #load(nl.toolforge.karma.core.LocalEnvironment)}-process.
+   * {@link #load()}-process.
    *
    * <p>This method also checks if the module is available locally. If so, the module will be matched with the module
    * on disk to check if they are equal. This is to ensure that a changed manifest-definition is reflected on disk. If
@@ -56,12 +57,10 @@ public final class DevelopmentManifest extends AbstractManifest {
     }
 
     try {
-      if (getLocalEnvironment() != null) {
         if (module instanceof SourceModule) {
-          File manifestDirectory = new File(getLocalEnvironment().getDevelopmentHome(), getName());
+          File manifestDirectory = new File(LocalEnvironment.getDevelopmentHome(), getName());
           ((SourceModule) module).setBaseDir(new File(manifestDirectory, module.getName()));
         }
-      }
     } catch(Exception e) {
       // Basically, if we can't do this, we have nothing ... really a RuntimeException
       //

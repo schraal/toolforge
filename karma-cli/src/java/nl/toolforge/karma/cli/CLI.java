@@ -15,9 +15,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.File;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
@@ -80,11 +80,11 @@ public class CLI {
     //
     CommandContext ctx = null;
     try {
-      LocalEnvironment env = LocalEnvironment.getInstance();
+      LocalEnvironment.initialize();
 
       ctx = new CommandContext();
       try {
-        ctx.init(env, new CLICommandResponseHandler(writer));
+        ctx.init(new CLICommandResponseHandler(writer));
       } catch (LocationException e) {
         writer.writeln(e.getErrorMessage());
         logger.error(e.getMessage(), e);

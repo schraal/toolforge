@@ -12,6 +12,7 @@ import nl.toolforge.karma.core.cmd.util.DescriptorReader;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ModuleDescriptor;
+import nl.toolforge.karma.core.LocalEnvironment;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.commons.logging.Log;
@@ -90,7 +91,7 @@ public class PackageModule extends AbstractBuildCommand {
 
         // Set the base location for jar dependencies.
         //
-        project.setProperty(KARMA_JAR_REPOSITORY_PROPERTY, getContext().getLocalEnvironment().getLocalRepository().getPath());
+        project.setProperty(KARMA_JAR_REPOSITORY_PROPERTY, LocalEnvironment.getLocalRepository().getPath());
 
         // Include all jar dependencies --> copied to WEB-INF/lib
         //

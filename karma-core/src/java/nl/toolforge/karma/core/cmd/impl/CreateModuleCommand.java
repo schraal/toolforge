@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
@@ -68,7 +69,7 @@ public class CreateModuleCommand extends DefaultCommand {
     try {
       // Part 2 of the transaction is the creation in a version control system.
       //
-      Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getLocalEnvironment().getDevelopmentHome());
+      Runner runner = RunnerFactory.getRunner(module.getLocation(), LocalEnvironment.getDevelopmentHome());
       runner.setCommandResponse(getCommandResponse());
 
       CommandMessage message = null;
@@ -90,8 +91,6 @@ public class CreateModuleCommand extends DefaultCommand {
     } catch (VersionControlException e) {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
       //commandResponse.addMessage(new ErrorMessage(ke));
-    } catch (KarmaException e) {
-      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
   }
 

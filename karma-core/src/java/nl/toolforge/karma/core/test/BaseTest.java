@@ -3,6 +3,7 @@ package nl.toolforge.karma.core.test;
 import junit.framework.TestCase;
 import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.LocationLoader;
 import org.apache.commons.io.FileUtils;
@@ -44,24 +45,47 @@ public class BaseTest extends TestCase {
 
     try {
       workingContext = MyFileUtils.createTempDirectory();
-//      f2 = MyFileUtils.createTempDirectory();
-//      f3 = MyFileUtils.createTempDirectory();
+
+      new File(workingContext, "manifests").mkdirs();
+      new File(workingContext, "locations").mkdirs();
+      new File(workingContext, "projects").mkdirs();
+
     } catch (IOException e) {
       e.printStackTrace();
     }
 
     p = new Properties();
     p.put(LocalEnvironment.WORKING_CONTEXT_DIRECTORY, workingContext.getPath());
-//    p.put(LocalEnvironment.MANIFEST_STORE_DIRECTORY, f2.getPath());
-//    p.put(LocalEnvironment.LOCATION_STORE_DIRECTORY, f3.getPath());
+
+    p.put(LocalEnvironment.MANIFEST_STORE_HOST, "localhost");
+    p.put(LocalEnvironment.MANIFEST_STORE_PASSWORD, "bla");
+    p.put(LocalEnvironment.MANIFEST_STORE_PORT, "2401");
+    p.put(LocalEnvironment.MANIFEST_STORE_PROTOCOL, "local");
+    p.put(LocalEnvironment.MANIFEST_STORE_REPOSITORY, "/tmp/test-CVSROOT");
+    p.put(LocalEnvironment.MANIFEST_STORE_USERNAME, "asmedes");
+
+    p.put(LocalEnvironment.LOCATION_STORE_HOST, "localhost");
+    p.put(LocalEnvironment.LOCATION_STORE_PASSWORD, "bla");
+    p.put(LocalEnvironment.LOCATION_STORE_PORT, "2401");
+    p.put(LocalEnvironment.LOCATION_STORE_PROTOCOL, "local");
+    p.put(LocalEnvironment.LOCATION_STORE_REPOSITORY, "/tmp/test-CVSROOT");
+    p.put(LocalEnvironment.LOCATION_STORE_USERNAME, "asmedes");
 
     try {
-      tmp = MyFileUtils.createTempDirectory();
 
-      writeFile("test-locations.xml");
-      writeFile("test-locations-2.xml");
-      writeFile("authenticators.xml");
+      // Initializes the LocalEnvironment so we can work with it ...
+      //
+      LocalEnvironment.initialize(p);
+    } catch (KarmaException e) {
+      fail(e.getMessage());
+    }
 
+    try {
+      writeFile(LocalEnvironment.getLocationStore(), "test-locations.xml");
+      writeFile(LocalEnvironment.getLocationStore(), "test-locations-2.xml");
+      writeFile(LocalEnvironment.getLocationStore(), "authenticators.xml");
+      writeFile(LocalEnvironment.getManifestStore(), "test-manifest-1.xml");
+      writeFile(LocalEnvironment.getManifestStore(), "included-test-manifest-1.xml");
     } catch (IOException e) {
       fail(e.getMessage());
     }
@@ -71,7 +95,7 @@ public class BaseTest extends TestCase {
     //
     try {
       LocationLoader loader = LocationLoader.getInstance();
-      loader.load(tmp);
+      loader.load(LocalEnvironment.getLocationStore());
 
     } catch (LocationException e) {
       fail("INITIALIZATION ERROR : " + e.getErrorMessage());
@@ -81,18 +105,9 @@ public class BaseTest extends TestCase {
   public void tearDown() {
     try {
       org.apache.commons.io.FileUtils.deleteDirectory(workingContext);
-//      org.apache.commons.io.FileUtils.deleteDirectory(f2);
-//      org.apache.commons.io.FileUtils.deleteDirectory(f3);
     } catch (IOException e) {
       e.printStackTrace();
     }
-
-    try {
-      FileUtils.deleteDirectory(tmp);
-    } catch (IOException e) {
-      fail(e.getMessage());
-    }
-
   }
 
   public final Properties getProperties() {
@@ -106,12 +121,12 @@ public class BaseTest extends TestCase {
     return this.getClass().getClassLoader();
   }
 
-  private synchronized void writeFile(String fileRef) throws IOException {
+  private synchronized void writeFile(File dir, String fileRef) throws IOException {
 
     BufferedReader in =
         new BufferedReader(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(fileRef)));
     BufferedWriter out =
-        new BufferedWriter(new FileWriter(new File(tmp, fileRef)));
+        new BufferedWriter(new FileWriter(new File(dir, fileRef)));
 
     String str;
     while ((str = in.readLine()) != null) {

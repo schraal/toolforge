@@ -32,6 +32,8 @@ public final class ErrorCode {
 
   private String errorCode = null;
 
+  public static final ErrorCode NO_ERROR = new ErrorCode("XXX-00000");
+
   /**
    * Creates an error code. Error codes must comply to the following pattern : <code>[A-Z]{3}-\d{5}</code>. Examples are:
    * <code>MAN-00001</code>, <code>CMD-10020</code>.

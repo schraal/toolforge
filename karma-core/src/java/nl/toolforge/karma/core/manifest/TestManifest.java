@@ -14,20 +14,19 @@ public class TestManifest extends BaseTest {
 
     try {
       DevelopmentManifest m = new DevelopmentManifest("test-manifest-1");
-      m.load(getClassLoader());
+      m.load();
 
       assertTrue("test-manifest-1".equals(m.getName()));
       assertTrue("1-0".equals(m.getVersion()));
-
-      //assertNotNull(m.getDescription()); //todo something wrong in the digester rules.xml
       assertEquals(3, m.size());
 
+      //assertNotNull(m.getDescription()); //todo something wrong in the digester rules.xml
+
       m = new DevelopmentManifest("test-manifest-1");
-      m.load(getClassLoader());
+      m.load();
       assertEquals(3, m.size());
 
     } catch (Exception e) {
-//      e.printStackTrace();
       fail(e.getMessage());
     }
   }
@@ -36,10 +35,21 @@ public class TestManifest extends BaseTest {
 
     try {
       DevelopmentManifest m = new DevelopmentManifest("test-manifest-1");
-      m.load(getClassLoader());
+      assertEquals(0, m.getAllModules().size());
+
+      m.load();
 
       assertEquals(3, m.getAllModules().size());
       assertEquals(3, m.getAllModules().size());
+
+      m.load();
+
+      assertEquals(3, m.getAllModules().size());
+
+      m = new DevelopmentManifest("included-test-manifest-1");
+      m.load();
+
+      assertEquals(1, m.getAllModules().size());
 
     } catch (Exception e) {
       fail(e.getMessage());

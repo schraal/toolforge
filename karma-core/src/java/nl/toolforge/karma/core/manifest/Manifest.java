@@ -1,6 +1,8 @@
 package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.core.util.listener.ChangeListener;
+import nl.toolforge.core.util.listener.ChangeListener;
 
 import java.io.File;
 import java.util.Collection;
@@ -69,7 +71,7 @@ public interface Manifest {
   /**
    * @see AbstractManifest for the time being
    */
-  public void load(LocalEnvironment localEnvironment) throws ManifestException;
+  public void load() throws ManifestException;
 
   /**
    * @see AbstractManifest for the time being

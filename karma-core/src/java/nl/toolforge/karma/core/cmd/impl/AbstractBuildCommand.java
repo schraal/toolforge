@@ -2,6 +2,7 @@ package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
@@ -289,7 +290,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
         if (relative) {
           jar = dep.getJarDependency();
         } else {
-          jar = getContext().getLocalEnvironment().getLocalRepository(false).getPath() + File.separator + dep.getJarDependency();
+          jar = LocalEnvironment.getLocalRepository(false).getPath() + File.separator + dep.getJarDependency();
         }
 
         buffer.append(jar);

@@ -1,18 +1,18 @@
 package nl.toolforge.karma.core.cmd.impl;
 
-import java.util.prefs.BackingStoreException;
-import java.util.prefs.Preferences;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.cmd.DefaultCommand;
+import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.LocalEnvironment;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.prefs.Preferences;
+import java.util.prefs.BackingStoreException;
+
 
 /**
  * <p>This command activates a manifest, which is a general requirement for most other commands. The newly activated
@@ -48,8 +48,7 @@ public class SelectManifest extends DefaultCommand {
 
     // Store this manifest as the last used manifest.
     //
-    String contextManifest =
-        LocalEnvironment.LAST_USED_MANIFEST_PREFERENCE + "." + LocalEnvironment.getWorkingContextAsString();
+    String contextManifest = LocalEnvironment.getContextManifestPreference();
 
     Preferences.userRoot().put(contextManifest, getContext().getCurrentManifest().getName());
     try {

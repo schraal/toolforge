@@ -1,6 +1,6 @@
 package nl.toolforge.karma.core.manifest;
 
-import nl.toolforge.karma.core.LocalEnvironment;
+
 
 /**
  * @author D.A. Smedes
@@ -9,16 +9,14 @@ import nl.toolforge.karma.core.LocalEnvironment;
 public final class ManifestFactory {
 
   private static ManifestFactory instance = null;
-  private LocalEnvironment env = null;
 
-  private ManifestFactory(LocalEnvironment env) {
-    this.env = env;
+  private ManifestFactory() {
   }
 
-  public static ManifestFactory getInstance(LocalEnvironment env) {
+  public static ManifestFactory getInstance() {
 
     if (instance == null) {
-      instance = new ManifestFactory(env);
+      instance = new ManifestFactory();
     }
     return instance;
   }
@@ -28,7 +26,7 @@ public final class ManifestFactory {
     // todo this one should 'read' the manifest and apply its type.
 
     Manifest manifest = new DevelopmentManifest(manifestName);
-    manifest.load(env);
+    manifest.load();
 
     return manifest;
   }

@@ -4,6 +4,7 @@ import nl.toolforge.core.util.file.XMLFilenameFilter;
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.ErrorCode;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
 import org.apache.commons.digester.Digester;
@@ -37,7 +38,7 @@ public final class LocationLoader {
 
   private static Log logger = LogFactory.getLog(LocationLoader.class);
 
-  private static LocalEnvironment env = null; // Reference to the local environment.
+//  private static LocalEnvironment env = null; // Reference to the local environment.
   private static LocationLoader instance = null;
 
   private static Map locations = null;
@@ -54,44 +55,36 @@ public final class LocationLoader {
    *
    * @return A location factory.
    */
-  public static LocationLoader getInstance(LocalEnvironment localEnvironment) throws LocationException {
+  public static LocationLoader getInstance() throws LocationException {
 
     if (instance == null) {
       instance = new LocationLoader();
 
-      if (localEnvironment != null) {
-
-        env = localEnvironment;
-
-        try {
-          locationBase = env.getLocationStore();
-        } catch (KarmaException e) {
-          throw new LocationException(e, LocationException.NO_LOCATION_DATA_FOUND);
-        }
-        authenticationBase = env.getConfigurationDirectory();
-      }
+      locationBase = LocalEnvironment.getLocationStore();
+      authenticationBase = LocalEnvironment.getConfigurationDirectory();
     }
     return instance;
   }
 
   /**
-   * Gets the singleton instance of the location factory. An instance obtained through this method cannot load locations
-   * from the file system. Use {@link #getInstance(nl.toolforge.karma.core.LocalEnvironment)} instead.
-   *
-   * @return A location factory.
-   */
-  public static LocationLoader getInstance() throws LocationException {
-    return getInstance(null);
-  }
-
-  /**
-   * Loads all location xml files from the path specified by the {@link nl.toolforge.karma.core.LocalEnvironment#LOCATION_STORE_DIRECTORY}
+   * Loads all location xml files from the path specified by the {@link LocalEnvironment#getLocationStore()}
    * property. Location objects are matched against authenticator objects, which should be available in the Karma
    * configuration directory and should start with '<code>authentication</code>' and have an <code>xml</code>-extension.
    *
    * @throws LocationException
    */
   public synchronized void load() throws LocationException {
+
+    /*
+
+    Scenarios:
+    A. XML can be invalid
+    B. Duplicate keys found
+    C. No authenticator for location
+    D. Authenticator is wrong for the location (missing username when location requires that)
+
+    */
+
 
     if (locationBase == null) {
       throw new KarmaRuntimeException("Local environment is not initialized. Use 'getInstance(LocalEnvironment)'.");
@@ -127,7 +120,10 @@ public final class LocationLoader {
     for (Iterator j = subList.iterator(); j.hasNext();) {
       AuthenticatorDescriptor authDescriptor = (AuthenticatorDescriptor) j.next();
       if (authenticators.containsKey(authDescriptor.getId())) {
-        throw new LocationException(LocationException.DUPLICATE_AUTHENTICATOR_KEY, new Object[] {authDescriptor.getId()});
+        throw new LocationException(
+            LocationException.DUPLICATE_AUTHENTICATOR_KEY,
+            new Object[] {authDescriptor.getId(), LocalEnvironment.getConfigurationDirectory().getPath()}
+        );
       }
       authenticators.put(authDescriptor.getId(), authDescriptor);
     }
@@ -153,13 +149,12 @@ public final class LocationLoader {
       digester.addCallMethod("locations/location/repository", "setRepository", 0);
       digester.addSetNext("locations/location", "add");
 
-//      subList = null;
       try {
         subList = (List) digester.parse(new File(locationBase, files[i]).getPath());
       } catch (IOException e) {
-        e.printStackTrace();
+        throw new LocationException(e, LocationException.LOCATION_LOAD_ERROR);
       } catch (SAXException e) {
-        e.printStackTrace();
+        throw new LocationException(e, LocationException.LOCATION_LOAD_ERROR);
       }
 
       if (subList != null) {
@@ -167,7 +162,11 @@ public final class LocationLoader {
 
           LocationDescriptor d = (LocationDescriptor) j.next();
           if (locations.containsKey(d.getId())) {
-            throw new LocationException(LocationException.DUPLICATE_LOCATION_KEY, new Object[] {d.getId()});
+            locations.remove(d.getId());
+            throw new LocationException(
+                LocationException.DUPLICATE_LOCATION_KEY,
+                new Object[] {d.getId(), LocalEnvironment.getLocationStore().getPath()}
+            );
           }
 
           // Get the authenticator
@@ -175,7 +174,7 @@ public final class LocationLoader {
           AuthenticatorDescriptor authDescriptor = (AuthenticatorDescriptor) authenticators.get(d.getId());
 
           if (authDescriptor == null) {
-            throw new LocationException(LocationException.INVALID_AUTHENTICATOR_CONFIGURATION, new Object[]{d.getId()});
+            throw new LocationException(LocationException.AUTHENTICATOR_NOT_FOUND, new Object[]{d.getId()});
           }
           locations.put(d.getId(), getLocation(d, authDescriptor));
         }
@@ -195,7 +194,7 @@ public final class LocationLoader {
     load();
   }
 
-  private Location getLocation(LocationDescriptor locDescriptor, AuthenticatorDescriptor authDescriptor) {
+  private Location getLocation(LocationDescriptor locDescriptor, AuthenticatorDescriptor authDescriptor) throws LocationException {
 
     if (Location.Type.CVS_REPOSITORY.type.equals(locDescriptor.getType().toUpperCase())) {
 
@@ -208,6 +207,8 @@ public final class LocationLoader {
 
       cvsLocation.setUsername(authDescriptor.getUsername());
       cvsLocation.setPassword(authDescriptor.getPassword());
+
+      checkLocation(cvsLocation);
 
       return cvsLocation;
 
@@ -272,7 +273,7 @@ public final class LocationLoader {
     if (locations.containsKey(locationAlias)) {
 
       Location location = (Location) locations.get(locationAlias);
-      checkLocation(location); // checks if authentication data is available if need be.
+//      checkLocation(location); // checks if authentication data is available if need be.
 
       return location;
     }
@@ -287,4 +288,51 @@ public final class LocationLoader {
   public String toString() {
     return locations.toString();
   }
+
+//  private class LocationKey {
+//
+//    private ErrorCode errorCode = null;
+//    private String id = null;
+//
+//    LocationKey(String locationAlias, ErrorCode errorCode) {
+//
+//      if (id == null || "".equals(id)) {
+//        throw new KarmaRuntimeException("Location alias cannot be null or an empty String.");
+//      }
+//
+//      id = locationAlias;
+//
+//      if (errorCode == null) {
+//        this.errorCode = ErrorCode.NO_ERROR;
+//      } else {
+//        this.errorCode = errorCode;
+//      }
+//    }
+//
+//    String getId() {
+//      return id;
+//    }
+//
+//    ErrorCode getErrorCode() {
+//      return errorCode;
+//    }
+//
+//    public boolean equals(Object o) {
+//
+//      if (this == o) return true;
+//
+//      if (!(o instanceof LocationKey)) {
+//        return false;
+//      }
+//
+//      final LocationKey locationKey = (LocationKey) o;
+//
+//      return (id.equals(locationKey.getId()) && (errorCode.equals(locationKey.getErrorCode())));
+//    }
+//
+//    public int hashCode() {
+//      return id.hashCode();
+//    }
+//
+//  }
 }

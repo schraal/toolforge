@@ -108,9 +108,6 @@ public final class LocalEnvironment {
    */
   public static final String WORKING_CONTEXT_DIRECTORY = "working-context";
 
-  /** Preference property identifying the manifest that was used in the last Karma session. */
-  public static final String LAST_USED_MANIFEST_PREFERENCE = "karma.manifest.last";
-
   public static final String MANIFEST_STORE_HOST = "manifest-store.cvs.host";
   public static final String MANIFEST_STORE_PORT = "manifest-store.cvs.port";
   public static final String MANIFEST_STORE_REPOSITORY = "manifest-store.cvs.repository";
@@ -128,39 +125,32 @@ public final class LocalEnvironment {
   private static final String PLACEHOLDER = "<...>";
 
   /** Property Object that stores the key-value pairs of the defined properties. */
-  private Properties configuration = new Properties();
+  private static Properties configuration = null;
 
   /**
    * The one-and-only instance of this class.
    */
-  private static LocalEnvironment localEnvironment;
+//  private static LocalEnvironment localEnvironment;
 
   /**
-   * Return the one-and-only instance of this class. It will be initialized from file
-   * when it does not yet exist.
+   * Initialize the <code>LocalEnvironment</code> with <code>karma.propeties</code>, located in
+   * <code>$HOME/.karma</code>.
+   *
+   * @throws KarmaException
    */
-  public static LocalEnvironment getInstance() throws KarmaException {
-    LogFactory factory = LogFactory.getFactory();
-    return getInstance(null);
+  public static void initialize() throws KarmaException {
+    initialize(null);
   }
 
   /**
-   * Return the one-and-only instance of this class. It will be initialized using the given
-   * Properties object when it does not yet exist.
+   * Initialize the <code>LocalEnvironment</code> with <code>properties</code>.
    *
    * @param properties Properties object used to initialize the instance.
    * @throws KarmaException When {@link KarmaException.MISSING_CONFIGURATION} is detected, it will result in a Karma
    *   startup failure.
    */
-  public static LocalEnvironment getInstance(Properties properties) throws KarmaException {
-    LogFactory factory = LogFactory.getFactory();
-
-    if (localEnvironment == null) {
-      localEnvironment = new LocalEnvironment(properties);
-    } else {
-      logger.warn("This singleton class has already been initialized. Use getInstance() instead.");
-    }
-    return localEnvironment;
+  public static void initialize(Properties properties) throws KarmaException {
+    new LocalEnvironment(properties);
   }
 
   /**
@@ -170,6 +160,8 @@ public final class LocalEnvironment {
    *   the properties are read from the <code>karma.properties</code> configuration file.
    */
   private LocalEnvironment(Properties properties) throws KarmaException {
+
+    configuration = new Properties();
 
     try {
 
@@ -330,7 +322,7 @@ public final class LocalEnvironment {
    *
    * @return The configuration directory for Karma.
    */
-  public File getConfigurationDirectory() {
+  public static File getConfigurationDirectory() {
     return new File(System.getProperty("user.home"), ".karma");
   }
 
@@ -354,10 +346,6 @@ public final class LocalEnvironment {
 
     configuration.put(WORKING_CONTEXT_DIRECTORY, karmaBase);
 
-//    configuration.put(DEVELOPMENT_STORE_DIRECTORY, karmaBase + "projects");
-//    configuration.put(MANIFEST_STORE_DIRECTORY, karmaBase + "manifests");
-//    configuration.put(LOCATION_STORE_DIRECTORY, karmaBase + "locations");
-//
     configuration.put(MANIFEST_STORE_HOST, PLACEHOLDER);
     configuration.put(MANIFEST_STORE_PORT, PLACEHOLDER);
     configuration.put(MANIFEST_STORE_REPOSITORY, PLACEHOLDER);
@@ -379,37 +367,44 @@ public final class LocalEnvironment {
     configuration.store(new FileOutputStream(configFile), header);
   }
 
-  public File getWorkingContext() throws KarmaException {
+  public static File getWorkingContext() {
 
-    try {
-      File home = null;
-
-      String workingContext = (String) configuration.get(WORKING_CONTEXT_DIRECTORY);
-
-      home = new File(workingContext);
-
-      if (!home.exists()) {
-        throw new KarmaException(KarmaException.WORKING_CONTEXT_NOT_FOUND);
-      }
-
-      return home;
-    } catch (NullPointerException n) {
-      throw new KarmaException(KarmaException.WORKING_CONTEXT_NOT_FOUND);
+    if (configuration == null) {
+      throw new KarmaRuntimeException("Local environment has not been initialized. Call initialize().");
     }
+
+    String workingContext = (String) configuration.get(WORKING_CONTEXT_DIRECTORY);
+
+    File home = new File(workingContext);
+
+    if (!home.exists()) {
+      throw new KarmaRuntimeException("No working context. (Not defined in karma.properties ?)");
+    }
+
+    return home;
   }
 
   public static String getWorkingContextAsString() {
 
-    File workingContext = null;
-    try {
-      workingContext = LocalEnvironment.getInstance().getWorkingContext();
-      if (workingContext == null) {
-        throw new KarmaRuntimeException("No working context defined.");
-      }
-    } catch (KarmaException k) {
-      throw new KarmaRuntimeException("No working context defined.");
+    if (getWorkingContext() == null) {
+      throw new KarmaRuntimeException("No working context defined. Local environment may not have been initialized properly.");
     }
-    return workingContext.getAbsolutePath();
+    return getWorkingContext().getAbsolutePath();
+  }
+
+  /**
+   * Gets the property at which the last used manifest is stored in <code>.java</code>. This property is
+   * context-sensitive.
+   *
+   * @return
+   */
+  public static String getContextManifestPreference() {
+
+    // Preference property identifying the manifest that was used in the last Karma session.
+    //
+    final String LAST_USED_MANIFEST_PREFERENCE = "karma.manifest.last";
+
+    return getWorkingContextAsString() + "." + LAST_USED_MANIFEST_PREFERENCE;
   }
 
   /**
@@ -417,16 +412,19 @@ public final class LocalEnvironment {
    * are stored here.
    *
    * @return A valid reference to the manifest store directory.
-   * @throws KarmaException When the manifest store directory does not exist.
    */
-  public File getManifestStore() throws KarmaException {
+  public static File getManifestStore() {
     return new File(getWorkingContext(), "manifests");
   }
 
   /**
    * Gets a reference to the location where manifests can be retrieved. Supports only CVS for now.
    */
-  public Location getManifestStoreLocation() throws LocationException {
+  public static Location getManifestStoreLocation() throws LocationException {
+
+    if (configuration == null) {
+      throw new KarmaRuntimeException("Local environment has not been initialized. Call initialize().");
+    }
 
     CVSLocationImpl location = new CVSLocationImpl("manifest-store");
     try {
@@ -467,7 +465,11 @@ public final class LocalEnvironment {
   /**
    * Gets a reference to the location where <code>location.xml</code> can be retrieved. Supports only CVS for now.
    */
-  public Location getLocationStoreLocation() throws LocationException {
+  public static Location getLocationStoreLocation() throws LocationException {
+
+    if (configuration == null) {
+      throw new KarmaRuntimeException("Local environment has not been initialized. Call initialize().");
+    }
 
     CVSLocationImpl location = new CVSLocationImpl("location-store");
     try {
@@ -511,9 +513,8 @@ public final class LocalEnvironment {
    * are stored here.
    *
    * @return A valid reference to the location store directory.
-   * @throws KarmaException When then location store directory does not exist.
    */
-  public File getLocationStore() throws KarmaException {
+  public static File getLocationStore() {
     return new File(getWorkingContext(), "locations");
   }
 
@@ -522,16 +523,15 @@ public final class LocalEnvironment {
    * the manifest instances are checked out from the version control system.
    *
    * @return A valid reference to the development home directory.
-   * @throws KarmaException When the development home does not exists.
    */
-  public File getDevelopmentHome() throws KarmaException {
+  public static File getDevelopmentHome() {
     return new File(getWorkingContext(), "projects");
   }
 
   /**
    * Defaults to <code>${user.home}/.maven/repository</code> at the moment.
    */
-  public File getLocalRepository() {
+  public static File getLocalRepository() {
     return getLocalRepository(false);
   }
 
@@ -540,7 +540,7 @@ public final class LocalEnvironment {
    * @param relative
    * @return
    */
-  public File getLocalRepository(boolean relative) {
+  public static File getLocalRepository(boolean relative) {
 
     if (relative) {
       return new File(".maven" + File.separator + "repository");

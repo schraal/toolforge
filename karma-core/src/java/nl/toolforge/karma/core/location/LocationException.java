@@ -3,8 +3,8 @@ package nl.toolforge.karma.core.location;
 import nl.toolforge.karma.core.ErrorCode;
 
 /**
- * <p>Exceptions relating to locations. As with all other <code>KarmaExceptions</code>, exceptions can only be thrown
- * with a certain <code>ErrorCode</code>
+ * <p>Exceptions relating to <code>Location</code>s. As with all other <code>KarmaExceptions</code>, exceptions can
+ * only be thrown with a certain <code>ErrorCode</code>.
  *
  * @author D.A. Smedes
  * @version $Id$
@@ -14,12 +14,18 @@ public final class LocationException extends Exception {
   private ErrorCode errorCode = null;
   private Object[] messageArguments = null;
 
+  /**
+   * This is the prefix that is shown when displaying the error.
+   */
   public static final String EXCEPTION_PREFIX = "LOC-";
 
   /**
-   * When the authentication configuration is invalid.
+   * When the authenticator configuration is invalid. This is due to functional errors in the content of the
+   * <code>&lt;&authenticator&gt;</code>-element. Some locations require certain data to be available (username and
+   * password for a <code>pserver</code> location for instance).
    */
   public static final ErrorCode INVALID_AUTHENTICATOR_CONFIGURATION = new ErrorCode(EXCEPTION_PREFIX + "00001");
+
   /**
    * When the location-type requires authentication configuration to be present.
    */
@@ -31,8 +37,8 @@ public final class LocationException extends Exception {
    */
   public static final ErrorCode LOCATION_NOT_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00005");
   /**
-   * No location files were found. A developer should have a directory configured in karma.properties, and location
-   * data should be available.
+   * No location files were found. Karma filters all <code>*.xml</code>-files from
+   * {@link nl.toolforge.karma.core.LocalEnvironment#getLocationStore()}.
    */
   public static final ErrorCode NO_LOCATION_DATA_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00006");
   /** The location was configured incorrectly. */
@@ -51,10 +57,21 @@ public final class LocationException extends Exception {
   public static final ErrorCode INVALID_LOCATION_STORE_LOCATION = new ErrorCode(EXCEPTION_PREFIX + "00012");
 
   public static final ErrorCode DUPLICATE_LOCATION_KEY = new ErrorCode(EXCEPTION_PREFIX + "00013");
-
+  /**
+   * No authenticator entry is configured that matches the location alias (the <code>id</code>-attribute).
+   */
   public static final ErrorCode DUPLICATE_AUTHENTICATOR_KEY = new ErrorCode(EXCEPTION_PREFIX + "00014");
 
-  public static final ErrorCode AUTHENTICATOR_LOAD_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00015");;
+  public static final ErrorCode AUTHENTICATOR_LOAD_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00015");
+  /**
+   * No authenticator entry is configured that matches the location alias (the <code>id</code>-attribute).
+   */
+  public static final ErrorCode AUTHENTICATOR_NOT_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00016");
+
+  /**
+   * An xml file with locations could not be loaded.
+   */
+  public static final ErrorCode LOCATION_LOAD_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00017");
 
   public LocationException(ErrorCode errorCode) {
     this(errorCode, null);
@@ -78,8 +95,6 @@ public final class LocationException extends Exception {
 
   /**
    * Helper method to get the localized error message based on the {@link nl.toolforge.karma.core.ErrorCode}.
-   *
-   * @return
    */
   public final String getErrorMessage() {
     if (messageArguments != null && messageArguments.length > 0) {
@@ -90,12 +105,14 @@ public final class LocationException extends Exception {
 
   /**
    * Gets the exceptions' {@link nl.toolforge.karma.core.ErrorCode}.
-   * @return
    */
   public final ErrorCode getErrorCode() {
     return errorCode;
   }
 
+  /**
+   * Retrieves the message arguments for this exception.
+   */
   public final Object[] getMessageArguments() {
     return messageArguments;
   }

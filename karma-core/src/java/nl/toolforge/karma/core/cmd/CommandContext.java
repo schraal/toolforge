@@ -15,11 +15,19 @@ import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.core.util.listener.ListenerManager;
+import nl.toolforge.core.util.listener.ListenerManagerException;
+import nl.toolforge.core.util.listener.ListenerManager;
+import nl.toolforge.core.util.listener.ChangeListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Map;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Iterator;
 
 /**
  * <p>The command context is the class that provides a runtime for commands to run in. The command context maintains
@@ -30,36 +38,35 @@ import java.util.Collection;
  * @author D.A. Smedes
  * @version $Id$
  */
-public final class CommandContext {
+public final class CommandContext implements ChangeListener {
 
   private static Log logger = LogFactory.getLog(CommandContext.class);
 
   private Manifest currentManifest = null;
-  private LocalEnvironment env = null;
   public CommandResponseHandler responseHandler = null;
+
+  private static ListenerManager manager = null;
 
   /**
    * Initializes the context to run commands.
    *
-   * @param env The users' {@link nl.toolforge.karma.core.LocalEnvironment}.
    */
-  public synchronized void init(LocalEnvironment env, CommandResponseHandler handler)
-      throws KarmaException, ManifestException, LocationException {
+  public synchronized void init(CommandResponseHandler handler)
+      throws ManifestException, LocationException {
 
     if (handler == null) {
       throw new IllegalArgumentException("CommandResponseHandler may not be null, you lazy bitch.");
     }
     this.responseHandler = handler;
-    this.env = env;
 
     // Update the manifest-store.
     //
 
-    Module manifestStore = new SourceModule("manifests", env.getManifestStoreLocation());
+    Module manifestStore = new SourceModule("manifests", LocalEnvironment.getManifestStoreLocation());
 
-    if (env.getWorkingContext().exists()) {
+    if (LocalEnvironment.getWorkingContext().exists()) {
       try {
-        Runner runner = RunnerFactory.getRunner(manifestStore.getLocation(), env.getWorkingContext());
+        Runner runner = RunnerFactory.getRunner(manifestStore.getLocation(), LocalEnvironment.getWorkingContext());
         runner.checkout(manifestStore);
       } catch (VersionControlException e) {
         // todo some sort of notification would be nice ...
@@ -75,11 +82,11 @@ public final class CommandContext {
 
     // Update the location-store.
     //
-    Module locationStore = new SourceModule("locations", env.getLocationStoreLocation());
+    Module locationStore = new SourceModule("locations", LocalEnvironment.getLocationStoreLocation());
 
-    if (env.getWorkingContext().exists()) {
+    if (LocalEnvironment.getWorkingContext().exists()) {
       try {
-        Runner runner = RunnerFactory.getRunner(locationStore.getLocation(), env.getWorkingContext());
+        Runner runner = RunnerFactory.getRunner(locationStore.getLocation(), LocalEnvironment.getWorkingContext());
         runner.checkout(locationStore);
       } catch (VersionControlException e) {
         // todo some sort of notification would be nice ...
@@ -96,13 +103,89 @@ public final class CommandContext {
 
     // Read in all location data
     //
-//    LocationFactory.getInstance(env).load();
-    LocationLoader.getInstance(env).load();
+    LocationLoader.getInstance().load();
 
     // Try reloading the last manifest that was used.
     //
-    ManifestCollector collector = ManifestCollector.getInstance(this.env);
+    ManifestCollector collector = ManifestCollector.getInstance();
     currentManifest = collector.loadFromHistory();
+
+    setFileModificationTimes();
+
+    // Register the command context with the listener to allow automaic updates of the manifest.
+    //
+
+    manager = ListenerManager.getInstance();
+    try {
+      manager.register(this);
+    } catch (ListenerManagerException e) {
+      e.printStackTrace();
+    }
+
+    manager.start();
+  }
+
+//  private static Map modificationMap = new Hashtable();
+
+  private long lastmodified = 0;
+
+  private synchronized void setFileModificationTimes() {
+
+    // todo verder uitwerken voor included manifests
+    //
+
+//    File manifestStore = LocalEnvironment.getManifestStore();
+//
+//    List includes = currentManifest.getIncludedManifests();
+//    for (Iterator i = includes.iterator(); i.hasNext();) {
+//
+//      Manifest m = (Manifest) i.next();
+//
+//      Long lastModified = new Long(new File(manifestStore, m.getName() + ".xml").lastModified());
+//      modificationMap.put(m.getName(), lastModified);
+//    }
+
+    lastmodified = new File(LocalEnvironment.getManifestStore(), currentManifest.getName() + ".xml").lastModified();
+  }
+
+  /**
+   * Implementation of the {@link nl.toolforge.core.util.listener.ChangeListener} interface. This method reloads the
+   * current manifest to allow changes to be reflected without having to restart.
+   */
+  public synchronized void process() {
+
+    try {
+
+      File f = new File(LocalEnvironment.getManifestStore(), currentManifest.getName() + ".xml");
+
+      if (!f.exists()) {
+        throw new ManifestException(ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[] {currentManifest.getName()});
+      }
+
+      if (f.lastModified() > lastmodified) {
+
+        setFileModificationTimes();
+//        lastmodified = f.lastModified(); // Reset
+
+        currentManifest.load();
+
+        String message = "Manifest " + getCurrentManifest().getName() + " has changed on disk. Reloaded automaitcally.";
+        logger.info(message);
+
+        responseHandler.commandResponseChanged(new CommandResponseEvent(new SuccessMessage(message)));
+
+        return;
+      }
+
+    } catch (ManifestException m) {
+
+      manager.suspendListener();
+
+      logger.error(new ErrorMessage(m.getErrorCode()).getMessageText());
+      throw new KarmaRuntimeException(m.getErrorCode(), m.getMessageArguments());
+
+      // todo in karma-core-1.1 this should be improved. Right now, the probability of this process failing is remote.
+    }
   }
 
   /**
@@ -122,12 +205,14 @@ public final class CommandContext {
    */
   public void changeCurrentManifest(String manifestName) throws ManifestException {
 
-    ManifestFactory manifestFactory = ManifestFactory.getInstance(getLocalEnvironment());
+    ManifestFactory manifestFactory = ManifestFactory.getInstance();
     Manifest newManifest = manifestFactory.createManifest(manifestName);
 
     // If we are here, loading the new manifest was succesfull.
     //
     currentManifest = newManifest;
+
+    setFileModificationTimes();
   }
 
 
@@ -137,7 +222,7 @@ public final class CommandContext {
    * @return See <code>ManifestLoader.getAllManifests()</code>.
    */
   public Collection getAllManifests() {
-    return ManifestCollector.getInstance(getLocalEnvironment()).getAllManifests();
+    return ManifestCollector.getInstance().getAllManifests();
   }
 
   /**
@@ -186,11 +271,6 @@ public final class CommandContext {
     return (currentManifest != null);
   }
 
-  public LocalEnvironment getLocalEnvironment() {
-    return this.env;
-  }
-
-
   /**
    * <p>Some module-types (e.g. source modules) have a physical location on disk where the module can be located. This
    * method returns a valid reference to that location. When the module-root is located at
@@ -201,7 +281,7 @@ public final class CommandContext {
    *
    * todo consider moving it to Module.
    */
-  public final File getLocalPath(Module module) throws KarmaException {
+  public final File getLocalPath(Module module) {
 
     File localPath = new File(getBase(), module.getName());
     logger.debug("getLocalPath() = " + localPath.getPath());
@@ -214,8 +294,8 @@ public final class CommandContext {
    */
   // todo what to do with the throws clause ???
   //
-  private File getBase() throws KarmaException {
-    return new File(getLocalEnvironment().getDevelopmentHome(), getCurrentManifest().getName());
+  private File getBase() {
+    return new File(LocalEnvironment.getDevelopmentHome(), getCurrentManifest().getName());
   }
 
 

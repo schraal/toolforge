@@ -1,21 +1,18 @@
 package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.core.util.file.XMLFilenameFilter;
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.location.LocationException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.prefs.Preferences;
 import java.util.prefs.BackingStoreException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.prefs.Preferences;
 
 /**
  * @author D.A. Smedes
@@ -28,46 +25,31 @@ public class ManifestCollector {
   private static ManifestCollector instance = null;
   private static Collection manifests = new ArrayList();
 
-  private LocalEnvironment env = null;
-
-  public static ManifestCollector getInstance(LocalEnvironment env) {
-
-    if (instance == null) {
-      instance = new ManifestCollector(env);
-    }
-    return instance;
-  }
-
   /**
-   * Same as {@link #getInstance(nl.toolforge.karma.core.LocalEnvironment)}, but this method can only be used when
-   * {@link ManifestCollector#init()} has been called.
+   *
    *
    * @return
    */
   public static ManifestCollector getInstance() {
 
     if (instance == null) {
-      throw new KarmaRuntimeException(
-          "ManifestCollector has not been initialized. Use 'getInstance(LocalEnvironment)'.");
+      instance = new ManifestCollector();
     }
     return instance;
   }
 
-  public ManifestCollector(LocalEnvironment env) {
-    this.env = env;
+  public ManifestCollector() {
     init();
   }
 
   public Collection getAllManifests() {
+    File manifestStore = LocalEnvironment.getManifestStore();
 
-    try {
-      File manifestStore = getLocalEnvironment().getManifestStore();
-
-      return Arrays.asList(manifestStore.list(new XMLFilenameFilter()));
-
-    } catch (KarmaException e) {
-      return manifests;
+    manifests = Arrays.asList(manifestStore.list(new XMLFilenameFilter()));
+    if (manifests.size() == 0) {
+      return new ArrayList();
     }
+    return manifests;
   }
 
   public synchronized void refresh() {
@@ -82,20 +64,19 @@ public class ManifestCollector {
    */
   public Manifest loadFromHistory() throws LocationException, ManifestException {
 
-    String contextManifest =
-        LocalEnvironment.LAST_USED_MANIFEST_PREFERENCE + "." + LocalEnvironment.getWorkingContextAsString();
+    String contextManifest = LocalEnvironment.getContextManifestPreference();
 
     String manifestId = Preferences.userRoot().get(contextManifest, null);
     if (manifestId != null) {
 
-      ManifestFactory manifestFactory = ManifestFactory.getInstance(getLocalEnvironment());
+      ManifestFactory manifestFactory = ManifestFactory.getInstance();
 
       Manifest manifest = null;
       try {
         manifest = manifestFactory.createManifest(manifestId);
       } catch (ManifestException m) {
         if (m.getErrorCode().equals(ManifestException.MANIFEST_FILE_NOT_FOUND)) {
-          Preferences.userRoot().remove(LocalEnvironment.LAST_USED_MANIFEST_PREFERENCE);
+          Preferences.userRoot().remove(LocalEnvironment.getContextManifestPreference());
           try {
             Preferences.userRoot().flush();
           } catch (BackingStoreException e) {
@@ -105,17 +86,12 @@ public class ManifestCollector {
         // Rethrow, the removal from userPrefs has been performed
         //
         throw m;
-//        }
       }
 
       return manifest;
     }
 
     return null;
-  }
-
-  private LocalEnvironment getLocalEnvironment() {
-    return env;
   }
 
   private synchronized void init() {
