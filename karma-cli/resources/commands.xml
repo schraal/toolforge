@@ -106,6 +106,24 @@
 
   </command>
 
+  <command name="clean-module" alias="clm">
+
+    <description lang="en">
+			Removes all built artifacts of the module.
+    </description>
+
+    <options>
+      <option opt="m" longOpt="module" required="true" description="The module name">
+        <arg name="module-name"/>
+      </option>
+    </options>
+
+    <classname>nl.toolforge.karma.core.cmd.impl.CleanModule</classname>
+
+    <help/>
+
+  </command>
+
   <command name="update-all" alias="ua">
 
     <description lang="en">
@@ -136,7 +154,7 @@
 
   </command>
 
-  <command name="create-module" alias="cm">
+  <command name="create-module" alias="crm">
 
     <description lang="en">
 			Creates a module (optionally includes it in the manifest as well).
