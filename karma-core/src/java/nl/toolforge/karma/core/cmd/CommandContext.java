@@ -119,8 +119,8 @@ public final class CommandContext implements ChangeListener {
         // Check if the locally existing manifest module has the same location (cvsroot e.g.) as the
         // requested update.
         //
-        AdminHandler adminHandler = new AdminHandler();
-        if (!adminHandler.isEqualLocation(manifestModule)) {
+        AdminHandler adminHandler = new AdminHandler(manifestModule);
+        if (!adminHandler.isEqualLocation()) {
           throw new LocationException(LocationException.LOCATION_MISMATCH, new Object[]{manifestModule.getName()});
         }
 
@@ -157,8 +157,8 @@ public final class CommandContext implements ChangeListener {
 
       if (workingContext.getLocationStore().exists()) {
 
-        AdminHandler adminHandler = new AdminHandler();
-        if (!adminHandler.isEqualLocation(locationModule)) {
+        AdminHandler adminHandler = new AdminHandler(locationModule);
+        if (!adminHandler.isEqualLocation()) {
           throw new LocationException(LocationException.LOCATION_MISMATCH, new Object[]{locationModule.getName()});
         }
 
