@@ -12,13 +12,12 @@ public class SuccessMessage extends AbstractCommandMessage {
   private String message;
 
   public SuccessMessage(String message) {
-
-    super(message, null);
-    this.message = message;
+    this(message, null);
   }
 
   public SuccessMessage(String message, Object[] messageParameters) {
     super(message, messageParameters);
+    this.message = message;
   }
 
 

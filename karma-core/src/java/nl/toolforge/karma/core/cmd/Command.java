@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
 import org.apache.commons.cli.CommandLine;
 
 /**
@@ -110,22 +111,23 @@ public interface Command {
 	public CommandLine getCommandLine();
 
   /**
-   * Register the given CommandResponseHandler as the handler for the command responses.
+   * Register the given <code>CommandResponseListener</code> as the handler for the command responses.
    *
-   * @param responseHandler
+   * @param responseListener
    */
-  public void registerCommandResponseHandler(CommandResponseHandler responseHandler);
+  public void registerCommandResponseListener(CommandResponseListener responseListener);
 
   /**
-   * Deregister the CommandResponseHandler.
+   * Deregister the <code>CommandResponseListener</code>.
    */
-  public void deregisterCommandResponseHandler();
+  public void deregisterCommandResponseListener(CommandResponseListener responseListener);
 
   /**
-   * Return the specific CommandResponse object that this command uses.
+   * Return the specific <code>CommandResponse</code> object that this command uses.
    *
    * @return CommandResponse
    */
   public CommandResponse getCommandResponse();
-  
+
+
 }

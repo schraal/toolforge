@@ -23,7 +23,7 @@ public class CLICommandResponseHandler implements CommandResponseHandler {
   }
 
   public void commandResponseChanged(CommandResponseEvent event) {
-    writer.writeln(event.getEventMessage());
+    writer.writeln(event.getEventMessage().getMessageText());
   }
 
   public void commandResponseFinished(CommandResponseEvent event) {

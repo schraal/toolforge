@@ -5,10 +5,7 @@ import nl.toolforge.karma.core.vc.cvs.CVSResponseAdapter;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,7 +22,8 @@ public abstract class CommandResponse {
 
   private static Log logger = LogFactory.getLog(CommandResponse.class);
 
-  private CommandResponseListener listener = null;
+  //todo this has to become a list of listeners.
+  private List listeners = new ArrayList();
 	//private List commandMessages = null;
 	//private Set statusUpdates = null;
 
@@ -77,8 +75,11 @@ public abstract class CommandResponse {
    */
 	public void addMessage(CommandMessage message) {
 //    commandMessages.add(message);
-    if (listener != null) {
-    listener.commandResponseChanged(new CommandResponseEvent(message.getMessageText()));
+    if (listeners.size() > 0) {
+      for (Iterator it = listeners.iterator(); it.hasNext(); ) {
+        CommandResponseListener listener = (CommandResponseListener) it.next();
+        listener.commandResponseChanged(new CommandResponseEvent(message));
+      }
     } else {
       logger.warn("No listener registered for command response (messages sent to /dev/null ...)");
     }
@@ -143,15 +144,15 @@ public abstract class CommandResponse {
    *
    * @param responseListener
    */
-  public final void setCommandResponseListener(CommandResponseListener responseListener) {
-    this.listener = responseListener;
+  public final void addCommandResponseListener(CommandResponseListener responseListener) {
+    listeners.add(responseListener);
   }
 
   /**
    * Remove the CommandResponseListener.
    */
-  public final void removeCommandReponseListener() {
-    this.listener = null;
+  public final void removeCommandReponseListener(CommandResponseListener responseListener) {
+    listeners.remove(responseListener);
   }
 
 }

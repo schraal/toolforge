@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
 import nl.toolforge.karma.core.bundle.BundleCache;
 import org.apache.commons.cli.CommandLine;
 
@@ -98,12 +99,12 @@ public abstract class DefaultCommand implements Command {
 		return commandLine;
 	}
 
-  public final void registerCommandResponseHandler(CommandResponseHandler responseHandler) {
-    getCommandResponse().setCommandResponseListener(responseHandler);
+  public final void registerCommandResponseListener(CommandResponseListener responseListener) {
+    getCommandResponse().addCommandResponseListener(responseListener);
   }
 
-  public final void deregisterCommandResponseHandler() {
-    getCommandResponse().removeCommandReponseListener();
+  public final void deregisterCommandResponseListener(CommandResponseListener responseListener) {
+    getCommandResponse().removeCommandReponseListener(responseListener);
   }
 
 //  public final Options getOptions() {

@@ -4,13 +4,9 @@ import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.ManifestException;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.ModuleMap;
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
-import nl.toolforge.karma.core.cmd.CommandDescriptor;
-import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.ErrorMessage;
-import nl.toolforge.karma.core.cmd.CompositeCommand;
+import nl.toolforge.karma.core.cmd.*;
+import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
+import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
 
 import java.util.Iterator;
 
@@ -24,6 +20,8 @@ import java.util.Iterator;
 public class UpdateAllModulesCommand extends CompositeCommand {
 
   private CommandResponse commandResponse = new ActionCommandResponse();
+
+  private boolean errorOccurred = false;
 
   /**
    * Creates a <code>UpdateAllModulesCommand</code> for module <code>module</code> that should be updated.
@@ -41,6 +39,7 @@ public class UpdateAllModulesCommand extends CompositeCommand {
    *
    */
   public void execute() {
+
     try {
       // A manifest must be present for this command
       //
@@ -54,16 +53,25 @@ public class UpdateAllModulesCommand extends CompositeCommand {
 
       // Loop through all modules and use UpdateModuleCommand on each module.
       //
-      for (Iterator i = modules.keySet().iterator(); i.hasNext();) {
+      for (Iterator i = modules.keySet().iterator(); i.hasNext() && !errorOccurred;) {
 
         Module module = (Module) modules.get(i.next());
 
         // todo hmm, the commandname is hardcoded whilst we have it dynamically in a file ...
         //
-        getContext().execute(CommandDescriptor.UPDATE_MODULE_COMMAND + " -m ".concat(module.getName()));
+        //getContext().execute(CommandDescriptor.UPDATE_MODULE_COMMAND + " -m ".concat(module.getName()));
+        //todo cast to updatecommand?
+        Command command = CommandFactory.getInstance().getCommand(CommandDescriptor.UPDATE_MODULE_COMMAND + " -m ".concat(module.getName()));
+        command.registerCommandResponseListener(this);
+        try {
+          getContext().execute(command);
+        } catch (KarmaException e) {
+          commandResponse.addMessage(new ErrorMessage(e));
+          break; //break out of the for loop.
+        } finally {
+          command.deregisterCommandResponseListener(this);
+        }
       }
-    } catch (CommandException ce) {
-      commandResponse.addMessage(new ErrorMessage(ce));
     } catch (KarmaException ke) {
       commandResponse.addMessage(new ErrorMessage(ke));
     }
@@ -71,6 +79,18 @@ public class UpdateAllModulesCommand extends CompositeCommand {
 
   public CommandResponse getCommandResponse() {
     return commandResponse;
+  }
+
+  public void commandResponseChanged(CommandResponseEvent event) {
+    //check what the change is. In case of an error, we want to give an error
+    //message and stop with updating the modules.
+    if (event.getEventMessage() instanceof ErrorMessage) {
+      errorOccurred = true;  
+    }
+  }
+
+  public void commandResponseFinished(CommandResponseEvent event) {
+    //the update module has finished. which is good. nothing to do.
   }
 
 }

@@ -1,18 +1,20 @@
 package nl.toolforge.karma.core.cmd.event;
 
+import nl.toolforge.karma.core.cmd.CommandMessage;
+
 /**
  * Event thrown when a CommandResponse changes. Classes interested in this event implement
  * the CommandResponseListener interface.
  */
 public class CommandResponseEvent {
 
-  String eventMessage = null;
+  CommandMessage eventMessage = null;
 
-  public CommandResponseEvent(String eventMessage) {
+  public CommandResponseEvent(CommandMessage eventMessage) {
     this.eventMessage = eventMessage;
   }
 
-  public String getEventMessage() {
+  public CommandMessage getEventMessage() {
     return eventMessage;
   }
 }

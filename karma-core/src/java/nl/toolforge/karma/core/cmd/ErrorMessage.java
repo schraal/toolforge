@@ -15,7 +15,11 @@ public class ErrorMessage extends AbstractCommandMessage {
   private KarmaException exception;
 
   public ErrorMessage(KarmaException ke) {
-    super(ke.getMessage(), null);
+    this(ke, null);
+  }
+
+  public ErrorMessage(KarmaException ke, Object[] messageParameters) {
+    super(ke.getMessage(), messageParameters);
     this.exception = ke;
   }
 

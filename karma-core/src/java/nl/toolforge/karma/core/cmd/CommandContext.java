@@ -138,11 +138,12 @@ public final class CommandContext {
 		// Store a reference to this context in the command
 		//
 		command.setContext(this);
-    command.registerCommandResponseHandler(this.responseHandler);
+    command.registerCommandResponseListener(responseHandler);
     // Register the response handler with this context, so commands have a reference to it.
     //
+    //todo what happens when an exception occurs in the execute wrt deregister?
 		command.execute();
-    command.deregisterCommandResponseHandler();
+    command.deregisterCommandResponseListener(responseHandler);
 	}
 
 	/**

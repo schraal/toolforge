@@ -27,9 +27,9 @@ public abstract class CompositeCommand extends DefaultCommand implements Command
   public void commandHeartBeat() {
   }
 
-  public void commandResponseChanged(CommandResponseEvent event) {
-  }
+//  public void commandResponseChanged(CommandResponseEvent event) {
+//  }
 
-  public void commandResponseFinished(CommandResponseEvent event) {
-  }
+//  public void commandResponseFinished(CommandResponseEvent event) {
+//  }
 }

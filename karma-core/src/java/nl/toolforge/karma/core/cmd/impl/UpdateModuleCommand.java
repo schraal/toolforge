@@ -53,6 +53,8 @@ public class UpdateModuleCommand extends DefaultCommand {
    */
   public void execute() {
 
+    String moduleName = "";
+    Module module = null;
     try {
       // A manifest must be present for this command
       //
@@ -60,9 +62,8 @@ public class UpdateModuleCommand extends DefaultCommand {
         throw new ManifestException(ManifestException.NO_MANIFEST_SELECTED);
       }
 
-      String moduleName = getCommandLine().getOptionValue("m");
-
-      Module module = getContext().getCurrent().getModule(moduleName);
+      moduleName = getCommandLine().getOptionValue("m");
+      module = getContext().getCurrent().getModule(moduleName);
 
       Version version = null;
       if (getCommandLine().getOptionValue("v") != null) {
@@ -85,7 +86,7 @@ public class UpdateModuleCommand extends DefaultCommand {
       response.addMessage(new SuccessMessage("Module " + module.getName() + " updated ..."));
 
     } catch (KarmaException e) {
-      response.addMessage(new ErrorMessage(e));
+      response.addMessage(new ErrorMessage(e, new Object[]{moduleName, module.getLocation().getId()}));
     }
   }
 
