@@ -64,6 +64,7 @@ public final class CVSLocationImpl extends BaseLocation {
   private String protocol = null;
   private int port = -1;
   private String repository = null;
+  private String rootModule = null;
 
   private String cvsRootString = null;
   private boolean passwordSet = false;
@@ -96,8 +97,8 @@ public final class CVSLocationImpl extends BaseLocation {
    * @return
    */
   public boolean ping() {
-    if (host != null && port != -1) {
-      return Ping.ping(host, port, 1000);
+    if (!LOCAL.equals(protocol) && host != null && port != -1) {
+      return Ping.ping(host, port, 2000);
     } else {
       return true; // Local, apparently.
     }
@@ -242,6 +243,21 @@ public final class CVSLocationImpl extends BaseLocation {
   String getRepository() {
     return repository;
   }
+
+//  /**
+//   * The module name that acts as the starting point for a module within a CVS repository. For example, of modules are
+//   * stored in a CVS repository under modules, a checkout should be performed from <code>modules/module-A</code> to get
+//   * <code>module-A</code>.
+//   *
+//   * @return The root module or any empty string if none exists (in which case modules are kept directly at the CVSROOT.
+//   */
+//  public String getRootModule() {
+//    return (rootModule == null ? "" : rootModule);
+//  }
+//
+//  public void setRootModule(String rootModule) {
+//    this.rootModule = rootModule;
+//  }
 
   /**
    * String representation of the CVSROOT.
