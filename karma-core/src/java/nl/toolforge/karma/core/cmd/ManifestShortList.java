@@ -16,6 +16,8 @@ import nl.toolforge.karma.core.Manifest;
  * disadvantage,
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public final class ManifestShortList {
 

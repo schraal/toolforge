@@ -10,7 +10,7 @@ import java.util.Map;
  *
  * @author D.A. Smedes
  *
- * @version
+ * @version $Id$
  */
 public final class CommandDescriptor {
 

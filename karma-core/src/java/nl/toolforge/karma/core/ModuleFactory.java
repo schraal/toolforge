@@ -7,6 +7,8 @@ import nl.toolforge.karma.core.vc.VersionControlSystem;
  * manifest.
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public class ModuleFactory {
 

@@ -1,12 +1,13 @@
 package nl.toolforge.karma.core.location;
 
-import nl.toolforge.karma.core.location.BaseLocation;
 import nl.toolforge.karma.core.KarmaException;
 
 /**
  * Describes a Maven repository.
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public final class MavenRepositoryImpl extends BaseLocation {
 

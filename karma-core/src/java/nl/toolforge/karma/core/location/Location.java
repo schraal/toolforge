@@ -9,6 +9,8 @@ package nl.toolforge.karma.core.location;
  * This file contains
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public interface Location {
 

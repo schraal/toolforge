@@ -11,6 +11,8 @@ import nl.toolforge.karma.core.vc.VersionControlSystem;
  * vcs.
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public class SubversionRepository implements VersionControlSystem {
 

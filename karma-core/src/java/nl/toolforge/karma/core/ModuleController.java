@@ -7,6 +7,8 @@ package nl.toolforge.karma.core;
  * files, etc. This task is solely assigned to this class.
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public class ModuleController {
 

@@ -14,6 +14,8 @@ import java.io.File;
  * coverage of the conceptual manifest that Karma supports.
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public interface Manifest {
 

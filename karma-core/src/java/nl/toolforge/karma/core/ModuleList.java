@@ -7,6 +7,8 @@ import java.util.Iterator;
  * <code>List</code> implementation containing <code>Module</coide> instances.
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public final class ModuleList extends ArrayList
 {

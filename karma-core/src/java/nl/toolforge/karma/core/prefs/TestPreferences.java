@@ -1,15 +1,12 @@
 package nl.toolforge.karma.core.prefs;
 
-import junit.framework.TestCase;
-
-import java.io.File;
-
-import nl.toolforge.karma.core.prefs.Preferences;
 import nl.toolforge.karma.core.test.BaseTest;
 
 /**
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public class TestPreferences extends BaseTest {
 

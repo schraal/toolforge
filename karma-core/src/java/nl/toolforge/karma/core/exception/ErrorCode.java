@@ -7,9 +7,6 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.prefs.Preferences;
-
 /**
  * <p>Class representing a Karma errorcode. These error codes are localized to support different languages. Errorcodes
  * are defined in ranges. Please refer to the online documentation for all error code ranges.

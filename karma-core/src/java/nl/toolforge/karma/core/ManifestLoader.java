@@ -1,11 +1,14 @@
 package nl.toolforge.karma.core;
 
+import nl.toolforge.core.util.file.XMLFilenameFilter;
+import nl.toolforge.karma.core.prefs.Preferences;
+import nl.toolforge.karma.core.prefs.UnavailableValueException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -14,15 +17,13 @@ import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
 
-import nl.toolforge.karma.core.prefs.Preferences;
-import nl.toolforge.karma.core.prefs.UnavailableValueException;
-import nl.toolforge.core.util.file.XMLFilenameFilter;
-
 /**
  * <p>The manifest loader is responsible for loading a manifest from disk in memory. Manifests are stored on disk in
  * a directory identified by the property <code>manifest.dir</code>.
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public final class ManifestLoader {
 

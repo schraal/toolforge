@@ -2,8 +2,8 @@ package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.Manifest;
-import nl.toolforge.karma.core.ManifestLoader;
 import nl.toolforge.karma.core.ManifestException;
+import nl.toolforge.karma.core.ManifestLoader;
 import nl.toolforge.karma.core.location.LocationFactory;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.PosixParser;
@@ -17,6 +17,8 @@ import java.util.*;
  * <code>init</code> method can only be run once.
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public class CommandContext {
 
@@ -137,7 +139,7 @@ public class CommandContext {
 
 		// A command is extracted from the commandLine
 		//
-		Command command = commands.;
+		Command command = (Command) commands.get(commandName);
 
 		return execute(command);
 	}
@@ -160,7 +162,7 @@ public class CommandContext {
 		return command.execute();
 	}
 
-	public Set getCommands() {
+	public Map getCommands() {
 		return commands;
 	}
 

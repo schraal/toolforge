@@ -1,12 +1,14 @@
 package nl.toolforge.karma.core.vc.cvs;
 
+import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.location.BaseLocation;
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.KarmaException;
 
 /**
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public final class CVSLocationImpl extends BaseLocation {
 

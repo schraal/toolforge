@@ -90,7 +90,19 @@
 			<includes>
 				<include>**/Test*.java</include>
 			</includes>
-			<excludes/>
+
+			<resources>
+				<resource>
+					<directory>resources/test</directory>
+					<targetPath>resources</targetPath>
+					<includes>
+						<include>**/*.xml</include>
+						<include>**/*.dtd</include>
+						<include>**/*.properties</include>
+					</includes>
+				</resource>
+			</resources>
+
 		</unitTest>
 
 		<resources>

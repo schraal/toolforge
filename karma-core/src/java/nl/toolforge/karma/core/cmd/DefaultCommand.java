@@ -1,7 +1,6 @@
 package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.KarmaRuntimeException;
 import org.apache.commons.cli.Options;
 
 import java.util.Map;
@@ -9,6 +8,8 @@ import java.util.Map;
 /**
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public abstract class DefaultCommand implements Command {
 

@@ -3,15 +3,14 @@ package nl.toolforge.karma.core.prefs;
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.ManifestException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * <p>This class is used to store configuration settings. If Karma is used from the command line, then settings will be
@@ -46,6 +45,8 @@ import org.apache.commons.logging.LogFactory;
  *
  * @author W.M.Oosterom
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public final class Preferences
 {

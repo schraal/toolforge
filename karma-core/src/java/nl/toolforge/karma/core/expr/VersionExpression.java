@@ -7,6 +7,8 @@ package nl.toolforge.karma.core.expr;
  * <code>1_0_4</code>.
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public class VersionExpression implements Expression
 {

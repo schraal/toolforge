@@ -1,16 +1,12 @@
 package nl.toolforge.karma.core;
 
-import junit.framework.TestCase;
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.cmd.CommandLoader;
 import nl.toolforge.karma.core.test.BaseTest;
-
-import java.util.Set;
-import java.io.File;
 
 /**
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public class TestManifestLoader extends BaseTest {
 

@@ -6,6 +6,8 @@ import nl.toolforge.karma.core.KarmaException;
  * <code>BaseLocation</code> implements some generic <code>Location</code> functionality.
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public abstract class BaseLocation implements Location {
 

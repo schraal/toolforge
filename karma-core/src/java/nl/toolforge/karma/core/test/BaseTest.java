@@ -6,6 +6,8 @@ import nl.toolforge.karma.core.prefs.Preferences;
 /**
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public class BaseTest extends TestCase {
 

@@ -1,6 +1,6 @@
 package nl.toolforge.karma.core;
 
-import nl.toolforge.karma.core.exception.ErrorCode;
+
 
 /**
  * Root runtime exception for <code>nl.toolforge.karma</code> classes.

@@ -13,6 +13,8 @@ import nl.toolforge.karma.core.expr.VersionExpression;
  * @see nl.toolforge.karma.core.Module
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public class SourceModule extends DefaultModule {
 

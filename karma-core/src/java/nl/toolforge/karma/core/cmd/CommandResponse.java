@@ -2,7 +2,8 @@ package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Command response objects are returned by the execute method of the Command Object. It is recognized that a GUI needs
@@ -11,6 +12,8 @@ import java.util.*;
  *
  * @author W.M. Oosterom
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public abstract class CommandResponse {
 

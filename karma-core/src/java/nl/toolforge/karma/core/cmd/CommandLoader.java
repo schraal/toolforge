@@ -24,7 +24,7 @@ import java.util.Set;
  * @author W.M. Oosterom
  * @author D.A. Smedes
  *
- * @version
+ * @version $Id$
  */
 public final class CommandLoader {
 

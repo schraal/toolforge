@@ -6,6 +6,8 @@ package nl.toolforge.karma.core.expr;
  * <p>The following pattern applies to a module name : <code>[^_\\s\\d\\-]+</code>
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public class ModuleNameExpression implements Expression
 {

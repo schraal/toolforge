@@ -12,6 +12,8 @@ package nl.toolforge.karma.core;
  * </ul>
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public interface Module {
 

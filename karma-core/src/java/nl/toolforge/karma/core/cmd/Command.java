@@ -14,6 +14,8 @@ import java.util.Map;
  *
  * @author D.A. Smedes
  * @author W.M. Oosterom
+ *
+ * @version $Id$
  */
 public interface Command {
 

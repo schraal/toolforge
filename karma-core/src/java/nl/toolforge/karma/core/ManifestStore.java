@@ -10,6 +10,8 @@ import java.io.FileNotFoundException;
  * disk if need be) where manifest's are stored.
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public final class ManifestStore {
 

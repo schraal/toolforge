@@ -11,7 +11,7 @@ import nl.toolforge.karma.core.exception.ErrorCode;
  *
  * @author D.A. Smedes
  *
- * @version
+ * @version $Id$
  */
 public final class ManifestException extends KarmaException {
 

@@ -8,6 +8,8 @@ import nl.toolforge.karma.core.Module;
  * so I'll stick to this message as a documentation snippet for this interface.
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public interface VersionControlSystem {
 

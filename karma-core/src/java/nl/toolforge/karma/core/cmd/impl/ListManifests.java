@@ -9,8 +9,9 @@ import java.util.Set;
 /**
  * Base implementation for the ListManifests command.
  *
- * @author D.A. Smedes  
- * @version $revision $date $author
+ * @author D.A. Smedes
+ *
+ * @version @version $Id$
  */
 public abstract class ListManifests extends DefaultCommand {
 
