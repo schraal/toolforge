@@ -1,12 +1,13 @@
 package nl.toolforge.karma.core.test;
 
-import nl.toolforge.core.util.file.FileUtils;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
+import nl.toolforge.core.util.file.MyFileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,8 +26,8 @@ import java.util.Random;
  * <p>When performing operations on managed files, a randomize function is used to be able to repeatedly perform
  * tests. Filenames and modulenames in the repository could be named like <code>bla_036548290.56437</code>.
  *
- * @author D.A. Smedes 
- * 
+ * @author D.A. Smedes
+ *
  * @version $Id:
  */
 public class LocalCVSInitializer extends BaseTest {
@@ -59,7 +60,7 @@ public class LocalCVSInitializer extends BaseTest {
       location.setProtocol(CVSLocationImpl.LOCAL);
       location.setRepository(localPath);
 
-			tempDevelopmentHome = FileUtils.createTempDirectory();
+			tempDevelopmentHome = MyFileUtils.createTempDirectory();
 
     } catch (Exception e) {
       throw new InitializationException(
@@ -70,7 +71,7 @@ public class LocalCVSInitializer extends BaseTest {
     // random name.
     //
     try {
-			File file = FileUtils.createTempDirectory();
+			File file = MyFileUtils.createTempDirectory();
       logger.info("Temporary directory " + file.getPath() + " created.");
     } catch (IOException e) {
       throw new InitializationException("Directory in " + System.getProperty("TMP_DIR") + " could be created.");
@@ -81,11 +82,15 @@ public class LocalCVSInitializer extends BaseTest {
    * Deletes the temporary directory.
    */
   public void tearDown() {
-		if (FileUtils.delete(getDevelopmentHome())) {
-			logger.info("Temporary directory " + tempDevelopmentHome.getPath() + " deleted.");
-		} else {
-			logger.info("Temporary directory " + tempDevelopmentHome.getPath() + " could not be deleted.");
-		}
+
+		try { FileUtils.deleteDirectory(getDevelopmentHome()); } catch (IOException e) { e.printStackTrace(); }
+//
+//
+//		if (FileUtil.delete(getDevelopmentHome())) {
+//			logger.info("Temporary directory " + tempDevelopmentHome.getPath() + " deleted.");
+//		} else {
+//			logger.info("Temporary directory " + tempDevelopmentHome.getPath() + " could not be deleted.");
+//		}
   }
 
   /**

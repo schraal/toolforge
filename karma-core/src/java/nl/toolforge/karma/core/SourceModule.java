@@ -165,16 +165,16 @@ public class SourceModule extends BaseModule {
     }
   }
 
-  /**
-   * Gets a file reference to the <code>module.info</code> file for this module.
-   */
-  public File getModuleInfo() throws KarmaException {
-
-    if (hasModuleInfo()) {
-      return new File(getLocalPath(), MODULE_INFO);
-    }
-    throw new KarmaException(KarmaException.NO_MODULE_INFO);
-  }
+//  /**
+//   * Gets a file reference to the <code>module.info</code> file for this module.
+//   */
+//  public File getModuleInfo() throws KarmaException {
+//
+//    if (hasModuleInfo()) {
+//      return new File(getLocalPath(), MODULE_INFO);
+//    }
+//    throw new KarmaException(KarmaException.NO_MODULE_INFO);
+//  }
 
 	/**
 	 * Checks if this module has a version number.

@@ -17,6 +17,11 @@ public abstract class VersionControlException extends KarmaException {
 
 	/** Generated when a branch was created on a module which already existed. */
 	public static final ErrorCode DUPLICATE_BRANCH = new ErrorCode("VC-00010");
+	/** Version already exists for this module. */
+	public static final ErrorCode DUPLICATE_VERSION = new ErrorCode("VC-00011");
+
+	/** The requested file does not exist in the repository */
+	public static final ErrorCode FILE_NOT_FOUND = new ErrorCode("VC-00012");
 
 	public VersionControlException(ErrorCode errorCode) {
 		super(errorCode);

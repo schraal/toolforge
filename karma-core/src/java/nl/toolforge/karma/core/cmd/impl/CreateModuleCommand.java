@@ -63,7 +63,7 @@ public class CreateModuleCommand extends DefaultCommand {
 		// If we get to this point, creation of the module was succesfull.
 		//
 		CommandMessage message =
-			new SimpleCommandMessage(getFrontendMessages().getString("message.MODULE_CREATED"), new Object[]{moduleName});
+			new SimpleCommandMessage(getFrontendMessages().getString("message.MODULE_CREATED"), new Object[]{moduleName, locationAlias});
 
    	// Ensure that only this message is passed back to the client
 		//

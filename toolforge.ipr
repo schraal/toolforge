@@ -6,6 +6,7 @@
       <root type="composite">
         <root type="simple" url="file://$PROJECT_DIR$" />
         <root type="simple" url="file://$PROJECT_DIR$/../netbeans-cvs-beta3.6/src" />
+        <root type="simple" url="file://$PROJECT_DIR$/../jakarta-commons/io/src/java" />
       </root>
     </projectPath>
     <sourcePath>
@@ -16,17 +17,18 @@
         <root type="simple" url="file://$PROJECT_DIR$/karma-core/src/java" />
         <root type="simple" url="file://$PROJECT_DIR$/karma-launcher/src/java" />
         <root type="simple" url="file://$PROJECT_DIR$/../netbeans-cvs-beta3.6/src" />
+        <root type="simple" url="file://$PROJECT_DIR$/../jakarta-commons/io/src/java" />
       </root>
     </sourcePath>
     <classPath>
       <root type="composite">
         <root type="jdk" rootType="classPath" name="java version &quot;1.4.1_02&quot;" />
         <root type="simple" url="jar://$PROJECT_DIR$/../../.maven/repository/commons-cli/jars/commons-cli-1.0.jar!/" />
+        <root type="simple" url="jar://$PROJECT_DIR$/../../.maven/repository/commons-lang/jars/commons-lang-1.0.1.jar!/" />
+        <root type="simple" url="jar://$PROJECT_DIR$/../../.maven/repository/commons-logging/jars/commons-logging-1.0.3.jar!/" />
         <root type="output" />
         <root type="simple" url="jar://$PROJECT_DIR$/../../.maven/repository/junit/jars/junit-3.8.1.jar!/" />
         <root type="simple" url="jar://$PROJECT_DIR$/../../.maven/repository/regexp/jars/regexp-1.2.jar!/" />
-        <root type="simple" url="jar://$PROJECT_DIR$/../../.maven/repository/commons-lang/jars/commons-lang-1.0.1.jar!/" />
-        <root type="simple" url="jar://$PROJECT_DIR$/../../.maven/repository/commons-logging/jars/commons-logging-1.0.3.jar!/" />
         <root type="simple" url="jar://$PROJECT_DIR$/../../.maven/repository/log4j/jars/log4j-1.2.8.jar!/" />
         <root type="simple" url="jar://$PROJECT_DIR$/../../.maven/repository/netbeans/jars/netbeans-cvs-beta3.6.jar!/" />
         <root type="simple" url="file://$PROJECT_DIR$/karma-cli/resources" />
@@ -112,49 +114,6 @@
     <option name="PRINT_LINE_NUMBERS" value="false" />
     <option name="OPEN_IN_BROWSER" value="false" />
     <option name="OUTPUT_DIRECTORY" />
-  </component>
-  <component name="simpleUML.UMLToolWindowPlugin">
-    <General>
-      <option name="birdViewUpdateDelay" value="2000" />
-      <option name="defaultFileLocation" value="file://$PROJECT_DIR$" />
-    </General>
-    <Classdiagram>
-      <option name="diagramTitleFont" value="SansSerif,1,12" />
-      <option name="diagramFont" value="SansSerif,0,10" />
-      <option name="defaultFieldsExpanded" value="false" />
-      <option name="defaultContructorsExpanded" value="false" />
-      <option name="defaultMethodsExpanded" value="false" />
-      <option name="showParameters" value="true" />
-      <option name="showTooltip" value="true" />
-      <option name="showReturnValues" value="true" />
-      <option name="longModifier" value="true" />
-      <option name="implementsBehaviour" value="1" />
-      <option name="extendsBehaviour" value="1" />
-      <option name="compartmentBehaviour" value="1" />
-      <option name="interfaceBackgroundColor" value="-6494306" />
-      <option name="abstractClassBackgroundColor" value="-1580132" />
-      <option name="classBackgroundColor" value="-6508057" />
-      <option name="diagramBackgroundColor" value="-1" />
-      <option name="useAntialiasedConnectors" value="true" />
-      <option name="quickSourceLinkColor" value="-16776961" />
-      <option name="quickDiagramLinkColor" value="-8454144" />
-      <option name="drawDecorations" value="false" />
-      <option name="hideFieldList" value="" />
-      <option name="showFieldList" value="" />
-      <option name="hideConstructorList" value="" />
-      <option name="showConstructorList" value="" />
-      <option name="hideMethodList" value="" />
-      <option name="showMethodList" value="" />
-      <option name="minimumFigureSize" value="0,0" />
-    </Classdiagram>
-    <Packagediagram>
-      <option name="diagramTitleFont" value="SansSerif,0,12" />
-      <option name="diagramFont" value="SansSerif,0,10" />
-      <option name="packageBackgroundColor" value="-4144960" />
-      <option name="diagramBackgroundColor" value="-1" />
-      <option name="useAntialiasedConnectors" value="true" />
-      <option name="packageNameCompressionLevel" value="2" />
-    </Packagediagram>
   </component>
 </project>
 

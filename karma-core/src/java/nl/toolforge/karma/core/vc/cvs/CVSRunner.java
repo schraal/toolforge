@@ -1,6 +1,6 @@
 package nl.toolforge.karma.core.vc.cvs;
 
-import nl.toolforge.core.util.file.FileUtils;
+import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.*;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandResponse;
@@ -8,12 +8,16 @@ import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.vc.ManagedFile;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.SymbolicName;
+import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.model.MainLine;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.io.FileUtils;
 import org.netbeans.lib.cvsclient.Client;
 import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
 import org.netbeans.lib.cvsclient.command.CommandException;
 import org.netbeans.lib.cvsclient.command.GlobalOptions;
+import org.netbeans.lib.cvsclient.command.tag.TagCommand;
 import org.netbeans.lib.cvsclient.command.add.AddCommand;
 import org.netbeans.lib.cvsclient.command.checkout.CheckoutCommand;
 import org.netbeans.lib.cvsclient.command.commit.CommitCommand;
@@ -26,6 +30,7 @@ import org.netbeans.lib.cvsclient.connection.AuthenticationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>Runner class for CVS. Executes stuff on a CVS repository.
@@ -77,13 +82,30 @@ public final class CVSRunner implements Runner {
 		logger.debug("CVSRunner using CVSROOT : " + cvsLocation.toString());
 
 		globalOptions.setCVSRoot(cvsLocation.getCVSRootAsString());
-
 	}
 
 	/**
-	 * Creates a module in a CVS repository. This is done through the CVS <code>import</code> command.
+	 * <p>Creates a module in a CVS repository. This is done through the CVS <code>import</code> command. The basic structure
+	 * of the module directory is defined by the file <code>module-structure.model</code>, which should be available from
+	 * the classpath. If the file cannot be located, a basic structure is created:
+	 *
+	 * <ul>
+	 *   <li/>A directory based on <code>module.getName()</code>.
+	 *   <li/>A file in that directory, called <code>module.info</code>.
+	 * </ul>
+	 *
+	 * <p>After creation, the module is available with the initial version <code>0-0</code>.
+	 *
+	 * @param module The module to be created.
+	 *
+	 * @return The result of the create command, wrapped in a <code>CommandResponse</code> object.
+	 *
+	 * @throws CVSException Errorcode <code>MODULE_EXISTS_IN_REPOSITORY</code>, when the module already exists on the
+	 *         location as specified by the module.
 	 */
 	public CommandResponse create(Module module) throws CVSException {
+
+		// TODO the initial version should also be made configurable, together with the patterns for modulenames et al.
 
 		if (existsInRepository(module)) {
 			throw new CVSException(CVSException.MODULE_EXISTS_IN_REPOSITORY, new Object[]{module.getName(), module.getLocation().getId()});
@@ -101,7 +123,7 @@ public final class CVSRunner implements Runner {
 		//
 		File tmp = null;
 		try {
-			tmp = FileUtils.createTempDirectory();
+			tmp = MyFileUtils.createTempDirectory();
 		} catch (IOException e) {
 			throw new KarmaRuntimeException("Panic! Failed to create temporary directory.");
 		}
@@ -119,60 +141,51 @@ public final class CVSRunner implements Runner {
 
 		// Remove the temporary structure.
 		//
-		FileUtils.delete(tmp);
+		try { FileUtils.deleteDirectory(tmp); } catch (IOException e) { e.printStackTrace(); }
 
-    // Step 2 : checkout the module to be able to create module.info
+		// Step 2 : checkout the module to be able to create module.info
 		//
 
 		// Create another (...) temporary structure
 		//
 		try {
-			tmp = FileUtils.createTempDirectory();
+			tmp = MyFileUtils.createTempDirectory();
 		} catch (IOException e) {
 			throw new KarmaRuntimeException("Panic! Failed to create temporary directory.");
 		}
 
 		client.setLocalPath(tmp.getPath()); // Point the CVS client to the temp directory.
-
-//		checkout(module);
-
-    CheckoutCommand checkoutCommand = new CheckoutCommand();
-		checkoutCommand.setModule(module.getName());
-		checkoutCommand.setPruneDirectories(true);
-
-		adapter = executeOnCVS(checkoutCommand, null); // Use module as context directory
-
-		// TODO do more on exception handling from CVS ... You can't be sure it worked
-		//
+		checkout(module);
 
 		client.setLocalPath(tmp.getPath()); // Make sure the CVS client points to the current temp directory again.
-
 		add(module, SourceModule.MODULE_INFO);
 
-//		adapter.clearStatus();
-//		adapter.addStatusUpdate(CVSResponseAdapter.MODULE_);
+		client.setLocalPath(tmp.getPath());
+		tag(module, new Version("0-0"));
 
 		// Remove the temporary structure.
 		//
-		FileUtils.delete(tmp);
+		try { FileUtils.deleteDirectory(tmp); } catch (IOException e) { e.printStackTrace(); }
 
 		return adapter;
 	}
 
 	/**
-	 * Performs the <code>cvs checkout &lt;module&gt;</code>command for a module in a specific
-	 * <code>checkoutDirectory</code>. Use {@link #checkout(nl.toolforge.karma.core.Module)} to checkout the module
-	 * in the default checkout directory.
+	 * Performs the <code>cvs checkout [-r &lt;symbolic-name&gt;] &lt;module&gt;</code>command for a module.
+	 * <code>version</code> is used when not <code>null</code> to checkout a module with a symbolic name.
 	 *
-	 * @param module The module.
+	 * @param module The module to check out.
+	 * @param version The version number for the module to check out.
 	 *
-	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
+	 * @return The CVS response wrapped in a <code>CommandResponse</code>.
+	 *
+	 * @throws CVSException With errorcodes <code>NO_SUCH_MODULE_IN_REPOSITORY</code> when the module does not exist
+	 *         in the repository and <code>INVALID_SYMBOLIC_NAME</code>, when the version does not exists for the module.
 	 */
 	public CommandResponse checkout(Module module, Version version) throws CVSException {
 
 		CheckoutCommand checkoutCommand = new CheckoutCommand();
 		checkoutCommand.setModule(module.getName());
-//		checkoutCommand.setPruneDirectories(true);
 
 		if (version != null) {
 			checkoutCommand.setCheckoutByRevision(Utils.createSymbolicName(module, version).getSymbolicName());
@@ -190,6 +203,17 @@ public final class CVSRunner implements Runner {
 		return adapter;
 	}
 
+	/**
+	 * See {@link #checkout(nl.toolforge.karma.core.Module, nl.toolforge.karma.core.Version)}. This method defaults
+	 * to the HEAD of the development branch at hand.
+	 *
+	 * @param module The module to check out.
+	 *
+	 * @return The CVS response wrapped in a <code>CommandResponse</code>.
+	 *
+	 * @throws CVSException With errorcodes <code>NO_SUCH_MODULE_IN_REPOSITORY</code> when the module does not exist
+	 *         in the repository and <code>INVALID_SYMBOLIC_NAME</code>, when the version does not exists for the module.
+	 */
 	public CommandResponse checkout(Module module) throws CVSException {
 		return checkout(module, null);
 	}
@@ -302,7 +326,8 @@ public final class CVSRunner implements Runner {
 		commitCommand.setFiles(new File[]{new File(client.getLocalPath())});
 		commitCommand.setRecursive(true);
 		commitCommand.setMessage(message);
-    CVSResponseAdapter adapter = executeOnCVS(commitCommand, null);
+
+		CVSResponseAdapter adapter = executeOnCVS(commitCommand, null);
 
 		return adapter;
 	}
@@ -322,16 +347,64 @@ public final class CVSRunner implements Runner {
 		return null;
 	}
 
+	public CommandResponse tag(Module module, Version version) throws CVSException {
+
+		if (hasVersion(module, version)) {
+			throw new CVSException(VersionControlException.DUPLICATE_VERSION, new Object[]{module.getName(), version.getVersionIdentifier()});
+		}
+
+		TagCommand tagCommand = new TagCommand();
+		tagCommand.setRecursive(true);
+		tagCommand.setTag(Utils.createSymbolicName(module, version).getSymbolicName());
+
+		CVSResponseAdapter adapter = executeOnCVS(tagCommand, null);
+
+		return adapter;
+	}
+
 	/**
-	 *
+	 * Provide log information on a module.
 	 */
-	public LogInformation log(Module module) throws KarmaException {
+	public LogInformation log(Module module) throws CVSException {
 
 		if (module instanceof SourceModule) {
-			LogCommand logCommand = new LogCommand();
-			logCommand.setFiles(new File[] {((SourceModule) module).getModuleInfo()});
+			try {
 
-			executeOnCVS(logCommand, null);
+				// Logs are run on a temporary checkout of the module.info of a module.
+				//
+				File tmp = null;
+				try {
+					tmp = MyFileUtils.createTempDirectory();
+				} catch (IOException e) {
+					throw new KarmaRuntimeException("Panic! Failed to create temporary directory for module " + module.getName());
+				}
+
+				// Overrule client.setLocalPath() to a temporary location
+				//
+				client.setLocalPath(tmp.getPath());
+
+				CheckoutCommand checkoutCommand = new CheckoutCommand();
+				checkoutCommand.setModule(module.getName() + "/" + SourceModule.MODULE_INFO);
+
+				CVSResponseAdapter adapter = executeOnCVS(checkoutCommand, null);
+
+				if (adapter.hasStatus(CVSResponseAdapter.MODULE_NOT_FOUND)) {
+					throw new CVSException(VersionControlException.FILE_NOT_FOUND);
+				}
+
+				LogCommand logCommand = new LogCommand();
+
+				// Determine the location of module.info, relative to where we are.
+				//
+				// Todo a reference to SourceModule is used here. Verify ...
+				File moduleInfo = new File(client.getLocalPath() + File.separator + module.getName() + File.separator + SourceModule.MODULE_INFO);
+				logCommand.setFiles(new File[] {moduleInfo});
+
+				return executeOnCVS(logCommand, null).getLogInformation();
+
+			} catch (KarmaException k) {
+				throw new CVSException(k.getErrorCode());
+			}
 		}
 		throw new KarmaRuntimeException("Only instance of type SourceModule can use this method.");
 	}
@@ -378,9 +451,8 @@ public final class CVSRunner implements Runner {
 	 */
 	private boolean existsInRepository(Module module) throws CVSException {
 
-
 		if (module == null) {
-			throw new NullPointerException("Module should not be null.");
+			return false;
 		}
 
 		CheckoutCommand checkoutCommand = new CheckoutCommand();
@@ -388,7 +460,7 @@ public final class CVSRunner implements Runner {
 
 		File tmp = null;
 		try {
-			tmp = FileUtils.createTempDirectory();
+			tmp = MyFileUtils.createTempDirectory();
 		} catch (IOException e) {
 			throw new KarmaRuntimeException("Panic! Failed to create temporary directory for module " + module.getName());
 		}
@@ -401,10 +473,28 @@ public final class CVSRunner implements Runner {
 
 		File moduleDirectory = new File(tmp.getPath(), module.getName());
 		if (moduleDirectory.exists()) {
+			try { FileUtils.deleteDirectory(tmp); } catch (IOException e) { e.printStackTrace(); }
 			return true;
 		} else {
+			try { FileUtils.deleteDirectory(tmp); } catch (IOException e) { e.printStackTrace(); }
 			return false;
 		}
+	}
+
+	private boolean hasVersion(Module module, Version version) throws CVSException {
+		return hasSymbolicName(module, Utils.createSymbolicName(module, version));
+	}
+
+	private boolean hasSymbolicName(Module module, SymbolicName symbolicName) throws CVSException {
+
+		if (symbolicName == null) {
+			return false;
+		}
+
+		LogInformation logInfo = log(module);
+		List symbolicNames = logInfo.getAllSymbolicNames();
+
+		return symbolicNames.contains(symbolicName.getSymbolicName());
 	}
 
 }
