@@ -25,10 +25,10 @@
     <!-- '${module-source-dir}' maps to ${development.home}/<manifest-name>/<module-name>/src/java-->
     <!-- '${compile-classpath}' is determined by Module.getDependencies -->
 
-    <mkdir dir="${module-build-dir}/${module-test-dir}/xml"/>
+    <mkdir dir="${module-test-dir}/xml"/>
 
     <javac
-      destdir="${module-build-dir}/${module-test-dir}"
+      destdir="${module-test-dir}"
       srcdir="${module-source-dir}"
       classpath="${module-classpath}"
       debug="true"/>
@@ -46,12 +46,12 @@
 
       <!-- todo: pad moet anders -->
       <classpath>
-        <pathelement path="${module-classpath}:${module-build-dir}/${module-test-dir}:${module-source-dir}/../resources:${module-source-dir}/../../resources"/>
+        <pathelement path="${module-classpath}:${module-test-dir}:${module-source-dir}/../resources:${module-source-dir}/../../resources"/>
       </classpath>
 
       <formatter type="xml"/>
 
-      <batchtest todir="${module-build-dir}/${module-test-dir}/xml">
+      <batchtest todir="${module-test-dir}/xml">
         <fileset dir="${module-source-dir}">
           <include name="**/*.java"/>
           <excludesfile name="${module-source-dir}/excludes.properties" if="excludes-file-present"/>
