@@ -1,0 +1,14 @@
+<history>
+  <event>
+    <type>Create module</type>
+    <version>0-0</version>
+    <datetime>20041204T120000Z</datetime>
+    <comment>blah</comment>
+  </event>
+  <event>
+    <type>Promote module</type>
+    <version>0-1</version>
+    <datetime>20041205T120000Z</datetime>
+    <comment>blahdieblah</comment>
+  </event>
+</history>
