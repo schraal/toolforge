@@ -44,7 +44,7 @@ public final class CLI {
       }
       System.exit(0);
     } catch (Exception e) {
-      System.out.println("-- catch all ---\n");
+      System.out.println("Exception caught by CLI catch-all. Message: " + e.getMessage() + "\n");
       System.exit(1);
     }
   }
@@ -83,6 +83,8 @@ public final class CLI {
 
     WorkingContext workingContext =
         new WorkingContext(Preferences.userRoot().get(WorkingContext.WORKING_CONTEXT_PREFERENCE, WorkingContext.DEFAULT));
+
+		workingContext.init();
 
     System.out.println("[ karma ] Checking command ...");
 
