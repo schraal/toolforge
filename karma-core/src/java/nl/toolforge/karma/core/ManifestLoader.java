@@ -251,8 +251,12 @@ public final class ManifestLoader {
 					}
 				}
 			}
-		} catch (KarmaException k) {
-			throw (ManifestException) k;
+        } catch (ManifestException me) {
+            me.printStackTrace();
+            throw me;
+        } catch (KarmaException ke) {
+            ke.printStackTrace();
+            throw new ManifestException(ManifestException.MANIFEST_LOAD_ERROR, ke);
 		} catch (ParserConfigurationException p) {
 			throw new ManifestException(ManifestException.MANIFEST_LOAD_ERROR, p);
 		} catch (SAXException s) {
