@@ -270,7 +270,7 @@ public final class CVSRunner implements Runner {
     }
     // NOTE : the following may not be included. My theory is there is a bug in the netbeans api.
     // todo to be investigated further.
-    checkoutCommand.setPruneDirectories(true);
+//    checkoutCommand.setPruneDirectories(true);
 
     // The checkout directory for a module has to be relative to
 
