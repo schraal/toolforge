@@ -14,30 +14,14 @@ public abstract class VersionControlException extends Exception {
   private Object[] messageArguments = null;
 
   public static String EXCEPTION_PREFIX = "VER-";
-
-  /**
-   * A runner instance cannot be created to execute commands on a repository.
-   */
-  public static final ErrorCode RUNNER_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00001");
-
-  /**
-   * Generated when a branch was created on a module which already existed.
-   */
-  public static final ErrorCode DUPLICATE_BRANCH = new ErrorCode(EXCEPTION_PREFIX + "00010");
   /**
    * Version already exists for this module.
    */
-  public static final ErrorCode DUPLICATE_VERSION = new ErrorCode(EXCEPTION_PREFIX + "00011");
-
-  /**
-   * The requested file does not exist in the repository
-   */
-  public static final ErrorCode FILE_NOT_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00012");
-
+  public static final ErrorCode DUPLICATE_VERSION = new ErrorCode(EXCEPTION_PREFIX + "00001");
   /**
    * The requested module does not exist in the repository
    */
-  public static final ErrorCode MODULE_NOT_IN_REPOSITORY = new ErrorCode(EXCEPTION_PREFIX + "00013");
+  public static final ErrorCode MODULE_NOT_IN_REPOSITORY = new ErrorCode(EXCEPTION_PREFIX + "00002");
 
 
   public VersionControlException(ErrorCode errorCode) {

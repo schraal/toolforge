@@ -88,11 +88,13 @@ public class BuildModule extends DefaultCommand {
     try {
       tmp = getBuildFile("build-module.xml");
       helper.parse(project, tmp);
+    } catch (IOException e) {
+      throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {moduleName});
     } finally {
       try {
         FileUtils.deleteDirectory(tmp.getParentFile());
       } catch (IOException e) {
-        throw new CommandException(e, CommandException.BUILD_FAILED);
+        throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {moduleName});
       }
     }
 
@@ -149,32 +151,15 @@ public class BuildModule extends DefaultCommand {
     return this.commandResponse;
   }
 
-  private File getBuildFile(String buildFile) throws CommandException {
+  private File getBuildFile(String buildFile) throws IOException {
 
     File tmp = null;
-    try {
 
-      tmp = MyFileUtils.createTempDirectory();
+    tmp = MyFileUtils.createTempDirectory();
 
-      BufferedReader in =
-          new BufferedReader(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(buildFile)));
-      BufferedWriter out =
-          new BufferedWriter(new FileWriter(new File(tmp, buildFile)));
-
-      String str;
-      while ((str = in.readLine()) != null) {
-        out.write(str);
-      }
-      out.close();
-      in.close();
-
-      // Return a temp reference to the file
-      //
-      return new File(tmp, buildFile);
-
-    } catch (IOException e) {
-      throw new CommandException(e, CommandException.BUILD_FAILED);
-    }
+    // Return a temp reference to the file
+    //
+    return new File(tmp, buildFile);
 
   }
 }

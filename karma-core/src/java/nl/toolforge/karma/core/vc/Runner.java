@@ -106,6 +106,7 @@ public interface Runner {
    * @param module
    * @return <code>true</code> if the module exists, <code>false</code> otherwise.
    */
+  // todo some of the methods could be moved to a helper class that performs checks like existsInRepository. Much clearer and nicer.
   public boolean existsInRepository(Module module);
 
 }

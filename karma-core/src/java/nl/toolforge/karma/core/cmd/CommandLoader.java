@@ -79,8 +79,6 @@ public final class CommandLoader {
 
 			Element commandsElement = null;
 
-//			if (commands == null) {
-
 			// We need to load the configuration file from the classpath.
 			//
 			InputStream in = this.getClass().getClassLoader().getResourceAsStream(resource);
@@ -94,7 +92,6 @@ public final class CommandLoader {
 				loaded = true;
 			}
 			commandsElement = descriptorDocument.getDocumentElement();
-//			}
 
 			// Always reload commands into memory, due to something I don't understand in the cli stuff.
 			//
@@ -157,7 +154,7 @@ public final class CommandLoader {
 					String alias = commandElement.getAttribute("alias");
 
 					if (!uniqueAliasses.add(alias)) {
-						throw new KarmaRuntimeException(KarmaException.DUPLICATE_COMMAND_ALIAS.getErrorCodeString());
+						throw new KarmaRuntimeException("Duplicate command alias.");
 					}
 
 					String clazzName = commandElement.getElementsByTagName("classname").item(0).getFirstChild().getNodeValue();
@@ -200,22 +197,14 @@ public final class CommandLoader {
 					if (!descriptors.contains(descriptor)) {
 						descriptors.add(descriptor);
 					} else {
-						throw new KarmaRuntimeException(KarmaException.DUPLICATE_COMMAND);
+						throw new KarmaRuntimeException("Duplicate command definition.");
 					}
 				}
 			}
-		} catch (FactoryConfigurationError e) {
-			throw new KarmaRuntimeException(KarmaException.COMMAND_DESCRIPTOR_XML_ERROR, e);
-		} catch (ParserConfigurationException e) {
-			throw new KarmaRuntimeException(KarmaException.COMMAND_DESCRIPTOR_XML_ERROR, e);
-		} catch (SAXException e) {
-			throw new KarmaRuntimeException(KarmaException.COMMAND_DESCRIPTOR_XML_ERROR, e);
-		} catch (IOException e) {
-			throw new KarmaRuntimeException(KarmaException.COMMAND_DESCRIPTOR_XML_ERROR, e);
-		} catch (IllegalArgumentException e) {
-			throw new KarmaRuntimeException(KarmaException.COMMAND_DESCRIPTOR_XML_ERROR, e);
-		} catch (DOMException e) {
-			throw new KarmaRuntimeException(KarmaException.COMMAND_DESCRIPTOR_XML_ERROR, e);
+		} catch (Exception e) {
+      // If something goes wrong here, throw a runtime; this is too serious to ignore.
+      //
+			throw new KarmaRuntimeException(e.getMessage());
 		}
 
 		return descriptors;

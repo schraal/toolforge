@@ -30,11 +30,11 @@ public final class BuildUtil {
   private static final String DEFAULT_BUILD_DIR = "build";
 
   private Manifest currentManifest = null;
-  private SourceModule module = null;
+//  private SourceModule module = null;
 
   public BuildUtil(Manifest currentManifest) {
     this.currentManifest = currentManifest;
-    this.module = module;
+//    this.module = module;
   }
 
   public String getDependencies(Set dependencies) throws ManifestException, CommandException {
@@ -66,7 +66,7 @@ public final class BuildUtil {
             new File(moduleBuildDir + File.separator + currentManifest.resolveJarName(currentManifest.getModule(dep.getModule())));
 
         if (!dependencyJar.exists()) {
-          throw new CommandException(CommandException.DEPENDENCY_DOES_NOT_EXIST, new Object[] {jar});
+          throw new CommandException(CommandException.DEPENDENCY_DOES_NOT_EXIST, new Object[] {jar, dep.getModule()});
         }
         jar = dependencyJar.getPath();
       }

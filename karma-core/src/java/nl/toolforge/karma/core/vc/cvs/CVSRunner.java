@@ -3,6 +3,7 @@ package nl.toolforge.karma.core.vc.cvs;
 import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.ErrorCode;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.location.Location;
@@ -35,6 +36,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Hashtable;
 
 /**
  * <p>Runner class for CVS. Executes stuff on a CVS repository.
@@ -53,7 +56,7 @@ public final class CVSRunner implements Runner {
     System.setProperty("javacvs.multiple_commands_warning", "false");
   }
 
-  private CVSListener listener = null; // The listener that receives events from this runner.
+  private CVSResponseAdapter listener = null; // The listener that receives events from this runner.
 //  private CommandResponse commandResponse = null;
 
   private static Log logger = LogFactory.getLog(CVSRunner.class);
@@ -238,16 +241,22 @@ public final class CVSRunner implements Runner {
   //
   private void checkout(Module module, Version version, File basePoint) throws CVSException {
 
+    Map arguments = new Hashtable();
+    arguments.put("MODULE", module.getName());
+
     CheckoutCommand checkoutCommand = new CheckoutCommand();
     checkoutCommand.setModule(module.getName());
 
     if (version != null || ((SourceModule) module).hasDevelopmentLine()) {
       checkoutCommand.setCheckoutByRevision(Utils.createSymbolicName(module, version).getSymbolicName());
+      if (version != null) {
+        arguments.put("VERSION", version.toString());
+      }
     } else {
       checkoutCommand.setResetStickyOnes(true);
     }
 
-    executeOnCVS(checkoutCommand, basePoint);
+    executeOnCVS(checkoutCommand, basePoint, arguments);
   }
 
   /**
@@ -266,19 +275,25 @@ public final class CVSRunner implements Runner {
 
   private void update(Module module, Version version, File basePoint) throws CVSException {
 
+    Map arguments = new Hashtable();
+    arguments.put("MODULE", module.getName());
+
     UpdateCommand updateCommand = new UpdateCommand();
     updateCommand.setRecursive(true);
     updateCommand.setPruneDirectories(true);
 
     if (version != null || ((SourceModule) module).hasDevelopmentLine()) {
       updateCommand.setUpdateByRevision(Utils.createSymbolicName(module, version).getSymbolicName());
+      if (version != null) {
+        arguments.put("VERSION", version.toString());
+      }
     } else {
       updateCommand.setResetStickyOnes(true);
     }
 
     // todo add data to the exception. this sort of business logic should be here, not in CVSResponseAdapter.
     //
-    executeOnCVS(updateCommand, new File(basePoint, module.getName()));
+    executeOnCVS(updateCommand, new File(basePoint, module.getName()), arguments);
   }
 
   /**
@@ -302,6 +317,10 @@ public final class CVSRunner implements Runner {
 
   private void add(Module module, String fileName, File basePoint) throws CVSException {
 
+    Map arguments = new Hashtable();
+    arguments.put("MODULE", module.getName());
+    arguments.put("FILE", fileName);
+
     // Step 1 : Add the file to the CVS repository
     //
     AddCommand addCommand = new AddCommand();
@@ -323,7 +342,7 @@ public final class CVSRunner implements Runner {
     // A file is added against a module, thus the contextDirectory is constructed based on the basePoint and the
     // modules' name.
     //
-    executeOnCVS(addCommand, new File(basePoint, module.getName()));
+    executeOnCVS(addCommand, new File(basePoint, module.getName()), arguments);
 
     // Step 2 : Commit the file to the CVS repository
     //
@@ -416,10 +435,13 @@ public final class CVSRunner implements Runner {
       throw new KarmaRuntimeException("Panic! Failed to create temporary directory for module " + module.getName());
     }
 
+    Map arguments = new Hashtable();
+    arguments.put("MODULE", module.getName());
+
     CheckoutCommand checkoutCommand = new CheckoutCommand();
     checkoutCommand.setModule(module.getName() + "/" + SourceModule.MODULE_INFO);
 
-    executeOnCVS(checkoutCommand, tmp);
+    executeOnCVS(checkoutCommand, tmp, arguments);
 
     LogCommand logCommand = new LogCommand();
 
@@ -509,16 +531,22 @@ public final class CVSRunner implements Runner {
     return symbolicNames.contains(symbolicName.getSymbolicName());
   }
 
+  private void executeOnCVS(org.netbeans.lib.cvsclient.command.Command command,
+                            File contextDirectory) throws CVSException {
+    executeOnCVS(command, contextDirectory, null);
+  }
+
   /**
    * Runs a CVS command on the repository (through the Netbeans API). contextDirectory is assigned to client.setLocalPath()
    *
    * @param command          A command object, representing the CVS command.
    * @param contextDirectory The directory from where the command should be run.
+   * @param args             Arguments that can be passed to the CVSRuntimeException thrown by the CVSListener.
    *
    * @throws CVSException    When CVS has reported an error through its listener.
    */
   private void executeOnCVS(org.netbeans.lib.cvsclient.command.Command command,
-                            File contextDirectory) throws CVSException {
+                            File contextDirectory, Map args) throws CVSException {
 
     Client client = new Client(getConnection(), new StandardAdminHandler());
     client.setLocalPath(contextDirectory.getPath());
@@ -529,6 +557,7 @@ public final class CVSRunner implements Runner {
       // A CVSResponseAdapter is registered as a listener for the response from CVS. This one adapts to Karma
       // specific stuff.
       //
+      listener.setArguments(args);
       client.getEventManager().addCVSListener(listener);
       client.executeCommand(command, globalOptions);
 
@@ -536,9 +565,14 @@ public final class CVSRunner implements Runner {
       // Trick to get a hold of the exception we threw in the CVSResponseAdapter.
       //
       if (e.getUnderlyingException() instanceof CVSRuntimeException) {
-        throw new CVSException(((CVSRuntimeException) e.getUnderlyingException()).getErrorCode());
+
+        // todo somehow, messagearguments should be added ...
+        ErrorCode code = ((CVSRuntimeException) e.getUnderlyingException()).getErrorCode();
+        Object[] messageArgs = ((CVSRuntimeException) e.getUnderlyingException()).getMessageArguments();
+
+        throw new CVSException(code, messageArgs);
       } else {
-        throw new CVSException(CVSException.INTERNAL_ERROR);
+        throw new CVSException(CVSException.INTERNAL_ERROR, new Object[]{globalOptions.getCVSRoot()});
       }
     } catch (AuthenticationException e) {
       throw new CVSException(CVSException.AUTHENTICATION_ERROR, new Object[]{client.getConnection()});

@@ -21,74 +21,35 @@ public class KarmaException extends Exception {
   public static final String EXCEPTION_PREFIX = "KAR-";
 
   /**
-   * When some function is not yet implemented and likely to be forgotten, this one can be thrown to be reminded
-   */
-  public static final ErrorCode LAZY_BASTARD = new ErrorCode(EXCEPTION_PREFIX + "00000");
-
-  /**
-   * Vital configuration is missing
-   */
-  public static final ErrorCode MISSING_CONFIGURATION = new ErrorCode(EXCEPTION_PREFIX + "00001");
-
-  /**
-   * The configuration home directory cannot be created
-   */
-  public static final ErrorCode CONFIG_HOME_CANNOT_BE_CREATED = new ErrorCode(EXCEPTION_PREFIX + "00011");
-  /**
    * Can be used to identify something that is not implemented
    */
   public static final ErrorCode NOT_IMPLEMENTED = new ErrorCode(EXCEPTION_PREFIX + "00000");
   /**
-   * The implementation class for the command as defined in the descriptor cannot be found
+   * Vital configuration is missing
    */
-  public static final ErrorCode COMMAND_IMPLEMENTATION_CLASS_NOT_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00002");
+  public static final ErrorCode MISSING_CONFIGURATION = new ErrorCode(EXCEPTION_PREFIX + "00001");
   /**
-   * The XML describing the command is invalid
+   * When the manifest store directory could not be found.
    */
-  public static final ErrorCode COMMAND_DESCRIPTOR_XML_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00003");
+  public static final ErrorCode MANIFEST_STORE_NOT_FOUND = new ErrorCode(ManifestException.EXCEPTION_PREFIX + "00010");
   /**
-   * The {@link nl.toolforge.karma.core.cmd.CommandContext#init} method has not been called. This is
-   * serious, as commands are run by this command context.
+   * When the location store directory could not be found.
    */
-  public static final ErrorCode COMMAND_CONTEXT_NOT_INITIALIZED = new ErrorCode(EXCEPTION_PREFIX + "00004");
+  public static final ErrorCode LOCATION_STORE_NOT_FOUND = new ErrorCode(LocationException.EXCEPTION_PREFIX + "00011");
   /**
    * No development home directory could be referenced to. This is panic, because without it, nothing will work.
    */
-  public static final ErrorCode NO_DEVELOPMENT_HOME = new ErrorCode(EXCEPTION_PREFIX + "00005");
-  /**
-   * Duplicate command descriptor name in commands XML file
-   */
-  public static final ErrorCode DUPLICATE_COMMAND = new ErrorCode(EXCEPTION_PREFIX + "00007");
-  /**
-   * Duplicate command descriptor alias in commands XML file
-   */
-  public static final ErrorCode DUPLICATE_COMMAND_ALIAS = new ErrorCode(EXCEPTION_PREFIX + "00008");
-  /**
-   * The console could not be initialized with user defined settings. Settings could not be available.
-   */
-  public static final ErrorCode CONSOLE_INITIALIZATION_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00040");
-  /**
-   * Command does not exist
-   */
-  public static final ErrorCode INVALID_COMMAND = new ErrorCode(EXCEPTION_PREFIX + "00050");
-  /**
-   * Invalid option for this command
-   */
-  public static final ErrorCode INVALID_COMMAND_OPTION = new ErrorCode(EXCEPTION_PREFIX + "00051");
+  public static final ErrorCode DEVELOPMENT_HOME_NOT_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00012");
+  
   /**
    * The build of a module failed.
    */
+  // todo NO_MAVEN_PROJECT_XML should be moved to CommandException ?
   public static final ErrorCode NO_MAVEN_PROJECT_XML = new ErrorCode(EXCEPTION_PREFIX + "00100");
 
   protected ErrorCode errorCode = null;
 
   protected Object[] messageArguments = new Object[]{};
-  /**
-   * When the manifest store directory could not be found.
-   */
-  public static final ErrorCode MANIFEST_STORE_NOT_FOUND = new ErrorCode(ManifestException.EXCEPTION_PREFIX + "00008");
-  /** No directory is present where location data can be found. */
-  public static final ErrorCode NO_LOCATION_STORE_DIRECTORY = new ErrorCode(LocationException.EXCEPTION_PREFIX + "00008");
 
   /**
    * Create a new KarmaException, with the specific errorCode.

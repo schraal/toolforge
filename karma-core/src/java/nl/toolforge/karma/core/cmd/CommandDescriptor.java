@@ -32,16 +32,6 @@ public final class CommandDescriptor {
 
 	private Map deps = new Hashtable();
 
-//  private CommandDescriptor(String name, String alias) {
-//
-//  }
-//
-//  public CommandDescriptor setOption(String shortOpt) {
-//
-//  }
-//
-//  public
-
 	/**
 	 * Creates a command using its mandatory fields.
 	 *
@@ -57,7 +47,7 @@ public final class CommandDescriptor {
 		try {
 			this.commandImpl = Class.forName(commandImpl);
 		} catch (ClassNotFoundException c) {
-			throw new KarmaRuntimeException(KarmaException.COMMAND_IMPLEMENTATION_CLASS_NOT_FOUND, new Object[]{name}, c);
+			throw new KarmaRuntimeException("Implementation class for " + name + " not found.");
 		}
 	}
 

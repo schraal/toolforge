@@ -16,6 +16,12 @@ import org.netbeans.lib.cvsclient.event.MessageEvent;
 import org.netbeans.lib.cvsclient.event.ModuleExpansionEvent;
 import org.netbeans.lib.cvsclient.event.TerminationEvent;
 
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
+
 /**
  * Adapts a response from CVS to Karma specific messages. This class listens to CVS responses as per the Netbeans API.
  * Success messages are sent to the <code>CommandResponse</code> instance (which can optionally be registered with this
@@ -31,6 +37,7 @@ public final class CVSResponseAdapter implements CVSListener {
 //  private ErrorCode errorCode = null;
 
   private static Log logger = LogFactory.getLog(CVSResponseAdapter.class);
+  private Map arguments = null;
 
 //  private String moduleName = null;
 //  private String version = null;
@@ -45,6 +52,32 @@ public final class CVSResponseAdapter implements CVSListener {
    */
   public CVSResponseAdapter(CommandResponse response) {
     this.response = response;
+  }
+
+  public void setArguments(Map arguments) {
+    this.arguments = arguments;
+  }
+
+  public Object[] getArguments(String args) {
+
+    if (arguments == null) {
+      return null;
+    }
+
+    List argList = new ArrayList();
+    StringTokenizer tokenizer = new StringTokenizer(args, ",");
+    while (tokenizer.hasMoreTokens()) {
+      argList.add((String) tokenizer.nextElement());
+    }
+
+    Object[] argArray = new Object[argList.size()];
+    int j = 0;
+    for (Iterator i = argList.iterator(); i.hasNext();) {
+      argArray[j] = arguments.get((String) i.next());
+      j++;
+
+    }
+    return argArray;
   }
 
 //  public void setModuleName(String moduleName) {
@@ -156,19 +189,19 @@ public final class CVSResponseAdapter implements CVSListener {
       }
     } else if (message.startsWith("cvs server: cannot find module")) {
 
-      throw new CVSRuntimeException(CVSException.NO_SUCH_MODULE_IN_REPOSITORY);
+      throw new CVSRuntimeException(CVSException.NO_SUCH_MODULE_IN_REPOSITORY, getArguments("MODULE, REPOSITORY"));
 
     } else if (message.startsWith("cvs add:") && message.indexOf("already exists") >= 0) {
 
-      throw new CVSRuntimeException(CVSException.FILE_EXISTS_IN_REPOSITORY);
+      throw new CVSRuntimeException(CVSException.FILE_EXISTS_IN_REPOSITORY, getArguments("FILE, MODULE, REPOSITORY"));
 
     } else if (message.startsWith("cvs") && message.indexOf("no such tag") >= 0) {
 
-      throw new CVSRuntimeException(CVSException.VERSION_NOT_FOUND);
+      throw new CVSRuntimeException(CVSException.VERSION_NOT_FOUND, getArguments("MODULE, VERSION"));
 
     } else if (message.indexOf("contains characters other than digits") >= 0) {
 
-      throw new CVSRuntimeException(CVSException.INVALID_SYMBOLIC_NAME);
+      throw new CVSRuntimeException(CVSException.INVALID_SYMBOLIC_NAME, getArguments("MODULE, SYMBOLIC_NAME"));
 
     } else if (message.indexOf("permission denied") >= 0) {
 

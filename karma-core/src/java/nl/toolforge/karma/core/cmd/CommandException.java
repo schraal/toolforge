@@ -23,20 +23,20 @@ public class CommandException extends Exception {
    * Some commands apply to modules in the current manifest. When the command is called with a module that is not
    * part of the current manifest, this error code is generated.
    */
-  public static final ErrorCode MODULE_NOT_IN_MANIFEST = new ErrorCode(EXCEPTION_PREFIX + "00010");
+//  public static final ErrorCode MODULE_NOT_IN_MANIFEST = new ErrorCode(EXCEPTION_PREFIX + "00010");
 
   /** The module has no version attribute. */
-  public static final ErrorCode MODULE_WITHOUT_VERSION = new ErrorCode(EXCEPTION_PREFIX + "00011");
+//  public static final ErrorCode MODULE_WITHOUT_VERSION = new ErrorCode(EXCEPTION_PREFIX + "00011");
 
   /**
    * Used when a duplicate status update is added to a command response.
    *
    * @see CommandResponse#addStatusUpdate
    */
-  public static final ErrorCode DUPLICATE_COMMAND_STATUS = new ErrorCode(EXCEPTION_PREFIX + "00020");
+//  public static final ErrorCode DUPLICATE_COMMAND_STATUS = new ErrorCode(EXCEPTION_PREFIX + "00020");
 
   /**
-   * The command that is requested by <code>CommandFactory</code> is invalid. The command could
+   * The command that is requested from <code>CommandFactory.getCommand()</code> is invalid. The command could
    * not be created.
    *
    * @see CommandFactory#getCommand

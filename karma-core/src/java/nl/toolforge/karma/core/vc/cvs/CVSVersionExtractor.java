@@ -131,11 +131,11 @@ public final class CVSVersionExtractor implements VersionExtractor {
         }
         return new Version(moduleInfo.getTag().substring(moduleInfo.getTag().indexOf("_") + 1));
       } catch (Exception e) {
-        throw new CVSException(CVSException.LOCAL_MODULE_ERROR);
+        throw new CVSException(CVSException.LOCAL_MODULE_ERROR, new Object[]{module.getName()});
       }
 
     } catch (IOException e) {
-      throw new CVSException(CVSException.LOCAL_MODULE_ERROR);
+      throw new CVSException(CVSException.LOCAL_MODULE_ERROR, new Object[]{module.getName()});
     } catch (ManifestException e) {
       throw new CVSException(e.getErrorCode(), e.getMessageArguments());
     }

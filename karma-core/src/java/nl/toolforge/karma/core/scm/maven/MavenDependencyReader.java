@@ -54,9 +54,11 @@ public class MavenDependencyReader {
     try {
       deps = (List) digester.parse(dependencyFileIs);
     } catch (IOException e) {
-      throw new KarmaException(KarmaException.LAZY_BASTARD);
+      e.printStackTrace();
+//      throw new KarmaException(KarmaException.LAZY_BASTARD);
     } catch (SAXException e) {
-      throw new KarmaException(KarmaException.LAZY_BASTARD);
+      e.printStackTrace();
+//      throw new KarmaException(KarmaException.LAZY_BASTARD);
     }
 
     return deps;

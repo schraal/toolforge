@@ -39,9 +39,15 @@ public final class LocationException extends Exception {
   public static final ErrorCode LOCATION_CONFIGURATION_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00007");
   /** Missing location property */
   public static final ErrorCode MISSING_LOCATION_PROPERTY = new ErrorCode(EXCEPTION_PREFIX + "00010");
-
+  /**
+   * The manifest-store is configured based on properties in <code>karma.properties</code>. This error code is
+   * created when the <code>Location</code> for the manifest-store could not be created succesfully.
+   */
   public static final ErrorCode INVALID_MANIFEST_STORE_LOCATION = new ErrorCode(EXCEPTION_PREFIX + "00011");
-
+  /**
+   * The location-store is configured based on properties in <code>karma.properties</code>. This error code is
+   * created when the <code>Location</code> for the location-store could not be created succesfully.
+   */
   public static final ErrorCode INVALID_LOCATION_STORE_LOCATION = new ErrorCode(EXCEPTION_PREFIX + "00012");
 
   public LocationException(ErrorCode errorCode) {

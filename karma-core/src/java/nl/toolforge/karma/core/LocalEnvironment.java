@@ -97,7 +97,7 @@ public final class LocalEnvironment {
    * Private constructor. This class is only initialized via the getInstance() methods.
    *
    * @param properties The properties object that is used to initialize. When this parameter is null,
-   *                   the properties are read from file.
+   *   the properties are read from the <code>karma.properties</code> configuration file.
    */
   private LocalEnvironment(Properties properties) throws KarmaException {
 
@@ -129,21 +129,113 @@ public final class LocalEnvironment {
       String store;
       store = (String) configuration.get(DEVELOPMENT_STORE_DIRECTORY);
       if (store == null || store.equals("") ) {
+        logger.error("Development store is missing; property " + DEVELOPMENT_STORE_DIRECTORY + " has invalid value.");
         throw new KarmaException(KarmaException.MISSING_CONFIGURATION, new Object[]{DEVELOPMENT_STORE_DIRECTORY});
       } else {
         new File(store).mkdirs();
       }
       store = (String) configuration.get(MANIFEST_STORE_DIRECTORY);
       if (store == null || store.equals("") ) {
+        logger.error("Manifest store is missing; property " + MANIFEST_STORE_DIRECTORY + " has invalid value.");
         throw new KarmaException(KarmaException.MISSING_CONFIGURATION, new Object[]{MANIFEST_STORE_DIRECTORY});
       } else {
         new File(store).mkdirs();
       }
       store = (String) configuration.get(LOCATION_STORE_DIRECTORY);
       if (store == null || store.equals("") ) {
+        logger.error("Location store is missing; property " + LOCATION_STORE_DIRECTORY + " has invalid value.");
         throw new KarmaException(KarmaException.MISSING_CONFIGURATION, new Object[]{LOCATION_STORE_DIRECTORY});
       } else {
         new File(store).mkdirs();
+      }
+
+      // Check other 'essential' configuration.
+      //
+      String[] configItems = new String [6];
+      configItems[0] = (String) configuration.get(MANIFEST_STORE_HOST);
+      configItems[1] = (String) configuration.get(MANIFEST_STORE_REPOSITORY);
+      configItems[2] = (String) configuration.get(MANIFEST_STORE_PROTOCOL);
+
+      if (configItems[0] == null || "".equals(configItems[0])) {
+        logger.error(
+            "Configuration of manifest-store is invalid; property " + MANIFEST_STORE_HOST +
+            " is missing or has invalid value.");
+        throw new KarmaException(KarmaException.MISSING_CONFIGURATION, new Object[]{MANIFEST_STORE_HOST});
+      }
+      if (configItems[1] == null || "".equals(configItems[1])) {
+        logger.error(
+            "Configuration of manifest-store is invalid; property " + MANIFEST_STORE_REPOSITORY +
+            " is missing or has invalid value.");
+        throw new KarmaException(KarmaException.MISSING_CONFIGURATION, new Object[]{MANIFEST_STORE_REPOSITORY});
+      }
+      if (configItems[2] == null || "".equals(configItems[2])) {
+        logger.error(
+            "Configuration of manifest-store is invalid; property " + MANIFEST_STORE_PROTOCOL +
+            " is missing or has invalid value.");
+        throw new KarmaException(KarmaException.MISSING_CONFIGURATION, new Object[]{MANIFEST_STORE_PROTOCOL});
+      }
+
+      configItems[0] = (String) configuration.get(LOCATION_STORE_HOST);
+      configItems[1] = (String) configuration.get(LOCATION_STORE_REPOSITORY);
+      configItems[2] = (String) configuration.get(LOCATION_STORE_PROTOCOL);
+
+      if (configItems[0] == null || "".equals(configItems[0])) {
+        logger.error(
+            "Configuration of location-store is invalid; property " + LOCATION_STORE_HOST +
+            " is missing or has invalid value.");
+        throw new KarmaException(KarmaException.MISSING_CONFIGURATION, new Object[]{LOCATION_STORE_HOST});
+      }
+      if (configItems[1] == null || "".equals(configItems[1])) {
+        logger.error(
+            "Configuration of location-store is invalid; property " + LOCATION_STORE_REPOSITORY +
+            " is missing or has invalid value.");
+        throw new KarmaException(KarmaException.MISSING_CONFIGURATION, new Object[]{LOCATION_STORE_REPOSITORY});
+      }
+      if (configItems[2] == null || "".equals(configItems[2])) {
+        logger.error(
+            "Configuration of location-store is invalid; property " + LOCATION_STORE_PROTOCOL +
+            " is missing or has invalid value.");
+        throw new KarmaException(KarmaException.MISSING_CONFIGURATION, new Object[]{LOCATION_STORE_PROTOCOL});
+      }
+
+      // Check other 'non-essential' configuration.
+      //
+      configItems[3] = (String) configuration.get(MANIFEST_STORE_PORT);
+      configItems[4] = (String) configuration.get(MANIFEST_STORE_USERNAME);
+      configItems[5] = (String) configuration.get(MANIFEST_STORE_PASSWORD);
+      if (configItems[3] == null || "".equals(configItems[3])) {
+        logger.warn(
+            "Configuration of manifest-store possibly incomplete, " + MANIFEST_STORE_PORT +
+            " is missing or has invalid value.");
+      }
+      if (configItems[4] == null || "".equals(configItems[4])) {
+        logger.warn(
+            "Configuration of manifest-store possibly incomplete, " + MANIFEST_STORE_USERNAME +
+            " is missing or has invalid value.");
+      }
+      if (configItems[5] == null || "".equals(configItems[5])) {
+        logger.warn(
+            "Configuration of manifest-store possibly incomplete, " + MANIFEST_STORE_PASSWORD +
+            " is missing or has invalid value.");
+      }
+
+      configItems[3] = (String) configuration.get(LOCATION_STORE_PORT);
+      configItems[4] = (String) configuration.get(LOCATION_STORE_USERNAME);
+      configItems[5] = (String) configuration.get(LOCATION_STORE_PASSWORD);
+      if (configItems[3] == null || "".equals(configItems[3])) {
+        logger.warn(
+            "Configuration of location-store possibly incomplete, " + LOCATION_STORE_PORT +
+            " is missing or has invalid value.");
+      }
+      if (configItems[4] == null || "".equals(configItems[4])) {
+        logger.warn(
+            "Configuration of location-store possibly incomplete, " + LOCATION_STORE_USERNAME +
+            " is missing or has invalid value.");
+      }
+      if (configItems[5] == null || "".equals(configItems[5])) {
+        logger.warn(
+            "Configuration of location-store possibly incomplete, " + LOCATION_STORE_PASSWORD +
+            " is missing or has invalid value.");
       }
 
     } catch (IOException e) {
@@ -230,7 +322,7 @@ public final class LocalEnvironment {
       return location;
 
     } catch (Exception e) {
-		logger.debug(e);
+      logger.debug(e);
       throw new LocationException(LocationException.INVALID_MANIFEST_STORE_LOCATION);
     }
   }
@@ -273,12 +365,12 @@ public final class LocalEnvironment {
 
       home = new File(locationStore);
       if (!home.exists()) {
-        throw new KarmaException(KarmaException.NO_LOCATION_STORE_DIRECTORY);
+        throw new KarmaException(KarmaException.LOCATION_STORE_NOT_FOUND);
       }
 
       return home;
     } catch (NullPointerException n) {
-      throw new KarmaException(KarmaException.NO_LOCATION_STORE_DIRECTORY);
+      throw new KarmaException(KarmaException.LOCATION_STORE_NOT_FOUND);
     }
   }
 
@@ -298,11 +390,11 @@ public final class LocalEnvironment {
       logger.debug("development home directory: " + developmentHome);
       home = new File(developmentHome);
       if (!home.exists()) {
-        throw new KarmaException(KarmaException.NO_DEVELOPMENT_HOME);
+        throw new KarmaException(KarmaException.DEVELOPMENT_HOME_NOT_FOUND);
       }
       return home;
     } catch (NullPointerException n) {
-      throw new KarmaException(KarmaException.NO_DEVELOPMENT_HOME);
+      throw new KarmaException(KarmaException.DEVELOPMENT_HOME_NOT_FOUND);
     }
   }
 }

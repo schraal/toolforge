@@ -3,7 +3,6 @@ package nl.toolforge.karma.core.cmd;
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
-import nl.toolforge.karma.core.ErrorCode;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.LocationFactory;
 import nl.toolforge.karma.core.manifest.Manifest;
@@ -162,7 +161,7 @@ public final class CommandContext {
   public synchronized void execute(Command command) throws CommandException {
 
     if (command == null) {
-      throw new CommandException(KarmaException.INVALID_COMMAND, new Object[]{command.getName()});
+      throw new IllegalArgumentException("Invalid command; command cannot be null.");
     }
 
     // Store a reference to this context in the command
@@ -206,26 +205,6 @@ public final class CommandContext {
     logger.debug("getLocalPath() = " + localPath.getPath());
 
     return localPath;
-  }
-
-  /**
-   * <p>Gets the build target directory for <code>module</code>, creating it when non existing. The current default
-   * location for a build target directory is determined as follows :
-   *
-   * <pre>{@link LocalEnvironment#DEVELOPMENT_STORE_DIRECTORY} + File.separator + {@link #getCurrentManifest()} + File.separator
-   * + build + module.getName()</pre>
-   *
-   * todo consider moving it to Module.
-   */
-  public final File getBuildTarget(Module module) throws KarmaException {
-
-    File localPath = new File(new File(getBase(), "build"), module.getName());
-
-    if (localPath.exists() || localPath.mkdirs()) {
-      return localPath;
-    }
-    logger.error("Could not create build directory for module " + module.getName());
-    throw new KarmaException(KarmaException.LAZY_BASTARD); // todo proper exception
   }
 
   /**

@@ -29,6 +29,12 @@ public final class TestLocalEnvironment extends TestCase {
 			p.put(LocalEnvironment.DEVELOPMENT_STORE_DIRECTORY, f1.getPath());
 			p.put(LocalEnvironment.MANIFEST_STORE_DIRECTORY, f2.getPath());
 			p.put(LocalEnvironment.LOCATION_STORE_DIRECTORY, f3.getPath());
+			p.put(LocalEnvironment.MANIFEST_STORE_HOST, "one");
+			p.put(LocalEnvironment.MANIFEST_STORE_REPOSITORY, "two");
+			p.put(LocalEnvironment.MANIFEST_STORE_PROTOCOL, "three");
+      p.put(LocalEnvironment.LOCATION_STORE_HOST, "one");
+			p.put(LocalEnvironment.LOCATION_STORE_REPOSITORY, "two");
+			p.put(LocalEnvironment.LOCATION_STORE_PROTOCOL, "three");
 
 		} catch (IOException e) {
 			fail(e.getMessage());

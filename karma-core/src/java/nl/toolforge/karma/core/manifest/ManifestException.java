@@ -34,10 +34,6 @@ public class ManifestException extends Exception {
    */
   public static final ErrorCode MODULE_NOT_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00004");
   /**
-   * When the manifest could not be written to disk (mainly IO).
-   */
-  public static final ErrorCode MANIFEST_FLUSH_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00005");
-  /**
    * When the manifest could not be loaded from disk.
    */
   public static final ErrorCode MANIFEST_LOAD_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00006");
@@ -45,10 +41,6 @@ public class ManifestException extends Exception {
    * When the manifest could not be loaded from disk.
    */
   public static final ErrorCode NO_ACTIVE_MANIFEST = new ErrorCode(EXCEPTION_PREFIX + "00007");
-  /**
-   * When the manifest has not yet been checked out to the local environment
-   */
-  public static final ErrorCode MANIFEST_NOT_UPDATED = new ErrorCode(EXCEPTION_PREFIX + "00009");
   /**
    * When the local path to the manifest on disk is invalid.
    */
@@ -58,14 +50,6 @@ public class ManifestException extends Exception {
    */
   public static final ErrorCode STATE_UPDATE_FAILURE = new ErrorCode(EXCEPTION_PREFIX + "00011");
   /**
-   * When the state of module within a manifest contains > 1 state files.
-   */
-  public static final ErrorCode TOO_MANY_STATE_FILES = new ErrorCode(EXCEPTION_PREFIX + "00012");
-  /**
-   * When the state of module could not be determined correctly.
-   */
-  public static final ErrorCode INVALID_STATE = new ErrorCode(EXCEPTION_PREFIX + "00012");
-  /**
    * When a modules' <code>project.xml</code> cannot be found.
    */
   public static final ErrorCode DEPENDENCY_FILE_NOT_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00013");
@@ -73,10 +57,6 @@ public class ManifestException extends Exception {
 	 * When a module has not yet been checked out for this manifest
 	 */
 	public static final ErrorCode MODULE_NOT_LOCAL = new ErrorCode(EXCEPTION_PREFIX + "00014");
-	/**
-	 * When a module has a conflicting state while being loaded by a manifest
-	 */
-	public static final ErrorCode STATE_CONFLICT = new ErrorCode(EXCEPTION_PREFIX + "00015");
 
 	public ManifestException(ErrorCode errorCode) {
     this(errorCode, null);
