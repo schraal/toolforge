@@ -40,7 +40,7 @@ public class BuildAllModules extends DefaultCommand {
 
   public void execute() throws CommandException {
 
-    Manifest currentManifest = getContext().getCurrent();
+    Manifest currentManifest = getContext().getCurrentManifest();
 
     Map modules = currentManifest.getAllModules();
     for (Iterator i = modules.values().iterator(); i.hasNext();) {
@@ -72,7 +72,7 @@ public class BuildAllModules extends DefaultCommand {
 //    try {
 //      // todo move this bit to aspect-code.
 //      //
-//      currentManifest = getContext().getCurrent();
+//      currentManifest = getContext().getCurrentManifest();
 //      module = currentManifest.getModule(moduleName);
 //
 //    } catch (ManifestException m) {
@@ -114,7 +114,7 @@ public class BuildAllModules extends DefaultCommand {
 //
 //      // Where compiled classes will be stored.
 //      //
-//      File buildDir = new File(new File(getContext().getCurrent().getDirectory(), "build"), moduleName);
+//      File buildDir = new File(new File(getContext().getCurrentManifest().getDirectory(), "build"), moduleName);
 //
 //      project.setProperty(JAVAC_SRC_DIR_PROPERTY, srcBase.getPath());
 //      project.setProperty(JAVAC_DEST_DIR_PROPERTY, buildDir.getPath());

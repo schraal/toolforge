@@ -51,7 +51,7 @@ public class StartWorkCommand extends DefaultCommand {
 
     moduleName = getCommandLine().getOptionValue("m");
     try {
-      module = getContext().getCurrent().getModule(moduleName);
+      module = getContext().getCurrentManifest().getModule(moduleName);
     } catch (ManifestException e) {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
@@ -79,7 +79,7 @@ public class StartWorkCommand extends DefaultCommand {
 
     } else {
 
-      Manifest currentManifest = getContext().getCurrent();
+      Manifest currentManifest = getContext().getCurrentManifest();
 
       if (!currentManifest.isLocal(module)) {
         // todo Hmm, mixing functionality of two exceptions.
@@ -91,7 +91,7 @@ public class StartWorkCommand extends DefaultCommand {
 
         // A developer always works on the HEAD of a DevelopmentLine.
         //
-        Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getCurrent().getDirectory());
+        Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getCurrentManifest().getDirectory());
         runner.checkout(module);
 
 //        Command command = CommandFactory.getInstance().getCommand(CommandDescriptor.UPDATE_MODULE_COMMAND + " -m ".concat(module.getName()));

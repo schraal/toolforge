@@ -49,7 +49,7 @@ public class PromoteCommand extends DefaultCommand {
 
       String moduleName = getCommandLine().getOptionValue("m");
 
-      SourceModule module = (SourceModule) getContext().getCurrent().getModule(moduleName);
+      SourceModule module = (SourceModule) getContext().getCurrentManifest().getModule(moduleName);
 
       if (!module.getState().equals(Module.WORKING)) {
         throw new CommandException(CommandException.PROMOTE_ONLY_ALLOWED_ON_WORKING_MODULE, new Object[]{moduleName});
@@ -76,7 +76,7 @@ public class PromoteCommand extends DefaultCommand {
         nextVersion = extractor.getNextVersion(module);
       }
 
-      Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getCurrent().getDirectory());
+      Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getCurrentManifest().getDirectory());
 
       // TODO check whether files exist that have not yet been committed.
 

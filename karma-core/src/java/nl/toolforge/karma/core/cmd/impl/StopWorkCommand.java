@@ -50,7 +50,7 @@ public class StopWorkCommand extends DefaultCommand {
 
     moduleName = getCommandLine().getOptionValue("m");
     try {
-      module = getContext().getCurrent().getModule(moduleName);
+      module = getContext().getCurrentManifest().getModule(moduleName);
     } catch (ManifestException e) {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
@@ -81,10 +81,10 @@ public class StopWorkCommand extends DefaultCommand {
 
         // Update to the latest available version (in a DevelopmentLine).
         //
-        Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getCurrent().getDirectory());
+        Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getCurrentManifest().getDirectory());
         runner.checkout(module, version);
 
-        getContext().getCurrent().setState(module, Module.DYNAMIC);
+        getContext().getCurrentManifest().setState(module, Module.DYNAMIC);
 
       } catch (ManifestException e) {
         throw new CommandException(e.getErrorCode(), e.getMessageArguments());

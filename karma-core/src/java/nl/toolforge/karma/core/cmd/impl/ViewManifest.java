@@ -46,7 +46,7 @@ public class ViewManifest extends DefaultCommand {
     if (!getContext().isManifestLoaded()) {
       throw new CommandException(ManifestException.NO_ACTIVE_MANIFEST);
     }
-    Manifest manifest = getContext().getCurrent();
+    Manifest manifest = getContext().getCurrentManifest();
 
     Map sourceModules = manifest.getAllModules();
 

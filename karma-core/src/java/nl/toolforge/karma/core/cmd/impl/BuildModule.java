@@ -68,7 +68,7 @@ public class BuildModule extends DefaultCommand {
     try {
       // todo move this bit to aspect-code.
       //
-      currentManifest = getContext().getCurrent();
+      currentManifest = getContext().getCurrentManifest();
       module = currentManifest.getModule(moduleName);
 
     } catch (ManifestException m) {
@@ -110,15 +110,15 @@ public class BuildModule extends DefaultCommand {
 
       // Where compiled classes will be stored.
       //
-      File buildDir = new File(new File(getContext().getCurrent().getDirectory(), "build"), moduleName);
+      File buildDir = new File(new File(getContext().getCurrentManifest().getDirectory(), "build"), moduleName);
 
       project.setProperty(JAVAC_SRC_DIR_PROPERTY, srcBase.getPath());
       project.setProperty(JAVAC_DEST_DIR_PROPERTY, buildDir.getPath());
       project.setProperty(JAVAC_CLASSPATH_PROPERTY, ((SourceModule) module).getDependencies());
 
       project.setProperty(JAR_JAR_FILE_PROPERTY, module.getDependencyName());
-
     } catch (ManifestException e) {
+      e.printStackTrace();
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
 
@@ -126,7 +126,7 @@ public class BuildModule extends DefaultCommand {
 //      project.executeTarget("compile");
       project.executeTarget("jar");
     } catch (BuildException e) {
-//      e.printStackTrace();
+      e.printStackTrace();
       throw new CommandException(CommandException.BUILD_FAILED, new Object[] {moduleName});
     }
 

@@ -33,7 +33,7 @@ public class SelectManifest extends DefaultCommand {
 		// Select a manifest and store it in the command context
 		//
     try {
-		  getContext().changeCurrent(getCommandLine().getOptionValue("m"));
+		  getContext().changeCurrentManifest(getCommandLine().getOptionValue("m"));
     } catch (ManifestException me) {
       throw new CommandException(me.getErrorCode(), me.getMessageArguments());
     } catch (LocationException e) {

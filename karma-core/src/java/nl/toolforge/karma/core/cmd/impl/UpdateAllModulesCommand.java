@@ -55,7 +55,7 @@ public class UpdateAllModulesCommand extends CompositeCommand {
 
     // todo what to do about jarmodules etc ?
     //
-    Map modules = getContext().getCurrent().getAllModules();
+    Map modules = getContext().getCurrentManifest().getAllModules();
 
     // Loop through all modules and use UpdateModuleCommand on each module.
     //

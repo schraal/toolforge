@@ -70,7 +70,7 @@ public class UpdateModuleCommand extends DefaultCommand {
 
     moduleName = getCommandLine().getOptionValue("m");
     try {
-      module = getContext().getCurrent().getModule(moduleName);
+      module = getContext().getCurrentManifest().getModule(moduleName);
     } catch (ManifestException e) {
       throw new CommandException(e.getErrorCode(),e.getMessageArguments());
     }
@@ -93,7 +93,7 @@ public class UpdateModuleCommand extends DefaultCommand {
     }
 
     try {
-      if (version != null && version.equals(CVSVersionExtractor.getInstance().getLocalVersion(getContext().getCurrent(), module))) {
+      if (version != null && version.equals(CVSVersionExtractor.getInstance().getLocalVersion(getContext().getCurrentManifest(), module))) {
         // todo message to be internationalized.
         //
 
@@ -104,7 +104,7 @@ public class UpdateModuleCommand extends DefaultCommand {
 
       } else {
 
-        Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getCurrent().getDirectory());
+        Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getCurrentManifest().getDirectory());
         runner.setCommandResponse(response);
 
         if (!runner.existsInRepository(module)) {

@@ -110,7 +110,7 @@ public final class CommandContext {
    *
    * @return The currently active manifest, or <code>null</code> when no manifest is current.
    */
-  public Manifest getCurrent() {
+  public Manifest getCurrentManifest() {
     return currentManifest;
   }
 
@@ -120,7 +120,7 @@ public final class CommandContext {
    * @param manifestName
    * @throws nl.toolforge.karma.core.manifest.ManifestException When the manifest could not be changed. See {@link nl.toolforge.karma.core.manifest.ManifestException#MANIFEST_LOAD_ERROR}.
    */
-  public void changeCurrent(String manifestName) throws LocationException, ManifestException {
+  public void changeCurrentManifest(String manifestName) throws LocationException, ManifestException {
 
     Manifest newManifest = new Manifest(manifestName);
     newManifest.load(getLocalEnvironment());
@@ -212,7 +212,7 @@ public final class CommandContext {
    * <p>Gets the build target directory for <code>module</code>, creating it when non existing. The current default
    * location for a build target directory is determined as follows :
    *
-   * <pre>{@link LocalEnvironment#DEVELOPMENT_STORE_DIRECTORY} + File.separator + {@link #getCurrent()} + File.separator
+   * <pre>{@link LocalEnvironment#DEVELOPMENT_STORE_DIRECTORY} + File.separator + {@link #getCurrentManifest()} + File.separator
    * + build + module.getName()</pre>
    *
    * todo consider moving it to Module.
@@ -234,7 +234,7 @@ public final class CommandContext {
   // todo what to do with the throws clause ???
   //
   private File getBase() throws KarmaException {
-    return new File(getLocalEnvironment().getDevelopmentHome(), getCurrent().getName());
+    return new File(getLocalEnvironment().getDevelopmentHome(), getCurrentManifest().getName());
   }
 
 
