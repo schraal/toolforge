@@ -100,9 +100,8 @@ public class BuildModule extends DefaultCommand {
 
       //project.executeTarget("compile");
 
-      CommandResponse response = new ActionCommandResponse();
       CommandMessage message = new SimpleCommandMessage("Module " + module.getName() + " built succesfully."); // todo localize message
-      response.addMessage(message);
+      commandResponse.addMessage(message);
     } catch (Exception e) {
       e.printStackTrace();
     }
