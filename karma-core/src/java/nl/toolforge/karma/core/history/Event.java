@@ -2,6 +2,8 @@ package nl.toolforge.karma.core.history;
 
 import nl.toolforge.karma.core.Version;
 
+import java.util.Date;
+
 /**
  * Holds the information of one module history event.
  *
@@ -10,7 +12,7 @@ import nl.toolforge.karma.core.Version;
 public class Event {
   String type;
   Version version = null;
-  Datetime datetime = null;
+  Date datetime = null;
   String comment;
 
   public Event() {
@@ -24,12 +26,24 @@ public class Event {
     this.version = version;
   }
 
-  public void setDatetime(Datetime datetime) {
+  public void setDatetime(Date datetime) {
     this.datetime = datetime;
   }
 
   public void setComment(String comment) {
     this.comment = comment;
+  }
+
+  public String toXml() {
+      String s = "\t<event";
+
+      s += " type=\""+type+"\"";
+      s += " comment=\""+comment+"\"/>\n";
+      s += "\t\t<version value=\""+version+"\"/>\n";
+      s += "\t\t<datetime time=\""+datetime.getTime()+"\"/>\n";
+      s += "\t</event>\n";
+
+      return s;
   }
 
   public String toString() {
