@@ -1,8 +1,6 @@
 package nl.toolforge.karma.cli;
 
 import nl.toolforge.karma.core.prefs.Preferences;
-import nl.toolforge.karma.core.prefs.UnavailableValueException;
-import nl.toolforge.karma.core.KarmaException;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -14,7 +12,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public final class ConsoleWriter {
 
-  private String prompt = null;
+  private boolean defaultPrompt = false;
 
   /**
    * Creates a <code>ConsoleWriter</code> to be able to write command output to <code>System.out</code>. A
@@ -25,23 +23,28 @@ public final class ConsoleWriter {
    *                      prompt ({@link ConsoleConfiguration#getPrompt}) should be used.
    */
   public ConsoleWriter(boolean defaultPrompt) {
-
-    // TODO : logger.info("Output will be written to the console.")
-
-    if (!defaultPrompt) {
-      prompt = Preferences.getInstance().get("", ConsoleConfiguration.getDefaultPrompt());
-    } else {
-      prompt = ConsoleConfiguration.getDefaultPrompt();
-    }
-    prompt = prompt.concat(" "); // Remove too many spaces, and add one for readability.
+		this.defaultPrompt = defaultPrompt;
   }
 
   /**
    * Writes the prompt to the console.
    */
   public void prompt() {
-    System.out.print(prompt);
+    System.out.print(getPrompt());
   }
+
+	public String getPrompt() {
+
+    String prompt = null;
+
+		if (defaultPrompt) {
+			prompt = ConsoleConfiguration.getDefaultPrompt();
+		} else {
+			prompt = Preferences.getInstance().get("", ConsoleConfiguration.getDefaultPrompt());
+			// TODO based on any logic like the PS stuff on Unix, do something with the prompt.
+		}
+		return prompt.trim().concat(" "); // Remove too many spaces, and add one for readability.
+	}
 
   /**
    * Writes <code>text</code> to <code>System.out</code>, preceded with {@link ConsoleConfiguration#getPrompt}.
@@ -49,7 +52,7 @@ public final class ConsoleWriter {
    * @param text Text to write to the console.
    */
   public void write(String text) {
-    System.out.print(prompt.concat(text));
+    System.out.print(getPrompt().concat(text));
   }
 
   /**
@@ -59,14 +62,14 @@ public final class ConsoleWriter {
    * @param text Text to write to the console.
    */
   public void writeln(String text) {
-    System.out.println(prompt.concat(text));
+    System.out.println(getPrompt().concat(text));
   }
 
   public void writeln(boolean writePrompt, String text) {
     if (writePrompt) {
       writeln(text);
     } else {
-      System.out.println(StringUtils.repeat(" ", prompt.length()).concat(text));
+      System.out.println(StringUtils.repeat(" ", getPrompt().length()).concat(text));
     }
   }
 

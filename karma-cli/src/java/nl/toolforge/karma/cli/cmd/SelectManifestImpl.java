@@ -1,9 +1,9 @@
 package nl.toolforge.karma.cli.cmd;
 
-import nl.toolforge.karma.core.cmd.impl.SelectManifest;
-import nl.toolforge.karma.core.cmd.*;
-import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.cli.ConsoleConfiguration;
 import nl.toolforge.karma.core.ManifestException;
+import nl.toolforge.karma.core.cmd.*;
+import nl.toolforge.karma.core.cmd.impl.SelectManifest;
 
 /**
  * @author W.H. Schraal
@@ -29,6 +29,8 @@ public class SelectManifestImpl extends SelectManifest {
     // Use stuff that's being done in the superclass.
     //
     super.execute(); // Ignore the response from the superclass
+
+		ConsoleConfiguration.setManifest(getContext().getCurrent());
 
     CommandMessage message = new SimpleCommandMessage(getFrontendMessages().getString("message.MANIFEST_ACTIVATED"));
     CommandResponse response = new SimpleCommandResponse();

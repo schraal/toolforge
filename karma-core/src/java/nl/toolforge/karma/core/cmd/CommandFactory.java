@@ -35,6 +35,10 @@ public final class CommandFactory {
 	 * Only static methods
 	 */
 	private CommandFactory() throws KarmaException {
+		init();
+	}
+
+	private synchronized void init() throws KarmaException {
 
 		Set descriptors = CommandLoader.getInstance().load();
 		//commands = new Hashtable();
@@ -94,10 +98,10 @@ public final class CommandFactory {
 
 		// Extract the command line options and arguments from the command line string
 		//                                              ring
-//		String[] commandOptions = new String[tokenizer.countTokens()];
-		String[] commandOptions = null;
+		String[] commandOptions = new String[tokenizer.countTokens()];
+//		String[] commandOptions = null;
 		if (tokenizer.hasMoreTokens()) {
-			commandOptions = new String[tokenizer.countTokens()];
+//			commandOptions = new String[tokenizer.countTokens()];
 			int i = 0;
 			while (tokenizer.hasMoreTokens()) {
 				commandOptions[i] = tokenizer.nextToken();
@@ -123,12 +127,9 @@ public final class CommandFactory {
 				// Parse the command line options.
 				//
 				CommandLineParser parser = new PosixParser();
-				Options parserOptions = descriptor.getOptions();
-				CommandLine commandLine = parser.parse(parserOptions, commandOptions);
-				parserOptions = null;
 
-				cmd.setCommandLine(commandLine);
-//        commandLine = null;
+				Options parserOptions = descriptor.getOptions();
+				cmd.setCommandLine(parser.parse(parserOptions, commandOptions));
 
 			} catch (NoSuchMethodException e) {
 				throw new CommandException(CommandException.INVALID_COMMAND, new Object[]{commandLineString}, e);
@@ -143,13 +144,14 @@ public final class CommandFactory {
 			} catch (InvocationTargetException e) {
 				throw new CommandException(CommandException.INVALID_COMMAND, new Object[]{commandLineString}, e);
 			} catch (ParseException e) {
-
 				if (e instanceof MissingOptionException) {
 					throw new CommandException(CommandException.MISSING_OPTION, new Object[]{commandLineString}, e);
 				}
 				if (e instanceof MissingArgumentException) {
 					throw new CommandException(CommandException.MISSING_ARGUMENT, new Object[]{commandLineString}, e);
 				}
+			} catch (KarmaException e) {
+				throw new CommandException(e.getErrorCode(), e); // TODO Hmm, not what you would like.
 			}
 			return cmd;
 		}
@@ -177,7 +179,9 @@ public final class CommandFactory {
 	 * Retrieves the correct command descriptor either by name or by alias (whichever is passed as a
 	 * parameter).
 	 */
-	private CommandDescriptor getCommandDescriptor(String commandId) {
+	private CommandDescriptor getCommandDescriptor(String commandId) throws KarmaException {
+
+		init(); //
 
 		if (commandsByName.containsKey(commandId)) {
 			return (CommandDescriptor) commandsByName.get(commandId);

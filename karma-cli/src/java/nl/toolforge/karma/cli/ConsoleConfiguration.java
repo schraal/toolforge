@@ -1,6 +1,6 @@
 package nl.toolforge.karma.cli;
 
-import nl.toolforge.karma.core.prefs.Preferences;
+import nl.toolforge.karma.core.Manifest;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Calendar;
@@ -18,6 +18,7 @@ import java.util.Set;
 public final class ConsoleConfiguration {
 
  	public static Set exitCommands = new HashSet();
+  private static Manifest manifest = null;
 
 	static {
 
@@ -25,8 +26,6 @@ public final class ConsoleConfiguration {
 		exitCommands.add("BYE");
 		exitCommands.add("EXIT");
 	}
-
-	private static Preferences prefs = Preferences.getInstance();
 
 	/**
 	 * <p>Returns the prompt which is defined by the <code>console.prompt</code> property. The following syntax is
@@ -36,26 +35,32 @@ public final class ConsoleConfiguration {
 	 */
 	public static String getPrompt() {
 
-		String prompt = null;
+		// TODO other prompts to be implemented.
 
-		// TODO : logger.debug("getPrompt() returns getDefaultPrompt(); requires implementation");
-		prompt = getDefaultPrompt();
+		return getDefaultPrompt();
+	}
 
-		return prompt;
+	/**
+	 * Sets the manifest. Useful for the prompt.
+	 *
+	 * @param manifest The (current) manifest.
+	 */
+	public static void setManifest(Manifest manifest) {
+		ConsoleConfiguration.manifest = manifest;
 	}
 
 	/**
 	 * Gets the default prompt, constructed as follows : <code>HH:MM:SS [ Karma ]</code>
-	 * @return
 	 */
 	public static String getDefaultPrompt() {
 
 		Calendar now = Calendar.getInstance();
 
+		String end = (manifest == null ? "Karma" : manifest.getName());
 		return
 			StringUtils.leftPad("" + now.get(Calendar.HOUR_OF_DAY) , 2, "0") + ":" +
 			StringUtils.leftPad("" + now.get(Calendar.MINUTE) , 2, "0") + ":" +
-			StringUtils.leftPad("" + now.get(Calendar.SECOND) , 2, "0") + " [ Karma ] > ";
+			StringUtils.leftPad("" + now.get(Calendar.SECOND) , 2, "0") + " [ " + end + " ] > ";
 	}
 
 	/**

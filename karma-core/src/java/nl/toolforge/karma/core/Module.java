@@ -4,11 +4,16 @@ import nl.toolforge.karma.core.location.Location;
 
 
 /**
- * <p>A module is an important concept for the Karma tool. It represents a main building block of an application system.
- * An application system consists of one or more (generally more) modules.
+ * <p>A module is a collection of files, representing some block of functionality. This definition is probablt highlt
+ * subjective, but for Karma, that's what it is. A module is a generally part of a container, called a
+ * <code>Manifest</code>. System's theory tells us that a system is separated into subsystems. Well, that's what we
+ * do in the Karma context as well. An application system consists of one or more (generally more) modules.
  *
- * <p><code>Module</code> instances can be created in two ways:
+ * <p>Karma <code>Module</code>s are maintained in a version management system and grouped together in a
+ * <code>Manifest</code>. The manifest is managing the modules. New modules can be created in two ways:
+ *
  * <ul>
+ * <li/>Manually, in which case their structure should comply to
  * <li/>through {@link nl.toolforge.karma.core.ModuleFactory#createModule}
  * <li/>through {@link nl.toolforge.karma.core.Manifest#createModule}
  * </ul>

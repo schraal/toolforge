@@ -4,6 +4,7 @@ import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
 import nl.toolforge.karma.core.cmd.impl.UpdateModuleCommand;
 
 /**
@@ -13,15 +14,17 @@ import nl.toolforge.karma.core.cmd.impl.UpdateModuleCommand;
  * 
  * @version $Id:
  */
-public class UpdateModuleImpl extends UpdateModuleCommand {
+public class UpdateAllModulesImpl extends UpdateModuleCommand {
 
-  public UpdateModuleImpl(CommandDescriptor descriptor) throws CommandException {
+  public UpdateAllModulesImpl(CommandDescriptor descriptor) throws CommandException {
     super(descriptor);
   }
 
   public CommandResponse execute() throws KarmaException {
 
     CommandResponse response = super.execute();
+
+		response.addMessage(new SimpleCommandMessage(getFrontendMessages().getString("message.MODULES_UPDATED")));
 
     return response;
   }

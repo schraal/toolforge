@@ -4,166 +4,196 @@
 
 <commands>
 
-  <command name="create-module" alias="cm">
+	<command name="update-all" alias="ua">
 
-    <description lang="en">
-      Creates a module (optionally includes it in the manifest as well).
-    </description>
+		<description lang="en">
+			Updates all modules from the active manifest.
+		</description>
 
-    <options>
-      <option opt="m" longOpt="module" required="true" description="The module name">
-        <arg name="module-name"/>
-      </option>
-      <option opt="l" longOpt="location" required="true" description="The location alias">
-        <arg name="location-alias"/>
-      </option>
-<!--      <option opt="t" longOpt="type" required="false" description="The module type">-->
-<!--        <arg name="module-type"/>-->
-<!--      </option>-->
-      <option opt="i" longOpt="include" required="false" description="Include the module in the manifest"/>
-    </options>
+		<options/>
 
-    <classname>nl.toolforge.karma.core.cmd.impl.CreateModuleCommand</classname>
+		<classname>nl.toolforge.karma.core.cmd.impl.UpdateAllModulesCommand</classname>
 
-    <!--		<dependencies>-->
-    <!--			<dependency type="vc-support" name="cvs"/>-->
-    <!--			<dependency type="vc-support" name="subversion"/>-->
-    <!--			<dependency type="module-support" name="lib"/>-->
-    <!--			<dependency type="module-support" name="source"/>-->
-    <!--		</dependencies>-->
+		<help/>
 
-    <help>
-      This command adds a module to a version control system and optionally includes the module in the active
-      manifest.
-    </help>
+	</command>
 
-  </command>
+	<command name="view-manifest" alias="vm">
 
-  <command name="promote-module" alias="pm">
+		<description lang="en">
+			Views the active manifest.
+		</description>
 
-    <description lang="en">
-      Promotes a module to the next version.
-    </description>
+		<options/>
 
-    <options>
-      <option opt="m" longOpt="module" required="true" description="The module name">
-        <arg name="module-name"/>
-      </option>
-    </options>
+		<classname>nl.toolforge.karma.cli.cmd.ViewManifestImpl</classname>
 
-    <classname>nl.toolforge.karma.core.cmd.impl.PromoteCommand</classname>
+		<help>
+			This command shows the status of the current manifest.
+		</help>
 
-    <!--		<dependencies>-->
-    <!--			<dependency type="vc-support" name="cvs"/>-->
-    <!--			<dependency type="vc-support" name="subversion"/>-->
-    <!--			<dependency type="module-support" name="lib"/>-->
-    <!--			<dependency type="module-support" name="source"/>-->
-    <!--		</dependencies>-->
+	</command>
 
-    <help/>
+	<command name="create-module" alias="cm">
 
-  </command>
+		<description lang="en">
+			Creates a module (optionally includes it in the manifest as well).
+		</description>
 
-  <command name="select-manifest" alias="slm">
+		<options>
+			<option opt="m" longOpt="module" required="true" description="The module name">
+				<arg name="module-name"/>
+			</option>
+			<option opt="l" longOpt="location" required="true" description="The location alias">
+				<arg name="location-alias"/>
+			</option>
+			<!--      <option opt="t" longOpt="type" required="false" description="The module type">-->
+			<!--        <arg name="module-type"/>-->
+			<!--      </option>-->
+			<option opt="i" longOpt="include" required="false" description="Include the module in the manifest"/>
+		</options>
 
-    <description lang="en">
-      The select-manifest command activates a manifest by reading it from disk and loading it into Karma.
-    </description>
+		<classname>nl.toolforge.karma.core.cmd.impl.CreateModuleCommand</classname>
 
-    <options>
-      <option opt="m" longOpt="manifest" required="true" description="The manifest name">
-        <arg name="manifest-name"/>
-      </option>
-    </options>
+		<!--		<dependencies>-->
+		<!--			<dependency type="vc-support" name="cvs"/>-->
+		<!--			<dependency type="vc-support" name="subversion"/>-->
+		<!--			<dependency type="module-support" name="lib"/>-->
+		<!--			<dependency type="module-support" name="source"/>-->
+		<!--		</dependencies>-->
 
-    <classname>nl.toolforge.karma.cli.cmd.SelectManifestImpl</classname>
+		<help>
+			This command adds a module to a version control system and optionally includes the module in the active
+			manifest.
+		</help>
 
-    <!--		<dependencies>-->
-    <!--			<dependency type="vc-support" name="cvs"/>-->
-    <!--			<dependency type="vc-support" name="subversion"/>-->
-    <!--			<dependency type="module-support" name="lib"/>-->
-    <!--			<dependency type="module-support" name="source"/>-->
-    <!--		</dependencies>-->
+	</command>
 
-    <help/>
+	<command name="promote-module" alias="pm">
 
-  </command>
+		<description lang="en">
+			Promotes a module to the next version.
+		</description>
 
-  <command name="update-module" alias="upd">
+		<options>
+			<option opt="m" longOpt="module" required="true" description="The module name">
+				<arg name="module-name"/>
+			</option>
+		</options>
 
-    <description lang="en">
-      The update command updates a module from a version control system.
-    </description>
-    <description lang="nl">
-      Het update commando doet een update op een module vanuit een versie beheer systeem.
-    </description>
+		<classname>nl.toolforge.karma.core.cmd.impl.PromoteCommand</classname>
 
-    <options>
-      <option opt="m" longOpt="module-name" required="true" description="The module name that should be updated">
-        <arg name="module-name"/>
-      </option>
-    </options>
+		<!--		<dependencies>-->
+		<!--			<dependency type="vc-support" name="cvs"/>-->
+		<!--			<dependency type="vc-support" name="subversion"/>-->
+		<!--			<dependency type="module-support" name="lib"/>-->
+		<!--			<dependency type="module-support" name="source"/>-->
+		<!--		</dependencies>-->
 
-    <classname>nl.toolforge.karma.cli.cmd.UpdateModuleImpl</classname>
+		<help/>
 
-    <!--		<dependencies>-->
-    <!--			<dependency type="vc-support" name="cvs"/>-->
-    <!--			<dependency type="vc-support" name="subversion"/>-->
-    <!--			<dependency type="module-support" name="lib"/>-->
-    <!--			<dependency type="module-support" name="source"/>-->
-    <!--		</dependencies>-->
+	</command>
 
-    <help/>
+	<command name="select-manifest" alias="slm">
 
-  </command>
+		<description lang="en">
+			The select-manifest command activates a manifest by reading it from disk and loading it into Karma.
+		</description>
 
-  <command name="show-manifest" alias="sm">
+		<options>
+			<option opt="m" longOpt="manifest" required="true" description="The manifest name">
+				<arg name="manifest-name"/>
+			</option>
+		</options>
 
-    <description lang="en">
-      The show-manifest command shows the contents of the manifest.
-    </description>
+		<classname>nl.toolforge.karma.cli.cmd.SelectManifestImpl</classname>
 
-    <options>
-      <option opt="m" longOpt="manifest" required="true" description="The manifest name">
-        <arg name="manifest-name"/>
-      </option>
-    </options>
+		<!--		<dependencies>-->
+		<!--			<dependency type="vc-support" name="cvs"/>-->
+		<!--			<dependency type="vc-support" name="subversion"/>-->
+		<!--			<dependency type="module-support" name="lib"/>-->
+		<!--			<dependency type="module-support" name="source"/>-->
+		<!--		</dependencies>-->
 
-    <classname>nl.toolforge.karma.core.cmd.impl.CommandFaker</classname>
+		<help/>
 
-    <dependencies/>
+	</command>
 
-    <help>
-      There is a central repository (generally maintained in a version control system), which contains all the
-      available manifests. This repository is configured in the builder.properties file. There
-      can be only one such a repository configured in the builder. With the update-manifests command manifests
-      are downloaded from the manifest repository and put on the local file system. The list-manifests command
-      lists these local manifests. Only these manifests are available for the Karma runtime.
-    </help>
+	<command name="update-module" alias="upd">
 
-  </command>
+		<description lang="en">
+			The update command updates a module from a version control system.
+		</description>
+		<description lang="nl">
+			Het update commando doet een update op een module vanuit een versie beheer systeem.
+		</description>
 
-  <command name="list-manifests" alias="lm">
+		<options>
+			<option opt="m" longOpt="module-name" required="true" description="The module name that should be updated">
+				<arg name="module-name"/>
+			</option>
+		</options>
 
-    <description>
-      The list-manifests command shows all manifests.
-    </description>
+		<classname>nl.toolforge.karma.cli.cmd.UpdateModuleImpl</classname>
 
-    <options/>
+		<!--		<dependencies>-->
+		<!--			<dependency type="vc-support" name="cvs"/>-->
+		<!--			<dependency type="vc-support" name="subversion"/>-->
+		<!--			<dependency type="module-support" name="lib"/>-->
+		<!--			<dependency type="module-support" name="source"/>-->
+		<!--		</dependencies>-->
 
-    <classname>nl.toolforge.karma.core.cmd.impl.CommandFaker</classname>
+		<help/>
 
-    <dependencies/>
+	</command>
 
-    <help>
-      There is a central repository (generally maintained in a version control system), which contains all the
-      available manifests. This repository is configured in the builder.properties file. There
-      can be only one such a repository configured in the builder. With the update-manifests command manifests
-      are downloaded from the manifest repository and put on the local file system. The list-manifests command
-      lists these local manifests. Only these manifests are available for the Karma runtime.
-    </help>
+	<command name="show-manifest" alias="sm">
 
-  </command>
+		<description lang="en">
+			The show-manifest command shows the contents of the manifest.
+		</description>
+
+		<options>
+			<option opt="m" longOpt="manifest" required="true" description="The manifest name">
+				<arg name="manifest-name"/>
+			</option>
+		</options>
+
+		<classname>nl.toolforge.karma.core.cmd.impl.CommandFaker</classname>
+
+		<dependencies/>
+
+		<help>
+			There is a central repository (generally maintained in a version control system), which contains all the
+			available manifests. This repository is configured in the builder.properties file. There
+			can be only one such a repository configured in the builder. With the update-manifests command manifests
+			are downloaded from the manifest repository and put on the local file system. The list-manifests command
+			lists these local manifests. Only these manifests are available for the Karma runtime.
+		</help>
+
+	</command>
+
+	<command name="list-manifests" alias="lm">
+
+		<description>
+			The list-manifests command shows all manifests.
+		</description>
+
+		<options/>
+
+		<classname>nl.toolforge.karma.core.cmd.impl.CommandFaker</classname>
+
+		<dependencies/>
+
+		<help>
+			There is a central repository (generally maintained in a version control system), which contains all the
+			available manifests. This repository is configured in the builder.properties file. There
+			can be only one such a repository configured in the builder. With the update-manifests command manifests
+			are downloaded from the manifest repository and put on the local file system. The list-manifests command
+			lists these local manifests. Only these manifests are available for the Karma runtime.
+		</help>
+
+	</command>
 
 </commands>
 
