@@ -48,7 +48,7 @@ public class CLI {
       LocalEnvironment env = LocalEnvironment.getInstance();
 
       ctx = new CommandContext();
-			ctx.init(env);
+			ctx.init(env, new CLICommandResponseHandler(writer));
 
 			Manifest currentManifest = ctx.getCurrent();
 			if (currentManifest != null) {
