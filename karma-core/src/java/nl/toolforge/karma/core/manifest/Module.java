@@ -23,6 +23,28 @@ public interface Module {
   public static final State DYNAMIC = new State("DYNAMIC");
   public static final State STATIC = new State("STATIC");
 
+  /**
+   * <p>Modules that contain application server specific configuration, must have this prefix.
+   *
+   * <p>Check the Karma User Manual for background information about this type of module.
+   */
+  public static final String CONFIG_APPSERVER_PREFIX = "config-appserver";
+
+  /**
+   * <p>Modules that contain application server software (or the applicatin server as a whole), must have this prefix.
+   *
+   * <p>Check the Karma User Manual for background information about this type of module.
+   */
+  public static final String APPSERVER_PREFIX = "appserver";
+
+  /**
+   * <p>Modules containing a web application (resulting in the creation of a web application archive - WAR -, must have
+   * this prefix. Webapp-modules have specific requirements wrt to their internal structure. The 
+   *
+   * <p>Check the Karma User Manual for background information about this type of module.
+   */
+  public static final String WEBAPP_PREFIX = "webapp";
+
 	/**
    * Retrieves a modules' name, the <code>name</code> attribute of the module in the manifest XML file.
    *
@@ -52,12 +74,6 @@ public interface Module {
    * @return
    */
   public String getStateAsString();
-
-//  /**
-//   * Iets met artifact-name.
-//   * @return
-//   */
-//  public String getDependencyName();
 
   /**
    * <p>Inner class representing the 'state' of a module. Three states exist at the moment : <code>WORKING</code>,
