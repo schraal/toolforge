@@ -46,8 +46,7 @@ public class UpdateModuleCommand extends DefaultCommand {
 
     super(descriptor);
 
-    // todo CVSResponseAdapter ???????
-    response = new CVSResponseAdapter();
+    response = new ActionCommandResponse();
   }
 
   /**
@@ -79,9 +78,9 @@ public class UpdateModuleCommand extends DefaultCommand {
       runner.setCommandResponse(response);
 
       if (getContext().getCurrent().isLocal(module)) {
-        response = runner.update(module, version);
+        runner.update(module, version);
       } else {
-        response = runner.checkout(module, version);
+        runner.checkout(module, version);
       }
 
       // todo message to be internationalized.

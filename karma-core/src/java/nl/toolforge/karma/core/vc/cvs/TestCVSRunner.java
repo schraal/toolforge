@@ -51,9 +51,9 @@ public class TestCVSRunner extends LocalCVSInitializer {
       Module module =
         new SourceModule(new SourceModuleDescriptor(DEFAULT_MODULE_1, getTestLocation()), getDevelopmentHome());
 
-      CommandResponse response = runner.add(module, getTestFileName());
-
-      assertTrue(response.hasStatus(CVSResponseAdapter.FILE_ADDED_OK));
+      runner.add(module, getTestFileName());
+fail();
+//      assertTrue(response.hasStatus(CVSResponseAdapter.FILE_ADDED_OK));
 
     } catch (KarmaException e) {
       fail(e.getMessage());
@@ -83,7 +83,7 @@ public class TestCVSRunner extends LocalCVSInitializer {
       Module module =
         new SourceModule(new SourceModuleDescriptor(DEFAULT_MODULE_1, getTestLocation()), getDevelopmentHome());
 
-      response = runner.update(module, new Version("99-99"));
+      runner.update(module, new Version("99-99"));
 
       fail("Excepted a CVSException.");
 
@@ -123,7 +123,7 @@ public class TestCVSRunner extends LocalCVSInitializer {
       Module module =
         new SourceModule(new SourceModuleDescriptor(DEFAULT_MODULE_1, getTestLocation()), getDevelopmentHome());
 
-      response = runner.update(module, new Version("0-1")); // On the mainline (HEAD)
+      runner.update(module, new Version("0-1")); // On the mainline (HEAD)
 
       assertTrue(response.hasStatus(CVSResponseAdapter.MODULE_UPDATED_OK));
 

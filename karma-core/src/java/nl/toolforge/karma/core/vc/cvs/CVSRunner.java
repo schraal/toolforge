@@ -19,6 +19,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.Client;
+import org.netbeans.lib.cvsclient.event.CVSListener;
+import org.netbeans.lib.cvsclient.commandLine.BasicListener;
 import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
 import org.netbeans.lib.cvsclient.command.CommandException;
 import org.netbeans.lib.cvsclient.command.GlobalOptions;
@@ -55,7 +57,7 @@ public final class CVSRunner implements Runner {
 		System.setProperty("javacvs.multiple_commands_warning", "false");
 	}
 
-  private CVSResponseAdapter listener = null; // The listener that receives events from this runner.
+  private CVSListener listener = null; // The listener that receives events from this runner.
 //  private CommandResponse commandResponse = null;
 
 	private static Log logger = LogFactory.getLog(CVSRunner.class);
@@ -98,7 +100,7 @@ public final class CVSRunner implements Runner {
 //    if (listener == null) {
 //      throw new IllegalArgumentException("A CVSRunner requires a non-null listener.");
 //    }
-    this.listener = new CVSResponseAdapter();
+    this.listener = new BasicListener();
 
 		logger.debug("CVSRunner using CVSROOT : " + cvsLocation.toString());
 		globalOptions.setCVSRoot(cvsLocation.getCVSRootAsString());
@@ -118,7 +120,7 @@ public final class CVSRunner implements Runner {
    * @param response A - possibly <code>null</code> response instance.
    */
   public void setCommandResponse(CommandResponse response) {
-    listener = (CVSResponseAdapter) response;
+    listener = new CVSResponseAdapter(response);
   }
 
   /**
@@ -134,11 +136,10 @@ public final class CVSRunner implements Runner {
 	 * <p>After creation, the module is available with the initial version <code>0-0</code>.
 	 *
 	 * @param module The module to be created.
-	 * @return The result of the create command, wrapped in a <code>CommandResponse</code> object.
 	 * @throws CVSException Errorcode <code>MODULE_EXISTS_IN_REPOSITORY</code>, when the module already exists on the
 	 *                      location as specified by the module.
 	 */
-	public CommandResponse create(Module module) throws CVSException {
+	public void create(Module module) throws CVSException {
 
 		// TODO the initial version should also be made configurable, together with the patterns for modulenames et al.
 
@@ -168,7 +169,8 @@ public final class CVSRunner implements Runner {
 			throw new KarmaRuntimeException("Panic! Failed to create temporary directory for module " + module.getName());
 		}
 
-		CVSResponseAdapter adapter = executeOnCVS(importCommand, moduleDirectory); // Use module as context directory
+//		CVSResponseAdapter adapter = executeOnCVS(importCommand, moduleDirectory); // Use module as context directory
+		executeOnCVS(importCommand, moduleDirectory); // Use module as context directory
 
 		// Remove the temporary structure.
 		//
@@ -206,9 +208,9 @@ public final class CVSRunner implements Runner {
 			e.printStackTrace();
 		}
 
-    listener.finalizeTransaction(); // Mark the end of the 'transaction'
+//    listener.finalizeTransaction(); // Mark the end of the 'transaction'
 
-		return adapter;
+//		return adapter;
 	}
 
 	/**
@@ -217,13 +219,12 @@ public final class CVSRunner implements Runner {
 	 *
 	 * @param module  The module to check out.
 	 * @param version The version number for the module to check out.
-	 * @return The CVS response wrapped in a <code>CommandResponse</code>.
 	 * @throws CVSException With errorcodes <code>NO_SUCH_MODULE_IN_REPOSITORY</code> when the module does not exist
 	 *                      in the repository and <code>INVALID_SYMBOLIC_NAME</code>, when the version does not exists for the module.
 	 */
-	public CommandResponse checkout(Module module, Version version) throws CVSException {
+	public void checkout(Module module, Version version) throws CVSException {
 
-		return checkout(module, version, getBasePoint());
+		checkout(module, version, getBasePoint());
 	}
 
 	/**
@@ -231,25 +232,24 @@ public final class CVSRunner implements Runner {
 	 * to the HEAD of the development branch at hand.
 	 *
 	 * @param module The module to check out.
-	 * @return The CVS response wrapped in a <code>CommandResponse</code>.
 	 * @throws CVSException With errorcodes <code>NO_SUCH_MODULE_IN_REPOSITORY</code> when the module does not exist
 	 *                      in the repository and <code>INVALID_SYMBOLIC_NAME</code>, when the version does not exists for the module.
 	 */
-	public CommandResponse checkout(Module module) throws CVSException {
-		return checkout(module, null, getBasePoint());
+	public void checkout(Module module) throws CVSException {
+		checkout(module, null, getBasePoint());
 	}
 
 	//
 	// For the time being, private
 	//
-	private CommandResponse checkout(Module module, File basePoint) throws CVSException {
-		return checkout(module, null, basePoint);
+	private void checkout(Module module, File basePoint) throws CVSException {
+		checkout(module, null, basePoint);
 	}
 
 	//
 	// For the time being, private
 	//
-	private CommandResponse checkout(Module module, Version version, File basePoint) throws CVSException {
+	private void checkout(Module module, Version version, File basePoint) throws CVSException {
 
 		CheckoutCommand checkoutCommand = new CheckoutCommand();
 		checkoutCommand.setModule(module.getName());
@@ -258,18 +258,19 @@ public final class CVSRunner implements Runner {
 			checkoutCommand.setCheckoutByRevision(Utils.createSymbolicName(module, version).getSymbolicName());
 		}
 
-		CVSResponseAdapter adapter = executeOnCVS(checkoutCommand, basePoint);
+//		CVSResponseAdapter adapter = executeOnCVS(checkoutCommand, basePoint);
+		executeOnCVS(checkoutCommand, basePoint);
 
-		if (adapter.hasStatus(CVSResponseAdapter.MODULE_NOT_FOUND)) {
-			throw new CVSException(CVSException.NO_SUCH_MODULE_IN_REPOSITORY, new Object[]{module.getName(), module.getLocation().getId()});
-		}
-		if (adapter.hasStatus(CVSResponseAdapter.INVALID_SYMBOLIC_NAME)) {
-			throw new CVSException(CVSException.INVALID_SYMBOLIC_NAME);
-		}
-
-    listener.finalizeTransaction();
-
-		return adapter;
+//		if (adapter.hasStatus(CVSResponseAdapter.MODULE_NOT_FOUND)) {
+//			throw new CVSException(CVSException.NO_SUCH_MODULE_IN_REPOSITORY, new Object[]{module.getName(), module.getLocation().getId()});
+//		}
+//		if (adapter.hasStatus(CVSResponseAdapter.INVALID_SYMBOLIC_NAME)) {
+//			throw new CVSException(CVSException.INVALID_SYMBOLIC_NAME);
+//		}
+//
+//    listener.finalizeTransaction();
+//
+//		return adapter;
 	}
 
 	/**
@@ -277,17 +278,16 @@ public final class CVSRunner implements Runner {
 	 *
 	 * @param module  The module that should be updated.
 	 * @param version The version of the module or <code>null</code> when no specific version applies.
-	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
 	 */
-	public CommandResponse update(Module module, Version version) throws CVSException {
-		return update(module, version, basePoint);
+	public void update(Module module, Version version) throws CVSException {
+		update(module, version, basePoint);
 	}
 
-	public CommandResponse update(Module module) throws CVSException {
-		return update(module, null, basePoint);
+	public void update(Module module) throws CVSException {
+		update(module, null, basePoint);
 	}
 
-	private CommandResponse update(Module module, Version version, File basePoint) throws CVSException {
+	private void update(Module module, Version version, File basePoint) throws CVSException {
 
 		UpdateCommand updateCommand = new UpdateCommand();
 		updateCommand.setRecursive(true);
@@ -297,27 +297,26 @@ public final class CVSRunner implements Runner {
 			updateCommand.setUpdateByRevision(Utils.createSymbolicName(module, version).getSymbolicName());
 		}
 
-		CVSResponseAdapter adapter = executeOnCVS(updateCommand, new File(basePoint, module.getName()));
+		executeOnCVS(updateCommand, new File(basePoint, module.getName()));
 
-		if (adapter.hasStatus(CVSResponseAdapter.SYMBOLIC_NAME_NOT_FOUND)) {
-			throw new CVSException(CVSException.VERSION_NOT_FOUND, new Object[]{version.getVersionNumber(), module.getName()});
-		}
-		if (adapter.hasStatus(CVSResponseAdapter.INVALID_SYMBOLIC_NAME)) {
-			throw new CVSException(CVSException.INVALID_SYMBOLIC_NAME);
-		}
-
-    listener.finalizeTransaction();
-
-		return adapter;
+//		if (adapter.hasStatus(CVSResponseAdapter.SYMBOLIC_NAME_NOT_FOUND)) {
+//			throw new CVSException(CVSException.VERSION_NOT_FOUND, new Object[]{version.getVersionNumber(), module.getName()});
+//		}
+//		if (adapter.hasStatus(CVSResponseAdapter.INVALID_SYMBOLIC_NAME)) {
+//			throw new CVSException(CVSException.INVALID_SYMBOLIC_NAME);
+//		}
+//
+//    listener.finalizeTransaction();
+//
+//		return adapter;
 	}
 
 	/**
 	 * For a module, the <code>cvs commit -m &lt;commitMessage&gt;</code>command is executed.
 	 *
-	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
 	 */
-	public CommandResponse commit(ManagedFile file, String message) throws CVSException {
-		return null;
+	public void commit(ManagedFile file, String message) throws CVSException {
+//		null;
 	}
 
 	/**
@@ -326,13 +325,12 @@ public final class CVSRunner implements Runner {
 	 * @param module   The module that contains the file.
 	 * @param fileName The fileName to add, relative to <code>contextDirectory</code>, which was set when instantiating
 	 *                 this runner.
-	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
 	 */
-	public CommandResponse add(Module module, String fileName) throws CVSException {
-		return add(module, fileName, getBasePoint());
+	public void add(Module module, String fileName) throws CVSException {
+		add(module, fileName, getBasePoint());
 	}
 
-	private CommandResponse add(Module module, String fileName, File basePoint) throws CVSException {
+	private void add(Module module, String fileName, File basePoint) throws CVSException {
 
 		// Step 1 : Add the file to the CVS repository
 		//
@@ -363,15 +361,16 @@ public final class CVSRunner implements Runner {
 		commitCommand.setFiles(new File[]{fileToAdd});
 		commitCommand.setMessage("File added automatically by Karma.");
 
-		CVSResponseAdapter adapter = executeOnCVS(commitCommand, new File(basePoint, module.getName()));
+//		CVSResponseAdapter adapter = executeOnCVS(commitCommand, new File(basePoint, module.getName()));
+		executeOnCVS(commitCommand, new File(basePoint, module.getName()));
 
-    listener.finalizeTransaction();
+//    listener.finalizeTransaction();
 
-		if (adapter.hasStatus(CVSResponseAdapter.FILE_EXISTS)) {
-			throw new CVSException(CVSException.FILE_EXISTS_IN_REPOSITORY, new Object[]{module.getName(), module.getLocation().getId()});
-		}
-
-		return adapter;
+//		if (adapter.hasStatus(CVSResponseAdapter.FILE_EXISTS)) {
+//			throw new CVSException(CVSException.FILE_EXISTS_IN_REPOSITORY, new Object[]{module.getName(), module.getLocation().getId()});
+//		}
+//
+//		return adapter;
 	}
 
 	/**
@@ -379,14 +378,13 @@ public final class CVSRunner implements Runner {
 	 *
 	 * @param module  The module. Will be committed recursively.
 	 * @param message A commit message.
-	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
 	 */
-	public CommandResponse commit(Module module, String message) throws CVSException {
+	public void commit(Module module, String message) throws CVSException {
 
-		return commit(module, message, getBasePoint());
+		commit(module, message, getBasePoint());
 	}
 
-	private CommandResponse commit(Module module, String message, File basePoint) throws CVSException {
+	private void commit(Module module, String message, File basePoint) throws CVSException {
 
 		CommitCommand commitCommand = new CommitCommand();
 
@@ -394,45 +392,47 @@ public final class CVSRunner implements Runner {
 		commitCommand.setRecursive(true);
 		commitCommand.setMessage(message);
 
-		CVSResponseAdapter adapter = executeOnCVS(commitCommand, basePoint);
+//		CVSResponseAdapter adapter = executeOnCVS(commitCommand, basePoint);
+		executeOnCVS(commitCommand, basePoint);
 
-		return adapter;
+//		return adapter;
 	}
 
 
-	public CommandResponse branch(Module module, SymbolicName branch) throws CVSException {
-		return null;
+	public void branch(Module module, SymbolicName branch) throws CVSException {
+//		return null;
 	}
 
-	public CommandResponse tag(Module module, SymbolicName tag) throws CVSException {
-		return tag(tag, new File(getBasePoint(), module.getName()));
+	public void tag(Module module, SymbolicName tag) throws CVSException {
+		tag(tag, new File(getBasePoint(), module.getName()));
 	}
 
-	public CommandResponse tag(Module module, Version version) throws CVSException {
-		return tag(module, version, new File(getBasePoint(), module.getName()));
+	public void tag(Module module, Version version) throws CVSException {
+		tag(module, version, new File(getBasePoint(), module.getName()));
 	}
 
-	private CommandResponse tag(Module module, Version version, File basePoint) throws CVSException {
+	private void tag(Module module, Version version, File basePoint) throws CVSException {
 		if (hasVersion(module, version)) {
 			throw new CVSException(VersionControlException.DUPLICATE_VERSION, new Object[]{module.getName(), version.getVersionNumber()});
 		}
-		return tag(Utils.createSymbolicName(module, version), basePoint);
+		tag(Utils.createSymbolicName(module, version), basePoint);
 	}
 
 	//
 	// Private for the time being
 	//
-	private CommandResponse tag(SymbolicName symbolicName, File basePoint) throws CVSException {
+	private void tag(SymbolicName symbolicName, File basePoint) throws CVSException {
 
 		TagCommand tagCommand = new TagCommand();
 		tagCommand.setRecursive(true);
 		tagCommand.setTag(symbolicName.getSymbolicName());
 
-		CVSResponseAdapter adapter = executeOnCVS(tagCommand, basePoint);
+//		CVSResponseAdapter adapter = executeOnCVS(tagCommand, basePoint);
+		executeOnCVS(tagCommand, basePoint);
 
-    listener.finalizeTransaction();
-
-		return adapter;
+//    listener.finalizeTransaction();
+//
+//		return adapter;
 	}
 
 	/**
@@ -440,7 +440,7 @@ public final class CVSRunner implements Runner {
 	 */
 	public LogInformation log(Module module) throws CVSException {
 
-		CVSResponseAdapter adapter = null;
+//		CVSResponseAdapter adapter = null;
 
 		if (module instanceof SourceModule) {
 			try {
@@ -457,11 +457,12 @@ public final class CVSRunner implements Runner {
 				CheckoutCommand checkoutCommand = new CheckoutCommand();
 				checkoutCommand.setModule(module.getName() + "/" + SourceModule.MODULE_INFO);
 
-				adapter = executeOnCVS(checkoutCommand, tmp);
+//				adapter = executeOnCVS(checkoutCommand, tmp);
+				executeOnCVS(checkoutCommand, tmp);
 
-				if (adapter.hasStatus(CVSResponseAdapter.MODULE_NOT_FOUND)) {
-					throw new CVSException(VersionControlException.FILE_NOT_FOUND);
-				}
+//				if (adapter.hasStatus(CVSResponseAdapter.MODULE_NOT_FOUND)) {
+//					throw new CVSException(VersionControlException.FILE_NOT_FOUND);
+//				}
 
 				LogCommand logCommand = new LogCommand();
 
@@ -471,7 +472,8 @@ public final class CVSRunner implements Runner {
 				File moduleInfo = new File(new File(tmp, module.getName()), SourceModule.MODULE_INFO);
 				logCommand.setFiles(new File[]{moduleInfo});
 
-				adapter = executeOnCVS(logCommand, new File(tmp, module.getName()));
+//				adapter = executeOnCVS(logCommand, new File(tmp, module.getName()));
+				executeOnCVS(logCommand, new File(tmp, module.getName()));
 
 				try {
 					FileUtils.deleteDirectory(tmp);
@@ -479,7 +481,7 @@ public final class CVSRunner implements Runner {
 					e.printStackTrace();
 				}
 
-				return adapter.getLogInformation();
+				return ((CVSResponseAdapter) this.listener).getLogInformation();
 
 			} catch (KarmaException k) {
 				throw new CVSException(k.getErrorCode());
@@ -553,9 +555,8 @@ public final class CVSRunner implements Runner {
 	 *
 	 * @param command          A command object, representing the CVS command.
 	 * @param contextDirectory The directory from where the command should be run.
-	 * @return The response from the CVS command, wrapped in a nice little object, which can be queried for results.
 	 */
-	private CVSResponseAdapter executeOnCVS(org.netbeans.lib.cvsclient.command.Command command,
+	private void executeOnCVS(org.netbeans.lib.cvsclient.command.Command command,
 																					File contextDirectory) throws CVSException {
 
 		Client client = new Client(getConnection(), new StandardAdminHandler());
@@ -567,7 +568,7 @@ public final class CVSRunner implements Runner {
 
     // Reset status info on the listener.
     //
-    listener.clearStatus();
+//    listener.clearStatus();
 
 		try {
 			// A CVSResponseAdapter is registered as a listener for the response from CVS. This one adapts to Karma
@@ -580,11 +581,13 @@ public final class CVSRunner implements Runner {
 			//
 			client.getConnection().close();
 
-			return listener;
+//			return listener;
 
 		} catch (IOException e) {
+      e.printStackTrace();
 			throw new CVSException(CVSException.INTERNAL_ERROR);
 		} catch (CommandException e) {
+      e.printStackTrace();
 			throw new CVSException(CVSException.INTERNAL_ERROR);
 		} catch (AuthenticationException e) {
 			throw new CVSException(CVSException.AUTHENTICATION_ERROR, new Object[]{client.getConnection()});

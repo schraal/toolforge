@@ -27,54 +27,54 @@ public final class SubversionRunner implements Runner {
     
   }
 
-  public CommandResponse create(Module module) {
-		return null;
+  public void create(Module module) {
+//		return null;
 	}
 
-	public CommandResponse add(Module module, String fileName) throws SVNException {
-		return null;
+	public void add(Module module, String fileName) throws SVNException {
+//		return null;
 	}
 
 	public CommandResponse execute(Command command) {
 		return null;
 	}
 
-	public CommandResponse checkout(Module module) throws VersionControlException {
-		return checkout(module, null);
+	public void checkout(Module module) throws VersionControlException {
+//		return checkout(module, null);
 	}
 	//  public CommandResponse checkout(Module module) throws SVNException {
 //    return checkout(module, null);
 //  }
 
-	public CommandResponse checkout(Module module, Version version) throws SVNException {
-		return null;
+	public void checkout(Module module, Version version) throws SVNException {
+//		return null;
 	}
 
-	public CommandResponse update(Module module) throws SVNException {
-		return update(module, null);
+	public void update(Module module) throws SVNException {
+//		return update(module, null);
 	}
 
-	public CommandResponse update(Module module, Version version) throws SVNException {
-		return null;
+	public void update(Module module, Version version) throws SVNException {
+//		return null;
 	}
 
-	public CommandResponse commit(ManagedFile file, String message) {
-		return null;
+	public void commit(ManagedFile file, String message) {
+//		return null;
 	}
 
-	public CommandResponse commit(Module module, String message) {
-		return null;
+	public void commit(Module module, String message) {
+//		return null;
 	}
 
-	public CommandResponse branch(Module module, SymbolicName branch) {
-		return null;
+	public void branch(Module module, SymbolicName branch) {
+//		return null;
 	}
 
-	public CommandResponse tag(Module module, SymbolicName tag) {
-		return null;
+	public void tag(Module module, SymbolicName tag) {
+//		return null;
 	}
 
-	public CommandResponse tag(Module module, Version version) {
-		return null;
+	public void tag(Module module, Version version) {
+//		return null;
 	}
 }

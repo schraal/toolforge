@@ -27,7 +27,7 @@ public class UpdateAllModulesImpl extends UpdateAllModulesCommand {
 
     super.execute();
 
-		CommandResponse response = new ActionCommandResponse();
+		CommandResponse response = super.getCommandResponse();
 		response.addMessage(new SimpleCommandMessage(getFrontendMessages().getString("message.MODULES_UPDATED")));
   }
 

@@ -2,6 +2,7 @@ package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
+import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -70,8 +71,7 @@ public abstract class CommandResponse {
    */
 	public void addMessage(CommandMessage message) {
     commandMessages.add(message);
-//todo
-    listener.commandHeartBeat();
+    listener.commandResponseChanged(new CommandResponseEvent(message.getMessageText()));
   }
 
 
