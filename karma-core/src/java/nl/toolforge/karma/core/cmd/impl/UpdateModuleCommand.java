@@ -78,7 +78,7 @@ public class UpdateModuleCommand extends DefaultCommand {
    * the module is already present, otherwise a checkout will be performed. The checkout directory for the module
    * is relative to the root directory of the <code>active</code> manifest.
    */
-  public void execute() throws CommandException {
+  public synchronized void execute() throws CommandException {
 
     String moduleName = "";
     Module module = null;

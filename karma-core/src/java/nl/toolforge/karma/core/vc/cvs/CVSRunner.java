@@ -552,7 +552,7 @@ public final class CVSRunner implements Runner {
       try {
         FileUtils.deleteDirectory(tmp);
       } catch (IOException e) {
-        e.printStackTrace();
+        throw new KarmaRuntimeException(e.getMessage());
       }
     }
 
@@ -632,14 +632,14 @@ public final class CVSRunner implements Runner {
       try {
         FileUtils.deleteDirectory(tmp);
       } catch (IOException e) {
-        e.printStackTrace();
+        throw new KarmaRuntimeException(e);
       }
       return true;
     } else {
       try {
         FileUtils.deleteDirectory(tmp);
       } catch (IOException e) {
-        e.printStackTrace();
+        throw new KarmaRuntimeException(e);
       }
       return false;
     }
@@ -697,7 +697,6 @@ public final class CVSRunner implements Runner {
       client.executeCommand(command, globalOptions);
 
     } catch (CommandException e) {
-//      e.printStackTrace();
       logger.debug(e);
       // Trick to get a hold of the exception we threw in the CVSResponseAdapter.
       //

@@ -19,12 +19,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.cli;
 
 import nl.toolforge.karma.cli.cmd.CLICommandResponseHandler;
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.bundle.BundleCache;
 import nl.toolforge.karma.core.cmd.CommandContext;
 import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.CommandFactory;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
@@ -37,14 +36,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.MessageFormat;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 
 /**
  * <p>The <code>CLI</code> is the command-line interface for Karma. The class presents a simple-to-use command-line
  * terminal, where developers can type in their commands and if you're lucky, stuff works.
- *
- * <p>See {@link nl.toolforge.karma.core.LocalEnvironment} for a description of how to configure the logging
- * environment for your <strong>Karma</strong> runtime environment.
  *
  * @author D.A. Smedes
  *
@@ -92,49 +90,111 @@ public class CLI {
       }
     });
 
+    String workingContext = null;
+
+    try {
+      workingContext = args[0];
+    } catch (IndexOutOfBoundsException i) {
+      workingContext = null;
+    }
+
     ConsoleWriter writer = new ConsoleWriter(true);
 
     // Initialize the command context
     //
-    CommandContext ctx = null;
+    CommandContext commandContext = null;
+
+    writer.writeln(
+        "********************\n" +
+        "Welcome to Karma !!!\n" +
+        "********************\n");
+
+    if (workingContext == null) {
+      writer.writeln("Loading `default` working context ...\n");
+    } else {
+      writer.writeln("Loading `" + workingContext + "` working context ...\n");
+    }
+
+    WorkingContext context = new WorkingContext(workingContext);
+    Collection invalid = context.getInvalidConfiguration();
+
+    if (invalid.size() > 0) {
+      writer.writeln("Configuration for working context `" + context.getName() + "` incomplete !\n");
+    } else {
+      writer.writeln("Configuration for working context `" + context.getName() + "` complete !\n");
+    }
+
+    while (invalid.size() > 0) {
+
+      // Warning, modifies the configuration ...
+      //
+      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+      Iterator i = invalid.iterator();
+
+      while (i.hasNext()) {
+
+        WorkingContext.ConfigurationItem key = (WorkingContext.ConfigurationItem) i.next();
+
+        if (key.getDefaultValue() == null) {
+          System.out.print(key.getLabel() + " : ");
+        } else {
+          System.out.print(key.getLabel() + " (" + key.getDefaultValue() + ") : ");
+        }
+
+        String value = null;
+        try {
+          value = reader.readLine().trim();
+        } catch (IOException e) {
+          // todo moet anders ........
+          //
+          e.printStackTrace();
+        }
+
+        if (value == null || "".equals(value)) {
+          value = (key.getDefaultValue() == null ? "" : key.getDefaultValue());
+        }
+        context.getConfiguration().setProperty(key.getProperty(), value);
+      }
+
+      invalid =  context.getInvalidConfiguration();
+    }
+
     try {
-      LocalEnvironment.initialize();
+      context.storeConfiguration();
+    } catch (IOException e) {
+      logger.error(e.getMessage(), e);
+      throw new KarmaRuntimeException(e.getMessage());
+    }
 
-      ctx = new CommandContext();
-      try {
-        ctx.init(new CLICommandResponseHandler(writer));
-      } catch (LocationException e) {
-        writer.writeln(e.getErrorMessage());
-        logger.error(e.getMessage(), e);
-      } catch (ManifestException e) {
-        writer.writeln(e.getErrorMessage());
-        logger.warn(e.getMessage(), e);
-      }
+    writer.writeln("Starting up ...\n");
 
-      Manifest currentManifest = ctx.getCurrentManifest();
-      if (currentManifest != null) {
-        ConsoleConfiguration.setManifest(currentManifest);
+    //
+    //
 
-        writer.writeln(new MessageFormat(FRONTEND_MESSAGES.getString("message.MANIFEST_RESTORED")).format(new Object[]{currentManifest.getName()}));
-      }
+//    KarmaRuntime.init(context);
+    commandContext = new CommandContext(context);
+    try {
+      commandContext.init(new CLICommandResponseHandler(writer));
+    } catch (LocationException e) {
+      writer.writeln(e.getErrorMessage());
+      logger.error(e.getMessage(), e);
+    } catch (ManifestException e) {
+      writer.writeln(e.getErrorMessage());
+      logger.warn(e.getMessage(), e);
+    }
 
-    } catch (KarmaException k) {
 
-      writer.writeln(k.getErrorMessage());
+    Manifest currentManifest = commandContext.getCurrentManifest();
+    if (currentManifest != null) {
+      ConsoleConfiguration.setManifest(currentManifest);
 
-      logger.error(k.getMessage(), k);
-
-      System.exit(1);
+      writer.writeln(new MessageFormat(FRONTEND_MESSAGES.getString("message.MANIFEST_RESTORED")).format(new Object[]{currentManifest.getName()}));
     }
 
     String karmaHome = System.getProperty("karma.home");
-    File logDirectory = null;
     if (karmaHome == null) {
-      String userHome = System.getProperty("user.home");
-      logDirectory = new File(userHome, "logs");
       writer.writeln("Property 'karma.home' not set; logging will be written to " + System.getProperty("user.home") + File.separator + "logs.");
     } else {
-      logDirectory = new File(karmaHome, "logs");
       writer.writeln("Logging will be written to " + System.getProperty("karma.home") + File.separator + "logs.");
     }
 
@@ -165,7 +225,7 @@ public class CLI {
         }
 
         try {
-					ctx.execute(line);
+          commandContext.execute(line);
         } catch (CommandException e) {
           writer.writeln("");
           //ugly way to format the messages. There is going to be a more elegant

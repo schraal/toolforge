@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.history;
 
 import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.test.LocalCVSInitializer;
 
 import java.io.File;
@@ -34,7 +33,7 @@ public class TestModuleHistoryFactory extends LocalCVSInitializer {
       try {
           checkoutDefaultModule1();
 
-          File projectRoot = LocalEnvironment.getDevelopmentHome();
+          File projectRoot = getWorkingContext().getDevelopmentHome();
           ModuleHistoryFactory factory = ModuleHistoryFactory.getInstance(projectRoot);
           assertNotNull(factory);
 

@@ -82,7 +82,8 @@ public class CreateModuleCommand extends DefaultCommand {
 
     Module module = null;
     try {
-      module = ModuleFactory.getInstance().create(descriptor);
+      ModuleFactory factory = new ModuleFactory(getWorkingContext());
+      module = factory.create(descriptor);
     } catch (LocationException e) {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }

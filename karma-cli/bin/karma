@@ -38,7 +38,14 @@ for JAR in $JARS ; do
 done
 CLASSPATH=$CLASSPATH:$JAVA_HOME/lib/tools.jar
 
-if [ "x$1" = "x" ]; then
+#
+# The first parameter is the working context identifier.
+#
+
+#
+# The seconds parameter is the working context identifier.
+#
+if [ "x$2" = "x" ]; then
     LOGLEVEL=INFO
 fi
 

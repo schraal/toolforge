@@ -19,9 +19,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.location.LocationLoader;
 
 /**
  * <p>Factory class to create modules based on a {@link ModuleDescriptor}.</p>
@@ -29,23 +29,13 @@ import nl.toolforge.karma.core.location.LocationLoader;
  * @author D.A. Smedes
  * @version $Id$
  */
-public class ModuleFactory {
+public final class ModuleFactory {
 
-  private static ModuleFactory instance;
+  private WorkingContext workingContext = null;
 
-  /**
-   * Get the singleton instance of this factory.
-   *
-   * @return The factory to create modules.
-   */
-  public synchronized static ModuleFactory getInstance() {
-    if (instance == null) {
-      instance = new ModuleFactory();
-    }
-    return instance;
+  public ModuleFactory(WorkingContext workingContext) {
+    this.workingContext = workingContext;
   }
-
-  private ModuleFactory() {}
 
   public Module create(ModuleDescriptor descriptor) throws LocationException {
 
@@ -55,7 +45,7 @@ public class ModuleFactory {
 
     Module module = null;
 
-    Location location = LocationLoader.getInstance().get(descriptor.getLocation());
+    Location location = workingContext.getLocationLoader().get(descriptor.getLocation());
 
     Version version = null;
     if (descriptor.getVersion() != null) {
@@ -67,17 +57,17 @@ public class ModuleFactory {
     //
     if (version != null) {
 
-        //
-        // <module name="" location="" version="">
-        //
-        switch (descriptor.getType()) {
-          case ModuleDescriptor.SOURCE_MODULE :
-            module = new SourceModule(descriptor.getName(), location, version);
-            break;
-          case ModuleDescriptor.MAVEN_MODULE :
-            module = new MavenModule(descriptor.getName(), location, version);
-            break;
-        }
+      //
+      // <module name="" location="" version="">
+      //
+      switch (descriptor.getType()) {
+        case ModuleDescriptor.SOURCE_MODULE :
+          module = new SourceModule(descriptor.getName(), location, version);
+          break;
+        case ModuleDescriptor.MAVEN_MODULE :
+          module = new MavenModule(descriptor.getName(), location, version);
+          break;
+      }
     } else {
       //
       // <module name="" location="">

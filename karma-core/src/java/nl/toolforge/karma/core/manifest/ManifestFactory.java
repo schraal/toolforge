@@ -18,169 +18,37 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest;
 
-import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.manifest.digester.ManifestCreationFactory;
-import nl.toolforge.karma.core.manifest.digester.ModuleDescriptorCreationFactory;
-import org.apache.commons.digester.Digester;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.xml.sax.SAXException;
+import nl.toolforge.karma.core.boot.WorkingContext;
+import nl.toolforge.karma.core.manifest.DevelopmentManifest;
+import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.manifest.ReleaseManifest;
+import org.apache.commons.digester.AbstractObjectCreationFactory;
+import org.xml.sax.Attributes;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Hashtable;
 
 /**
- * Factory class to create {@link Manifest} instances.
+ * Creation factory to be able to create {@link Manifest} instances. The reason to have this class
+ * is that Digester at some point calls <code>hashCode()</code> on newly created <code>AbstractManifest</code> instances
+ * and this fails with a <code>NullPointerException</code> if <code>name</code> is still
+ * <code>null</code>; Digester somehow calls upon the setName() later on in the process.
  *
  * @author D.A. Smedes
  * @version $Id$
  */
 public final class ManifestFactory {
 
-  private static Log logger = LogFactory.getLog(ManifestFactory.class);
+  public Manifest create(WorkingContext context, ManifestStructure structure) throws LocationException {
 
-  private static ManifestFactory instance = null;
-
-  private ManifestFactory() {
-  }
-
-  /**
-   * Get the factory instance class.
-   *
-   * @return The singleton factory class.
-   */
-  public static ManifestFactory getInstance() {
-
-    if (instance == null) {
-      instance = new ManifestFactory();
-    }
-    return instance;
-  }
-
-  /**
-   * Creates a manifest by
-   * @param manifestName
-   * @return
-   * @throws ManifestException
-   */
-  public Manifest createManifest(String manifestName) throws ManifestException {
-
-    Digester digester = new Digester();
-
-    // The <manifest>-element, to get to the correct manifest type.
-    //
-    digester.addFactoryCreate("manifest", ManifestCreationFactory.class);
-    digester.addSetProperties("manifest");
-
-    Manifest manifest = null;
-
-    try {
-      manifest = (Manifest) digester.parse(getManifestFileAsStream(manifestName));
-    } catch (IOException e) {
-      if (e instanceof FileNotFoundException) {
-        throw new ManifestException(e, ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[]{manifest.getName()});
-      }
-      throw new ManifestException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{manifest.getName()});
-    } catch (SAXException e) {
-      if (e.getException() instanceof ManifestException) {
-        // It was already a ManifestException, that one should be propagated
-        //
-        ManifestException m = (ManifestException) e.getException();
-        throw new ManifestException(m.getErrorCode(), m.getMessageArguments());
-      } else if (e.getException() instanceof LocationException) {
-        LocationException m = (LocationException) e.getException();
-        throw new ManifestException(m, m.getErrorCode(), m.getMessageArguments());
-      } else {
-        throw new ManifestException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{manifestName});
-      }
-    }
-
-    manifest.load();
-
-    return manifest;
-  }
-
-  /**
-   * Parses a manifest file with name <code>&lt;name&gt;+.xml</code>.
-   *
-   * @param name
-   * @return
-   * @throws ManifestException
-   */
-  public Manifest parse(String name) throws ManifestException {
-
-    try {
-      return (Manifest) getDigester().parse(getManifestFileAsStream(name));
-    } catch (IOException e) {
-      if (e instanceof FileNotFoundException) {
-        throw new ManifestException(e, ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[]{name});
-      }
-      throw new ManifestException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{name});
-    } catch (SAXException e) {
-//      e.printStackTrace();
-      if (e.getException() instanceof ManifestException) {
-        // It was already a ManifestException, that one should be propagated
-        //
-        ManifestException m = (ManifestException) e.getException();
-        throw new ManifestException(m.getErrorCode(), m.getMessageArguments());
-      } else if (e.getException() instanceof LocationException) {
-        LocationException m = (LocationException) e.getException();
-        throw new ManifestException(m.getErrorCode(), m.getMessageArguments());
-      } else {
-        throw new ManifestException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{name});
-      }
+    if (Manifest.DEVELOPMENT_MANIFEST.equals(structure.getType())) {
+      return new DevelopmentManifest(context, structure);
+    } else {
+      return new ReleaseManifest(context, structure);
     }
   }
-
-  private Digester getDigester() {
-
-    Digester digester = new Digester();
-
-    // The <manifest>-element
-    //
-    digester.addFactoryCreate("manifest", ManifestCreationFactory.class);
-    digester.addSetProperties("manifest");
-
-    digester.addCallMethod("manifest/description", "setDescription", 0);
-
-    // All <module>-elements
-    //
-    digester.addFactoryCreate("*/module", ModuleDescriptorCreationFactory.class);
-    digester.addSetProperties("*/module");
-    digester.addSetNext("*/module", "addModule", "nl.toolforge.karma.core.manifest.ModuleDescriptor");
-
-    // All <include-manifest>-elements
-    //
-    digester.addObjectCreate("*/include-manifest", "nl.toolforge.karma.core.manifest.ManifestDescriptor");
-    digester.addSetProperties("*/include-manifest");
-    digester.addSetNext("*/include-manifest", "includeManifest");
-
-    return digester;
-  }
-
-  private InputStream getManifestFileAsStream(String id) throws ManifestException {
-
-    try {
-      String fileName = (id.endsWith(".xml") ? id : id.concat(".xml"));
-
-      if (fileName.endsWith(File.separator)) {
-        fileName = fileName.substring(0, fileName.length() - 1);
-      }
-      fileName = fileName.substring(fileName.lastIndexOf(File.separator) + 1);
-
-      logger.debug("Loading manifest " + fileName + " from " + LocalEnvironment.getManifestStore().getPath() + File.separator + fileName);
-
-      return new FileInputStream(LocalEnvironment.getManifestStore().getPath() + File.separator + fileName);
-
-    } catch (FileNotFoundException f) {
-      throw new ManifestException(f, ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[]{id});
-    } catch (NullPointerException n) {
-      throw new ManifestException(n, ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[]{id});
-    }
-  }
-
 }

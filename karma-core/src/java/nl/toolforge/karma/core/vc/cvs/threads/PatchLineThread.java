@@ -61,10 +61,9 @@ public class PatchLineThread extends RunnerThread {
       }
 
     } catch (VersionControlException e) {
-      e.printStackTrace();
+      exception = e;
     } finally {
       stopRunning();
     }
   }
-
 }

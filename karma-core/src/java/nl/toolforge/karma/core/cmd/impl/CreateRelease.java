@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
@@ -33,8 +32,11 @@ import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.ManifestFactory;
 import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.ManifestLoader;
+import nl.toolforge.karma.core.manifest.ManifestLoader;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.Utils;
+import nl.toolforge.karma.core.location.LocationException;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -76,21 +78,25 @@ public class CreateRelease extends CompositeCommand {
     } else {
 
       try {
-        releaseManifest = ManifestFactory.getInstance().createManifest(manifestName);
+        ManifestFactory factory = new ManifestFactory();
+        ManifestLoader loader = new ManifestLoader(getWorkingContext());
+        releaseManifest = factory.create(getWorkingContext(), loader.load(manifestName));
       } catch (ManifestException e) {
         throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+      } catch (LocationException e) {
+       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
       }
     }
 
     String releaseName = getCommandLine().getOptionValue("r");
 
-    File releaseManifestFile = new File(LocalEnvironment.getManifestStore(), releaseName + ".xml");
+    File releaseManifestFile = new File(getWorkingContext().getManifestStore(), releaseName + ".xml");
 
     if (releaseManifestFile.exists()) {
       if (!getCommandLine().hasOption("o")) {
         throw new CommandException(
             ManifestException.DUPLICATE_MANIFEST_FILE,
-            new Object[] {releaseName, LocalEnvironment.getManifestStore().getPath()}
+            new Object[] {releaseName, getWorkingContext().getManifestStore().getPath()}
         );
       }
     }

@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core.cmd.util;
 
 import junit.framework.TestCase;
+import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
@@ -96,6 +97,7 @@ public class TestDependencyHelper extends TestCase {
     public Collection getIncludes() { return null; }
     public void load() throws ManifestException { }
     public String getType() { return null; }
+
   };
 
   // ********************

@@ -57,7 +57,7 @@ public final class AdminHandler {
     } catch (FileNotFoundException e) {
       // We guess the user has created a module and not stored in a version control repository.
       //
-      return false;
+      return true;
     } catch (IOException e) {
       throw new KarmaRuntimeException(e.getMessage());
     }
@@ -68,7 +68,7 @@ public final class AdminHandler {
     try {
       return cvsRoot.toString().equals(loc.getCVSRootAsString());
     } catch (CVSException e) {
-      return false;
+      return true;
     }
   }
 }

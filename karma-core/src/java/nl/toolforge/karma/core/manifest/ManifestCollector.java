@@ -19,8 +19,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.core.util.file.XMLFilenameFilter;
-import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.karma.core.boot.WorkingContext;
+//import nl.toolforge.karma.core.boot.KarmaRuntime;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -33,7 +34,7 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
- * Class that collects all manifests.
+ * Class that collects all manifests for a <code>WorkingContext</code>.
  *
  * @author D.A. Smedes
  * @version $Id$
@@ -42,26 +43,31 @@ public class ManifestCollector {
 
   private static Log logger = LogFactory.getLog(ManifestCollector.class);
 
-  private static ManifestCollector instance = null;
-  private static Collection manifests = new ArrayList();
+  private Collection manifests = new ArrayList();
+  private WorkingContext workingContext = null;
 
-  /**
-   * @return
-   */
-  public static ManifestCollector getInstance() {
 
-    if (instance == null) {
-      instance = new ManifestCollector();
-    }
-    return instance;
+//  private static ManifestCollector instance = null;
+
+//  private ManifestCollector() {
+//    init();
+//  }
+
+//  public static ManifestCollector getInstance() {
+//
+//    if (instance== null) {
+//      instance = new ManifestCollector();
+//    }
+//    return instance;
+//  }
+
+  public ManifestCollector(WorkingContext workingContext) {
+    this.workingContext = workingContext;
   }
 
-  public ManifestCollector() {
-    init();
-  }
 
   public Collection getAllManifests() {
-    File manifestStore = LocalEnvironment.getManifestStore();
+    File manifestStore = workingContext.getManifestStore();
 
     Object[] mList = manifestStore.list(new XMLFilenameFilter());
 
@@ -88,29 +94,32 @@ public class ManifestCollector {
    */
   public Manifest loadFromHistory() throws LocationException, ManifestException {
 
-    String contextManifest = LocalEnvironment.getContextManifestPreference();
+    String contextManifest = workingContext.getContextManifestPreference();
 
     String manifestId = Preferences.userRoot().get(contextManifest, null);
     if (manifestId != null) {
 
-      ManifestFactory manifestFactory = ManifestFactory.getInstance();
+      ManifestFactory manifestFactory = new ManifestFactory();
+      ManifestLoader loader = new ManifestLoader(workingContext);
+      Manifest manifest = manifestFactory.create(workingContext, loader.load(manifestId));
 
-      Manifest manifest = null;
-      try {
-        manifest = manifestFactory.createManifest(manifestId);
-      } catch (ManifestException m) {
-        if (m.getErrorCode().equals(ManifestException.MANIFEST_FILE_NOT_FOUND)) {
-          Preferences.userRoot().remove(LocalEnvironment.getContextManifestPreference());
-          try {
-            Preferences.userRoot().flush();
-          } catch (BackingStoreException e) {
-            logger.warn("Could not write user preferences due to java.util.prefs.BackingStoreException.");
-          }
-        }
-        // Rethrow, the removal from userPrefs has been performed
-        //
-        throw m;
-      }
+
+
+//      try {
+//        manifest = manifestFactory.createManifest(manifestId);
+//      } catch (ManifestException m) {
+//        if (m.getErrorCode().equals(ManifestException.MANIFEST_FILE_NOT_FOUND)) {
+//          Preferences.userRoot().remove(KarmaRuntime.getWorkingContext().getContextManifestPreference());
+//          try {
+//            Preferences.userRoot().flush();
+//          } catch (BackingStoreException e) {
+//            logger.warn("Could not write user preferences due to java.util.prefs.BackingStoreException.");
+//          }
+//        }
+//        // Rethrow, the removal from userPrefs has been performed
+//        //
+//        throw m;
+//      }
 
       return manifest;
     }

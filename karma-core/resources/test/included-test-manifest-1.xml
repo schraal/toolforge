@@ -14,4 +14,6 @@ DO NOT CHANGE THE CONTENTS OF THIS FILE. IT IS USED BY JUnit TEST CLASSES
 
   </modules>
 
+   <include-manifest name="included-test-manifest-2"/>
+
 </manifest>

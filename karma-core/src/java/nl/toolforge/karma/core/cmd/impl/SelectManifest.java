@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
@@ -26,6 +25,7 @@ import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.location.LocationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -64,11 +64,13 @@ public class SelectManifest extends DefaultCommand {
       selectedManifest = getContext().getCurrentManifest();
     } catch (ManifestException me) {
       throw new CommandException(me.getErrorCode(), me.getMessageArguments());
+    } catch (LocationException e) {
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
 
     // Store this manifest as the last used manifest.
     //
-    String contextManifest = LocalEnvironment.getContextManifestPreference();
+    String contextManifest = getWorkingContext().getContextManifestPreference();
 
     Preferences.userRoot().put(contextManifest, getContext().getCurrentManifest().getName());
     try {

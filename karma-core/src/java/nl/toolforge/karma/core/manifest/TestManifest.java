@@ -1,104 +1,89 @@
-/*
-Karma core - Core of the Karma application
-Copyright (C) 2004  Toolforge <www.toolforge.nl>
-
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
-
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
 package nl.toolforge.karma.core.manifest;
 
-import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.location.LocationLoader;
 import nl.toolforge.karma.core.test.BaseTest;
+import nl.toolforge.karma.core.boot.WorkingContext;
+import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.ManifestFactory;
+import nl.toolforge.karma.core.manifest.DevelopmentManifest;
+import nl.toolforge.karma.core.manifest.ManifestLoader;
+import nl.toolforge.karma.core.manifest.TestManifestLoader;
+import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.core.util.file.MyFileUtils;
 
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
+import java.io.IOException;
+import java.io.File;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.util.Properties;
+
+import org.apache.commons.io.FileUtils;
 
 /**
  * @author D.A. Smedes
  * @version $Id$
  */
-public class TestManifest extends BaseTest {
+public class TestManifest extends TestManifestLoader {
 
-  public void testManifest() {
+  /**
+   *
+   */
+  public void testConstructor() {
+
+    ManifestLoader loader = new ManifestLoader(getWorkingContext());
 
     try {
-      DevelopmentManifest m = new DevelopmentManifest("test-manifest-1");
+      ManifestStructure structure = loader.load("test-manifest-1");
 
-      m.load();
+      DevelopmentManifest manifest = new DevelopmentManifest(getWorkingContext(), structure);
 
-      assertTrue( "test-manifest-1".equals(m.getName()));
-			assertTrue( Pattern.matches("\\d{1}-\\d{1}", m.getVersion()));
-      assertEquals(3, m.size());
+      assertEquals(5, manifest.getAllModules().size());
 
-      //assertNotNull(m.getDescription()); //todo something wrong in the digester rules.xml
-
-      m = new DevelopmentManifest("test-manifest-1");
-      m.load();
-      assertEquals(3, m.size());
-
-    } catch (Exception e) {
+    } catch (ManifestException e) {
+      fail(e.getMessage());
+    } catch (LocationException e) {
       fail(e.getMessage());
     }
   }
 
-  public void testModuleCache() {
+  /**
+   *
+   */
+  public void testDuplicateModules() {
+
+    ManifestLoader loader = new ManifestLoader(getWorkingContext());
 
     try {
-      DevelopmentManifest m = new DevelopmentManifest("test-manifest-1");
-      assertEquals(0, m.getAllModules().size());
+      ManifestStructure structure = loader.load("test-manifest-2");
+      new DevelopmentManifest(getWorkingContext(), structure);
 
-      m.load();
+      fail("Duplicate module in manifest should have been detected.");
 
-      assertEquals(3, m.getAllModules().size());
-      assertEquals(3, m.getAllModules().size());
-
-      m.load();
-
-      assertEquals(3, m.getAllModules().size());
-
-      m = new DevelopmentManifest("included-test-manifest-1");
-      m.load();
-
-      assertEquals(1, m.getAllModules().size());
-
-    } catch (Exception e) {
+    } catch (ManifestException e) {
+      assertEquals(ManifestException.DUPLICATE_MODULE, e.getErrorCode());
+    } catch (LocationException e) {
       fail(e.getMessage());
     }
   }
 
-  public void testAddAndGetModule() {
+  /**
+   *
+   */
+  public void testDuplicateIncludes() {
 
-    DevelopmentManifest m = new DevelopmentManifest("a");
-    try {
-      m.addModule(null);
-      fail("Should have failed. No null allowed.");
-    } catch (Exception r) {
-      assertTrue(true);
-    }
+    ManifestLoader loader = new ManifestLoader(getWorkingContext());
 
     try {
-      m.addModule(new ModuleDescriptor("a", "src", "local-test"));
+      ManifestStructure structure = loader.load("test-manifest-3");
+      new DevelopmentManifest(getWorkingContext(), structure);
 
-      Location l = LocationLoader.getInstance().get("local-test");
-      Module module = new SourceModule("a", l);
+      fail("Manifest include recursion should have been detected.");
 
-      assertEquals(m.getModule("a"), module);
-
-    } catch (Exception r) {
-      assertTrue(true);
+    } catch (ManifestException e) {
+      assertEquals(ManifestException.MANIFEST_NAME_RECURSION, e.getErrorCode());
+    } catch (LocationException e) {
+      fail(e.getMessage());
     }
   }
-
 }

@@ -26,7 +26,6 @@ import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
-import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.Version;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
@@ -82,7 +81,7 @@ public class LocalCVSInitializer extends BaseTest {
 
     try {
       Properties props = new Properties();
-      InputStream stream = getClass().getClassLoader().getResourceAsStream("test-cvs.properties");
+      InputStream stream = getClass().getClassLoader().getResourceAsStream("test/test-cvs.properties");
       if (stream == null) {
         //properties file does not exist
         //log an error. Nullpointer will follow... ;)
@@ -115,7 +114,6 @@ public class LocalCVSInitializer extends BaseTest {
       location.setRepository(localCVSRepository.getPath());
 
     } catch (Exception e) {
-      e.printStackTrace();
       throw new InitializationException("Local CVS repository could not be initialized. Trying to initialize repository at : ".concat(localPath));
     }
 
@@ -131,7 +129,7 @@ public class LocalCVSInitializer extends BaseTest {
     try {
       FileUtils.deleteDirectory(localCVSRepository);
     } catch (IOException e) {
-      e.printStackTrace();
+      fail(e.getMessage());
     }
   }
 
@@ -163,14 +161,13 @@ public class LocalCVSInitializer extends BaseTest {
       Runner runner = getTestRunner();
 
       Module module = new SourceModule(DEFAULT_MODULE_1, location);
-      module.setBaseDir(new File(LocalEnvironment.getDevelopmentHome(), module.getName()));
+      module.setBaseDir(new File(getWorkingContext().getDevelopmentHome(), module.getName()));
 
       runner.checkout(module);
 
       return module;
 
     } catch (Exception e) {
-      e.printStackTrace();
       fail(e.getMessage());
     }
     return null;
@@ -182,14 +179,13 @@ public class LocalCVSInitializer extends BaseTest {
       Runner runner = getTestRunner();
 
       Module module = new SourceModule(DEFAULT_MODULE_1, location, new Version("0-0"));
-      module.setBaseDir(new File(LocalEnvironment.getDevelopmentHome(), module.getName()));
+      module.setBaseDir(new File(getWorkingContext().getDevelopmentHome(), module.getName()));
 
       runner.checkout(module);
 
       return module;
 
     } catch (Exception e) {
-      e.printStackTrace();
       fail(e.getMessage());
     }
     return null;

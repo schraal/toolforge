@@ -28,13 +28,13 @@ import nl.toolforge.karma.core.test.BaseTest;
 public class TestModuleFactory extends BaseTest {
 
   public void testGetInstance() {
-    ModuleFactory f = ModuleFactory.getInstance();
+    ModuleFactory f = new ModuleFactory(getWorkingContext());
     assertNotNull(f);
   }
 
   public void testCreate1() {
 
-    ModuleFactory f = ModuleFactory.getInstance();
+    ModuleFactory f = new ModuleFactory(getWorkingContext());
 
     ModuleDescriptor d1 = new ModuleDescriptor("module-1", "src", "test-id-1");
     d1.setVersion("0-1");

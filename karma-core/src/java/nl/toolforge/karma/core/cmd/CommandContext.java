@@ -18,36 +18,36 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd;
 
+import nl.toolforge.core.util.listener.ChangeListener;
+import nl.toolforge.core.util.listener.ListenerManager;
+import nl.toolforge.core.util.listener.ListenerManagerException;
+import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.boot.WorkingContext;
+import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
+import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.ManifestFactory;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.manifest.ManifestLoader;
+import nl.toolforge.karma.core.manifest.ManifestLoader;
+import nl.toolforge.karma.core.manifest.ManifestStructure;
+import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.vc.RunnerFactory;
+import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.cvs.AdminHandler;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import nl.toolforge.core.util.listener.ChangeListener;
-import nl.toolforge.core.util.listener.ListenerManager;
-import nl.toolforge.core.util.listener.ListenerManagerException;
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.LocalEnvironment;
-import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
-import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.location.LocationLoader;
-import nl.toolforge.karma.core.manifest.Manifest;
-import nl.toolforge.karma.core.manifest.ManifestCollector;
-import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.ManifestFactory;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.SourceModule;
-import nl.toolforge.karma.core.vc.Runner;
-import nl.toolforge.karma.core.vc.RunnerFactory;
-import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.cvs.AdminHandler;
 
 /**
  * <p>The command context is the class that provides a runtime for commands to run in. The command context maintains
@@ -68,10 +68,17 @@ public final class CommandContext implements ChangeListener {
 
   private static ListenerManager manager;
 
+  private WorkingContext workingContext = null;
+
   /**
    * Constructs a <code>CommandContext</code>, in which commands are run.
    */
-  public CommandContext() {
+  public CommandContext(WorkingContext workingContext) {
+    this.workingContext = workingContext;
+  }
+
+  public WorkingContext getWorkingContext() {
+    return workingContext;
   }
 
   /**
@@ -91,16 +98,16 @@ public final class CommandContext implements ChangeListener {
     // Update the manifest-store.
     //
 
-    Location location = LocalEnvironment.getManifestStoreLocation();
+    Location location = workingContext.getManifestStoreLocation();
     Module manifestModule = new SourceModule("manifests", location);
 
     if (location.ping()) {
 
-      manifestModule.setBaseDir(LocalEnvironment.getManifestStore());
+      manifestModule.setBaseDir(workingContext.getManifestStore());
 
       handler.commandResponseChanged(new CommandResponseEvent(new SuccessMessage("Updating manifests from CVS location `" + manifestModule.getLocation().toString() + "`")));
 
-      if (LocalEnvironment.getWorkingContext().exists()) {
+      if (workingContext.getWorkingContextDirectory().exists()) {
 
         // Check if the locally existing manifest module has the same location (cvsroot e.g.) as the
         // requested update.
@@ -133,15 +140,15 @@ public final class CommandContext implements ChangeListener {
 
     // Update the location-store.
     //
-    location = LocalEnvironment.getLocationStoreLocation();
+    location = workingContext.getLocationStoreLocation();
     if (location.ping()) {
 
       Module locationModule = new SourceModule("locations", location);
-      locationModule.setBaseDir(LocalEnvironment.getLocationStore());
+      locationModule.setBaseDir(workingContext.getLocationStore());
 
       handler.commandResponseChanged(new CommandResponseEvent(new SuccessMessage("Updating locations from CVS location `" + locationModule.getLocation().toString() + "`")));
 
-      if (LocalEnvironment.getWorkingContext().exists()) {
+      if (workingContext.getWorkingContextDirectory().exists()) {
 
         AdminHandler adminHandler = new AdminHandler();
         if (!adminHandler.isEqualLocation(locationModule)) {
@@ -168,15 +175,14 @@ public final class CommandContext implements ChangeListener {
     } else {
       handler.commandResponseChanged(new CommandResponseEvent(new ErrorMessage("Location store location unreachable!")));
     }
-
-    // Read in all location data
-    //
-    LocationLoader.getInstance().load();
+//
+//    // Read in all location data
+//    //
+//    LocationLoader loader = workingContext.getLocationLoader();
 
     // Try reloading the last manifest that was used.
     //
-    ManifestCollector collector = ManifestCollector.getInstance();
-    currentManifest = collector.loadFromHistory();
+    currentManifest = workingContext.getManifestCollector().loadFromHistory();
 
     // Register the command context with the listener to allow automaic updates of the manifest.
     //
@@ -190,7 +196,7 @@ public final class CommandContext implements ChangeListener {
 
     Manifest manifest = currentManifest;
 
-    Long lastMod = new Long(new File(LocalEnvironment.getManifestStore(), manifest.getName() + ".xml").lastModified());
+    Long lastMod = new Long(new File(workingContext.getManifestStore(), manifest.getName() + ".xml").lastModified());
     modificationMap.put(manifest, lastMod);
 
     try {
@@ -199,7 +205,7 @@ public final class CommandContext implements ChangeListener {
 
         manifest = (Manifest) i.next();
 
-        lastMod = new Long(new File(LocalEnvironment.getManifestStore(), manifest.getName() + ".xml").lastModified());
+        lastMod = new Long(new File(workingContext.getManifestStore(), manifest.getName() + ".xml").lastModified());
         modificationMap.put(manifest, lastMod);
       }
     } catch (Exception e) {
@@ -226,7 +232,7 @@ public final class CommandContext implements ChangeListener {
         Manifest m = (Manifest) i.next();
         long lastMod = ((Long) modificationMap.get(m)).longValue();
 
-        File f = new File(LocalEnvironment.getManifestStore(), m.getName() + ".xml");
+        File f = new File(workingContext.getManifestStore(), m.getName() + ".xml");
         if (!f.exists()) {
           currentManifest = null;
           throw new ManifestException(ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[] {m.getName()});
@@ -242,7 +248,9 @@ public final class CommandContext implements ChangeListener {
 
         // One of the manifests in the tree has been changed on disk, reload the full structure.
         //
-        currentManifest.load();
+        ManifestStructure reloadedStructure =
+            getWorkingContext().getManifestLoader().load(currentManifest.getName());
+        currentManifest = new ManifestFactory().create(workingContext, reloadedStructure);
 
         setFileModificationTimes();
 
@@ -250,6 +258,7 @@ public final class CommandContext implements ChangeListener {
         logger.info(message);
 
         responseHandler.commandResponseChanged(new CommandResponseEvent(new SuccessMessage(message)));
+        responseHandler.commandResponseFinished(null);
 
         return;
       }
@@ -289,10 +298,11 @@ public final class CommandContext implements ChangeListener {
    * @param manifestName
    * @throws ManifestException When the manifest could not be changed. See {@link ManifestException#MANIFEST_LOAD_ERROR}.
    */
-  public void changeCurrentManifest(String manifestName) throws ManifestException {
+  public void changeCurrentManifest(String manifestName) throws ManifestException, LocationException {
 
-    ManifestFactory manifestFactory = ManifestFactory.getInstance();
-    Manifest newManifest = manifestFactory.createManifest(manifestName);
+    ManifestFactory manifestFactory = new ManifestFactory();
+    ManifestLoader loader = new ManifestLoader(workingContext);
+    Manifest newManifest = manifestFactory.create(workingContext, loader.load(manifestName));
 
     // If we are here, loading the new manifest was succesfull.
     //
@@ -313,7 +323,7 @@ public final class CommandContext implements ChangeListener {
       try {
         manager.register(this);
       } catch (ListenerManagerException e) {
-        e.printStackTrace();
+        throw new KarmaRuntimeException(e.getMessage());
       }
 
       manager.start();
@@ -328,7 +338,7 @@ public final class CommandContext implements ChangeListener {
    * @return See <code>ManifestLoader.getAllManifests()</code>.
    */
   public Collection getAllManifests() {
-    return ManifestCollector.getInstance().getAllManifests();
+    return workingContext.getManifestCollector().getAllManifests();
   }
 
   /**
@@ -402,7 +412,7 @@ public final class CommandContext implements ChangeListener {
    * Helper to get the module base for the current manifest.
    */
   private File getBase() {
-    return new File(LocalEnvironment.getDevelopmentHome(), getCurrentManifest().getName());
+    return new File(workingContext.getDevelopmentHome(), getCurrentManifest().getName());
   }
 
 }

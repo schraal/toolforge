@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd;
 
+import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.bundle.BundleCache;
 import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
 import org.apache.commons.cli.CommandLine;
@@ -89,6 +90,15 @@ public abstract class DefaultCommand implements Command {
 	public final String getAlias() {
 		return alias;
 	}
+
+  /**
+   * Helper.
+   *
+   * @return
+   */
+  public final WorkingContext getWorkingContext() {
+    return getContext().getWorkingContext();
+  }
 
 	/**
 	 * Gets a localized version of a command's description.

@@ -23,7 +23,7 @@ import nl.toolforge.karma.core.Patch;
 
 /**
  * A <code>PatchLine</code> is a special type of <code>DevelopmentLine</code>, used when a module has been released to
- * (for example) the test department. Blaat.
+ * (for example) the test department. NIET_WEG.
  *
  * @author D.A. Smedes
  * @version $Id$

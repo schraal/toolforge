@@ -18,18 +18,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.vc.threads;
 
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.vc.ModuleStatus;
-import nl.toolforge.karma.core.vc.cvs.threads.CVSLogThread;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.cmd.CommandContext;
 
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * The ParallelRunner handles parallel <code>RunnerThread</code>s. This concept should be used when parallel read
@@ -46,7 +42,6 @@ public class ParallelRunner {
   private Manifest manifest = null;
   private RunnerThread[] threads = null;
 
-  private boolean initializing = true;
   private Class impl = null;
 
   /**
@@ -81,21 +76,12 @@ public class ParallelRunner {
 
     // Start each task in parallel ...
     //
-
-    initializing = true;
-
     for (Iterator i = modules.values().iterator(); i.hasNext();) {
 
       try {
         Constructor constructor = impl.getConstructor(new Class[]{Module.class});
-        RunnerThread t = (RunnerThread) constructor.newInstance(new Object[]{(Module) i.next()});
-
-//        Constructor constructor = impl.getConstructor(new Class[]{Module.class, Manifest.class});
-//        RunnerThread t = (RunnerThread) constructor.newInstance(new Object[]{(Module) i.next(), manifest});
-
-        threads[index] = t;
+        threads[index] = (RunnerThread) constructor.newInstance(new Object[]{(Module) i.next()});
       } catch (Exception e) {
-        e.printStackTrace();
         throw new KarmaRuntimeException("Could not start a RunnerThread instance.");
       }
 
@@ -103,7 +89,15 @@ public class ParallelRunner {
       index++;
     }
 
-    initializing = false;
+    for (int i = 0; i < threads.length; i++) {
+
+      try {
+        threads[i].join();
+        addResult(threads[i].getModule(), threads[i].getResult());
+      } catch (InterruptedException e) {
+        throw new KarmaRuntimeException(e.getMessage());
+      }
+    }
   }
 
   private void addResult(Module module, RunnerResult result) {
@@ -120,32 +114,4 @@ public class ParallelRunner {
     return results;
   }
 
-  /**
-   * Determines if all tasks are finished. This method is non-blocking and should be called continuously if all tasks
-   * are required to have finished before the transaction is complete.
-   *
-   * @return <code>true</code> if all tasks are finished.
-   */
-  public boolean finished() {
-
-    if (initializing) {
-      // This class should have started all threads first, before this method can execute properly.
-      //
-      return false;
-    }
-
-    int totalThreads = threads.length;
-    int runningThreads = threads.length;
-
-    for (int i = 0; i < totalThreads; i++) {
-
-      boolean runningThread = threads[i].isRunning();
-      runningThreads -= (runningThread ? 0 : 1);
-
-      if (!runningThread) {
-        addResult(threads[i].getModule(), threads[i].getResult());
-      }
-    }
-    return (runningThreads == 0);
-  }
 }

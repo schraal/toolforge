@@ -18,17 +18,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.AntErrorMessage;
+import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.cmd.CommandFactory;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
-import nl.toolforge.karma.core.cmd.Command;
-import nl.toolforge.karma.core.cmd.CommandFactory;
 import nl.toolforge.karma.core.cmd.ErrorMessage;
+import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.util.DescriptorReader;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
@@ -63,12 +62,6 @@ import java.util.regex.Pattern;
 public class PackageModule extends AbstractBuildCommand {
 
   private static final Log logger = LogFactory.getLog(PackageModule.class);
-
-  private static final String MODULE_PACKAGE_NAME_PROPERTY = "module-package-name";
-  private static final String MODULE_APPXML_PROPERTY = "module-appxml";
-  private static final String MODULE_WEBXML_PROPERTY = "module-webxml";
-  private static final String MODULE_INCLUDES_PROPERTY = "module-includes";
-  private static final String MODULE_EXCLUDES_PROPERTY = "module-excludes";
 
   private CommandResponse commandResponse = new ActionCommandResponse();
 
@@ -273,7 +266,7 @@ System.out.println("Going to: "+commandLineString);
         //
         if (jarDeps != null && !"".equals(jarDeps)) {
           fileSet = new FileSet();
-          fileSet.setDir(LocalEnvironment.getLocalRepository());
+          fileSet.setDir(getWorkingContext().getLocalRepository());
           fileSet.setIncludes(jarDeps);
           copy.addFileset(fileSet);
         }

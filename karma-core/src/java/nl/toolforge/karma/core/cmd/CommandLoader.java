@@ -194,7 +194,7 @@ public final class CommandLoader {
           try {
             descriptor = new CommandDescriptor(commandName, alias, clazzName);
           } catch (KarmaException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            throw new KarmaRuntimeException(e.getMessage());
           }
           if (options != null) {
 						descriptor.setOptions(options);

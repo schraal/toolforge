@@ -28,10 +28,12 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandFactory;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.CompositeCommand;
+import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.cmd.threads.ParallelCommandWrapper;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 
 /**
  * This command updates all modules in the active manifest on a developers' local system.
@@ -43,15 +45,15 @@ import nl.toolforge.karma.core.manifest.Module;
 public class UpdateAllModulesCommand extends CompositeCommand {
 
   public void commandHeartBeat() {
-
+    // hmmm
   }
 
   public void commandResponseChanged(CommandResponseEvent event) {
-
+    // hmmm
   }
 
   public void commandResponseFinished(CommandResponseEvent event) {
-
+    // hmmm
   }
 
   public CommandResponse getCommandResponse() {
@@ -107,19 +109,14 @@ public class UpdateAllModulesCommand extends CompositeCommand {
     }
 
     int totalThreads = threads.length;
-    int runningThreads = threads.length;
 
-    // todo use join() ?
+    for (int i = 0; i < totalThreads; i++) {
 
-    while (runningThreads != 0) {
-
-      for (int i = 0; i < totalThreads; i++) {
-
-        boolean runningThread = threads[i].isRunning();
-        runningThreads -= (runningThread ? 0 : 1);
+      try {
+        threads[i].join();
+      } catch (InterruptedException e) {
+        throw new KarmaRuntimeException(e.getMessage());
       }
     }
-
-    int a = 0;
   }
 }

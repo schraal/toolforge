@@ -18,12 +18,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.vc.cvs;
 
-import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.test.LocalCVSInitializer;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.VersionControlException;
@@ -115,7 +113,7 @@ public class TestCVSRunner extends LocalCVSInitializer {
 
       Module module = checkoutDefaultModule1();
 
-      assertTrue(new File(LocalEnvironment.getDevelopmentHome(), module.getName()).exists());
+      assertTrue(new File(getWorkingContext().getDevelopmentHome(), module.getName()).exists());
 
       ((CVSRunner) runner).add(module, new String[]{"blaat-file"}, new String[]{"blaat-dir"});
 
@@ -190,7 +188,7 @@ public class TestCVSRunner extends LocalCVSInitializer {
     try {
 
       Module module = checkoutDefaultModuleWithVersion();
-      module.setBaseDir(new File(LocalEnvironment.getDevelopmentHome(), module.getName()));
+      module.setBaseDir(new File(getWorkingContext().getDevelopmentHome(), module.getName()));
       module.markPatchLine(true);
 
       runner.createPatchLine(module);

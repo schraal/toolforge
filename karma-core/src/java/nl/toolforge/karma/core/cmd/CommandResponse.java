@@ -44,8 +44,8 @@ public abstract class CommandResponse {
   private List listeners = new ArrayList();
 
 
-	public CommandResponse() {
-	}
+  public CommandResponse() {
+  }
 
   /**
    * Add a message to the command response. When a {@link CommandResponseListener} has been registered with this
@@ -54,11 +54,22 @@ public abstract class CommandResponse {
    *
    * @param message The message to add to the response.
    */
-	public synchronized void addMessage(CommandMessage message) {
+  public synchronized void addMessage(CommandMessage message) {
     if (listeners.size() > 0) {
       for (Iterator it = listeners.iterator(); it.hasNext(); ) {
         CommandResponseListener listener = (CommandResponseListener) it.next();
         listener.commandResponseChanged(new CommandResponseEvent(message));
+      }
+    } else {
+      logger.warn("No listener registered for command response (messages sent to /dev/null ...)");
+    }
+  }
+
+  public synchronized void addFinishMessage(CommandMessage message) {
+    if (listeners.size() > 0) {
+      for (Iterator it = listeners.iterator(); it.hasNext(); ) {
+        CommandResponseListener listener = (CommandResponseListener) it.next();
+        listener.commandResponseFinished(new CommandResponseEvent(message));
       }
     } else {
       logger.warn("No listener registered for command response (messages sent to /dev/null ...)");

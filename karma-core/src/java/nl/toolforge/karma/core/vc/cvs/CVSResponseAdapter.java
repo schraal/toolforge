@@ -239,11 +239,6 @@ public final class CVSResponseAdapter implements CVSListener {
     } else if (message.startsWith("?")) {
       updateParser.addNewFile(message.substring(message.indexOf(" ") + 1));
     }
-
-//    if (!"".equals(message)) {
-//      logger.debug("MessageEvent from CVS : " + message);
-//    }
   }
 
-//  private static int newLineCounter = 0;
 }

@@ -20,10 +20,8 @@ package nl.toolforge.karma.core.test;
 
 import junit.framework.TestCase;
 import nl.toolforge.core.util.file.MyFileUtils;
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.LocalEnvironment;
-import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.location.LocationLoader;
+import nl.toolforge.karma.core.boot.WorkingContext;
+import org.apache.commons.io.FileUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -32,8 +30,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Properties;
-
-import org.apache.commons.io.FileUtils;
 
 /**
  * This testclass is highly recommended when writing JUnit testclasses for Karma. It initializes some basic stuff. Just
@@ -46,7 +42,8 @@ public class BaseTest extends TestCase {
 
   private Properties p = null;
 
-  private File workingContext = null;
+  private File wcDir = null;
+  private WorkingContext ctx = null;
 
   public void setUp() {
 
@@ -59,67 +56,56 @@ public class BaseTest extends TestCase {
     System.setProperty("locale", "en");
 
     try {
-      workingContext = MyFileUtils.createTempDirectory();
-
-      new File(workingContext, "manifests").mkdirs();
-      new File(workingContext, "locations").mkdirs();
-      new File(workingContext, "projects").mkdirs();
-
+      wcDir = MyFileUtils.createTempDirectory();
     } catch (IOException e) {
-      e.printStackTrace();
+      fail(e.getMessage());
     }
 
     p = new Properties();
-    p.put(LocalEnvironment.WORKING_CONTEXT_DIRECTORY, workingContext.getPath());
 
-    p.put(LocalEnvironment.MANIFEST_STORE_HOST, "localhost");
-    p.put(LocalEnvironment.MANIFEST_STORE_PORT, "2401");
-    p.put(LocalEnvironment.MANIFEST_STORE_PROTOCOL, "local");
-    p.put(LocalEnvironment.MANIFEST_STORE_REPOSITORY, "/tmp/test-CVSROOT");
-    p.put(LocalEnvironment.MANIFEST_STORE_USERNAME, "asmedes");
+    p.put(WorkingContext.MANIFEST_STORE_HOST, "localhost");
+    p.put(WorkingContext.MANIFEST_STORE_PORT, "2401");
+    p.put(WorkingContext.MANIFEST_STORE_PROTOCOL, "local");
+    p.put(WorkingContext.MANIFEST_STORE_REPOSITORY, "/tmp/test-CVSROOT");
+    p.put(WorkingContext.MANIFEST_STORE_USERNAME, "asmedes");
 
-    p.put(LocalEnvironment.LOCATION_STORE_HOST, "localhost");
-    p.put(LocalEnvironment.LOCATION_STORE_PORT, "2401");
-    p.put(LocalEnvironment.LOCATION_STORE_PROTOCOL, "local");
-    p.put(LocalEnvironment.LOCATION_STORE_REPOSITORY, "/tmp/test-CVSROOT");
-    p.put(LocalEnvironment.LOCATION_STORE_USERNAME, "asmedes");
+    p.put(WorkingContext.LOCATION_STORE_HOST, "localhost");
+    p.put(WorkingContext.LOCATION_STORE_PORT, "2401");
+    p.put(WorkingContext.LOCATION_STORE_PROTOCOL, "local");
+    p.put(WorkingContext.LOCATION_STORE_REPOSITORY, "/tmp/test-CVSROOT");
+    p.put(WorkingContext.LOCATION_STORE_USERNAME, "asmedes");
 
-    try {
-
-      // Initializes the LocalEnvironment so we can work with it ...
-      //
-      LocalEnvironment.initialize(p);
-    } catch (KarmaException e) {
-      fail(e.getMessage());
-    }
+    ctx = new WorkingContext("test", wcDir, p);
+//    KarmaRuntime.init(ctx);
 
     try {
-      writeFile(LocalEnvironment.getLocationStore(), "test-locations.xml");
-      writeFile(LocalEnvironment.getLocationStore(), "test-locations-2.xml");
-      writeFile(LocalEnvironment.getLocationStore(), "authenticators.xml");
-      writeFile(LocalEnvironment.getManifestStore(), "test-manifest-1.xml");
-      writeFile(LocalEnvironment.getManifestStore(), "included-test-manifest-1.xml");
+      writeFile(ctx.getConfigurationDirectory(), new File("test/authenticators.xml"));
+
+      writeFile(ctx.getLocationStore(), new File("test/test-locations.xml"));
+      writeFile(ctx.getLocationStore(), new File("test/test-locations-2.xml"));
+
+      writeFile(ctx.getManifestStore(), new File("test/test-manifest-1.xml"));
+      writeFile(ctx.getManifestStore(), new File("test/test-manifest-2.xml"));
+      writeFile(ctx.getManifestStore(), new File("test/test-manifest-3.xml"));
+
+      writeFile(ctx.getManifestStore(), new File("test/included-test-manifest-1.xml"));
+      writeFile(ctx.getManifestStore(), new File("test/included-test-manifest-2.xml"));
+
+
     } catch (IOException e) {
       fail(e.getMessage());
     }
+  }
 
-
-    // Initialize the LocationFactory
-    //
-    try {
-      LocationLoader loader = LocationLoader.getInstance();
-      loader.load(LocalEnvironment.getLocationStore());
-
-    } catch (LocationException e) {
-      fail("INITIALIZATION ERROR : " + e.getErrorMessage());
-    }
+  public WorkingContext getWorkingContext() {
+    return ctx;
   }
 
   public void tearDown() {
     try {
-     FileUtils.deleteDirectory(workingContext);
+      FileUtils.deleteDirectory(wcDir);
     } catch (IOException e) {
-      e.printStackTrace();
+      fail(e.getMessage());
     }
   }
 
@@ -134,12 +120,12 @@ public class BaseTest extends TestCase {
     return this.getClass().getClassLoader();
   }
 
-  private synchronized void writeFile(File dir, String fileRef) throws IOException {
+  private synchronized void writeFile(File dir, File fileRef) throws IOException {
 
     BufferedReader in =
-        new BufferedReader(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(fileRef)));
+        new BufferedReader(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(fileRef.getPath())));
     BufferedWriter out =
-        new BufferedWriter(new FileWriter(new File(dir, fileRef)));
+        new BufferedWriter(new FileWriter(new File(dir, fileRef.getName())));
 
     String str;
     while ((str = in.readLine()) != null) {

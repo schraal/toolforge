@@ -1,17 +1,15 @@
-<?xml version="1.0" ?>
-
 <!--
 DO NOT CHANGE THE CONTENTS OF THIS FILE. IT IS USED BY JUnit TEST CLASSES
 -->
 
-<manifest name="test-manifest-1" type="development" version="1-0">
+<manifest name="test-manifest-2" type="development" version="1-0">
 
   <description>This manifest is an example of the manifest definition.</description>
   
   <modules>
     
-    <module name="test-module-1" type="src" location="test-id-1" version="0-1"/>
-    <module name="test-module-2" type="src" location="test-id-2"/>
+    <module name="module-1" type="src" location="test-id-1" version="0-1"/>
+    <module name="module-1" type="src" location="test-id-1"/>
 
   </modules>
   

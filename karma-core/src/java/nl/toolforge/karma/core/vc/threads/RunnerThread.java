@@ -29,6 +29,7 @@ public abstract class RunnerThread extends Thread {
 
   private boolean running = true;
 
+  protected Throwable exception = null;
   protected RunnerResult result = null;
   private Module module = null;
 
@@ -79,6 +80,10 @@ public abstract class RunnerThread extends Thread {
       throw new KarmaRuntimeException("Module instance has not been set.");
     }
     return module;
+  }
+
+  public Throwable getException() {
+    return exception;
   }
 
 }

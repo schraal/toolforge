@@ -85,18 +85,7 @@ public class ViewManifest extends DefaultCommand {
     Collections.sort(sourceModules, new ModuleComparator());
 
     ParallelRunner runner = new ParallelRunner(manifest, CVSLogThread.class);
-    runner.execute();
-
-    // todo timing issue ... COULD last forever.
-    //
-    while (!runner.finished()) {
-
-      try {
-        Thread.sleep(100);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
+    runner.execute(); // Blocks ...
 
     Map statusOverview = runner.retrieveResults();
 

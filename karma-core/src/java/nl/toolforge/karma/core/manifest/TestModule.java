@@ -38,7 +38,11 @@ public class TestModule extends BaseTest {
   
   public void setUp() {
     super.setUp();
-    locationFactory = LocationLoader.getInstance();
+    try {
+      locationFactory = getWorkingContext().getLocationLoader();
+    } catch (LocationException e) {
+      fail(e.getMessage());
+    }
   }
 
   public void testTypes() {

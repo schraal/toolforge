@@ -18,9 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest;
 
-import nl.toolforge.karma.core.LocalEnvironment;
-import nl.toolforge.core.util.listener.ChangeListener;
-import nl.toolforge.core.util.listener.ChangeListener;
+import nl.toolforge.karma.core.boot.WorkingContext;
 
 import java.io.File;
 import java.util.Collection;
@@ -71,6 +69,7 @@ public interface Manifest {
 
   public Module.State getState(Module module);
 
+
   /**
    * @see AbstractManifest for the time being
    *
@@ -106,11 +105,6 @@ public interface Manifest {
    * @return Collection with Manifest instances.
    */
   public Collection getIncludes();
-
-  /**
-   * @see AbstractManifest for the time being
-   */
-  public void load() throws ManifestException;
 
   public String getType();
 }

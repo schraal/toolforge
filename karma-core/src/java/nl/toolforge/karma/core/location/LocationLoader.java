@@ -19,8 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.location;
 
 import nl.toolforge.core.util.file.XMLFilenameFilter;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
 import org.apache.commons.digester.Digester;
@@ -36,8 +35,8 @@ import java.util.Map;
 /**
  * <p>Loader class to load all gain access to <code>Location</code> instances. Location instances are created based on XML
  * definitions in the location store. The location store is a directory on the user's local harddisk, which is a
- * mandatory property in <code>karma.properties</code>. See {@link nl.toolforge.karma.core.LocalEnvironment} for more information.
- * <p/>
+ * mandatory property in <code>karma.properties</code>.
+ *
  * <p>A location can be of different types. Some locations require authenticator data, which is mapped from an XML file
  * in the Karma configuration directory (<code>uthenticator.xml</code>). A location with id <code>cvs-1</code> will be
  *  mapped to an authenticator with the same id.
@@ -48,37 +47,33 @@ import java.util.Map;
  */
 public final class LocationLoader {
 
-//  private static Log logger = LogFactory.getLog(LocationLoader.class);
-  
-  private static LocationLoader instance = null;
+  private Map locations = null;
+  private WorkingContext workingContext = null;
 
-  private static Map locations = null;
+//  private static LocationLoader instance = null;
 
-  private static File locationBase = null;
-  private static File authenticationBase = null;
-
-  private LocationLoader() {
-  }
+//  private LocationLoader() {}
+//
+//  public static LocationLoader getInstance() {
+//
+//    if (instance == null) {
+//      instance = new LocationLoader();
+//    }
+//    return instance;
+//  }
 
   /**
-   * Gets the singleton instance of the location factory. This instance can be used to get access to all location
-   * objects. This method expects an initialized {@link nl.toolforge.karma.core.LocalEnvironment}.
-   *
-   * @return A location factory.
+   * Constructs a LocationLoader for the current <code>workingContext</code>.
+   * @param workingContext
    */
-  public static LocationLoader getInstance() {
-
-    if (instance == null) {
-      instance = new LocationLoader();
-
-      locationBase = LocalEnvironment.getLocationStore();
-      authenticationBase = LocalEnvironment.getConfigurationDirectory();
-    }
-    return instance;
+  public LocationLoader(WorkingContext workingContext) {
+    this.workingContext = workingContext;
   }
 
+
+
   /**
-   * Loads all location xml files from the path specified by the {@link LocalEnvironment#getLocationStore()}
+   * Loads all location xml files from the path specified by the {@link WorkingContext#getLocationStore()}
    * property. Location objects are matched against authenticator objects, which should be available in the Karma
    * configuration directory and should start with '<code>authentication</code>' and have an <code>xml</code>-extension.
    *
@@ -86,15 +81,11 @@ public final class LocationLoader {
    */
   public synchronized void load() throws LocationException {
 
-    if (locationBase == null) {
-      throw new KarmaRuntimeException("Local environment is not initialized. Use 'getInstance(LocalEnvironment)'.");
-    }
-
     locations = new Hashtable();
 
     Map authenticators = new Hashtable();
 
-    File authenticatorsFile = new File(authenticationBase, "authenticators.xml");
+    File authenticatorsFile = new File(workingContext.getConfigurationDirectory(), "authenticators.xml");
 
     if (authenticatorsFile == null) {
       throw new LocationException(LocationException.MISSING_AUTHENTICATOR_CONFIGURATION);
@@ -122,7 +113,7 @@ public final class LocationLoader {
       if (authenticators.containsKey(authDescriptor.getId())) {
         throw new LocationException(
             LocationException.DUPLICATE_AUTHENTICATOR_KEY,
-            new Object[] {authDescriptor.getId(), LocalEnvironment.getConfigurationDirectory().getPath()}
+            new Object[] {authDescriptor.getId(), workingContext.getConfigurationDirectory().getPath()}
         );
       }
       authenticators.put(authDescriptor.getId(), authDescriptor);
@@ -131,7 +122,7 @@ public final class LocationLoader {
     // Recurse over all xml files in the locations directory.
     //
 
-    String[] files = locationBase.list(new XMLFilenameFilter());
+    String[] files = workingContext.getLocationStore().list(new XMLFilenameFilter());
 
     if (files == null || files.length <= 0) {
       throw new LocationException(LocationException.NO_LOCATION_DATA_FOUND);
@@ -149,7 +140,7 @@ public final class LocationLoader {
       digester.addSetNext("locations/location", "add");
 
       try {
-        subList = (List) digester.parse(new File(locationBase, files[i]).getPath());
+        subList = (List) digester.parse(new File(workingContext.getLocationStore(), files[i]).getPath());
       } catch (IOException e) {
         throw new LocationException(e, LocationException.LOCATION_LOAD_ERROR);
       } catch (SAXException e) {
@@ -164,7 +155,7 @@ public final class LocationLoader {
             locations.remove(d.getId());
             throw new LocationException(
                 LocationException.DUPLICATE_LOCATION_KEY,
-                new Object[] {d.getId(), LocalEnvironment.getLocationStore().getPath()}
+                new Object[] {d.getId(), workingContext.getLocationStore().getPath()}
             );
           }
 
@@ -179,18 +170,6 @@ public final class LocationLoader {
         }
       }
     }
-  }
-
-  /**
-   * Loads location objects and authenticator objects from a specified <code>File</code> location. Can be used for unit
-   * tests as well. Directories for locations and authentication files are the same.
-   */
-  public synchronized void load(File dir) throws LocationException {
-
-    locationBase = dir;
-    authenticationBase = dir;
-
-    load();
   }
 
   private Location getLocation(LocationDescriptor locDescriptor, AuthenticatorDescriptor authDescriptor) {

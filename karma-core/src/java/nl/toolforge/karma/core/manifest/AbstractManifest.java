@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.vc.VersionControlException;
@@ -52,13 +52,9 @@ import java.util.Set;
  */
 public abstract class AbstractManifest implements Manifest {
 
-  protected ModuleFactory moduleFactory = ModuleFactory.getInstance();
-
   private static Collection duplicates = null; // To detect duplicate included manifests.
 
   private Collection childManifests = new ArrayList();
-
-  private Map moduleCache = new HashMap();
 
   private String name = null;
   private String version = null;
@@ -66,17 +62,114 @@ public abstract class AbstractManifest implements Manifest {
 
   private Map modules = null;
 
+  private WorkingContext workingContext = null;
+  private ManifestStructure manifestStructure = null;
+  private File manifestDirectory = null;
+  private Map moduleCache = null;
+
   /**
    * Constructs a manifest instance; <code>name</code> is mandatory.
    */
-  public AbstractManifest(String name) {
+  public AbstractManifest(WorkingContext workingContext, String name) throws ManifestException, LocationException {
 
     if ("".equals(name) || name == null) {
       throw new IllegalArgumentException("Manifest name cannot be empty or null.");
     }
     this.name = name;
 
+    ManifestLoader loader = new ManifestLoader(workingContext);
+    this.manifestStructure = loader.load(name);
+
+    init();
+  }
+
+  /**
+   * A manifest is created based on its <code>ManifestStructure</code>, which can be loaded by the
+   * <code>ManifestLoader</code>. The <code>ManifestStructure</code> is the basis for the Manifest; a number of checks
+   * are applied to it, including a linking of the manifest to the {@link WorkingContext}.
+   *
+   * @param workingContext The current working context.
+   * @param structure The ManifestStructure, which is the basis for the manifest.
+   */
+  public AbstractManifest(WorkingContext workingContext, ManifestStructure structure) throws LocationException {
+
+    this.workingContext = workingContext;
+    this.manifestStructure = structure;
+
+    this.name = structure.getName();
+
+    init();
+  }
+
+  private void init() throws LocationException {
+
+    // Recursively load all modules from the root manifest and all includes to have them available quickly as one
+    // list.
+    //
+    copyStructure();
+
+    // Apply the current working context to this manifest.
+    //
+    applyWorkingContext();
+  }
+
+  //
+  //
+  //
+  private void copyStructure() throws LocationException {
+
+    // Step 1
+    //
     modules = new Hashtable();
+
+    ModuleFactory moduleFactory = new ModuleFactory(workingContext);
+
+    for (Iterator i = manifestStructure.getModules().iterator(); i.hasNext();) {
+      Module module = moduleFactory.create((ModuleDescriptor) i.next());
+      modules.put(module.getName(), module);
+    }
+
+    // Step 2
+    //
+    moduleCache = new HashMap();
+
+    // If there is nothing in the cache, there is a chance that we have not yet
+
+    ManifestFactory factory = new ManifestFactory();
+
+    for (Iterator i = manifestStructure.getChilds().values().iterator(); i.hasNext();) {
+
+      ManifestStructure childStructure = (ManifestStructure) i.next();
+      Manifest manifest = factory.create(workingContext, childStructure);
+
+      childManifests.add(manifest);
+      moduleCache.putAll(manifest.getAllModules());
+    }
+    moduleCache.putAll(getModulesForManifest());
+  }
+
+  //
+  //
+  //
+  private void applyWorkingContext() {
+
+    manifestDirectory = new File(workingContext.getDevelopmentHome(), getName());
+
+    for (Iterator i = moduleCache.values().iterator(); i.hasNext();) {
+      applyWorkingContext(workingContext, (Module) i.next());
+    }
+  }
+
+  /**
+   * A specific Manifest implementation may have to apply specific actions to modules. Each implementation should
+   * therefor
+   *
+   * @param module
+   */
+  protected abstract void applyWorkingContext(WorkingContext context, Module module);
+
+  public final File getDirectory() {
+    return manifestDirectory;
   }
 
   /**
@@ -86,10 +179,6 @@ public abstract class AbstractManifest implements Manifest {
    */
   public final String getName() {
     return name;
-  }
-
-  public final void setType(String type) {
-    // Just here for compatibility.
   }
 
   public abstract String getType();
@@ -122,113 +211,17 @@ public abstract class AbstractManifest implements Manifest {
   }
 
   /**
-   * Loads the manifest from disk. It uses a
-   * <a href="http://jakarta.apache.org/commons/digester">Digester</a> to parse the manifest XML.
-   *
-   * @throws ManifestException When loading the manifest failed.
-   */
-  public synchronized void load() throws ManifestException {
-
-    moduleCache.clear();
-    modules.clear();
-
-    (duplicates = new ArrayList()).add(getName()); // Add the root manifest.
-
-    ManifestFactory factory = ManifestFactory.getInstance();
-    Manifest manifest = factory.parse(getName());
-
-    if (manifest instanceof ReleaseManifest) {
-      checkForPatchLines(manifest);
-    }
-
-    copyToThis((AbstractManifest) manifest);
-
-    // todo As a final step, check all modules in the manifest and remove modules that are not in the manifest anymore
-    // but still on disk.
-
-    // todo should move all modules to a 'modules' sub-directory, for better scanning purposes.
-  }
-
-  /**
    * Checks (in parallel) if modules have a PatchLine associated.
    *
    * @param manifest
    */
-  private void checkForPatchLines(Manifest manifest) {
 
+  // TODO should be included elsewhere ...
+  //
+  private void checkForPatchLines(Manifest manifest) {
     ParallelRunner runner = new ParallelRunner(manifest, PatchLineThread.class);
     runner.execute();
-
-    // todo timing issue ... COULD last forever.
-    //
-    while (!runner.finished()) {
-
-      try {
-        Thread.sleep(100);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
   }
-
-  /**
-   * Makes a 'deep' copy of <code>manifest</code> into <code>this</code>. <code>manifest</code> was generated by
-   * Digester, but they have to be copied to <code>this</code>, because that's the <code>AbstractManifest</code> instance that
-   * is returned by {@link #load()}.
-   */
-  private void copyToThis(AbstractManifest manifest) {
-
-    // Copy all loaded data into this instance
-    //
-    setDescription(manifest.getDescription());
-    setVersion(manifest.getVersion());
-    copyIncludes(manifest.getIncludes());
-    copyModules(manifest.getModulesForManifest());
-
-  }
-
-  private void copyIncludes(Collection includedManifests) {
-    for (Iterator i = includedManifests.iterator(); i.hasNext();) {
-      childManifests.add((Manifest) i.next());
-    }
-  }
-
-  private void copyModules(Map newModules) {
-    getModulesForManifest().putAll(newModules);
-  }
-
-  /**
-   * Includes another manifest in the manifest and links them as 'parent-child'. This method is called by
-   * <a href="http://jakarta.apache.org/commons/digester">Digester</a>
-   *
-   * @param child
-   * @throws ManifestException
-   */
-  public final void includeManifest(ManifestDescriptor child) throws ManifestException {
-
-    if (duplicates.contains(child.getName())) {
-      throw new ManifestException(ManifestException.MANIFEST_NAME_RECURSION, new Object[]{child.getName()});
-    }
-    duplicates.add(child.getName());
-
-    ManifestFactory factory = ManifestFactory.getInstance();
-    Manifest manifest = factory.parse(child.getName());
-
-    // If we correctly parsed the manifest, we can link it to the current manifest.
-    //
-    childManifests.add(manifest);
-  }
-
-  /**
-   * Adds a module to this manifest. This method is called by
-   * <a href="http://jakarta.apache.org/commons/digester">Digester</a> during the {@link #load()}-process.
-   *
-   * @param descriptor The object representing a &lt;module&gt;-elemeent from a manifest XML file.
-   * @throws LocationException When an invalid location was passed with <code>descriptor</code>. This occurs when no
-   *   location-id has been identified in the <code>locations.xml</code>-file in the manifest-store.
-   * @throws ManifestException
-   */
-  public abstract void addModule(ModuleDescriptor descriptor) throws LocationException, ManifestException;
 
   /**
    * Gets all modules defined in this manifest (excluding includedManifests).
@@ -249,18 +242,6 @@ public abstract class AbstractManifest implements Manifest {
    * @return A <code>Map</code> with {@link Module} instances.
    */
   public final Map getAllModules() {
-
-    if (moduleCache == null || moduleCache.size() == 0) {
-
-      moduleCache = new HashMap();
-
-      // If there is nothing in the cache, there is a chance that we have not yet
-
-      for (Iterator i = childManifests.iterator(); i.hasNext();) {
-        moduleCache.putAll(((Manifest) i.next()).getAllModules());
-      }
-      moduleCache.putAll(getModulesForManifest());
-    }
     return moduleCache;
   }
 
@@ -316,10 +297,6 @@ public abstract class AbstractManifest implements Manifest {
 
   public final boolean isLocal(Module module) {
     return new File(getDirectory(), module.getName()).exists();
-  }
-
-  public final File getDirectory() {
-    return new File(LocalEnvironment.getDevelopmentHome(), getName());
   }
 
   /**
@@ -522,6 +499,10 @@ public abstract class AbstractManifest implements Manifest {
    */
   public final void setState(Module module, Module.State state) {
 
+//    if (!contextEnabled) {
+//      throw new KarmaRuntimeException("Working context has not been enabled.");
+//    }
+
     if (state == null) {
       throw new IllegalArgumentException("Parameter state cannot be null.");
     }
@@ -561,6 +542,10 @@ public abstract class AbstractManifest implements Manifest {
   }
 
   public final Module.State getState(Module module) {
+
+//    if (!contextEnabled) {
+//      throw new KarmaRuntimeException("Working context has not been enabled.");
+//    }
 
     if (!isLocal(module)) {
       if (module.hasVersion() || this instanceof ReleaseManifest) {

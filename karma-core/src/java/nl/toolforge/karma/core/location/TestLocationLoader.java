@@ -32,8 +32,7 @@ public class TestLocationLoader extends BaseTest {
     LocationLoader loader = null;
 
     try {
-      loader = LocationLoader.getInstance();
-
+      loader = getWorkingContext().getLocationLoader();
       loader.load();
 
     } catch (LocationException e) {

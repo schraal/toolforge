@@ -18,18 +18,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
+import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.MessageLogger;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.scm.ModuleDependency;
-import nl.toolforge.core.util.file.MyFileUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,12 +38,12 @@ import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
 import org.apache.tools.ant.types.FileSet;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -324,7 +321,7 @@ System.out.println("doing build ('"+this.getClass().getName()+"') for module: "+
         if (relative) {
           jar = dep.getJarDependency();
         } else {
-          jar = LocalEnvironment.getLocalRepository().getPath() + File.separator + dep.getJarDependency();
+          jar = getWorkingContext().getLocalRepository().getPath() + File.separator + dep.getJarDependency();
         }
 
         buffer.append(jar);

@@ -45,7 +45,7 @@ public class CLICommandResponseHandler implements CommandResponseHandler {
   }
 
   public void commandResponseFinished(CommandResponseEvent event) {
-    writer.newLine();
+    writer.prompt();
   }
 
 }
