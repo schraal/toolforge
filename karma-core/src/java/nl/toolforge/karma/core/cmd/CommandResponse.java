@@ -100,6 +100,14 @@ public abstract class CommandResponse {
 	}
 
 	/**
+	 * Clears all statusses for the response.
+	 */
+	public final void clearStatus() {
+
+		statusUpdates.removeAll(statusUpdates);
+	}
+
+	/**
 	 * Includes <code>response</code> in this response.
 	 *
 	 * @param response The response to include in this response.

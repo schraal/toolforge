@@ -58,13 +58,17 @@ public class CreateModuleCommand extends DefaultCommand {
 		//
 		Runner runner = getContext().getRunner(module);
 
-		CommandResponse response = runner.create(module);
+		runner.create(module);
 
 		// If we get to this point, creation of the module was succesfull.
 		//
 		CommandMessage message =
 			new SimpleCommandMessage(getFrontendMessages().getString("message.MODULE_CREATED"), new Object[]{moduleName});
-    response.addMessage(message);
+
+   	// Ensure that only this message is passed back to the client
+		//
+    CommandResponse response = new SimpleCommandResponse();
+		response.addMessage(message);
 
 		return response;
 	}

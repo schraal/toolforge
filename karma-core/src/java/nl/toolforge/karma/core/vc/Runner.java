@@ -73,18 +73,20 @@ public interface Runner {
 	 * Commits a change to <code>file</code> to the version control system.
 	 *
 	 * @param file The file that should be committed.
+	 * @param message The commit message for the file.
 	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>.
 	 */
-	public CommandResponse commit(ManagedFile file) throws VersionControlException;
+	public CommandResponse commit(ManagedFile file, String message) throws VersionControlException;
 
 	/**
 	 * Commits all changes on <code>ManagedFile</code> instances for this
 	 * <code>module</code>.
 	 *
 	 * @param module The module for which all changes should be committed.
+	 * @param message The commit message for the module..
 	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>.
 	 */
-	public CommandResponse commit(Module module) throws VersionControlException;
+	public CommandResponse commit(Module module, String message) throws VersionControlException;
 
 	/**
 	 * Creates a branch on the module.

@@ -57,11 +57,11 @@ public final class SubversionRunner implements Runner {
 		return null;
 	}
 
-	public CommandResponse commit(ManagedFile file) {
+	public CommandResponse commit(ManagedFile file, String message) {
 		return null;
 	}
 
-	public CommandResponse commit(Module module) {
+	public CommandResponse commit(Module module, String message) {
 		return null;
 	}
 

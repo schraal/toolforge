@@ -89,11 +89,13 @@ public final class CVSRunner implements Runner {
 			throw new CVSException(CVSException.MODULE_EXISTS_IN_REPOSITORY, new Object[]{module.getName(), module.getLocation().getId()});
 		}
 
+		// Step 1 : create an empty module structure
+		//
 		ImportCommand importCommand = new ImportCommand();
 		importCommand.setModule(module.getName());
-		importCommand.setLogMessage("Module " + module.getName() + " created on " + new Date().toString());
-		importCommand.setVendorTag(module.getName() + "_MAINLINE");
-		importCommand.setReleaseTag(module.getName() + "_0-0");
+		importCommand.setLogMessage("Module " + module.getName() + " created automatically by Karma on " + new Date().toString());
+		importCommand.setVendorTag("INITIAL");
+		importCommand.setReleaseTag("INITIAL_0-0");
 
 		// Create a temporary structure
 		//
@@ -109,19 +111,44 @@ public final class CVSRunner implements Runner {
 			throw new KarmaRuntimeException("Panic! Failed to create temporary directory for module " + module.getName());
 		}
 
-		File moduleInfo = new File(tmp.getPath(), module.getName() + File.separator + SourceModule.MODULE_INFO);
-
-		try {
-			moduleInfo.createNewFile();
-		} catch (IOException e) {
-			throw new KarmaRuntimeException("Panic! Failed to create 'module.info' in " + moduleInfo.getParent() + ".");
-		}
-
 		// Override localpath setting in the CVS client, as we are importing the thing from a temporary location.
 		//
-		client.setLocalPath(moduleInfo.getParent());
+		client.setLocalPath(tmp.getPath());
 
-		CVSResponseAdapter adapter = executeOnCVS(importCommand, null);
+		CVSResponseAdapter adapter = executeOnCVS(importCommand, module.getName()); // Use module as context directory
+
+		// Remove the temporary structure.
+		//
+		FileUtils.delete(tmp);
+
+    // Step 2 : checkout the module to be able to create module.info
+		//
+
+		// Create another (...) temporary structure
+		//
+		try {
+			tmp = FileUtils.createTempDirectory();
+		} catch (IOException e) {
+			throw new KarmaRuntimeException("Panic! Failed to create temporary directory.");
+		}
+
+		client.setLocalPath(tmp.getPath()); // Point the CVS client to the temp directory.
+
+    CheckoutCommand checkoutCommand = new CheckoutCommand();
+		checkoutCommand.setModule(module.getName());
+		checkoutCommand.setPruneDirectories(true);
+
+		adapter = executeOnCVS(checkoutCommand, module.getName()); // Use module as context directory
+
+		// TODO do more on exception handling from CVS ... You can't be sure it worked
+		//
+
+		client.setLocalPath(tmp.getPath()); // Make sure the CVS client points to the current temp directory again.
+
+		add(module, SourceModule.MODULE_INFO);
+
+//		adapter.clearStatus();
+//		adapter.addStatusUpdate(CVSResponseAdapter.MODULE_);
 
 		// Remove the temporary structure.
 		//
@@ -202,10 +229,9 @@ public final class CVSRunner implements Runner {
 	/**
 	 * For a module, the <code>cvs commit -m &lt;commitMessage&gt;</code>command is executed.
 	 *
-	 * @param file
 	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
 	 */
-	public CommandResponse commit(ManagedFile file) throws CVSException {
+	public CommandResponse commit(ManagedFile file, String message) throws CVSException {
 		return null;
 	}
 
@@ -243,6 +269,7 @@ public final class CVSRunner implements Runner {
 		//
 		CommitCommand commitCommand = new CommitCommand();
 		commitCommand.setFiles(new File[]{fileToAdd});
+		commitCommand.setMessage("File added automatically by Karma.");
 
 		CVSResponseAdapter adapter = executeOnCVS(commitCommand, null);
 
@@ -254,13 +281,27 @@ public final class CVSRunner implements Runner {
 	}
 
 	/**
-	 * For a module, the <code>cvs -q update -Pd</code>command is executed.
+	 * For a module, the <code>cvs commit -m "&lt;some-message&gt;"</code>command is executed.
 	 *
-	 * @param module
+	 * @param module The module. Will be committed recursively.
+	 * @param message A commit message.
+	 *
+	 *
 	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
 	 */
-	public CommandResponse commit(Module module) throws CVSException {
-		return null;
+	public CommandResponse commit(Module module, String message) throws CVSException {
+
+		CommitCommand commitCommand = new CommitCommand();
+
+		// To commit the module, the cvs client should start from the module directory, which has been set
+		// when constructing this runner ...
+		//
+		commitCommand.setFiles(new File[]{new File(client.getLocalPath())});
+		commitCommand.setRecursive(true);
+		commitCommand.setMessage(message);
+    CVSResponseAdapter adapter = executeOnCVS(commitCommand, null);
+
+		return adapter;
 	}
 
 	public CommandResponse branch(Module module, SymbolicName branch) throws CVSException {
