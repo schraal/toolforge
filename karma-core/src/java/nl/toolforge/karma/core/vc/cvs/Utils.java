@@ -92,7 +92,11 @@ public final class Utils {
 
     Runner runner = RunnerFactory.getRunner(module.getLocation());
 
+    //todo refactor this logic.
+    //the idea now is that the retrieval of status would have given an exception when
+    //the module was not in the repo.
     ModuleStatus status = new CVSModuleStatus(module, ((CVSRunner) runner).log(module));
-    return status.existsInRepository();
+//    return status.existsInRepository();
+    return true;
   }
 }
