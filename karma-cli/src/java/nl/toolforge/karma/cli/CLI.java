@@ -44,14 +44,15 @@ public class CLI {
 	 */
 	public static void main(String[] args) {
 
-		LocalEnvironment env = LocalEnvironment.getInstance();
-
 		ConsoleWriter writer = new ConsoleWriter(true);
 
-		// Initialize the command context
-		//
-		CommandContext ctx = new CommandContext();
+    // Initialize the command context
+    //
+    CommandContext ctx = null;
 		try {
+      LocalEnvironment env = LocalEnvironment.getInstance();
+
+      ctx = new CommandContext();
 			ctx.init(env);
 
 			Manifest currentManifest = ctx.getCurrent();
@@ -65,7 +66,7 @@ public class CLI {
 
 			writer.writeln(k.getErrorMessage());
 
-			logger.error(k.getMessage());
+			logger.error(k.getMessage(), k);
 
 			writer.writeln(FRONTEND_MESSAGES.getString("message.EXIT"));
 			System.exit(1);
