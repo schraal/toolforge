@@ -4,8 +4,7 @@
 
 <commands>
 
-  <command name="create-release" alias="cr">
-
+  <command name="create-release-manifest" alias="cr">
     <description lang="en">todo Something.</description>
 
     <options>
@@ -20,13 +19,11 @@
     </options>
 
     <classname>nl.toolforge.karma.core.cmd.impl.CreateRelease</classname>
-
     <help/>
-
   </command>
 
-  <command name="package-module" alias="pam">
 
+  <command name="package-module" alias="pam">
     <description lang="en">todo Something.</description>
 
     <options>
@@ -36,13 +33,21 @@
     </options>
 
     <classname>nl.toolforge.karma.core.cmd.impl.PackageModule</classname>
-
     <help/>
-
   </command>
 
-  <command name="start-work" alias="sw">
 
+  <command name="package-all-modules" alias="paam">
+    <description lang="en">todo Something.</description>
+
+    <options/>
+
+    <classname>nl.toolforge.karma.core.cmd.impl.PackageAllModules</classname>
+    <help/>
+  </command>
+
+
+  <command name="start-work" alias="sw">
     <description lang="en">todo Something.</description>
 
     <options>
@@ -52,13 +57,11 @@
     </options>
 
     <classname>nl.toolforge.karma.cli.cmd.StartWorkImpl</classname>
-
     <help/>
-
   </command>
 
-  <command name="stop-work" alias="st">
 
+  <command name="stop-work" alias="st">
     <description lang="en">todo Something.</description>
 
     <options>
@@ -68,25 +71,11 @@
     </options>
 
     <classname>nl.toolforge.karma.cli.cmd.StopWorkImpl</classname>
-
     <help/>
-
   </command>
 
-  <command name="build-all-modules" alias="ba">
-
-    <description lang="en">todo Something.</description>
-
-    <options/>
-
-    <classname>nl.toolforge.karma.core.cmd.impl.BuildAllModules</classname>
-
-    <help/>
-
-  </command>
 
   <command name="build-module" alias="bm">
-
     <description lang="en">todo Something.</description>
 
     <options>
@@ -96,13 +85,21 @@
     </options>
 
     <classname>nl.toolforge.karma.core.cmd.impl.BuildModule</classname>
-
     <help/>
-
   </command>
 
-  <command name="test-module" alias="tm">
 
+  <command name="build-all-modules" alias="bam">
+    <description lang="en">todo Something.</description>
+
+    <options/>
+
+    <classname>nl.toolforge.karma.core.cmd.impl.BuildAllModules</classname>
+    <help/>
+  </command>
+
+
+  <command name="test-module" alias="tm">
     <description lang="en">Runs the unit tests that are available in the given module.</description>
 
     <options>
@@ -112,13 +109,55 @@
     </options>
 
     <classname>nl.toolforge.karma.core.cmd.impl.TestModule</classname>
-
     <help/>
-
   </command>
 
-  <command name="clean-module" alias="clm">
 
+  <command name="test-all-modules" alias="tam">
+    <description lang="en">Test all modules.</description>
+
+    <options/>
+
+    <classname>nl.toolforge.karma.core.cmd.impl.TestAllModules</classname>
+    <help/>
+  </command>
+
+
+  <command name="generate-test-report" alias="gtr">
+    <description lang="en">Generate a test report.</description>
+
+    <options/>
+
+    <classname>nl.toolforge.karma.core.cmd.impl.GenerateTestReport</classname>
+    <help/>
+  </command>
+
+
+  <command name="doc-module" alias="dm">
+    <description lang="en">Generate API documentation for the given module.</description>
+
+    <options>
+      <option opt="m" longOpt="module" required="true" description="The module name">
+        <arg name="module-name"/>
+      </option>
+    </options>
+
+    <classname>nl.toolforge.karma.core.cmd.impl.DocModule</classname>
+    <help/>
+  </command>
+
+
+  <command name="doc-all-modules" alias="dam">
+    <description lang="en">Generate API documentation for all modules.</description>
+
+    <options/>
+
+    <classname>nl.toolforge.karma.core.cmd.impl.DocAllModules</classname>
+    <help/>
+  </command>
+
+
+  <command name="clean-module" alias="clm">
     <description lang="en">Removes all built artifacts of the module.</description>
 
     <options>
@@ -128,51 +167,65 @@
     </options>
 
     <classname>nl.toolforge.karma.core.cmd.impl.CleanModule</classname>
-
     <help/>
-
   </command>
 
-  <command name="clean-all" alias="cla">
 
+  <command name="clean-all-modules" alias="clam">
     <description lang="en">Removes all built artifacts.</description>
 
     <options/>
 
     <classname>nl.toolforge.karma.core.cmd.impl.CleanAll</classname>
-
     <help/>
-
   </command>
 
-  <command name="update-all" alias="ua">
 
+  <command name="update-module" alias="um">
+    <description lang="en">The update command updates a module from a version control system.</description>
+    <description lang="nl">Het update commando doet een update op een module vanuit een versie beheer systeem.</description>
+
+    <options>
+      <option opt="m" longOpt="module-name" required="true" description="The module name that should be updated">
+        <arg name="module-name"/>
+      </option>
+      <option opt="v" longOpt="version" required="false" description="A specific version">
+        <arg name="version-number"/>
+      </option>
+    </options>
+
+    <classname>nl.toolforge.karma.cli.cmd.UpdateModuleImpl</classname>
+    <help>
+			The update command updates a module on a developer's local disk. Optionally, a version-number
+			can be provided, to update to a specific version. The version-number must comply to the pattern
+			rules for version numbers as defined by ...
+    </help>
+  </command>
+
+
+  <command name="update-all-modules" alias="uam">
     <description lang="en">Updates all modules from the active manifest.</description>
 
     <options/>
 
     <classname>nl.toolforge.karma.cli.cmd.UpdateAllModulesImpl</classname>
-
     <help/>
-
   </command>
 
-  <command name="view-manifest" alias="vm">
 
+  <command name="view-manifest" alias="vm">
     <description lang="en">Views the active manifest.</description>
 
     <options/>
 
     <classname>nl.toolforge.karma.cli.cmd.ViewManifestImpl</classname>
-
     <help>
 			This command shows the status of the current manifest.
     </help>
-
   </command>
 
-  <command name="create-module" alias="crm">
 
+  <command name="create-module" alias="crm">
     <description lang="en">Creates a module (optionally includes it in the manifest as well).</description>
 
     <options>
@@ -185,20 +238,17 @@
       <option opt="c" longOpt="comment" required="true" description="The developer's comment">
         <arg name="comment"/>
       </option>
-      <!--      <option opt="i" longOpt="include" required="false" description="Include the module in the manifest"/>-->
     </options>
 
     <classname>nl.toolforge.karma.core.cmd.impl.CreateModuleCommand</classname>
-
     <help>
 			This command adds a module to a version control system and optionally includes the module in the active
 			manifest.
     </help>
-
   </command>
 
+  
   <command name="promote-module" alias="prm">
-
     <description lang="en">Promotes a module to the next version.</description>
 
     <options>
@@ -214,13 +264,11 @@
     </options>
 
     <classname>nl.toolforge.karma.cli.cmd.PromoteModuleImpl</classname>
-
     <help/>
-
   </command>
 
-  <command name="select-manifest" alias="slm">
 
+  <command name="select-manifest" alias="slm">
     <description lang="en">The select-manifest command activates a manifest by reading it from disk and loading it into Karma.</description>
 
     <options>
@@ -230,45 +278,17 @@
     </options>
 
     <classname>nl.toolforge.karma.cli.cmd.SelectManifestImpl</classname>
-
     <help/>
-
   </command>
 
-  <command name="update-module" alias="upd">
-
-    <description lang="en">The update command updates a module from a version control system.</description>
-    <description lang="nl">Het update commando doet een update op een module vanuit een versie beheer systeem.</description>
-
-    <options>
-      <option opt="m" longOpt="module-name" required="true" description="The module name that should be updated">
-        <arg name="module-name"/>
-      </option>
-      <option opt="v" longOpt="version" required="false" description="A specific version">
-        <arg name="version-number"/>
-      </option>
-    </options>
-
-    <classname>nl.toolforge.karma.cli.cmd.UpdateModuleImpl</classname>
-
-    <help>
-			The update command updates a module on a developer's local disk. Optionally, a version-number
-			can be provided, to update to a specific version. The version-number must comply to the pattern
-			rules for version numbers as defined by ...
-    </help>
-
-  </command>
 
   <command name="list-manifests" alias="lm">
-
     <description>The list-manifests command shows all manifests.</description>
 
     <options/>
 
     <classname>nl.toolforge.karma.cli.cmd.ListManifestsImpl</classname>
-
     <dependencies/>
-
     <help>
 			There is a central repository (generally maintained in a version control system), which contains all the
 			available manifests. This repository is configured in the builder.properties file. There
@@ -276,7 +296,6 @@
 			are downloaded from the manifest repository and put on the local file system. The list-manifests command
 			lists these local manifests. Only these manifests are available for the Karma runtime.
     </help>
-
   </command>
 
 </commands>
