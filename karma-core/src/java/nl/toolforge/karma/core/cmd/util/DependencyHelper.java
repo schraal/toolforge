@@ -8,7 +8,7 @@ import nl.toolforge.karma.core.manifest.ModuleTypeException;
 import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.cvs.Utils;
+import nl.toolforge.karma.core.vc.cvsimpl.Utils;
 
 import java.io.File;
 import java.util.HashSet;

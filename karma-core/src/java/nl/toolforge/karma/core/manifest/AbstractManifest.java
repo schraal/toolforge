@@ -23,7 +23,7 @@ import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.vc.VersionControlSystem;
-import nl.toolforge.karma.core.vc.cvs.AdminHandler;
+import nl.toolforge.karma.core.vc.cvsimpl.AdminHandler;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;

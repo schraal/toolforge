@@ -7,7 +7,7 @@ import nl.toolforge.karma.core.location.LocationLoader;
 import nl.toolforge.karma.core.manifest.ManifestCollector;
 import nl.toolforge.karma.core.manifest.ManifestLoader;
 import nl.toolforge.karma.core.vc.Authenticator;
-import nl.toolforge.karma.core.vc.cvs.CVSRepository;
+import nl.toolforge.karma.core.vc.cvsimpl.CVSRepository;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;

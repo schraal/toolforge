@@ -26,7 +26,7 @@ import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.cvs.CVSException;
+import nl.toolforge.karma.core.vc.cvsimpl.CVSException;
 
 import java.io.File;
 

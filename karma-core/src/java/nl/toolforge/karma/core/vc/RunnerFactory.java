@@ -20,9 +20,9 @@ package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.vc.cvs.CVSRepository;
-import nl.toolforge.karma.core.vc.cvs.CVSRunner;
-import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
+import nl.toolforge.karma.core.vc.cvsimpl.CVSRepository;
+import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
+import nl.toolforge.karma.core.vc.svnimpl.SubversionLocationImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

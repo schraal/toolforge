@@ -33,8 +33,8 @@ import nl.toolforge.karma.core.manifest.ReleaseManifest;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.cvs.AdminHandler;
-import nl.toolforge.karma.core.vc.cvs.Utils;
+import nl.toolforge.karma.core.vc.cvsimpl.AdminHandler;
+import nl.toolforge.karma.core.vc.cvsimpl.Utils;
 
 /**
  *

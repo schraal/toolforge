@@ -33,8 +33,8 @@ import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ReleaseManifest;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.cvs.CVSRunner;
-import nl.toolforge.karma.core.vc.cvs.Utils;
+import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
+import nl.toolforge.karma.core.vc.cvsimpl.Utils;
 
 import java.util.regex.PatternSyntaxException;
 

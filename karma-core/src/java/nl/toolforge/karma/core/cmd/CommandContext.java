@@ -39,7 +39,7 @@ import nl.toolforge.karma.core.module.LocationModule;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.cvs.AdminHandler;
+import nl.toolforge.karma.core.vc.cvsimpl.AdminHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

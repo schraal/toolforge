@@ -16,16 +16,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-package nl.toolforge.karma.core.vc.subversion;
+package nl.toolforge.karma.core.vc.cvsimpl;
 
 import nl.toolforge.karma.core.vc.Revision;
 
 /**
- * Subversion revision container. A revision contains one or more files, directories etc. Note the difference between
- * a revision between Subversion and CVS. See {@link nl.toolforge.karma.core.vc.cvsimpl.CVSRevision}.
- *
  * @author D.A. Smedes
  * @version $Id$
  */
-public class SubversionRevision implements Revision {
+public class CVSRevision implements Revision {
 }

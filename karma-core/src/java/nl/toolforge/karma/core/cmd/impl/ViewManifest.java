@@ -31,7 +31,7 @@ import nl.toolforge.karma.core.manifest.ModuleComparator;
 import nl.toolforge.karma.core.manifest.ModuleTypeException;
 import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.cvs.threads.CVSLogThread;
+import nl.toolforge.karma.core.vc.cvsimpl.threads.CVSLogThread;
 import nl.toolforge.karma.core.vc.threads.ParallelRunner;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -41,9 +41,9 @@ import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.threads.ParallelRunner;
-import nl.toolforge.karma.core.vc.cvs.Utils;
-import nl.toolforge.karma.core.vc.cvs.CVSException;
-import nl.toolforge.karma.core.vc.cvs.threads.CVSLogThread;
+import nl.toolforge.karma.core.vc.cvsimpl.Utils;
+import nl.toolforge.karma.core.vc.cvsimpl.CVSException;
+import nl.toolforge.karma.core.vc.cvsimpl.threads.CVSLogThread;
 
 import java.io.File;
 import java.io.FileWriter;

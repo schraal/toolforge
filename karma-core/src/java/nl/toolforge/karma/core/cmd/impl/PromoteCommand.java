@@ -35,9 +35,9 @@ import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.cvs.AdminHandler;
-import nl.toolforge.karma.core.vc.cvs.CVSModuleStatus;
-import nl.toolforge.karma.core.vc.cvs.CVSRunner;
+import nl.toolforge.karma.core.vc.cvsimpl.AdminHandler;
+import nl.toolforge.karma.core.vc.cvsimpl.CVSModuleStatus;
+import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
 
 /**
  * Implementation of the 'codeline freeze' concept. Karma increases a modules' version (using whichever pattern is

@@ -24,9 +24,9 @@ import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.vc.Runner;
-import nl.toolforge.karma.core.vc.cvs.CVSException;
-import nl.toolforge.karma.core.vc.cvs.CVSRepository;
-import nl.toolforge.karma.core.vc.cvs.CVSRunner;
+import nl.toolforge.karma.core.vc.cvsimpl.CVSException;
+import nl.toolforge.karma.core.vc.cvsimpl.CVSRepository;
+import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,7 +48,7 @@ import java.util.Random;
  * be tested, make sure you ignore these testcases in your test-configuration.
  *
  * <p>Note the dependency of this class with {@link nl.toolforge.karma.core.location.Location} and
- * {@link nl.toolforge.karma.core.vc.cvs.CVSRepository}.
+ * {@link nl.toolforge.karma.core.vc.cvsimpl.CVSRepository}.
  *
  * <p>When performing operations on managed files, a randomize function is used to be able to repeatedly perform
  * tests. Filenames and modulenames in the repository could be named like <code>bla_036548290.56437</code>.

@@ -108,7 +108,6 @@ public class BaseTest extends TestCase {
 
   public void tearDown() {
     try {
-
       MyFileUtils.makeWriteable(wcBaseDir);
       MyFileUtils.makeWriteable(projectBaseDir);
       MyFileUtils.makeWriteable(localRepo);
@@ -117,6 +116,8 @@ public class BaseTest extends TestCase {
       FileUtils.deleteDirectory(projectBaseDir);
       FileUtils.deleteDirectory(localRepo);
     } catch (IOException e) {
+      fail(e.getMessage());
+    } catch (InterruptedException e) {
       fail(e.getMessage());
     }
   }

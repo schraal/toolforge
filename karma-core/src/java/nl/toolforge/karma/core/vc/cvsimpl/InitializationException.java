@@ -16,16 +16,17 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-package nl.toolforge.karma.core.vc.subversion;
-
-import nl.toolforge.karma.core.vc.Revision;
+package nl.toolforge.karma.core.vc.cvsimpl;
 
 /**
- * Subversion revision container. A revision contains one or more files, directories etc. Note the difference between
- * a revision between Subversion and CVS. See {@link nl.toolforge.karma.core.vc.cvsimpl.CVSRevision}.
+ * Thrown when the local CVS repository could not be located for CVS tests.
  *
  * @author D.A. Smedes
  * @version $Id$
  */
-public class SubversionRevision implements Revision {
+public class InitializationException extends RuntimeException {
+
+	public InitializationException(String message) {
+		super(message);
+	}
 }
