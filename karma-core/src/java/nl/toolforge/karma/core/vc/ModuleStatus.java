@@ -58,4 +58,6 @@ public interface ModuleStatus extends RunnerResult {
 
   public boolean existsInRepository();
 
+  public boolean connectionFailure();
+
 }

@@ -27,13 +27,11 @@ import nl.toolforge.karma.core.cmd.impl.ListManifests;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Collections;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Command line interface implementation of the {@link ListManifests} command.

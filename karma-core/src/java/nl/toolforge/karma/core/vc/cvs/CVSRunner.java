@@ -103,10 +103,12 @@ public final class CVSRunner implements Runner {
    * <code>location</code> and a <code>manifest</code>. The location must be a <code>CVSLocationImpl</code> instance,
    * reprenting a CVS repository. The manifest is required because it determines the base point from where CVS commands
    * will be run; modules are checked out in a directory structure, relative to
-   * {@link nl.toolforge.karma.core.manifest.Manifest#getDirectory()}.
+   * {@link nl.toolforge.karma.core.manifest.Manifest#getBaseDirectory()}.
    *
    * @param location  A <code>Location</code> instance (typically a <code>CVSLocationImpl</code> instance), containing
-   *                  the location and connection details of the CVS repository.
+   *   the location and connection details of the CVS repository.
+   * @throws CVSException <code>CONNECTION_EXCEPTION</code> is thrown when <code>location</code> cannot be reached
+   *   (remote locations).
    */
   public CVSRunner(Location location) throws CVSException {
 

@@ -20,6 +20,8 @@ package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.location.BaseLocation;
 import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.core.util.net.Ping;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -259,9 +261,14 @@ public final class CVSLocationImpl extends BaseLocation {
    * Returns a connection object to a CVS repository.
    *
    * @return A CVS Connection object.
-   * @throws CVSException See {@link CVSException#INVALID_CVSROOT}
+   * @throws CVSException <code>INVALID_CVSROOT</code>; <code>CONNECTION_EXCEPTION</code> is thrown when
+   *   <code>location</code> cannot be reached (remote locations).
    */
   public Connection getConnection() throws CVSException {
+
+    if (!ping()) {
+      throw new CVSException(LocationException.CONNECTION_EXCEPTION, new Object[]{getId()});
+    }
 
     if (cvsRootString != null) {
       createCVSRoot();

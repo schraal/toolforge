@@ -28,6 +28,7 @@ import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.vc.cvs.CVSModuleStatus;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
 import nl.toolforge.karma.core.vc.threads.RunnerThread;
+import nl.toolforge.karma.core.location.LocationException;
 
 /**
  * A <code>CVSLogThread</code> runs a <code>cvs log</code> command on a modules' <code>.module.info</code> file and
@@ -47,41 +48,33 @@ public class CVSLogThread extends RunnerThread {
    */
   public void run() {
 
+    ModuleStatus moduleStatus = null;
+
+    startRunning();
+
     try {
 
-      startRunning();
+      moduleStatus = new CVSModuleStatus(getModule());
 
       CVSRunner runner = (CVSRunner) RunnerFactory.getRunner(getModule().getLocation());
 
-      LogInformation logInfo = null;
-      ModuleStatus moduleStatus = new CVSModuleStatus(getModule());
-      try {
+      moduleStatus.setLogInformation(runner.log(getModule()));
 
-        logInfo = runner.log(getModule());
+      // The log method would have thrown a CVSException ..
+      //
+      moduleStatus.setExistsInRepository(true);
 
-        moduleStatus.setLogInformation(logInfo);
-
-        // The log method would have thrown a CVSException ..
-        //
-        moduleStatus.setExistsInRepository(true);
-
-      } catch (CVSException e) {
-        if (e.getErrorCode().equals(VersionControlException.MODULE_NOT_IN_REPOSITORY)) {
-          moduleStatus.setExistsInRepository(false);
-        } else {
-          // Must rethrow ...
-          //
-          throw e;
-        }
+    } catch (VersionControlException e) {
+      if (e.getErrorCode().equals(LocationException.CONNECTION_EXCEPTION)) {
+        ((CVSModuleStatus) moduleStatus).setConnnectionFailure();
       }
-
-      result = moduleStatus;
-
-    } catch (VersionControlException v) {
-      v.printStackTrace();
-    } finally {
-      stopRunning();
+      if (e.getErrorCode().equals(VersionControlException.MODULE_NOT_IN_REPOSITORY)) {
+        moduleStatus.setExistsInRepository(false);
+      }
     }
-  }
 
+    result = moduleStatus;
+
+    stopRunning();
+  }
 }
