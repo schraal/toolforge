@@ -19,36 +19,36 @@
   <!-- build-module (bm)        -->
   <!-- ************************ -->
 
-  <target name="build-module" depends="init-build-dir">
-
-    <!-- '${module-build-dir}' maps to ${development.home}/<manifest-name>/build/<module-name>-->
-    <!-- '${module-source-dir}' maps to ${development.home}/<manifest-name>/<module-name>/src/java-->
-    <!-- '${compile-classpath}' is determined by Module.getDependencies -->
-
-    <mkdir dir="${module-build-dir}/${module-compile-dir}"/>
-
-    <!-- Remove the old jar file. -->
-    <delete>
-      <fileset dir="${module-build-dir}">
-        <include name="*.jar"/>
-      </fileset>
-    </delete>
-
-    <!-- <echo message="${module-classpath}"/> -->
-
-    <javac
-      destdir="${module-build-dir}/${module-compile-dir}"
-      classpath="${module-classpath}"
-      source="1.4"
-      includes="**/*.java"
-      compiler="modern"
-      debug="true">
-
-      <src path="${module-source-dir}"/>
-
-    </javac>
-
-  </target>
+<!--  <target name="build-module" depends="init-build-dir">-->
+<!---->
+<!--    <!-- '${module-build-dir}' maps to ${development.home}/<manifest-name>/build/<module-name>-->-->
+<!--    <!-- '${module-source-dir}' maps to ${development.home}/<manifest-name>/<module-name>/src/java-->-->
+<!--    <!-- '${compile-classpath}' is determined by Module.getDependencies -->-->
+<!---->
+<!--    <mkdir dir="${module-build-dir}/${module-compile-dir}"/>-->
+<!---->
+<!--    <!-- Remove the old jar file. -->-->
+<!--    <delete>-->
+<!--      <fileset dir="${module-build-dir}">-->
+<!--        <include name="*.jar"/>-->
+<!--      </fileset>-->
+<!--    </delete>-->
+<!---->
+<!--    <!-- <echo message="${module-classpath}"/> -->-->
+<!---->
+<!--    <javac-->
+<!--      destdir="${module-build-dir}/${module-compile-dir}"-->
+<!--      classpath="${module-classpath}"-->
+<!--      source="1.4"-->
+<!--      includes="**/*.java"-->
+<!--      compiler="modern"-->
+<!--      debug="true">-->
+<!---->
+<!--      <src path="${module-source-dir}"/>-->
+<!---->
+<!--    </javac>-->
+<!---->
+<!--  </target>-->
 
   <!-- ************************ -->
   <!-- test-module (tm)        -->
@@ -117,70 +117,70 @@
   <!-- package-module (pa); resulting in a jar -->
   <!-- *************************************** -->
 
-  <target name="package-module-as-jar" depends="init-build-dir">
-
-    <!-- Remove all jar-files -->
-    <delete dir="${module-build-dir}" includes="*.jar"/>
-
-    <!-- <echo message="${module-build-dir}, ${module-base-dir}, ${module-includes}"/> -->
-
-    <!-- copy resources from the module src to the package dir -->
-    <!-- todo: refactor this so it works in a proper way. I really hate myself -->
-    <copy todir="${module-build-dir}/${module-package-dir}" overwrite="true">
-      <fileset dir="${module-base-dir}/resources" includes="**/*"/>
-    </copy>
-    <copy todir="${module-build-dir}/${module-package-dir}" overwrite="true">
-      <fileset dir="${module-base-dir}" includes="${module-includes}" excludes="resources"/>
-    </copy>
-
-    <!-- copy resources from the module build to the package dir -->
-    <copy todir="${module-build-dir}/${module-package-dir}" overwrite="true">
-      <fileset dir="${module-build-dir}/${module-compile-dir}" includes="**/*.class"/>
-    </copy>
-
-    <!-- todo: the /.. needs to be configured -->
-    <jar
-      destfile="${module-package-name}"
-      basedir="${module-build-dir}/${module-package-dir}"
-      excludes="${module-excludes}"
-      />
-
-  </target>
+<!--  <target name="package-module-as-jar" depends="init-build-dir">-->
+<!---->
+<!--    <!-- Remove all jar-files -->-->
+<!--    <delete dir="${module-build-dir}" includes="*.jar"/>-->
+<!---->
+<!--    <!-- <echo message="${module-build-dir}, ${module-base-dir}, ${module-includes}"/> -->-->
+<!---->
+<!--    <!-- copy resources from the module src to the package dir -->-->
+<!--    <!-- todo: refactor this so it works in a proper way. I really hate myself -->-->
+<!--    <copy todir="${module-build-dir}/${module-package-dir}" overwrite="true">-->
+<!--      <fileset dir="${module-base-dir}/resources" includes="**/*"/>-->
+<!--    </copy>-->
+<!--    <copy todir="${module-build-dir}/${module-package-dir}" overwrite="true">-->
+<!--      <fileset dir="${module-base-dir}" includes="${module-includes}" excludes="resources"/>-->
+<!--    </copy>-->
+<!---->
+<!--    <!-- copy resources from the module build to the package dir -->-->
+<!--    <copy todir="${module-build-dir}/${module-package-dir}" overwrite="true">-->
+<!--      <fileset dir="${module-build-dir}/${module-compile-dir}" includes="**/*.class"/>-->
+<!--    </copy>-->
+<!---->
+<!--    <!-- todo: the /.. needs to be configured -->-->
+<!--    <jar-->
+<!--      destfile="${module-package-name}"-->
+<!--      basedir="${module-build-dir}/${module-package-dir}"-->
+<!--      excludes="${module-excludes}"-->
+<!--      />-->
+<!---->
+<!--  </target>-->
 
   <!-- *************************************** -->
   <!-- package-module (pa); resulting in a war -->
   <!-- *************************************** -->
 
-  <target name="package-module-as-war" depends="init-build-dir">
-
-    <delete>
-      <fileset dir="${module-build-dir}" includes="*.war"/>
-    </delete>
-
-    <copy todir="${module-build-dir}/${module-package-dir}" overwrite="true">
-      <fileset dir="${module-base-dir}/web" includes="**/*"/>
-    </copy>
-    <copy todir="${module-build-dir}/${module-package-dir}" overwrite="true">
-      <fileset dir="${module-base-dir}" includes="${module-includes}" excludes="web"/>
-    </copy>
-
-    <!-- For standalone wars, all deps are copied to WEB-INF/lib and packaged as such.-->
-
-    <echo message="${manifest-build-dir} - ${module-module-dependencies}"/>
-    <echo message="${karma-jar-repository} - ${module-jar-dependencies}"/>
-    <copy todir="${module-build-dir}/${module-package-dir}/WEB-INF/lib" flatten="yes" >
-
-      <!-- Module dependencies, appear as <dependency module=""/> -->
-      <fileset dir="${manifest-build-dir}" includes="${module-module-dependencies}"/>
-      <!-- Jar dependencies, from the jar-repository -->
-      <fileset dir="${karma-jar-repository}" includes="${module-jar-dependencies}"/>
-    </copy>
-
-    <!-- Package the module -->
-
-    <war destfile="${module-package-name}" basedir="${module-build-dir}/${module-package-dir}" webxml="${module-webxml}"/>
-
-  </target>
+<!--  <target name="package-module-as-war" depends="init-build-dir">-->
+<!---->
+<!--    <delete>-->
+<!--      <fileset dir="${module-build-dir}" includes="*.war"/>-->
+<!--    </delete>-->
+<!---->
+<!--    <copy todir="${module-build-dir}/${module-package-dir}" overwrite="true">-->
+<!--      <fileset dir="${module-base-dir}/web" includes="**/*"/>-->
+<!--    </copy>-->
+<!--    <copy todir="${module-build-dir}/${module-package-dir}" overwrite="true">-->
+<!--      <fileset dir="${module-base-dir}" includes="${module-includes}" excludes="web"/>-->
+<!--    </copy>-->
+<!---->
+<!--    <!-- For standalone wars, all deps are copied to WEB-INF/lib and packaged as such.-->-->
+<!---->
+<!--    <echo message="${manifest-build-dir} - ${module-module-dependencies}"/>-->
+<!--    <echo message="${karma-jar-repository} - ${module-jar-dependencies}"/>-->
+<!--    <copy todir="${module-build-dir}/${module-package-dir}/WEB-INF/lib" flatten="yes" >-->
+<!---->
+<!--      <!-- Module dependencies, appear as <dependency module=""/> -->-->
+<!--      <fileset dir="${manifest-build-dir}" includes="${module-module-dependencies}"/>-->
+<!--      <!-- Jar dependencies, from the jar-repository -->-->
+<!--      <fileset dir="${karma-jar-repository}" includes="${module-jar-dependencies}"/>-->
+<!--    </copy>-->
+<!---->
+<!--    <!-- Package the module -->-->
+<!---->
+<!--    <war destfile="${module-package-name}" basedir="${module-build-dir}/${module-package-dir}" webxml="${module-webxml}"/>-->
+<!---->
+<!--  </target>-->
 
   <!-- *************************************** -->
   <!-- package-module (pa); resulting in an ear -->
