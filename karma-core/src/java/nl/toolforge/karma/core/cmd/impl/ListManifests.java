@@ -14,8 +14,6 @@ import java.util.Set;
  */
 public abstract class ListManifests extends DefaultCommand {
 
-	protected Set manifests = null;
-
 	/**
 	 * This constructor performs all generic (enduser-independent functionality).
 	 *
@@ -23,16 +21,6 @@ public abstract class ListManifests extends DefaultCommand {
 	 */
 	public ListManifests(CommandDescriptor descriptor) throws ManifestException {
 		super(descriptor);
-		manifests = getContext().getAll();
-	}
-
-	/**
-	 * Gets the list of manifests.
-	 *
-	 * @return The list of manifests.
-	 */
-	protected Set getManifests() {
-		return manifests;
 	}
 
 }

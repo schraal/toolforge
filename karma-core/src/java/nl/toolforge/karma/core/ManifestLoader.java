@@ -54,7 +54,7 @@ public final class ManifestLoader {
    * @return All manifests in the manifest store directory.
    * @throws ManifestException
    */
-  public final Set getAll() throws ManifestException {
+  public final Set getAllManifests() throws ManifestException {
 
     Set all = new HashSet();
 

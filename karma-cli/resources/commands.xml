@@ -199,7 +199,7 @@
 
 		<options/>
 
-		<classname>nl.toolforge.karma.core.cmd.impl.CommandFaker</classname>
+		<classname>nl.toolforge.karma.cli.cmd.ListManifestsImpl</classname>
 
 		<dependencies/>
 

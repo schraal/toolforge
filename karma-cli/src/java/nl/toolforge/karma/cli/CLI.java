@@ -1,24 +1,23 @@
 package nl.toolforge.karma.cli;
 
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.LocalEnvironment;
-import nl.toolforge.karma.core.Manifest;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.bundle.BundleCache;
-import nl.toolforge.karma.core.cmd.CommandContext;
-import nl.toolforge.karma.core.cmd.CommandFactory;
-import nl.toolforge.karma.core.cmd.CommandMessage;
-import nl.toolforge.karma.core.cmd.CommandResponse;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ResourceBundle;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ResourceBundle;
+import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.Manifest;
+import nl.toolforge.karma.core.bundle.BundleCache;
+import nl.toolforge.karma.core.cmd.CommandContext;
+import nl.toolforge.karma.core.cmd.CommandFactory;
+import nl.toolforge.karma.core.cmd.CommandMessage;
+import nl.toolforge.karma.core.cmd.CommandResponse;
 
 /**
  * <p>The <code>CLI</code> is the command-line interface for Karma. The class presents a simple-to-use command-line
@@ -136,11 +135,14 @@ public class CLI {
 							// Print the first message for now.
 							// TODO do something better with the message array
 							//
-							writer.writeln(messages[0].getMessageText());
+              for (int i = 0; i < messages.length; i++) {
+                writer.writeln(messages[i].getMessageText());
+              }
 						}
 					}
 				} catch (KarmaException e) {
 					writer.writeln(e.getErrorMessage());
+          logger.error(e.getMessage(), e);
 				}
 			}
 			writer.writeln(FRONTEND_MESSAGES.getString("message.EXIT"));

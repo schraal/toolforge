@@ -38,7 +38,7 @@ public final class CommandDescriptor {
 		try {
 			this.commandImpl = Class.forName(commandImpl);
 		} catch (ClassNotFoundException c) {
-			throw new KarmaException(KarmaException.COMMAND_IMPLEMENTATION_CLASS_NOT_FOUND, c);
+			throw new KarmaException(KarmaException.COMMAND_IMPLEMENTATION_CLASS_NOT_FOUND, new Object[]{name}, c);
 		}
 	}
 

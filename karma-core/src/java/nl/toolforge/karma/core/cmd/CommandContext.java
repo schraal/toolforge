@@ -101,10 +101,10 @@ public final class CommandContext {
 	/**
 	 * Gets all manifests. Delegate to {@link ManifestLoader}.
 	 *
-	 * @return See <code>ManifestLoader.getAll()</code>.
+	 * @return See <code>ManifestLoader.getAllManifests()</code>.
 	 */
-	public Set getAll() throws ManifestException {
-		return manifestLoader.getAll();
+	public Set getAllManifests() throws ManifestException {
+		return manifestLoader.getAllManifests();
 	}
 
 	/**
@@ -123,7 +123,8 @@ public final class CommandContext {
 			throw new KarmaException(KarmaException.COMMAND_CONTEXT_NOT_INITIALIZED);
 		}
 
-		return execute((CommandFactory.getInstance().getCommand(commandLine)));
+    Command command = CommandFactory.getInstance().getCommand(commandLine);
+		return execute(command);
 	}
 
 	/**
