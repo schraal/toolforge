@@ -8,10 +8,10 @@
 
 # the following needs to be tweaked.
 #
-export BASE=/home/asmedes/dev/toolforge
+export BASE=/home/toolforge
 
 cd $BASE
-#cvs update -dPA
+cvs update -dPA
 #unpack the CVS repo used for testing
 cd /tmp
 rm -rf test-CVSROOT
