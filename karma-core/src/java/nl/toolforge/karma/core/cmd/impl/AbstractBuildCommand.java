@@ -190,7 +190,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
       // todo hmm, this mechanism doesn't integrate with the commandresponse mechanism
       //
       logger.setOutputPrintStream(System.out);
-      logger.setErrorPrintStream(System.out);
+      logger.setErrorPrintStream(System.err);
 
       logger.setMessageOutputLevel(Project.MSG_INFO); // Always handy ...
 //    logger.setMessageOutputLevel(Project.MSG_VERBOSE); // Always handy ...

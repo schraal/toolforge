@@ -75,14 +75,16 @@ public class TestModule extends AbstractBuildCommand {
       command.registerCommandResponseListener(getResponseListener());
       command.execute();
     } catch (CommandException ce) {
-      if (    ce.getErrorCode().equals(CommandException.DEPENDENCY_DOES_NOT_EXIST) ||
+      if (ce.getErrorCode().equals(CommandException.DEPENDENCY_DOES_NOT_EXIST) ||
           ce.getErrorCode().equals(CommandException.BUILD_FAILED) ||
           ce.getErrorCode().equals(DependencyException.DEPENDENCY_NOT_FOUND) ) {
-        commandResponse.addEvent(new ErrorEvent(ce.getErrorCode(), ce.getMessageArguments()));
+        commandResponse.addEvent(new ErrorEvent(this, ce.getErrorCode(), ce.getMessageArguments()));
         throw new CommandException(ce, CommandException.TEST_FAILED, new Object[]{module.getName()});
+      } else if (ce.getErrorCode().equals(CommandException.NO_SRC_DIR)) {
+        //do not log anything this has already been done.
+        //commandResponse.addEvent(new ErrorEvent(this, ce.getErrorCode(), ce.getMessageArguments()));
       } else {
-        commandResponse.addEvent(new ErrorEvent(ce.getErrorCode(), ce.getMessageArguments()));
-        commandResponse.addEvent(new ErrorEvent(CommandException.BUILD_WARNING));
+        commandResponse.addEvent(new ErrorEvent(this, ce.getErrorCode(), ce.getMessageArguments()));
       }
     } catch (CommandLoadException e) {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
@@ -98,7 +100,8 @@ public class TestModule extends AbstractBuildCommand {
     if (!getBuildEnvironment().getModuleTestSourceDirectory().exists()) {
       // No point in building a module, if no test/java is available.
       //
-      throw new CommandException(CommandException.NO_TEST_DIR, new Object[] {getCurrentModule().getName(), "test/java"});
+      commandResponse.addEvent(new ErrorEvent(this, CommandException.NO_TEST_DIR, new Object[] {getCurrentModule().getName()}));
+      throw new CommandException(CommandException.NO_TEST_DIR, new Object[] {getCurrentModule().getName()});
     }
     DirectoryScanner scanner = new DirectoryScanner();
     scanner.setBasedir(getBuildEnvironment().getModuleTestSourceDirectory());
@@ -107,6 +110,7 @@ public class TestModule extends AbstractBuildCommand {
     if (scanner.getIncludedFiles().length == 0) {
       // No point in building a module, if no sources available.
       //
+      commandResponse.addEvent(new ErrorEvent(this, CommandException.NO_TEST_DIR, new Object[] {getCurrentModule().getName()}));
       throw new CommandException(CommandException.NO_TEST_DIR, new Object[] {getCurrentModule().getName(), "test/java"});
     }
 
@@ -126,7 +130,6 @@ public class TestModule extends AbstractBuildCommand {
       String deps = "";
 
       DependencyHelper helper = new DependencyHelper(getCurrentManifest());
-      helper.getClassPath(getCurrentModule());
 
       if (getCurrentModule().getDependencies().size() > 0) {
         deps = helper.getClassPath(getCurrentModule()) + ";";

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.LinkedHashSet;
 
 import net.sf.sillyexceptions.OutOfTheBlueException;
 
@@ -64,7 +65,7 @@ public final class DependencyHelper {
   }
 
   public Set getAllDependencies(Module module, boolean doPackage) throws ModuleTypeException, DependencyException {
-    HashSet all = new HashSet();
+    Set all = new LinkedHashSet();
     all.addAll(getModuleDependencies(module, doPackage));
     all.addAll(getJarDependencies(module, doPackage));
     return all;
@@ -88,7 +89,7 @@ public final class DependencyHelper {
 
     BuildEnvironment env = new BuildEnvironment(manifest, module);
 
-    Set s = new HashSet();
+    Set s = new LinkedHashSet();
 
     for (Iterator iterator = module.getDependencies().iterator(); iterator.hasNext();) {
       ModuleDependency dep = (ModuleDependency) iterator.next();
@@ -96,8 +97,15 @@ public final class DependencyHelper {
 
         try {
           Module depModule = manifest.getModule(dep.getModule());
-          File dependencyJar = new File(dep.getModule(), resolveArchiveName(depModule));
-          DependencyPath path = new DependencyPath(env.getBuildRootDirectory(), dependencyJar);
+          DependencyPath path;
+
+          //when packaging we want to have the archive
+          //when we are not packaging, i.e. building or testing, then we want the classes.
+          if (doPackage) {
+            path = new DependencyPath(env.getBuildRootDirectory(), new File(dep.getModule(), resolveArchiveName(depModule)));
+          } else {
+            path = new DependencyPath(env.getBuildRootDirectory(), new File(dep.getModule(), "build"));
+          }
           if (!path.exists()) {
             throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getModule()});
           }
@@ -222,7 +230,7 @@ public final class DependencyHelper {
       throw new IllegalArgumentException("Module cannot be null.");
     }
 
-    Set s = new HashSet();
+    Set s = new LinkedHashSet();
 
     for (Iterator iterator = module.getDependencies().iterator(); iterator.hasNext();) {
 

@@ -18,25 +18,27 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import java.io.File;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.Project;
 
+import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.cmd.CommandFactory;
+import nl.toolforge.karma.core.cmd.CommandLoadException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.event.ExceptionEvent;
 import nl.toolforge.karma.core.cmd.event.MessageEvent;
 import nl.toolforge.karma.core.cmd.event.SimpleMessage;
-import nl.toolforge.karma.core.cmd.util.BuildEnvironment;
+import nl.toolforge.karma.core.cmd.event.ErrorEvent;
 import nl.toolforge.karma.core.cmd.util.DependencyException;
 import nl.toolforge.karma.core.cmd.util.DependencyHelper;
+import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ModuleTypeException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.DirectoryScanner;
-import org.apache.tools.ant.types.FilterSet;
-import org.apache.tools.ant.types.FileSet;
 
 /**
  * Builds a module in a manifest. Building a module means that all java sources will be compiled into the
@@ -65,7 +67,8 @@ public class BuildModule extends AbstractBuildCommand {
     if (!getBuildEnvironment().getModuleSourceDirectory().exists()) {
       // No point in building a module, if no src/java is available or no .java files are present in that dir.
       //
-      throw new CommandException(CommandException.NO_SRC_DIR, new Object[] {getCurrentModule().getName(), DEFAULT_SRC_PATH});
+      commandResponse.addEvent(new ErrorEvent(this, CommandException.NO_SRC_DIR, new Object[] {getCurrentModule().getName()}));
+      throw new CommandException(CommandException.NO_SRC_DIR, new Object[] {getCurrentModule().getName()});
     }
     DirectoryScanner scanner = new DirectoryScanner();
     scanner.setBasedir(getBuildEnvironment().getModuleSourceDirectory());
@@ -74,7 +77,8 @@ public class BuildModule extends AbstractBuildCommand {
     if (scanner.getIncludedFiles().length == 0) {
       // No point in building a module, if no src/java is available or no .java files are present in that dir.
       //
-      throw new CommandException(CommandException.NO_SRC_DIR, new Object[] {getCurrentModule().getName(), DEFAULT_SRC_PATH});
+      commandResponse.addEvent(new ErrorEvent(this, CommandException.NO_SRC_DIR, new Object[] {getCurrentModule().getName()}));
+      throw new CommandException(CommandException.NO_SRC_DIR, new Object[] {getCurrentModule().getName()});
     }
     
     DependencyHelper helper = new DependencyHelper(getCurrentManifest());
@@ -82,54 +86,51 @@ public class BuildModule extends AbstractBuildCommand {
     Project project = getAntProject("build-module.xml");
 
     try {
-//      boolean dependenciesChecked = false;
-//      while (!dependenciesChecked) {
-//        try {
+      boolean dependenciesChecked = false;
+      while (!dependenciesChecked) {
+        try {
           project.setProperty("classpath", helper.getClassPath(getCurrentModule()));
-//          dependenciesChecked = true;
-//        } catch (DependencyException de) {
-//          if ( !getCommandLine().hasOption("n") ||
-//               de.getErrorCode().equals(DependencyException.DEPENDENCY_NOT_FOUND)) {
-//            //a dependency was not found. Let's build it.
-//            //if it's a module, build it.
-//            //else, rethrow the exception, since we can do nothing about it.
-//            String dep = (String) de.getMessageArguments()[0];
-//            try {
-//              Module module = getCurrentManifest().getModule(dep);
-//
-////----------
-//              Command command = null;
-//              try {
-//                //todo: this has to become a normal build command
-//                //however, then build needs to use classes, not packages.
-//                getCommandResponse().addMessage(new StatusMessage("Module `{0}` is needed, but is not built yet. Doing that now.", new Object[]{module.getName()}));
-//
-//                String commandLineString = "pam -m " + module.getName();
-//System.out.println("Going to: "+commandLineString);
-//                command = CommandFactory.getInstance().getCommand(commandLineString);
-//                command.setContext(getContext());
-//                command.registerCommandResponseListener(getResponseListener());
-//                command.execute();
-//
-//                //the dependency built successfully.
-//              } catch (CommandLoadException e) {
-//                throw new CommandException(e.getErrorCode(), e.getMessageArguments());
-//              } finally {
-//                if ( command != null ) {
-//                  command.deregisterCommandResponseListener(getResponseListener());
-//                }
-//              }
-////------------------
-//            } catch (ManifestException me) {
-//              //obviously it was not a module...
-//              throw de;
-//            }
-//          } else {
-//            //rethrow the exception. Don't know what to do with it here.
-//            throw de;
-//          }
-//        }
-//      }
+          dependenciesChecked = true;
+        } catch (DependencyException de) {
+          if ( !getCommandLine().hasOption("n") ||
+               de.getErrorCode().equals(DependencyException.DEPENDENCY_NOT_FOUND)) {
+            //a dependency was not found. Let's build it.
+            //if it's a module, build it.
+            //else, rethrow the exception, since we can do nothing about it.
+            String dep = (String) de.getMessageArguments()[0];
+            try {
+              Module module = getCurrentManifest().getModule(dep);
+
+              Command command = null;
+              try {
+                //todo: this has to become a normal build command
+                //however, then build needs to use classes, not packages.
+                getCommandResponse().addEvent(new MessageEvent(this, new SimpleMessage("Module `{0}` is needed, but is not built yet. Doing that now.", new Object[]{module.getName()})));
+                String commandLineString = "bm -m " + module.getName();
+                logger.info("Going to: "+commandLineString);
+                command = CommandFactory.getInstance().getCommand(commandLineString);
+                command.setContext(getContext());
+                command.registerCommandResponseListener(getResponseListener());
+                command.execute();
+
+                //the dependency built successfully.
+              } catch (CommandLoadException e) {
+                throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+              } finally {
+                if ( command != null ) {
+                  command.deregisterCommandResponseListener(getResponseListener());
+                }
+              }
+            } catch (ManifestException me) {
+              //obviously it was not a module...
+              throw de;
+            }
+          } else {
+            //rethrow the exception. Don't know what to do with it here.
+            throw de;
+          }
+        }
+      }
       project.setProperty("module-build-dir", getBuildEnvironment().getModuleBuildDirectory().getPath());
       project.setProperty("module-source-dir", getBuildEnvironment().getModuleSourceDirectory().getPath());
 

@@ -1,16 +1,15 @@
 package nl.toolforge.karma.core.cmd.util;
 
-import nl.toolforge.karma.core.cmd.Command;
-import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.event.MessageEvent;
-import nl.toolforge.karma.core.cmd.event.SimpleMessage;
-import org.apache.commons.lang.StringUtils;
-import org.apache.tools.ant.BuildEvent;
-import org.apache.tools.ant.DefaultLogger;
-
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
+import org.apache.tools.ant.BuildEvent;
+import org.apache.tools.ant.DefaultLogger;
+
+import nl.toolforge.karma.core.cmd.Command;
+import nl.toolforge.karma.core.cmd.event.MessageEvent;
+import nl.toolforge.karma.core.cmd.event.SimpleMessage;
 
 /**
  * @author D.A. Smedes

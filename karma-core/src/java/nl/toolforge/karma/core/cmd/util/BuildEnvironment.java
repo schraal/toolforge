@@ -32,11 +32,7 @@ public class BuildEnvironment {
    * @return
    */
   public File getModuleBuildRootDirectory() {
-
-    File moduleBuildDir = new File(getBuildRootDirectory(), module.getName());
-//    moduleBuildDir.mkdirs();
-
-    return moduleBuildDir;
+    return new File(getBuildRootDirectory(), module.getName());
   }
 
   /**
@@ -45,11 +41,7 @@ public class BuildEnvironment {
    * @return
    */
   public File getModuleBuildDirectory() {
-
-    File moduleBuildDir = new File(getModuleBuildRootDirectory(), "build");
-//    moduleBuildDir.mkdirs();
-
-    return moduleBuildDir;
+    return new File(getModuleBuildRootDirectory(), "build");
   }
 
   /**
@@ -58,27 +50,15 @@ public class BuildEnvironment {
    * @return
    */
   public File getModuleTestBuildDirectory() {
-
-    File moduleTestDirectory = new File(getModuleBuildRootDirectory(), "test");
-//    moduleTestDirectory.mkdirs();
-
-    return moduleTestDirectory;
+    return new File(getModuleBuildRootDirectory(), "test");
   }
 
   public File getModuleJavadocDirectory() {
-
-    File moduleJavadocDirectory = new File(getModuleBuildRootDirectory(), "javadoc");
-//    moduleJavadocDirectory.mkdirs();
-
-    return moduleJavadocDirectory;
+    return new File(getModuleBuildRootDirectory(), "javadoc");
   }
 
   public File getModulePackageDirectory() {
-
-    File modulePackageDirectory = new File(getModuleBuildRootDirectory(), "package");
-//    modulePackageDirectory.mkdirs();
-
-    return modulePackageDirectory;
+    return new File(getModuleBuildRootDirectory(), "package");
   }
 
   public File getModuleSourceDirectory() {
@@ -92,4 +72,5 @@ public class BuildEnvironment {
   public File getManifestBuildDirectory() {
     return new File(manifest.getBaseDirectory(), "build");
   }
+  
 }
