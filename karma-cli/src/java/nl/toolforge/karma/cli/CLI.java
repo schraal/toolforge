@@ -52,9 +52,7 @@ public final class CLI {
         }
         System.out.println("\n" + message);
 
-        System.out.println("\n\n\n\n");
-
-        e.printStackTrace();
+        System.out.println("\n");
 
         System.exit(1);
       }
