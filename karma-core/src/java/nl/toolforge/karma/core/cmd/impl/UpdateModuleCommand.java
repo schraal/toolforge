@@ -21,7 +21,7 @@ public class UpdateModuleCommand extends DefaultCommand {
 //		super(descriptor);
 //	}
 
-	public CommandResponse executeCommand() throws KarmaException {
+	public CommandResponse execute() throws KarmaException {
 		return null;
 	}
 }

@@ -8,7 +8,7 @@ import nl.toolforge.karma.core.cmd.DefaultCommand;
  * <p>Bogus implementation of {@link nl.toolforge.karma.core.cmd.DefaultCommand}. Used in testcases.
  *
  * @author D.A. Smedes
- * @version $revision$ $date$ $author$
+ * @version $revision $date $author
  */
 public final class CommandFaker extends DefaultCommand {
 

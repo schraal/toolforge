@@ -43,8 +43,7 @@ public final class LocationFactory {
 
 		load(
 			new File(prefs.get(Preferences.LOCATION_STORE_DIRECTORY_PROPERTY)),
-			Preferences.getInstance(true).getConfigurationDirectory().getPath() + File.separator + "location-authentication.xml"
-
+			prefs.getConfigurationDirectory().getPath() + File.separator + "location-authentication.xml"
 		);
 	}
 
@@ -62,11 +61,16 @@ public final class LocationFactory {
 	 */
 	public synchronized void load(File locationFilesPath, String authenticationFilePath) throws KarmaException {
 
+		String[] files = locationFilesPath.list(new XMLFilenameFilter());
+
+		System.out.println("locationPath " + locationFilesPath.getPath());
+
+		if (files.length <= 0) {
+           throw new KarmaException(KarmaException.NO_LOCATION_DATA_FOUND);
+		}
+
 		try {
 			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-
-
-			String[] files = locationFilesPath.list(new XMLFilenameFilter());
 
 			// Parse all XML files into one Document instance
 			//
@@ -82,31 +86,28 @@ public final class LocationFactory {
 				root = (Document) root.importNode(document.getDocumentElement(), true);
 			}
 
-			Document authenticators =
-				builder.parse(new File(authenticationFilePath + File.separator + "location-authentication.xml"));
-
 			NodeList locationElements = root.getElementsByTagName("location");
 
-            locations = new Hashtable();
+			locations = new Hashtable();
 
 			for (int i = 0; i < locationElements.getLength(); i++) {
 
-                // Check all elements for their type and add them to the locationList
+				// Check all elements for their type and add them to the locationList
 				//
-                Element locationElement = (Element) locationElements.item(i);
-                Location location = null;
+				Element locationElement = (Element) locationElements.item(i);
+				Location location = null;
 
 				if (Location.Type.CVS_REPOSITORY.equals(locationElement.getAttribute("type").toUpperCase())) {
 					CVSLocationImpl cvsLocation = new CVSLocationImpl(locationElement.getAttribute("id"));
 
 					cvsLocation.setHost(locationElement.getElementsByTagName("host").item(0).getNodeValue());
-                    cvsLocation.setPort(new Integer(locationElement.getElementsByTagName("host").item(0).getNodeValue()).intValue());
+					cvsLocation.setPort(new Integer(locationElement.getElementsByTagName("host").item(0).getNodeValue()).intValue());
 					cvsLocation.setRepository(locationElement.getElementsByTagName("repository").item(0).getNodeValue());
 
 					// TODO Read in the authentication stuff and process it
 					//
 					//cvsLocation.setUsername(authenticationElement.etElementsByTagName("username").item(0).getNodeValue());
-                    //cvsLocation.setPassword(authenticationElement.etElementsByTagName("password").item(0).getNodeValue());
+					//cvsLocation.setPassword(authenticationElement.etElementsByTagName("password").item(0).getNodeValue());
 					//cvsLocation.setProtocol(authenticationElement.etElementsByTagName("protocol").item(0).getNodeValue());
 
 					locations.put(cvsLocation.getId(), cvsLocation);
@@ -123,39 +124,15 @@ public final class LocationFactory {
 				if (Location.Type.MAVEN_REPOSITORY.equals(locationElement.getAttribute("type").toUpperCase())) {
 					MavenRepositoryImpl mavenLocation = new MavenRepositoryImpl(locationElement.getAttribute("id"));
 
-                    // TODO should be implemented for Maven
+					// TODO should be implemented for Maven
 
 					locations.put(mavenLocation.getId(), mavenLocation);
 				}
 			}
 
-			// We are going to perform a validation for each repository, to see whether to keep it
-			//
-//			StringBuffer reposBuffer = new StringBuffer();
-//			for (Iterator i = allRepositories.entrySet().iterator(); i.hasNext(); ) {
-//				Repository repository = (Repository) ((Map.Entry) i.next()).getValue();
-//				if (!repository.isValid()) {
-//					log.debug("Repository " + repository.getName() + " is not valid.");
-//					i.remove();
-//				} else {
-//					reposBuffer.append(repository.getName());
-//					if (i.hasNext()) reposBuffer.append(", ");
-//				}
-//			}
+			Document authenticators = builder.parse(new File(authenticationFilePath));
 
-//			log.info("Repositories have been initialized : " + reposBuffer.toString());
-//
-//			// If there is only one repository, we make it the default repository
-//			// Otherwise we try to set the original defaultRepository found in the Preferences (if it still exists)
-//			//
-//			if (allRepositories.size() == 1) {
-//				setDefaultRepository( ((Repository)((Map.Entry) allRepositories.entrySet().iterator().next()).getValue()).getName());
-//			} else {
-//				String previousDefaultRepository = Preferences.getInstance().get("karma.repository.default", null);
-//				if (previousDefaultRepository != null) {
-//					setDefaultRepository(previousDefaultRepository);
-//				}
-//			}
+			// TODO : match with authenticators
 
 		}
 		catch (Exception e) {
