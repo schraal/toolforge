@@ -140,6 +140,7 @@
 			<resource>
 				<directory>resources</directory>
 				<includes>
+					<include>templates/*</include>
 					<include>**/*.xml</include>
 					<include>**/*.dtd</include>
 					<include>**/*.properties</include>

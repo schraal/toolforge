@@ -18,10 +18,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest.util;
 
+import java.io.File;
 
 
 /**
- * <p>Layout for a module. A new modules can be initialized with new files and directories. Implementations of this
+ * <p>Layout for a module. A new module can be initialized with new files and directories. Implementations of this
  * class define those files and directories.
  *
  * @author D.A. Smedes
@@ -29,7 +30,7 @@ package nl.toolforge.karma.core.manifest.util;
  */
 public interface ModuleLayoutTemplate {
 
-  public String[] getFileElements();
+  public FileTemplate[] getFileElements();
 
   public String[] getDirectoryElements();
 

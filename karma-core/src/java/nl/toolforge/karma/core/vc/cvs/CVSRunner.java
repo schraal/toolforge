@@ -32,6 +32,7 @@ import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
+import nl.toolforge.karma.core.manifest.util.FileTemplate;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
 import nl.toolforge.karma.core.vc.PatchLine;
 import nl.toolforge.karma.core.vc.Runner;
@@ -57,6 +58,12 @@ import org.netbeans.lib.cvsclient.connection.Connection;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -201,7 +208,28 @@ public final class CVSRunner implements Runner {
 
     checkout(module, null, null);
 
-    add(module, template.getFileElements(), template.getDirectoryElements());
+    //copy the file templates here
+    try {
+      FileTemplate[] fileTemplates = template.getFileElements();
+      String[] templateFiles = new String[fileTemplates.length];
+      for (int i = 0; i < fileTemplates.length; i++) {
+        FileTemplate fileTemplate = fileTemplates[i];
+        Reader input = new BufferedReader(new InputStreamReader(CVSRunner.class.getResourceAsStream(fileTemplate.getSource().toString())));
+        File outputFile = new File(module.getBaseDir() + File.separator + fileTemplate.getTarget());
+        outputFile.getParentFile().mkdirs();
+        outputFile.createNewFile();
+        FileOutputStream output = new FileOutputStream(outputFile);
+        while (input.ready()) {
+          output.write(input.read());
+        }
+        templateFiles[i] = fileTemplate.getTarget().getPath();
+      }
+
+      add(module, templateFiles, template.getDirectoryElements());
+    } catch (Exception e) {
+      logger.error(e);
+      throw new CVSException(CVSException.TEMPLATE_CREATION_FAILED);
+    }
 
     //module has been created. Now, create the module history.
     try {

@@ -1,19 +1,15 @@
 <?xml version="1.0"?>
-
-<!-- dependencies file, modelled a bit like the maven project.xml, but without all the 'overhead' -->
+<!-- dependencies file -->
 
 <dependencies>
 
   <!-- Resolved as ~/.maven/repository/<groupId>/jars/<artifactId>-<version>.jar -->
-
-  <dependency groupId="" artifactId="" version=""/>
+  <!--  <dependency groupId="" artifactId="" version=""/>-->
 
   <!-- Resolved as ~/.maven/repository/<id>/jars/<jar> -->
-
-  <dependency id="" jar=""/>
+  <!--  <dependency id="" jar=""/>-->
 
   <!-- Resolved as <getDevelopmentHome>/<manifest>/build/<module>/classes; included as a directory in the classpath. -->
-
-  <dependency module=""/>
+  <!--  <dependency module=""/>-->
 
 </dependencies>

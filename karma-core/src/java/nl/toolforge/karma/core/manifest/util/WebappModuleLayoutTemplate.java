@@ -18,6 +18,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest.util;
 
+import java.io.File;
+
 import nl.toolforge.karma.core.manifest.Module;
 
 /**
@@ -38,12 +40,13 @@ public final class WebappModuleLayoutTemplate implements ModuleLayoutTemplate {
 
   // todo constructor met xml file naam waar de layout gevonden kan worden.
 
-  public String[] getFileElements() {
-    return new String[] {
-      ".cvsignore",
-      Module.MODULE_INFO,
-      "dependencies.xml",
-      "WEB-INF/web.xml"};
+  public FileTemplate[] getFileElements() {
+    return new FileTemplate[] {
+      new FileTemplate(new File("/templates/cvsignore.template"), new File(".cvsignore")),
+      new FileTemplate(new File("/templates/module.info.template"), new File(Module.MODULE_INFO)),
+      new FileTemplate(new File("/templates/dependencies.xml_template"), new File("dependencies.xml")),
+      new FileTemplate(new File("/templates/web.xml_template"), new File("WEB-INF","web.xml"))
+    };
   }
 
   public String[] getDirectoryElements() {

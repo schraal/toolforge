@@ -82,6 +82,11 @@ public class CVSException extends VersionControlException {
    */
   public static final ErrorCode MODULE_HISTORY_ERROR =  new ErrorCode(EXCEPTION_PREFIX + "00023");
 
+  /**
+   * Error thrown when copying the module templates failed failed.
+   */
+  public static final ErrorCode TEMPLATE_CREATION_FAILED =  new ErrorCode(EXCEPTION_PREFIX + "00024");
+
 
   public CVSException(ErrorCode errorCode) {
     super(errorCode);
