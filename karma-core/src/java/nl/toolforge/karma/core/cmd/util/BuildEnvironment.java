@@ -18,10 +18,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.util;
 
+import java.io.File;
+
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.Module;
-
-import java.io.File;
 
 /**
  * The BuildEnvironment
@@ -43,7 +43,6 @@ public class BuildEnvironment {
    * @deprecated Use {@link Manifest#getBuildBaseDirectory()} instead.
    */
   public File getBuildRootDirectory() {
-//    return new File(manifest.getBaseDirectory(), "build");
     return manifest.getBuildBaseDirectory();
   }
 
