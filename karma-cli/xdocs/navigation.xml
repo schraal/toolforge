@@ -25,21 +25,6 @@
       <item name="Howto Build "	         href="/how-to-build.html"/>
     </menu>
 
-<!--
-    <menu name="Interface Apps">
-      <item name="Command Line Interface"  href=""/>
-      <item name="Aura GUI"                href=""/>
-
-      <submenu name="Plugins">
-      <item name="Intelli-J" href="/plugins/intelli-j.html"/>
-      <item name="Eclipse" href="/plugins/eclipse.html"/>
-      <item name="JDeveloper" href="/plugins/jdeveloper.html"/>
-      <item name="Maven Plugin" href=""/>
-      </submenu>
-
-    </menu>
--->
-
     <menu name="Documentation">
       <item name="JavaDocs"		 href="/apidocs/index.html"/>
     </menu>
