@@ -158,8 +158,6 @@ public final class CommandContext {
 //
 //  }
 
-
-
   /**
    * A <code>Runner</code> might be required for a command to execute something on a version control system. A module
    * can determine which implementation of a runner it requires through the
@@ -174,7 +172,7 @@ public final class CommandContext {
 
     if (location instanceof CVSLocationImpl) {
       logger.debug("Getting new CVSRunner instance.");
-      return new CVSRunner(location);
+      return new CVSRunner(location, getCurrent().getLocalPath());
     }
     if (location instanceof SubversionLocationImpl) {
       logger.debug("Getting new CVSRunner instance.");

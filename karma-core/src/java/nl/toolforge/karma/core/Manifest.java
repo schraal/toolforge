@@ -99,4 +99,16 @@ public interface Manifest {
    * @return <code>true</code> if the module is present locally.
    */
   public boolean isLocal(Module module);
-  }
+
+  /**
+   * A manifest on a users' local disk is located in a directory relative to
+   * {@link nl.toolforge.karma.core.prefs.Preferences#getDevelopmentHome}. This method returns the full path to this
+   * manifests' directory.
+   *
+   * @return A <code>File</code> reference to the manifests' local directory.
+   * @throws KarmaException When a <code>File</code> reference cannot be obtained. See
+   *         {@link KarmaException#NO_DEVELOPMENT_HOME}.
+   */
+  public File getLocalPath() throws KarmaException;
+
+}

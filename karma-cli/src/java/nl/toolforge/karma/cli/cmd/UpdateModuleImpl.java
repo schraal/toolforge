@@ -21,7 +21,10 @@ public class UpdateModuleImpl extends UpdateModuleCommand {
   }
 
   public CommandResponse execute() throws KarmaException {
-    return super.execute();
+
+    CommandResponse response = super.execute();
+
+    return response;
   }
 
 }

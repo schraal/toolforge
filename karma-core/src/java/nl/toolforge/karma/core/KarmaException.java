@@ -58,7 +58,7 @@ public class KarmaException extends Exception {
 	 */
 	public static final ErrorCode COMMAND_CONTEXT_NOT_INITIALIZED = new ErrorCode("CORE-00004");
 
-	/** No development home directory could be created. This is panic, because without it, nothing will work. */
+	/** No development home directory could be referenced to. This is panic, because without it, nothing will work. */
 	public static final ErrorCode NO_DEVELOPMENT_HOME = new ErrorCode("CORE-00005");
 
 	/** No configuration directory could be referenced to. This is panic, because without it, nothing will work. */

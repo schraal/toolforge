@@ -34,7 +34,11 @@ public class BaseTest extends TestCase {
 
     try {
       LocationFactory locationFactory = LocationFactory.getInstance();
-      locationFactory.load(getClass().getClassLoader().getResourceAsStream("locations.xml"));
+      locationFactory.load(
+        getClass().getClassLoader().getResourceAsStream("locations.xml"),
+        getClass().getClassLoader().getResourceAsStream("location-authentication.xml")
+      );
+
     } catch (KarmaException e) {
       throw new KarmaRuntimeException("BaseTest setup error", e);
     }

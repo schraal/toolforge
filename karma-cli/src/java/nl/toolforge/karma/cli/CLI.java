@@ -109,10 +109,12 @@ public class CLI {
             //
             CommandMessage[] messages = response.getMessages();
 
-            // Print the first message for now.
-            // TODO do something better with the message array
-            //
-            writer.writeln(messages[0].getMessageText());
+            if (messages.length > 0) {
+              // Print the first message for now.
+              // TODO do something better with the message array
+              //
+              writer.writeln(messages[0].getMessageText());
+            }
           }
         } catch (KarmaException e) {
           writer.writeln(e.getErrorMessage());

@@ -6,6 +6,7 @@ import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
+import nl.toolforge.core.util.file.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -88,11 +89,11 @@ public class LocalCVSInitializer extends BaseTest {
    * Deletes the temporary directory.
    */
   public void tearDown() {
-//		if (tempDevelopmentHome.delete()) {
-//			logger.info("Temporary directory " + tempDevelopmentHome.getPath() + " deleted.");
-//		} else {
-//			logger.info("Temporary directory " + tempDevelopmentHome.getPath() + " could not be deleted.");
-//		}
+		if (FileUtils.delete(getDevelopmentHome())) {
+			logger.info("Temporary directory " + tempDevelopmentHome.getPath() + " deleted.");
+		} else {
+			logger.info("Temporary directory " + tempDevelopmentHome.getPath() + " could not be deleted.");
+		}
   }
 
   /**
@@ -133,7 +134,7 @@ public class LocalCVSInitializer extends BaseTest {
   public final void checkoutDefaultModule1() {
 
     try {
-      Runner runner = new CVSRunner(getTestLocation());
+      Runner runner = getTestRunner();
 
       FakeModule module = new FakeModule(DEFAULT_MODULE_1, location);
       module.setLocalPath(getDevelopmentHome());
@@ -147,6 +148,6 @@ public class LocalCVSInitializer extends BaseTest {
   }
 
   protected final Runner getTestRunner() throws CVSException {
-    return new CVSRunner(getTestLocation());
+    return new CVSRunner(getTestLocation(), getDevelopmentHome());
   }
 }

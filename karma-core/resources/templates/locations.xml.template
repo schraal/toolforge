@@ -5,12 +5,14 @@
 	<!-- The 'id'-attribute maps on a 'location'-attribute in a module -->
 
 	<location type="cvs-repository" id="cvs-local">
+    <protocol>[ local | ext | pserver ]</protocol>
 		<host>localhost</host>
 		<port>2401</port>
 		<repository>/home/cvs</repository>
 	</location>
 
 	<location type="cvs-repository" id="sourceforge">
+    <protocol>[ local | ext | pserver ]</protocol>
 		<host>cvs.sourceforge.net</host>
 		<port>2401</port>
 		<repository>/cvsroot/</repository>

@@ -57,17 +57,17 @@ public interface Module {
 	 */
 	public Location getLocation() throws KarmaException;
 
-	/**
-	 * <p>Some module-types (e.g. source modules) have a physical location on disk where the module can be located. This
-	 * method returns a valid reference to that location. When the module-root is located at
-	 * <code>/home/jensen/dev/modules/CORE-conversion</code>, <code>getLocalPath()</code> will return a <code>File</code>
-	 * handle to that directory.
-	 *
-	 * <p>A runtime exception wrapped in a <code>KarmaRuntimeException</code> may be thrown when
-	 *
-	 * @return The local directory where the module root can be found.
-	 */
-	public File getLocalPath();
+//	/**
+//	 * <p>Some module-types (e.g. source modules) have a physical location on disk where the module can be located. This
+//	 * method returns a valid reference to that location. When the module-root is located at
+//	 * <code>/home/jensen/dev/modules/CORE-conversion</code>, <code>getLocalPath()</code> will return a <code>File</code>
+//	 * handle to that directory.
+//	 *
+//	 * <p>A runtime exception wrapped in a <code>KarmaRuntimeException</code> may be thrown when
+//	 *
+//	 * @return The local directory where the module root can be found.
+//	 */
+//	public File getLocalPath();
 
 	/**
 	 * Sets the {@link State} of this module.

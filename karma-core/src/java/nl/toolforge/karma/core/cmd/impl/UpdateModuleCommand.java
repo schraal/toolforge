@@ -32,8 +32,9 @@ public class UpdateModuleCommand extends DefaultCommand {
   }
 
   /**
-   * Executes this command. The command will update the module from the version control system. An update is done when
-   * the module is already present, otherwise a fresh checkout will be done.
+   * This command will update the module from the version control system. An update is done when
+   * the module is already present, otherwise a checkout will be performed. The checkout directory for the module
+   * is relative to the root directory of the <code>active</code> manifest.
    *
    * @throws KarmaException When no manifest is loaded, a {@link CommandException#NO_MANIFEST_SELECTED} is thrown. For
    *   other errors, a more generic {@link KarmaException} is thrown.
@@ -48,11 +49,11 @@ public class UpdateModuleCommand extends DefaultCommand {
 
     String moduleName = getCommandLine().getOptionValue("m");
 
-    try {
-      this.module = getContext().getCurrent().getModule(moduleName);
-    } catch (KarmaException e) {
-      throw (CommandException) e;
-    }
+//    try {
+    this.module = getContext().getCurrent().getModule(moduleName);
+//    } catch (KarmaException e) {
+//      throw (CommandException) e;
+//    }
 
     Runner runner = getContext().getRunner(module);
 

@@ -18,6 +18,7 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
 
   public static final Integer FILE_ADDED_OK = new Integer(0);
   public static final Integer FILE_REMOVED_OK = new Integer(1);
+  public static final Integer MODULE_UPDATED_OK = new Integer(2);
 
   private static Log logger = LogFactory.getLog(CVSResponseAdapter.class);
 
@@ -95,7 +96,7 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
    * @param event The event from CVS.
    */
   public void fileUpdated(FileUpdatedEvent event) {
-    //logger.debug("FileUpdatedEvent from CVS : " + event.toString());
+    logger.debug("FileUpdatedEvent from CVS : " + event.toString());
   }
 
   /**
@@ -121,10 +122,18 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
       }
     }
 
+    if (message.startsWith("cvs server: Updating")) {
+
+      String messageText = "Module has been updated.";
+
+      addMessage(new CVSCommandMessage(messageText));
+
+      if (!hasStatus(MODULE_UPDATED_OK)) {
+        try { addStatusUpdate(MODULE_UPDATED_OK); } catch (CommandException e) { } // Ignore
+      }
+    }
 
     logger.debug("MessageEvent from CVS : " + event.getMessage());
-
-
 
   }
 

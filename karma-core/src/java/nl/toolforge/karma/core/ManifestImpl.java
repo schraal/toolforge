@@ -110,7 +110,7 @@ public class ManifestImpl implements Manifest {
     // TODO throw an exception if this manifest doesn't have this module in it.
     //
     try {
-      File manifestDirectory = Preferences.getInstance().getDevelopmentHome();
+      File manifestDirectory = new File(Preferences.getInstance().getDevelopmentHome(), getName());
       File moduleDirectory = new File(manifestDirectory, module.getName());
 
       return moduleDirectory.exists();
@@ -119,5 +119,9 @@ public class ManifestImpl implements Manifest {
       e.printStackTrace();  //To change body of catch statement use Options | File Templates.
     }
     return false;
+  }
+
+  public File getLocalPath() throws KarmaException {
+    return new File(Preferences.getInstance().getDevelopmentHome(), getName());
   }
 }

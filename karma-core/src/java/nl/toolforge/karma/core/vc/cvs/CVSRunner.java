@@ -14,6 +14,7 @@ import org.netbeans.lib.cvsclient.Client;
 import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
 import org.netbeans.lib.cvsclient.command.CommandException;
 import org.netbeans.lib.cvsclient.command.GlobalOptions;
+import org.netbeans.lib.cvsclient.command.update.UpdateCommand;
 import org.netbeans.lib.cvsclient.command.commit.CommitCommand;
 import org.netbeans.lib.cvsclient.command.add.AddCommand;
 import org.netbeans.lib.cvsclient.command.checkout.CheckoutCommand;
@@ -52,8 +53,9 @@ public final class CVSRunner implements Runner {
    *
    * @param location A <code>Location</code> instance (typically a <code>CVSLocationImpl</code> instance), containing
    *                 the location and connection details of the CVS repository.
+   * @param contextDirectory The absolute directory that acts as the local path required by the CVS client.
    */
-  public CVSRunner(Location location) throws CVSException {
+  public CVSRunner(Location location, File contextDirectory) throws CVSException {
 
     CVSLocationImpl cvsLocation = null;
     try {
@@ -67,6 +69,7 @@ public final class CVSRunner implements Runner {
     // Initialize a CVS client
     //
     client = new Client( cvsLocation.getConnection(), new StandardAdminHandler());
+    client.setLocalPath(contextDirectory.getPath());
 
     // A CVSResponseAdapter is registered as a listener for the response from CVS. This one adapts to Karma
     // specific stuff.
@@ -83,17 +86,29 @@ public final class CVSRunner implements Runner {
    * in the default checkout directory.
    *
    * @param module The module.
-   * @param checkoutDirectory The absolute directory where the module should be checked out.
+//   * @param checkoutDirectory The absolute directory where the module should be checked out. Overwrites the setting
+//   *   done when instantiating this runner (see {@link #CVSRunner}.
    *
    * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
    */
-  public CommandResponse checkout(Module module, File checkoutDirectory) {
+  public CommandResponse checkout(Module module) {
+//  public CommandResponse checkout(Module module, File checkoutDirectory) {
+
+//    if (checkoutDirectory == null) {
+//      throw new IllegalArgumentException("Parameter checkoutDirectory should not be null.");
+//    }
 
     CheckoutCommand checkoutCommand = new CheckoutCommand();
     checkoutCommand.setModule(module.getName());
     checkoutCommand.setPruneDirectories(true);
 
-    executeOnCVS(checkoutCommand, module.getLocalPath().getPath());
+    // TODO The manifest-name should prepend the module.
+
+    //checkoutDirectory.mkdirs(); // if not yet existing, it will be created
+
+    //client.setLocalPath(checkoutDirectory.getPath());
+
+    executeOnCVS(checkoutCommand, null);
 
     return adapter;
   }
@@ -104,10 +119,10 @@ public final class CVSRunner implements Runner {
    * @param module
    * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
    */
-  public CommandResponse checkout(Module module) {
-
-    return checkout(module, module.getLocalPath());
-  }
+//  public CommandResponse checkout(Module module) {
+//
+//    return checkout(module, null);
+//  }
 
   /**
    * For a module, the <code>cvs -q update -Pd</code>command is executed.
@@ -116,7 +131,20 @@ public final class CVSRunner implements Runner {
    * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
    */
   public CommandResponse update(Module module) {
-    return null;
+
+    UpdateCommand updateCommand = new UpdateCommand();
+    updateCommand.setRecursive(true);
+    updateCommand.setPruneDirectories(true);
+
+    // TODO The manifest-name should prepend the module.
+
+    //checkoutDirectory.mkdirs(); // if not yet existing, it will be created
+
+    //client.setLocalPath(checkoutDirectory.getPath());
+
+    executeOnCVS(updateCommand, module.getName());
+
+    return adapter;
   }
 
   /**
@@ -133,7 +161,8 @@ public final class CVSRunner implements Runner {
    * Adds a file to the CVS repository and implicitely commits the file (well, it tries to do so).
    *
    * @param module The module that contains the file.
-   * @param fileName The fileName to add, relative to {@link Module#getLocalPath}.
+   * @param fileName The fileName to add, relative to <code>contextDirectory</code>, which was set when instantiating
+   *   this runner.
    *
    * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
    */
@@ -144,25 +173,26 @@ public final class CVSRunner implements Runner {
     AddCommand addCommand = new AddCommand();
     addCommand.setMessage("Testcase message ... ");
 
-    File fileToAdd = new File(module.getLocalPath().getPath() + File.separator + fileName);
+    String path = client.getLocalPath() + File.separator + module.getName();
+    File fileToAdd = new File(path + File.separator + fileName);
     if (!fileToAdd.exists()) {
       try {
         fileToAdd.createNewFile();
       } catch (IOException e) {
-        throw new KarmaRuntimeException("Could not create " + fileName + " in " + module.getLocalPath().getPath());
+        throw new KarmaRuntimeException("Could not create " + fileName + " in " + path);
       }
     }
 
     addCommand.setFiles(new File[]{fileToAdd});
 
-    executeOnCVS(addCommand, fileToAdd.getParent());
+    executeOnCVS(addCommand, module.getName());
 
     // Step 2 : Commit the file to the CVS repository
     //
     CommitCommand commitCommand = new CommitCommand();
     commitCommand.setFiles(new File[]{fileToAdd});
 
-    executeOnCVS(commitCommand, fileToAdd.getParent());
+    executeOnCVS(commitCommand, null);
 
     return adapter;
   }
@@ -192,13 +222,19 @@ public final class CVSRunner implements Runner {
     return null;
   }
 
+  /**
+   *
+   * @param command The Netbeans Command implementation.
+   * @param contextDirectory The directory relative to Client.getLocalPath(), required by some commands.
+   */
   private void executeOnCVS(org.netbeans.lib.cvsclient.command.Command command, String contextDirectory) {
-
-    logger.debug("CVS command " + command.getCVSCommand() + " in " + contextDirectory);
 
     try {
 
-      client.setLocalPath(contextDirectory);
+      if (contextDirectory != null) {
+        client.setLocalPath(client.getLocalPath() + File.separator + contextDirectory);
+      }
+      logger.debug("CVS command " + command.getCVSCommand() + " in " + client.getLocalPath());
       client.executeCommand(command, globalOptions);
 
     } catch (CommandException e) {

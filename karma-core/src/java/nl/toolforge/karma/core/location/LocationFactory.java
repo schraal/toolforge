@@ -14,11 +14,11 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.FactoryConfigurationError;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -38,8 +38,7 @@ public final class LocationFactory {
 
 	private static Map locations = null;
 
-	private LocationFactory() {
-	}
+	private LocationFactory() {}
 
 	/**
 	 * Gets the singleton instance of the location factory. This instance can be used to get access to all location
@@ -86,7 +85,8 @@ public final class LocationFactory {
 
 	/**
 	 * Loads all location xml files from the path specified by the {@link Preferences#LOCATION_STORE_DIRECTORY_PROPERTY)}
-	 * property.
+	 * property. Location objects are matched against authenticator objects, which should be available in the Karma
+   * configuration directory and should start with '<code>authentication</code>' and have an <code>xml</code>-extension.
 	 *
 	 * @throws KarmaException
 	 */
@@ -109,7 +109,7 @@ public final class LocationFactory {
 
 			// Load the first file.
 			//
-			Document root = builder.parse(new File(base.getPath() + File.separator + files[0]));
+			Document locationRoot = builder.parse(new File(base.getPath() + File.separator + files[0]));
 
 			// Load the rest of them
 			//
@@ -119,10 +119,37 @@ public final class LocationFactory {
 
 				// Include one in the other
 				//
-				root = (Document) root.importNode(document.getDocumentElement(), true);
+				locationRoot = (Document) locationRoot.importNode(document.getDocumentElement(), true);
 			}
 
-			load(root);
+      // Repeat this step for authenticator files.
+      //
+
+      files = prefs.getConfigurationDirectory().list(new AuthenticationFilenameFilter());
+
+      Document authenticationRoot = null;
+
+      if (files.length > 0) {
+
+        // Load the first file.
+        //
+        authenticationRoot = builder.parse(new File(prefs.getConfigurationDirectory().getPath() + File.separator + files[0]));
+
+        // Load the rest of them
+        //
+        for (int i = 1; i < files.length; i++) {
+
+          Document document = builder.parse(new File(base.getPath() + File.separator + files[i]));
+
+          // Include one in the other
+          //
+          authenticationRoot = (Document) authenticationRoot.importNode(document.getDocumentElement(), true);
+        }
+      } else {
+        logger.info("No authentication files found in " + prefs.getConfigurationDirectory().getPath() + ".");
+      }
+
+			load(locationRoot, authenticationRoot);
 
 		} catch (ParserConfigurationException e) {
 			e.printStackTrace();
@@ -133,52 +160,43 @@ public final class LocationFactory {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-//		try {
-//			load(
-//				),
-//				prefs.getConfigurationDirectory().getPath() + File.separator + "location-authentication.xml"
-//			);
-//		} catch (KarmaException k) {
-//			logger.error(
-//				"Check if a location-authentication.xml is available in the directory " +
-//				"identified by the property 'karma.location-store.directory'");
-//			throw k;
-//		}
 	}
 
 	/**
-	 * Loads location objects from an <code>InputStream</code>.
+	 * Loads location objects and authenticator objects from an <code>InputStream</code>
 	 */
-	public synchronized void load(InputStream stream) throws KarmaException {
+	public synchronized void load(InputStream locationStream, InputStream authenticatorStream) throws KarmaException {
 
 		logger.debug("Loading locations from inputstream.");
 
-		Document root = null;
+		Document locationRoot = null;
+		Document authenticatorRoot = null;
 		try {
 			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			root = builder.parse(stream);
+			locationRoot = builder.parse(locationStream);
+      authenticatorRoot = builder.parse(authenticatorStream);
 		} catch (Exception e) {
 			throw new KarmaException(KarmaException.LAZY_BASTARD, e);
 		}
 
-		load(root);
+		load(locationRoot, authenticatorRoot);
 	}
 
 	/**
 	 * Parses the <code>root</code>-element and builds <code>Location</code> objects.
 	 *
-	 * @param root
+	 * @param locationRoot The DOM for all location data.
+   * @param authenticatorRoot The DOM for all authentication data.
 	 *
 	 * @throws KarmaException
 	 */
-	private synchronized void load(Document root) throws KarmaException {
+	private synchronized void load(Document locationRoot, Document authenticatorRoot) throws KarmaException {
 
 		if (locations == null) {
 			locations = new Hashtable();
 		}
 
-		NodeList locationElements = root.getElementsByTagName("location");
+		NodeList locationElements = locationRoot.getElementsByTagName("location");
 
 		for (int i = 0; i < locationElements.getLength(); i++) {
 
@@ -189,15 +207,16 @@ public final class LocationFactory {
 			if (Location.Type.CVS_REPOSITORY.type.equals(locationElement.getAttribute("type").toUpperCase())) {
 				CVSLocationImpl cvsLocation = new CVSLocationImpl(locationElement.getAttribute("id"));
 
+        cvsLocation.setProtocol(locationElement.getElementsByTagName("protocol").item(0).getFirstChild().getNodeValue());
 				cvsLocation.setHost(locationElement.getElementsByTagName("host").item(0).getFirstChild().getNodeValue());
 				cvsLocation.setPort(new Integer(locationElement.getElementsByTagName("port").item(0).getFirstChild().getNodeValue()).intValue());
 				cvsLocation.setRepository(locationElement.getElementsByTagName("repository").item(0).getFirstChild().getNodeValue());
 
-				// TODO Read in the authentication stuff and process it
+
+				// TODO Read in the authentication stuff and process it ==> XPATH Stuff.
 				//
 				//cvsLocation.setUsername(authenticationElement.etElementsByTagName("username").item(0).getNodeValue());
 				//cvsLocation.setPassword(authenticationElement.etElementsByTagName("password").item(0).getNodeValue());
-				//cvsLocation.setProtocol(authenticationElement.etElementsByTagName("protocol").item(0).getNodeValue());
 
 				locations.put(cvsLocation.getId(), cvsLocation);
 			}
@@ -218,18 +237,7 @@ public final class LocationFactory {
 				locations.put(mavenLocation.getId(), mavenLocation);
 			}
 		}
-
-//			Document authenticators = builder.parse(new File(authenticationFilePath));
-
-		// TODO : match with authenticators
-
-
-
 	}
-
-
-
-
 
 	public final Map getLocations() {
 		return locations;
