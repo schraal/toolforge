@@ -80,7 +80,7 @@ public class ViewManifestImpl extends ViewManifest {
       buffer.append(h6 + StringUtils.repeat(" ", 15 - h6.length()) + "| ");
       buffer.append(h7 + StringUtils.repeat(" ", 10 - h7.length()) + "| ");
       buffer.append(h8 + "\n");
-      buffer.append(StringUtils.repeat("_", 115));
+      buffer.append(StringUtils.repeat("_", 135));
       buffer.append("\n");
 
       for (Iterator i = renderedData.iterator(); i.hasNext();) {
