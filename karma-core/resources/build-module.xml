@@ -79,34 +79,4 @@
   </target>
 
 
-  <!-- *************************************** -->
-  <!-- package-module (pa); resulting in an ear -->
-  <!-- *************************************** -->
-
-  <target name="package-module-as-ear" depends="init-build-dir">
-
-    <delete dir="${module-build-dir}" includes="*.ear;archives.*"/>
-
-    <!-- copy the eapp stuff, while replacing module ids in application.xml -->
-    <copy todir="${module-build-dir}/${module-package-dir}" overwrite="true">
-      <fileset dir="${module-base-dir}" includes="${module-includes}"/>
-      <filterset>
-        <filtersfile file="${module-build-dir}/archives.properties"/>
-      </filterset>
-    </copy>
-
-    <!-- copy the external jars and wars-->
-    <copy todir="${module-build-dir}/${module-package-dir}" flatten="yes">
-      <fileset dir="${module-build-dir}" includesfile="${module-build-dir}/archives.includes"/>
-    </copy>
-
-    <ear
-      destfile="${module-package-name}"
-      basedir="${module-build-dir}/${module-package-dir}"
-      appxml="${module-appxml}"
-      excludes="${module-excludes}"
-      />
-
-  </target>
-
 </project>
