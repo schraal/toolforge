@@ -14,6 +14,9 @@
 	    <item name="Karma Core"     href="../karma-core/"/>
 	    <item name="Karma CLI"      href="../karma-cli/"/>
 	    <item name="Karma Launcher" href="../karma-launcher/"/>
+      <item name="Karma Plugins">
+        <item name="Refcard generator" href="../plugins/karma-plugin-refcard/"/>
+      </item>
     </menu>
 
     <menu name="General Information">

@@ -8,11 +8,14 @@
       <item name="Toolforge Home"	   href="http://toolforge.sourceforge.net"/>
     </links>
 
-    <menu name="Toolforge Components">
+    <menu name="Component Reference">
 	    <item name="Toolforge Core" href="../toolforge-core/"/>
 	    <item name="Karma Core"     href="../karma-core/"/>
 	    <item name="Karma CLI"      href="../karma-cli/"/>
 	    <item name="Karma launcher" href="../karma-launcher/"/>
+      <item name="Karma Plugins">
+        <item name="Refcard generator" href="../plugins/karma-plugin-refcard/"/>
+      </item>
     </menu>
     <menu name="Essentials">
       <item name="Overview" href="/index.html"/>
