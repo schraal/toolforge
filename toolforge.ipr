@@ -1,15 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4" relativePaths="true">
-  <component name="AntConfiguration">
-    <buildFile url="file://$PROJECT_DIR$/../apache-ant-1.6.1/build.xml">
-      <useEmacsModeOutput value="true" />
-      <maximumHeapSize value="128" />
-      <useCustomJdk value="false" />
-      <useJavaw value="false" />
-      <includeProjectClasspath value="false" />
-      <includeParser value="true" />
-    </buildFile>
-  </component>
+  <component name="AntConfiguration" />
   <component name="CodeStyleManager">
     <option name="USE_DEFAULT_CODE_STYLE_SCHEME" value="true" />
     <option name="CODE_STYLE_SCHEME" value="" />
@@ -79,7 +70,7 @@
       <module fileurl="file://$PROJECT_DIR$/toolforge.iml" filepath="$PROJECT_DIR$/toolforge.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" assert-keyword="false" project-jdk-name="java version &quot;1.4.2_03&quot;" />
+  <component name="ProjectRootManager" version="2" assert-keyword="false" project-jdk-name="java version &quot;1.4.1_07&quot;" />
   <component name="WebManager">
     <option enabled="false" />
   </component>
