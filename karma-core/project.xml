@@ -7,7 +7,7 @@
   <groupId>toolforge</groupId>
   <id>karma-core</id>
   <inceptionYear>2002</inceptionYear>
-  <currentVersion>1.0</currentVersion>
+  <currentVersion>1.0-dev</currentVersion>
   <package>nl.toolforge.karma.core</package>
   <siteAddress>ssh.sf.net</siteAddress>
   <siteDirectory>/home/groups/t/to/toolforge/htdocs/karma-core</siteDirectory>
