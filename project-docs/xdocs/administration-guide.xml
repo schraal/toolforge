@@ -56,7 +56,7 @@
   <![CDATA[
 <?xml version="1.0"?>
 
-<manifest name="helloworld" type="development" version="1-0">
+<manifest type="development" version="1-0">
   <modules>
     <module name="helloworld" location="local"/>
   </modules>
