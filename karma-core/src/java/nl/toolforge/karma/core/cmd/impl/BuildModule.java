@@ -89,7 +89,11 @@ public class BuildModule extends AbstractBuildCommand {
       javac.setDestdir(getCompileDirectory());
 
       Path classPath = new Path(project);
-      classPath.setPath(getDependencies(getCurrentModule().getDependencies(), false, CLASSPATH_SEPARATOR_CHAR));
+      try {
+        classPath.setPath(getDependencies(getCurrentModule().getDependencies(), false, CLASSPATH_SEPARATOR_CHAR));
+      } catch (ManifestException me) {
+        throw new CommandException(CommandException.DEPENDENCY_FILE_INVALID, me.getMessageArguments());
+      }
       javac.setClasspath(classPath);
 
       javac.setIncludes("**/*.java");
@@ -101,10 +105,7 @@ public class BuildModule extends AbstractBuildCommand {
       javac.execute();
 
 
-    } catch (ManifestException e) {
-      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }  catch (BuildException e) {
-//      e.printStackTrace();
       commandResponse.addMessage(new AntErrorMessage(e));
       throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
     }
@@ -117,7 +118,7 @@ public class BuildModule extends AbstractBuildCommand {
     return this.commandResponse;
   }
 
-  protected File getSourceDirectory() throws ManifestException {
+  protected File getSourceDirectory() {
 
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");

@@ -26,6 +26,9 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.Command;
+import nl.toolforge.karma.core.cmd.CommandFactory;
+import nl.toolforge.karma.core.cmd.ErrorMessage;
 import nl.toolforge.karma.core.cmd.util.DescriptorReader;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
@@ -77,12 +80,38 @@ public class PackageModule extends AbstractBuildCommand {
 
     super.execute();
 
-
-
-//    String moduleDeps = getModuleDependencies(getCurrentModule().getDependencies(), true, DEPENDENCY_SEPARATOR_CHAR);
-
-
     try {
+      //first, when not explicitly set off, run the unit tests
+      if ( ! getCommandLine().hasOption("nt") ) {
+        logger.info("Going to run the unit tests before packaging.");
+
+        Command command = null;
+        try {
+          String commandLineString = "tm -m " + module.getName();
+          command = CommandFactory.getInstance().getCommand(commandLineString);
+          command.setContext(getContext());
+          command.registerCommandResponseListener(getResponseListener());
+          command.execute();
+        } catch (CommandException ce) {
+          if (ce.getErrorCode().equals(CommandException.TEST_FAILED)) {
+            commandResponse.addMessage(new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments()));
+            throw new CommandException(ce, CommandException.PACKAGE_FAILED, new Object[]{module.getName()});
+          } else {
+            CommandMessage message = new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments());
+            commandResponse.addMessage(message);
+            message = new ErrorMessage(CommandException.TEST_WARNING);
+            commandResponse.addMessage(message);
+          }
+        } finally {
+          if ( command != null ) {
+            command.deregisterCommandResponseListener(getResponseListener());
+          }
+        }
+
+      } else {
+        logger.info("User has explicitly disabled running the unit tests.");
+      }
+
 
       File packageName = new File(getModuleBuildDirectory(), getCurrentManifest().resolveArchiveName(getCurrentModule()));
 
@@ -109,13 +138,13 @@ public class PackageModule extends AbstractBuildCommand {
 
     try {
 
-      Project blaat = getProjectInstance();
+      Project project = getProjectInstance();
 
-      Target t = new Target();
-      t.setName("blaat");
-      t.setProject(blaat);
+      Target target = new Target();
+      target.setName("project");
+      target.setProject(project);
 
-      blaat.addTarget(t);
+      project.addTarget(target);
 
       executeDelete(getModuleBuildDirectory(), "*.jar");
 
@@ -131,9 +160,7 @@ public class PackageModule extends AbstractBuildCommand {
       fileSet.setIncludes("**/*");
 
       copy.addFileset(fileSet);
-//      copy.execute();
-
-      t.addTask(copy);
+      target.addTask(copy);
 
       copy = new Copy();
       copy.setProject(getProjectInstance());
@@ -146,41 +173,39 @@ public class PackageModule extends AbstractBuildCommand {
       fileSet.setExcludes("resources");
 
       copy.addFileset(fileSet);
-
-      t.addTask(copy);
-//      copy.execute();
+      target.addTask(copy);
 
       // Copy all class files to the package directory.
       //
-      copy = new Copy();
-      copy.setProject(getProjectInstance());
-      copy.setTodir(getPackageDirectory());
-      copy.setOverwrite(true);
+      if (getCompileDirectory().exists()) {
+        copy = new Copy();
+        copy.setProject(getProjectInstance());
+        copy.setTodir(getPackageDirectory());
+        copy.setOverwrite(true);
 
-      fileSet = new FileSet();
-      fileSet.setDir(getCompileDirectory());
-      fileSet.setIncludes("**/*.class");
+        fileSet = new FileSet();
+        fileSet.setDir(getCompileDirectory());
+        fileSet.setIncludes("**/*.class");
 
-      copy.addFileset(fileSet);
-      t.addTask(copy);
-//      copy.execute();
+        copy.addFileset(fileSet);
+        target.addTask(copy);
+      }
 
       Jar jar = new Jar();
       jar.setProject(getProjectInstance());
       jar.setDestFile(packageName);
       jar.setBasedir(getPackageDirectory());
       jar.setExcludes("*.jar");
-      t.addTask(jar);
-//      jar.execute();
+      target.addTask(jar);
 
-      blaat.executeTarget("blaat");
+      project.executeTarget("project");
 
     } catch (BuildException e) {
       e.printStackTrace();
       if (logger.isDebugEnabled()) {
         commandResponse.addMessage(new AntErrorMessage(e));
       }
-      throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
+      throw new CommandException(e, CommandException.PACKAGE_FAILED, new Object[] {getCurrentModule().getName()});
     }
 
   }
@@ -271,7 +296,7 @@ public class PackageModule extends AbstractBuildCommand {
       if (logger.isDebugEnabled()) {
         commandResponse.addMessage(new AntErrorMessage(e));
       }
-      throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
+      throw new CommandException(e, CommandException.PACKAGE_FAILED, new Object[] {getCurrentModule().getName()});
     }
 
   }
@@ -379,7 +404,7 @@ public class PackageModule extends AbstractBuildCommand {
       if (logger.isDebugEnabled()) {
         commandResponse.addMessage(new AntErrorMessage(e));
       }
-      throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
+      throw new CommandException(e, CommandException.PACKAGE_FAILED, new Object[] {getCurrentModule().getName()});
     }
 
   }

@@ -30,6 +30,9 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.Command;
+import nl.toolforge.karma.core.cmd.CommandFactory;
+import nl.toolforge.karma.core.cmd.ErrorMessage;
 import nl.toolforge.karma.core.manifest.ManifestException;
 
 /**
@@ -57,28 +60,51 @@ public class TestModule extends AbstractBuildCommand {
 
     CommandMessage message = null;
 
-    Project project = getAntProject();
-
+    Command command = null;
     try {
-      // Define the location where junit source files are stored for a module (the default location in the context of
-      // a manifest).
-      //
-      File srcBase = getSourceDirectory();
-      if (!srcBase.exists()) {
-        // No point in building a module, if no test/java is available.
-        //
-        throw new CommandException(CommandException.NO_TEST_DIR, new Object[] {getCurrentModule().getName(), DEFAULT_TEST_SRC_DIRECTORY});
+      String commandLineString = "bm -m " + module.getName();
+      command = CommandFactory.getInstance().getCommand(commandLineString);
+      command.setContext(getContext());
+      command.registerCommandResponseListener(getResponseListener());
+      command.execute();
+    } catch (CommandException ce) {
+      if (ce.getErrorCode().equals(CommandException.DEPENDENCY_DOES_NOT_EXIST)) {
+        commandResponse.addMessage(new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments()));
+        throw new CommandException(ce, CommandException.TEST_FAILED, new Object[]{module.getName()});
+      } else {
+ce.printStackTrace();
+        message = new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments());
+        commandResponse.addMessage(message);
+        message = new ErrorMessage(CommandException.TEST_WARNING);
+        commandResponse.addMessage(message);
       }
+    } finally {
+      if ( command != null ) {
+        command.deregisterCommandResponseListener(getResponseListener());
+      }
+    }
 
-      // Configure the Ant project
+    // Define the location where junit source files are stored for a module (the default location in the context of
+    // a manifest).
+    //
+    File srcBase = getSourceDirectory();
+    if (!srcBase.exists()) {
+      // No point in building a module, if no test/java is available.
       //
-      project.setProperty(MODULE_SOURCE_DIR_PROPERTY, srcBase.getPath());
-      project.setProperty(MODULE_BUILD_DIR_PROPERTY, getModuleBuildDirectory().getPath());
-      project.setProperty(MODULE_TEST_DIR_PROPERTY, getTestDirectory().getPath());
-      project.setProperty(MODULE_COMPILE_DIR_PROPERTY, getCompileDirectory().getPath());
+      throw new CommandException(CommandException.NO_TEST_DIR, new Object[] {getCurrentModule().getName(), DEFAULT_TEST_SRC_DIRECTORY});
+    }
+
+    // Configure the Ant project
+    //
+    Project project = getAntProject();
+    project.setProperty(MODULE_SOURCE_DIR_PROPERTY, srcBase.getPath());
+    project.setProperty(MODULE_BUILD_DIR_PROPERTY, getModuleBuildDirectory().getPath());
+    project.setProperty(MODULE_TEST_DIR_PROPERTY, getTestDirectory().getPath());
+    project.setProperty(MODULE_COMPILE_DIR_PROPERTY, getCompileDirectory().getPath());
+    try {
       project.setProperty(MODULE_CLASSPATH_PROPERTY, getDependencies(getCurrentModule().getDependencies(), false, CLASSPATH_SEPARATOR_CHAR));
-    } catch (ManifestException e) {
-      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+    } catch (ManifestException me) {
+      throw new CommandException(CommandException.DEPENDENCY_FILE_INVALID, me.getMessageArguments());
     }
 
     try {
@@ -96,7 +122,7 @@ public class TestModule extends AbstractBuildCommand {
     return this.commandResponse;
   }
 
-  protected File getSourceDirectory() throws ManifestException {
+  protected File getSourceDirectory() {
 
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
@@ -105,7 +131,7 @@ public class TestModule extends AbstractBuildCommand {
   }
 
   /**
-   * Overrides {@link AbstractBuildCommand#getDependencies(java.util.Set, boolean)}. Adds the jar
+   * Overrides {@link AbstractBuildCommand#getDependencies(Set, boolean, char)}. Adds the jar
    * of the current module to the dependencies. This jar is needed to be able to compile the unit tests.
    *
    * @param dependencies
