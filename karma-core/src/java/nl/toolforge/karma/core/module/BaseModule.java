@@ -335,7 +335,7 @@ public abstract class BaseModule implements Module {
 
     if (!dependencyXml.exists()) {
       dependencies = new HashSet();
-    } else if (dependencyXml.lastModified() > dependencyXmlTimestamp) {
+    } else if (dependencyXml.lastModified() != dependencyXmlTimestamp) {
       // Read in the base dependency structure of a Maven project.xml file
       //
       Digester digester = new Digester();
