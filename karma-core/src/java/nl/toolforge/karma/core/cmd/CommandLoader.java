@@ -92,47 +92,52 @@ public final class CommandLoader {
 
 					NodeList optionsElement = ((Element) commandElement.getElementsByTagName("options").item(0)).getElementsByTagName("option");
 
-					Options options = new Options();
-					Option option = null;
+          Options options = null;
 
-					for (int j = 0; j < optionsElement.getLength(); j++) {
+          if (optionsElement.getLength() > 0) {
 
-						Element optionElement = (Element) optionsElement.item(j);
+            options = new Options();
+            Option option = null;
 
-						String opt = optionElement.getAttribute("opt");
-						String longOpt = optionElement.getAttribute("longOpts");
-						boolean required = optionElement.getAttribute("required").equals("true");
+            for (int j = 0; j < optionsElement.getLength(); j++) {
 
-						// Add an options' arguments
-						//
-						boolean hasArgs = optionElement.getElementsByTagName("arg").getLength() > 0;
+              Element optionElement = (Element) optionsElement.item(j);
 
-						NodeList argElements = optionElement.getElementsByTagName("arg");
+              String opt = optionElement.getAttribute("opt");
+              String longOpt = optionElement.getAttribute("longOpts");
+              boolean required = optionElement.getAttribute("required").equals("true");
 
-						if (hasArgs) {
+              // Add an options' arguments
+              //
+              boolean hasArgs = optionElement.getElementsByTagName("arg").getLength() > 0;
 
-							for (int k = 0; k < argElements.getLength(); k++) {
+              NodeList argElements = optionElement.getElementsByTagName("arg");
 
-								Element argElement = (Element) argElements.item(k);
+              if (hasArgs) {
 
-								option =
-									OptionBuilder.withArgName(argElement.getAttribute("module-name"))
-									.hasArg()
-									.withDescription(optionElement.getAttribute("description"))
-									.create(opt);
-							}
-						} else {
-							// Simple boolean option
-							//
-							option = new Option(opt, longOpt, false, optionElement.getAttribute("description"));
-						}
+                for (int k = 0; k < argElements.getLength(); k++) {
 
-						// We have an option for this command and add it to the Options container
-						//
-						options.addOption(option);
-					}
+                  Element argElement = (Element) argElements.item(k);
 
-					String commandName = commandElement.getAttribute("name");
+                  option =
+                    OptionBuilder.withArgName(argElement.getAttribute("module-name"))
+                    .hasArg()
+                    .withDescription(optionElement.getAttribute("description"))
+                    .create(opt);
+                }
+              } else {
+                // Simple boolean option
+                //
+                option = new Option(opt, longOpt, false, optionElement.getAttribute("description"));
+              }
+
+              // We have an option for this command and add it to the Options container
+              //
+              options.addOption(option);
+            }
+          }
+
+          String commandName = commandElement.getAttribute("name");
 					String alias = commandElement.getAttribute("alias");
 
 					if (!uniqueAliasses.add(alias)) {
@@ -142,7 +147,8 @@ public final class CommandLoader {
 					String clazzName = commandElement.getElementsByTagName("classname").item(0).getFirstChild().getNodeValue();
 					String explanation = commandElement.getElementsByTagName("description").item(0).getFirstChild().getNodeValue();
 
-					CommandDescriptor descriptor = new CommandDescriptor(commandName, alias, options, clazzName);
+					CommandDescriptor descriptor = new CommandDescriptor(commandName, alias, clazzName);
+          if (options != null) { descriptor.setOptions(options); }
           descriptor.setDescription(explanation);
 
 					// TODO : dependencies should be added. Might not be required for version 2.0 (CVS support only)

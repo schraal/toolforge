@@ -5,6 +5,7 @@
     <projectPath>
       <root type="composite">
         <root type="simple" url="file://$PROJECT_DIR$" />
+        <root type="simple" url="file:///home/asmedes/dev/netbeans-cvs-beta3.6/src" />
       </root>
     </projectPath>
     <sourcePath>
@@ -14,6 +15,7 @@
         <root type="simple" url="file://$PROJECT_DIR$/toolforge-core/src/java" />
         <root type="simple" url="file://$PROJECT_DIR$/karma-core/src/java" />
         <root type="simple" url="file://$PROJECT_DIR$/karma-launcher/src/java" />
+        <root type="simple" url="file:///home/asmedes/dev/netbeans-cvs-beta3.6/src" />
       </root>
     </sourcePath>
     <classPath>
@@ -24,7 +26,12 @@
         <root type="simple" url="jar:///home/asmedes/.maven/repository/junit/jars/junit-3.8.1.jar!/" />
         <root type="simple" url="jar:///home/asmedes/.maven/repository/regexp/jars/regexp-1.2.jar!/" />
         <root type="simple" url="jar:///home/asmedes/.maven/repository/commons-lang/jars/commons-lang-1.0.1.jar!/" />
+        <root type="simple" url="jar:///home/asmedes/.maven/repository/commons-logging/jars/commons-logging-1.0.3.jar!/" />
+        <root type="simple" url="jar:///home/asmedes/.maven/repository/log4j/jars/log4j-1.2.8.jar!/" />
+        <root type="simple" url="jar:///home/asmedes/.maven/repository/netbeans/jars/netbeans-cvs-beta3.6.jar!/" />
+        <root type="simple" url="file://$PROJECT_DIR$/karma-core/resources/test" />
         <root type="simple" url="file://$PROJECT_DIR$/karma-core/resources" />
+        <root type="simple" url="file://$PROJECT_DIR$/karma-cli/resources" />
       </root>
     </classPath>
     <excludePath>
@@ -43,14 +50,11 @@
     <option name="SYNCHRONIZE_OUTPUT_DIRECTORY" value="false" />
     <option name="DEFAULT_OUTPUT_PATH" value="$PROJECT_DIR$/build" />
     <option name="OUTPUT_MODE" value="single" />
-    <resourceExtensions>
-      <entry name=".+\.(properties)" />
-      <entry name=".+\.(gif|png|jpeg|jpg)" />
-    </resourceExtensions>
+    <resourceExtensions />
   </component>
   <component name="JavacSettings">
     <option name="DEBUGGING_INFO" value="true" />
-    <option name="GENERATE_NO_WARNINGS" value="false" />
+    <option name="GENERATE_NO_WARNINGS" value="true" />
     <option name="DEPRECATION" value="true" />
     <option name="ADDITIONAL_OPTIONS_STRING" value="" />
     <option name="MAXIMUM_HEAP_SIZE" value="128" />
@@ -70,7 +74,7 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="JavadocGenerationManager">
-    <option name="OUTPUT_DIRECTORY" />
+    <option name="OUTPUT_DIRECTORY" value="/home/asmedes/doc/netbeans-cvs-api" />
     <option name="OPTION_SCOPE" value="protected" />
     <option name="OPTION_HIERARCHY" value="true" />
     <option name="OPTION_NAVIGATOR" value="true" />
@@ -81,9 +85,9 @@
     <option name="OPTION_DOCUMENT_TAG_VERSION" value="false" />
     <option name="OPTION_DOCUMENT_TAG_DEPRECATED" value="true" />
     <option name="OPTION_DEPRECATED_LIST" value="true" />
-    <option name="OTHER_OPTIONS" value="" />
+    <option name="OTHER_OPTIONS" />
     <option name="HEAP_SIZE" />
-    <option name="OPEN_IN_BROWSER" value="true" />
+    <option name="OPEN_IN_BROWSER" value="false" />
   </component>
   <component name="WebManager">
     <option enabled="false" />
@@ -109,6 +113,49 @@
     <option name="PRINT_LINE_NUMBERS" value="false" />
     <option name="OPEN_IN_BROWSER" value="false" />
     <option name="OUTPUT_DIRECTORY" />
+  </component>
+  <component name="simpleUML.UMLToolWindowPlugin">
+    <General>
+      <option name="birdViewUpdateDelay" value="2000" />
+      <option name="defaultFileLocation" value="file://$PROJECT_DIR$" />
+    </General>
+    <Classdiagram>
+      <option name="diagramTitleFont" value="SansSerif,1,12" />
+      <option name="diagramFont" value="SansSerif,0,10" />
+      <option name="defaultFieldsExpanded" value="false" />
+      <option name="defaultContructorsExpanded" value="false" />
+      <option name="defaultMethodsExpanded" value="false" />
+      <option name="showParameters" value="true" />
+      <option name="showTooltip" value="true" />
+      <option name="showReturnValues" value="true" />
+      <option name="longModifier" value="true" />
+      <option name="implementsBehaviour" value="1" />
+      <option name="extendsBehaviour" value="1" />
+      <option name="compartmentBehaviour" value="1" />
+      <option name="interfaceBackgroundColor" value="-6494306" />
+      <option name="abstractClassBackgroundColor" value="-1580132" />
+      <option name="classBackgroundColor" value="-6508057" />
+      <option name="diagramBackgroundColor" value="-1" />
+      <option name="useAntialiasedConnectors" value="true" />
+      <option name="quickSourceLinkColor" value="-16776961" />
+      <option name="quickDiagramLinkColor" value="-8454144" />
+      <option name="drawDecorations" value="false" />
+      <option name="hideFieldList" value="" />
+      <option name="showFieldList" value="" />
+      <option name="hideConstructorList" value="" />
+      <option name="showConstructorList" value="" />
+      <option name="hideMethodList" value="" />
+      <option name="showMethodList" value="" />
+      <option name="minimumFigureSize" value="0,0" />
+    </Classdiagram>
+    <Packagediagram>
+      <option name="diagramTitleFont" value="SansSerif,0,12" />
+      <option name="diagramFont" value="SansSerif,0,10" />
+      <option name="packageBackgroundColor" value="-4144960" />
+      <option name="diagramBackgroundColor" value="-1" />
+      <option name="useAntialiasedConnectors" value="true" />
+      <option name="packageNameCompressionLevel" value="2" />
+    </Packagediagram>
   </component>
 </project>
 

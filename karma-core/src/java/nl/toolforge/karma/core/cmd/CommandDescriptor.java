@@ -14,111 +14,121 @@ import java.util.Map;
  */
 public final class CommandDescriptor {
 
-	private String name = null;
-	private String alias = null;
-	private String description = null;
- 	private String helpText = null;
+  private String name = null;
+  private String alias = null;
+  private String description = null;
+  private String helpText = null;
 
-	private Options options = null;
+  private Options options = null;
 
-	private Class commandImpl = null;
+  private Class commandImpl = null;
 
-	private Map deps = new Hashtable();
+  private Map deps = new Hashtable();
 
-	/**
-	 * Creates a command using its mandatory fields.
-	 *
-	 * @param name    The name of the command (the <code>name</code> attribute of the &lt;command&gt;-element).
-	 * @param alias   The alias of the command (the <code>alias</code> attribute of the &lt;command&gt;-element).
-	 * @param options The name of the command (the lt;options&gt;-child-element attribute of the &lt;command&gt;-element).
-	 * @param commandImpl   The <code>Class</code> implementing the command's behavior.
-	 */
-	public CommandDescriptor(String name, String alias, Options options, String commandImpl) throws KarmaException {
+  /**
+   * Creates a command using its mandatory fields.
+   *
+   * @param name    The name of the command (the <code>name</code> attribute of the &lt;command&gt;-element).
+   * @param alias   The alias of the command (the <code>alias</code> attribute of the &lt;command&gt;-element).
+   * @param commandImpl   The <code>Class</code> implementing the command's behavior.
+   */
+  public CommandDescriptor(String name, String alias, String commandImpl) throws KarmaException {
 
-		this.name = name;
-		this.alias = alias;
-		this.options = options;
+    this.name = name;
+    this.alias = alias;
 
-		try {
-			this.commandImpl = Class.forName(commandImpl);
-		} catch (ClassNotFoundException c) {
-			throw new KarmaException(KarmaException.COMMAND_IMPLEMENTATION_CLASS_NOT_FOUND, c);
-		}
-	}
+    try {
+      this.commandImpl = Class.forName(commandImpl);
+    } catch (ClassNotFoundException c) {
+      throw new KarmaException(KarmaException.COMMAND_IMPLEMENTATION_CLASS_NOT_FOUND, c);
+    }
+  }
 
-	public String getName() {
-		return this.name;
-	}
+  public String getName() {
+    return this.name;
+  }
 
-	public String getAlias() {
-		return this.alias;
-	}
+  public String getAlias() {
+    return this.alias;
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	public String getDescription() {
-		return this.description;
-	}
+  public String getDescription() {
+    return this.description;
+  }
 
-	public Options getOptions() {
-		return this.options;
-	}
+  /**
+   *
+   * @param options The name of the command (the lt;options&gt;-child-element attribute of the &lt;command&gt;-element).
+   */
+  public void setOptions(Options options) {
 
-	public Class getImplementation() {
-		return this.commandImpl;
-	}
+    if (options == null) {
+      throw new IllegalArgumentException("When using this setter, provide a non-null Options object.");
+    }
 
-	public void setDependencies(Map dependencies) {
-		this.deps = dependencies;
-	}
+    this.options = options;
+  }
+  public Options getOptions() {
+    return this.options;
+  }
 
-	public Map getDependencies() {
-		return this.deps;
-	}
+  public Class getImplementation() {
+    return this.commandImpl;
+  }
 
-	/**
-	 * Checks if this command has a certain dependency. Merely a helper method to get to the bottom of it more quickly.
-	 *
-	 * @param key The dependency key. Check the public fields in {@link nl.toolforge.karma.core.cmd.Command} for a list of 'valid' dependencies.
+  public void setDependencies(Map dependencies) {
+    this.deps = dependencies;
+  }
 
-	 * @return <code>true</code> If the command has a dependency, or <code>false</code> if it hasn't.
-	 */
-	public boolean hasDependency(String key) {
-		return deps.containsKey(key);
-	}
+  public Map getDependencies() {
+    return this.deps;
+  }
 
-	public void setHelp(String helpText) {
-		this.helpText = helpText;
-	}
+  /**
+   * Checks if this command has a certain dependency. Merely a helper method to get to the bottom of it more quickly.
+   *
+   * @param key The dependency key. Check the public fields in {@link nl.toolforge.karma.core.cmd.Command} for a list of 'valid' dependencies.
 
-	public String getHelp() {
-		return this.helpText;
-	}
+   * @return <code>true</code> If the command has a dependency, or <code>false</code> if it hasn't.
+   */
+  public boolean hasDependency(String key) {
+    return deps.containsKey(key);
+  }
 
-	/**
-	 * Commands are equal when their names are equal.
-	 *
-	 * @param o
-	 * @return
-	 */
-	public boolean equals(Object o) {
+  public void setHelp(String helpText) {
+    this.helpText = helpText;
+  }
 
-		if (o instanceof CommandDescriptor) {
-			if (this.getName().equals(((CommandDescriptor) o).getName())) {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
+  public String getHelp() {
+    return this.helpText;
+  }
 
-	public int hashCode() {
-		// Volgens mij gaat het volgende hartstikke fout !
-		//
-		return name.hashCode();
-	}
+  /**
+   * Commands are equal when their names are equal.
+   *
+   * @param o
+   * @return
+   */
+  public boolean equals(Object o) {
+
+    if (o instanceof CommandDescriptor) {
+      if (this.getName().equals(((CommandDescriptor) o).getName())) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  public int hashCode() {
+    // Volgens mij gaat het volgende hartstikke fout !
+    //
+    return name.hashCode();
+  }
 }

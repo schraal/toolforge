@@ -38,7 +38,8 @@ public class CLI {
 
 		CLI cli = new CLI();
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+		ConsoleWriter writer = new ConsoleWriter(true);
 
 		// Initialize the command context
 		//
@@ -46,13 +47,20 @@ public class CLI {
 		try {
 			ctx.init();
 		} catch (KarmaException k) {
+
+      writer.writeln(k.getErrorMessage());
+
 			logger.error(k.getMessage());
+
+      writer.writeln(FRONTEND_MESSAGES.getString("message.EXIT"));
 			System.exit(1);
 		}
 
-		ConsoleWriter writer = new ConsoleWriter(true);
-
 		try {
+
+      // Open a reader, which is the actual command line ...
+      //
+      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
 			while (true) {
 
@@ -71,7 +79,7 @@ public class CLI {
 				//
 				if (ConsoleConfiguration.getExitCommands().contains(line.trim().toUpperCase())) {
 
-					String text = "Thank you for using this great product.";
+					String text = FRONTEND_MESSAGES.getString("message.THANK_YOU");
 					int length = text.length();
 
 					StringBuffer g = new StringBuffer();
@@ -136,6 +144,7 @@ public class CLI {
 
 				}
 			}
+      writer.writeln(FRONTEND_MESSAGES.getString("message.EXIT"));
 			logger.info("Exiting Karma ...");
 			System.exit(0);
 		}

@@ -99,7 +99,8 @@ public final class LocationFactory {
 		File base = new File(prefs.get(Preferences.LOCATION_STORE_DIRECTORY_PROPERTY));
 		String[] files = base.list(new XMLFilenameFilter());
 
-		if (files.length <= 0) {
+    // TODO I can check for files == null, but this could be checked when setting up the user environment during startup.
+		if (files == null || files.length <= 0) {
 			throw new KarmaException(KarmaException.NO_LOCATION_DATA_FOUND);
 		}
 
