@@ -32,7 +32,7 @@ public class PromoteCommand extends DefaultCommand {
 
     // TODO extractor impl should be obtained from karma.properties or Preferences.
     //
-    VersionExtractor extractor = new CVSVersionExtractor(getContext());
+    VersionExtractor extractor = CVSVersionExtractor.getInstance();
     String nextVersion = extractor.getNextVersion(getContext().getCurrent().getModule(moduleName));
 
     return new SimpleCommandResponse();

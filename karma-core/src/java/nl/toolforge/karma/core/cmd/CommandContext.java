@@ -161,7 +161,7 @@ public final class CommandContext {
 	 * {@link nl.toolforge.karma.core.Module#getLocation} method.
 	 *
 	 * @param module The module for which a runner is required.
-	 * @return A version control specific runner.
+	 * @return A version control system specific runner.
 	 */
 	public Runner getRunner(Module module) throws VersionControlException {
 

@@ -36,5 +36,4 @@ public interface VersionExtractor {
    *         <code>CMD-</code>. TODO to be completed after implementation.
    */
   public String getNextVersion(Module module) throws KarmaException;
-
 }

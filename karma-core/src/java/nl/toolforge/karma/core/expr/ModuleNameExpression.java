@@ -9,8 +9,10 @@ package nl.toolforge.karma.core.expr;
  *
  * @version $Id$
  */
-public class ModuleNameExpression implements Expression
-{
+public class ModuleNameExpression implements Expression {
+
+
+
     public String getPatternString() {
         return "[^_\\s\\d\\-]+";
     }

@@ -42,7 +42,7 @@ public class ViewManifest extends DefaultCommand {
 			String[] moduleData = new String[5];
 			moduleData[0] = module.getName();
       moduleData[1] = module.getVersionAsString();
-			moduleData[2] = module.getDevelopmentLine().getName();
+			moduleData[2] = (module.getDevelopmentLine() == null ? "N/A" : module.getDevelopmentLine().getName());
 			moduleData[3] = module.getStateAsString();
 			moduleData[4] = module.getLocation().getId();
 

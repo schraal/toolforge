@@ -36,6 +36,12 @@ public class CVSException extends VersionControlException {
 	/** Symbolic name rejected by CVS */
 	public static final ErrorCode INVALID_SYMBOLIC_NAME = new ErrorCode("CVS-00019");
 
+	/**
+	 * Wrapper around <code>org.netbeans.lib.cvsclient.command.CommandException</code>. Can occur when processing the
+	 * response from CVS or when the command was aborted.
+	 */
+	public static final ErrorCode INTERNAL_ERROR = new ErrorCode("CVS-00020");
+
 	public CVSException(ErrorCode errorCode) {
 		super(errorCode);
 	}
