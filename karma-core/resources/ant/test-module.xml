@@ -9,10 +9,11 @@
     <echo level="debug" message="module-classpath: ${module-classpath}"/>
     <echo level="debug" message="module-build-dir: ${module-test-dir}"/>
 
-    <mkdir dir="${module-test-dir}/xml"/>
+    <mkdir dir="${module-test-dir}/classes"/>
+    <mkdir dir="${module-test-dir}/reports"/>
 
     <javac
-      destdir="${module-test-dir}"
+      destdir="${module-test-dir}/classes"
       srcdir="${module-source-dir}"
       classpath="${module-classpath}"
       debug="true"/>
@@ -29,12 +30,13 @@
 
       <!-- todo: pad moet anders -->
       <classpath>
-        <pathelement path="${module-classpath}:${module-test-dir}:${module-source-dir}/../resources:${module-source-dir}/../../src/resources"/>
+        <pathelement path="${module-classpath}:${module-test-dir}/classes:${module-source-dir}/../resources:${module-source-dir}/../../src/resources"/>
       </classpath>
 
       <formatter type="xml"/>
+      <formatter type="plain"/>
 
-      <batchtest todir="${module-test-dir}/xml">
+      <batchtest todir="${module-test-dir}/reports">
         <fileset dir="${module-source-dir}">
           <include name="**/*.java"/>
           <excludesfile name="${module-source-dir}/excludes.properties" if="excludes-file-present"/>
