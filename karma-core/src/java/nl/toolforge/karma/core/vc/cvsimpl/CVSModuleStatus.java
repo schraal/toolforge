@@ -18,18 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.vc.cvsimpl;
 
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.Patch;
-import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.vc.DevelopmentLine;
-import nl.toolforge.karma.core.vc.ModuleStatus;
-import nl.toolforge.karma.core.vc.PatchLine;
-import nl.toolforge.karma.core.vc.model.MainLine;
-import org.netbeans.lib.cvsclient.admin.Entry;
-import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
-import org.netbeans.lib.cvsclient.command.log.LogInformation;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,11 +28,28 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.netbeans.lib.cvsclient.admin.Entry;
+import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
+import org.netbeans.lib.cvsclient.command.log.LogInformation;
+
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.Patch;
+import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.vc.DevelopmentLine;
+import nl.toolforge.karma.core.vc.ModuleStatus;
+import nl.toolforge.karma.core.vc.PatchLine;
+import nl.toolforge.karma.core.vc.model.MainLine;
+
 /**
  * @author D.A. Smedes
  * @version $Id$
  */
 public class CVSModuleStatus implements ModuleStatus {
+
+  private static final Log logger = LogFactory.getLog(Utils.class);
 
   private boolean existsInRepository = false;
 
@@ -128,7 +133,7 @@ public class CVSModuleStatus implements ModuleStatus {
    * @throws CVSException
    */
   public Version getLocalVersion() throws CVSException {
-
+    logger.debug("Retrieving local version for module: "+module.getName());
     StandardAdminHandler handler = new StandardAdminHandler();
     Version localVersion = null;
 
@@ -139,7 +144,6 @@ public class CVSModuleStatus implements ModuleStatus {
 
       int i = 0;
       while (i < entries.length) {
-//      for (int i = 0; i < entries.length; i++) {
         if (entries[i].getName().equals(Module.MODULE_DESCRIPTOR)) {
           moduleDescriptor = entries[i];
           break;
@@ -149,14 +153,17 @@ public class CVSModuleStatus implements ModuleStatus {
       try {
 
         if (moduleDescriptor == null || moduleDescriptor.getTag() == null || moduleDescriptor.getTag().matches(DevelopmentLine.DEVELOPMENT_LINE_PATTERN_STRING)) {
+          logger.debug("We're on the head. Return null.");
           // We have the HEAD of a DevelopmentLine.
           //
           return null;
         }
         if (moduleDescriptor.getTag().startsWith(PatchLine.NAME_PREFIX)) {
           localVersion = new Patch(moduleDescriptor.getTag().substring(moduleDescriptor.getTag().indexOf("_") + 1));
+          logger.debug("PatchLine. Return "+localVersion);
         } else {
           localVersion = new Version(moduleDescriptor.getTag().substring(moduleDescriptor.getTag().indexOf("_") + 1));
+          logger.debug("MainLine. Return "+localVersion);
         }
 
       } catch (Exception e) {
