@@ -11,17 +11,23 @@
 
 <ul>
 
-  <li/><code>list-manifests</code>; shows all manifests that can be used
-  (based on the local contents of the manifest-store.
+  <li/><s><code>list-manifests</code>; shows all manifests that can be used
+  (based on the local contents of the manifest-store.</s>
 
-  <li/><code>select-manifest</code>; makes (another) manifest the current
+  <li/><s><code>select-manifest</code>; makes (another) manifest the current
   manifest for a karma runtime environment. The current manifest is stored as
   a java preference (java.util.prefs). The current manifest is maintained in
-  the CommandContext.
+  the CommandContext.</s>
 
-  <li/><code>view-manifest</code>; shows the status of a manifest. All modules
+  <li/><s><code>view-manifest</code>; shows the status of a manifest. All modules
   will be checked against their status in the VCS. Discrepancies between local
-  and remote versions are reported. It is a 'simple' overview.
+  and remote versions are reported. It is a 'simple' overview.</s>
+
+  <li/><code>update-manifest</code>; Update the current manifest to the situation
+  on disk/CVS.
+
+  <li/><s><code>update-module</code>; see <code>update-all</code>. This command
+  applies to the module supplied.</s>
 
   <li/><code>update-all</code>; given a manifest, this command should be
   capable of updating a module, given its location (CVS only for this
@@ -34,44 +40,50 @@
   have been made. The user has the chance (manually !) to check the current
   status. If state is STATIC or DYNAMIC, the warning is actually an ERROR !
 
-  <li/><code>update-module</code>; see <code>update-all</code>. This command
-  applies to the module supplied.
-
-  <li/><code>create-module</code>; creates a module in the VCS that is
+  <li/><s><code>create-module</code>; creates a module in the VCS that is
   supplied in the command as an argument. The basic layout of a module is
   created in the VCS as well (directory structure, standard files such as
-  module.info). When a module already exists, an error is thrown.
+  module.info). When a module already exists, an error is thrown.</s>
 
   <li/><code>build-module</code>; the command should be capable of building a
   module into a jar-file taking into account its dependencies. The jar-file
-  can be taken as an item for other modules as a dependency. Two types of
+  can be taken as an item for other modules as a dependency. Also, the unit tests
+  should be run as part of the build. The build fails when the unit tests fail.
+  Optionally, the unit tests can be skipped.
+  Two types of
   modules are available: source-modules and lib-modules. Only the first should
   be built as such; lib-modules are merely used as a dependency for other
   modules. The implementation is based on ANT (and nothing else).
 
   <li/><code>build-all</code>; builds all modules (the manifest itself).
 
-  <li/><code>promote-module</code>; adds a tag to the module in the VCS on a
+  <li/><code>test-module</code>; runs the unit tests of a module.
+
+  <li/><code>test-all</code>; runs the unit tests of all modules.
+
+  <li/><code>promote-module</code>; <s>adds a tag to the module in the VCS on a
   branch-level. The latest version of a module within a branch is determined
-  and the version is incremented by 1. No fancy schemes are supported.
+  and the version is incremented by 1. No fancy schemes are supported.</s>
+  At least the name of the promotor and an optional comment should be stored
+  as version information.
 
   <li/><code>module-status</code>; shows the latest status of a module (latest
   promoted version in the VCS etc.).
 
-  <li/><code>start-work</code>; state transition for a module from DYNAMIC to
+  <li/><s><code>start-work</code>; state transition for a module from DYNAMIC to
   WORKING. See 'state-management.html'. This implies that a developer can
   change a module (note that this can never be enforced other than checking
-  out the module as read-only).
+  out the module as read-only).</s>
 
-  <li/><code>stop-work</code>; state transition for a module from WORKING to
+  <li/><s><code>stop-work</code>; state transition for a module from WORKING to
   DYNAMIC. This transition can only be done when no local changes have been
   performed. In the latter case, a warning is shown (with a confirmation or
-  manual action required).
+  manual action required).</s>
 
-  <li/>Other stuff:<br/> 
+  <li/>Other stuff:<br/>
 
-       <ul> 
-   
+       <ul>
+
          <li/>Locations as well as manifests should be version managed in a
               VCS.
 
@@ -82,7 +94,7 @@
 	      for ourselves), website (generated with nightly build
 	      mechanism). Very important is a 'management-type'
 	      presentation. Also describe soft issues !!!!
-       
+
          <li/>Webstart enabled deployment of the application including all
               dependencies. The 'KISS' principle.
 
