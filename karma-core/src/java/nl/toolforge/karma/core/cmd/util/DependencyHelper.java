@@ -43,22 +43,9 @@ public final class DependencyHelper {
    */
   public String getClassPath(Module module) throws ModuleTypeException, DependencyException {
 
-    Set moduleDeps = getModuleDependencies(module, false);
-    Set jarDeps = getJarDependencies(module, false);
+    Set deps = getAllDependencies(module, false);
+    return DependencyPath.concat(deps, false, ';');
 
-    if (jarDeps.isEmpty()) {
-      if (moduleDeps.isEmpty()) {
-        return "";
-      } else {
-        return DependencyPath.concat(moduleDeps, false, ';');
-      }
-    } else {
-      if (moduleDeps.isEmpty()) {
-        return DependencyPath.concat(jarDeps, false, ';');
-      } else {
-        return DependencyPath.concat(jarDeps, false, ';') + ";" + DependencyPath.concat(moduleDeps, false, ';');
-      }
-    }
   }
 
   /**
@@ -82,14 +69,14 @@ public final class DependencyHelper {
    * Gets a <code>Set</code> of {@link DependencyPath}s, each one identifying the path to a module dependency (a
    * dependency of <code>module</code> to another <code>Module</code>).
    *
-   * @param module     The module for which a dependency-path should be determined.
-   * @param doPackage  Whether to include only the deps that are to be packaged or all deps.
+   * @param module      The module for which a dependency-path should be determined.
+   * @param doPackage   Whether to include only the deps that are to be packaged or all deps.
+   * @param moduleType  Only return modules of the specified type. Return all types when null.
    *
    * @return See method description.
    * @throws DependencyException  When a dependency for a module is not available.
    */
-  public Set getModuleDependencies(Module module, boolean doPackage) throws ModuleTypeException, DependencyException {
-
+  public Set getModuleDependencies(Module module, boolean doPackage, Module.Type moduleType) throws ModuleTypeException, DependencyException {
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
     }
@@ -100,24 +87,43 @@ public final class DependencyHelper {
 
     for (Iterator iterator = module.getDependencies().iterator(); iterator.hasNext();) {
       ModuleDependency dep = (ModuleDependency) iterator.next();
-
       if (dep.isModuleDependency()) {
 
         try {
-          File dependencyJar = new File(dep.getModule(), resolveArchiveName(manifest.getModule(dep.getModule())));
+          Module depModule = manifest.getModule(dep.getModule());
+          File dependencyJar = new File(dep.getModule(), resolveArchiveName(depModule));
           DependencyPath path = new DependencyPath(env.getBuildRootDirectory(), dependencyJar);
           if (!path.exists()) {
             throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getModule()});
           }
-          if (!doPackage || dep.doPackage()) {
+          if ((!doPackage || dep.doPackage()) &&
+              (moduleType == null || moduleType.equals(depModule.getType())) ) {
             s.add(path);
           }
-        } catch (ManifestException e) {
-          throw new DependencyException(e.getErrorCode(), e.getMessageArguments());
+        } catch (ManifestException me) {
+          if (me.getErrorCode().equals(ManifestException.MODULE_NOT_FOUND)) {
+            throw new DependencyException(DependencyException.MODULE_NOT_IN_MANIFEST, me.getMessageArguments());
+          } else {
+            throw new DependencyException(me.getErrorCode(), me.getMessageArguments());
+          }
         }
       }
     }
     return s;
+  }
+
+  /**
+   * Gets a <code>Set</code> of {@link DependencyPath}s, each one identifying the path to a module dependency (a
+   * dependency of <code>module</code> to another <code>Module</code>).
+   *
+   * @param module     The module for which a dependency-path should be determined.
+   * @param doPackage  Whether to include only the deps that are to be packaged or all deps.
+   *
+   * @return See method description.
+   * @throws DependencyException  When a dependency for a module is not available.
+   */
+  public Set getModuleDependencies(Module module, boolean doPackage) throws ModuleTypeException, DependencyException {
+    return getModuleDependencies(module, doPackage, null);
   }
 
   /**
