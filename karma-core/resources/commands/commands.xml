@@ -97,6 +97,7 @@
       <option opt="m" longOpt="module" hasArgs="true" required="true" description="The module name">
         <arg>module-name</arg>
       </option>
+      <option opt="n" longOpt="no-recurse" hasArgs="false" required="false" description="Do not recursively build dependencies."/>
     </options>
 
     <classname>nl.toolforge.karma.core.cmd.impl.BuildModule</classname>
@@ -119,6 +120,7 @@
       <option opt="m" longOpt="module" hasArgs="true" required="true" description="The module name">
         <arg>module-name</arg>
       </option>
+      <option opt="n" longOpt="no-recurse" hasArgs="false" required="false" description="Do not recursively test or build dependencies."/>
     </options>
 
     <classname>nl.toolforge.karma.core.cmd.impl.TestModule</classname>
