@@ -1,22 +1,18 @@
 package nl.toolforge.karma.core.cmd.impl;
 
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.QueryCommandResponse;
-import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.LocalEnvironment;
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.cli.cmd.SelectManifestImpl;
-
-import java.util.prefs.Preferences;
-import java.util.prefs.BackingStoreException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * <p>This command activates a manifest, which is a general requirement for most other commands. The newly activated
@@ -29,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class SelectManifest extends DefaultCommand {
 
-  private static Log logger = LogFactory.getLog(SelectManifestImpl.class);
+  private static Log logger = LogFactory.getLog(SelectManifest.class);
 
   private CommandResponse commandResponse = new ActionCommandResponse();
 
