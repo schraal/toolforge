@@ -43,9 +43,12 @@ public class ListManifestsImpl extends ListManifests {
     } else {
 
       Iterator manifestsIterator = manifests.iterator();
+      String manifest;
+      int index;
       while (manifestsIterator.hasNext()) {
-        Object manifest = manifestsIterator.next();
-        response.addMessage(new SimpleCommandMessage(manifest.toString()));
+        manifest = (String) manifestsIterator.next();
+        index = manifest.indexOf(".xml");
+        response.addMessage(new SimpleCommandMessage(" -  "+manifest.substring(0, index)));
       }
     }
   }
