@@ -30,7 +30,7 @@ import nl.toolforge.karma.core.ErrorCode;
  */
 public class ErrorMessage extends AbstractCommandMessage {
 
-  protected ErrorMessage(String message) {
+  public ErrorMessage(String message) {
     super(message, null);
   }
 

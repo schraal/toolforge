@@ -36,9 +36,11 @@ import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.Utils;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
+import nl.toolforge.karma.core.vc.cvs.AdminHandler;
 
 import java.util.regex.PatternSyntaxException;
 import java.util.Set;
+import java.util.List;
 import java.io.IOException;
 
 /**
@@ -85,8 +87,6 @@ public class UpdateModuleCommand extends DefaultCommand {
     Manifest manifest = null;
 
     // A manifest must be present for this command
-    //
-    // todo move to aspect; this type of checking can be done by one aspect.
     //
     if (!getContext().isManifestLoaded()) {
       throw new CommandException(ManifestException.NO_ACTIVE_MANIFEST);
@@ -155,11 +155,6 @@ public class UpdateModuleCommand extends DefaultCommand {
         runner.checkout(module, version);
 
         CommandMessage message = null;
-        if (runner.getUpdateParser().getNewFiles().size() > 0) {
-          message = new SuccessMessage("WARNING : Module " + moduleName + " has new files locally.");
-          response.addMessage(message);
-        }
-
         // todo message to be internationalized.
         if (version == null) {
           // No state change.

@@ -33,13 +33,19 @@ import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.model.MainLine;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.tools.ant.DirectoryScanner;
 import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
+import org.netbeans.lib.cvsclient.admin.Entry;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Collections;
 import java.util.Iterator;
 
 public final class Utils {
@@ -140,79 +146,4 @@ public final class Utils {
 
     return true;
   }
-
-
-  private static FilenameFilter filter = new FilenameFilter() {
-    public boolean accept(File dir, String name) {
-      return !name.matches(".cvsignore") && !name.matches("CVS");
-    }
-  };
-
-  /**
-   * Gets all files not known to CVS.
-   *
-   * @param module
-   * @return
-   */
-  public static Set getAllEntries(Module module) throws IOException {
-
-    //
-    // todo UNFINISHED.
-    //
-
-
-    // Define a file filter for everything except:
-    // 1. .cvsignore
-    // 2. CVS-directories.
-    //
-
-    Set newEntries = new HashSet();
-
-    if (module.getBaseDir().exists()) {
-      String[] allEntries = (String[]) module.getBaseDir().list(filter);
-
-      Set e = new HashSet();
-
-      for (int i = 0; i < allEntries.length; i++) {
-
-        File file = new File(module.getBaseDir(), allEntries[i]);
-        if (file.isDirectory()) {
-          addEntries(file, e);
-        } else {
-         e.add(file);
-        }
-
-      }
-
-      StandardAdminHandler handler = new StandardAdminHandler();
-      Set cvsFiles = handler.getAllFiles(module.getBaseDir());
-
-      for (Iterator i = e.iterator(); i.hasNext();) {
-
-        File f = (File) i.next();
-
-        if (!cvsFiles.contains(f)) {
-          newEntries.add(f);
-        }
-      }
-    }
-    return newEntries;
-  }
-
-  private static Set addEntries(File dir, Set currentSet) {
-
-    String[] newEntries = (String[]) dir.list(filter);
-
-    for (int i = 0; i < newEntries.length; i++) {
-
-      File entry = new File(dir, newEntries[i]);
-      if (entry.isDirectory()) {
-        currentSet.addAll(addEntries(entry, currentSet));
-      } else {
-        currentSet.add(entry);
-      }
-    }
-    return currentSet;
-  }
-
 }

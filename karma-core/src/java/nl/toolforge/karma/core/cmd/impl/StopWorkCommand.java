@@ -25,6 +25,7 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.ErrorMessage;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
@@ -34,6 +35,7 @@ import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.Utils;
+import nl.toolforge.karma.core.vc.cvs.AdminHandler;
 
 /**
  *
@@ -59,10 +61,6 @@ public class StopWorkCommand extends DefaultCommand {
     String moduleName = "";
     Module module = null;
 
-    // A manifest must be present for this command
-    //
-    // todo move to aspect; this type of checking can be done by one aspect.
-    //
     if (!getContext().isManifestLoaded()) {
       throw new CommandException(ManifestException.NO_ACTIVE_MANIFEST);
     }
@@ -74,27 +72,39 @@ public class StopWorkCommand extends DefaultCommand {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
 
-    if (!(module instanceof SourceModule)) {
-      throw new CommandException(CommandException.MODULE_TYPE_MUST_BE_SOURCEMODULE, new Object[] {module.getName()});
-    }
-//    if (((SourceModule) module).hasVersion()) {
-//      throw new CommandException(CommandException.START_WORK_NOT_ALLOWED_ON_STATIC_MODULE, new Object[] {module.getName()});
+//    if (!(module instanceof SourceModule)) {
+//      throw new CommandException(CommandException.MODULE_TYPE_MUST_BE_SOURCEMODULE, new Object[] {module.getName()});
 //    }
 
-
     if (!Module.WORKING.equals(getContext().getCurrentManifest().getState(module))) {
+      throw new CommandException(CommandException.INVALID_STATE_MODULE_NOT_WORKING, new Object[]{moduleName});
+    }
 
-      // todo throw commandexception
-      response.addMessage(new SuccessMessage("You are not working on module " + module.getName() + "."));
+    // Detect new files.
+    //
+    AdminHandler handler = new AdminHandler(module);
+    handler.administrate();
 
-    } else {
+    boolean proceed = true;
+    if (handler.hasNewStuff()) {
+      response.addMessage(new ErrorMessage("ERROR : Module " + moduleName + " has new, but uncommitted files."));
+      proceed = false;
+    }
+    if (handler.hasChangedStuff()) {
+      response.addMessage(new ErrorMessage("ERROR : Module " + moduleName + " has changed, but uncommitted files."));
+      proceed = false;
+    }
+    if (handler.hasRemovedStuff()) {
+      response.addMessage(new ErrorMessage("ERROR : Module " + moduleName + " has removed, but uncommitted files."));
+      proceed = false;
+    }
+
+    if (proceed) {
 
       Manifest m = getContext().getCurrentManifest();
       try {
 
         Version version = Utils.getLastVersion(module);
-
-        // todo what if user has made changes to files, even if not allowed by the common process ?
 
         // Update to the latest available version (in a DevelopmentLine).
         //
@@ -111,12 +121,12 @@ public class StopWorkCommand extends DefaultCommand {
       } catch (VersionControlException e) {
         throw new CommandException(e.getErrorCode(), e.getMessageArguments());
       }
-      // todo message handling to karma-cli ???
-      //
       response.addMessage(
           new SuccessMessage(
               getFrontendMessages().getString("message.STOP_WORK_SUCCESFULL"),
               new Object[]{module.getName(), m.getState(module).toString()}));
+    } else {
+      response.addMessage(new SuccessMessage("Module " + moduleName + " still WORKING."));
     }
   }
 

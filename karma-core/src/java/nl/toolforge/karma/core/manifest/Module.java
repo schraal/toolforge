@@ -185,6 +185,9 @@ public interface Module {
    */
   public Set getDependencies();
 
+
+//  public MetaDescriptor getDescriptor();
+
   /**
    * Types a module in the source hierarchy.
    */

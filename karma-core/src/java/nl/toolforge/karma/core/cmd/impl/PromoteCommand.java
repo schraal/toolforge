@@ -25,6 +25,8 @@ import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
+import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.ErrorMessage;
 import nl.toolforge.karma.core.manifest.DevelopmentManifest;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
@@ -35,6 +37,9 @@ import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.CVSModuleStatus;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
+import nl.toolforge.karma.core.vc.cvs.AdminHandler;
+
+import java.util.List;
 
 /**
  * Implementation of the 'codeline freeze' concept. Karma increases a modules' version (using whichever pattern is
@@ -77,34 +82,82 @@ public class PromoteCommand extends DefaultCommand {
         throw new CommandException(CommandException.PROMOTE_ONLY_ALLOWED_ON_WORKING_MODULE, new Object[]{moduleName});
       }
 
-      Runner runner = RunnerFactory.getRunner(module.getLocation());
+      // Detect new files.
+      //
+      AdminHandler handler = new AdminHandler(module);
+      handler.administrate();
 
-      ModuleStatus status = new CVSModuleStatus(module, ((CVSRunner) runner).log(module));
-      Version nextVersion = status.getNextVersion();
+      boolean force = getCommandLine().hasOption("f");
+      boolean proceed = true;
 
-      if (getCommandLine().getOptionValue("v") != null) {
-
-        Version manualVersion = null;
-
-        if (manifest instanceof DevelopmentManifest) {
-          manualVersion= new Version(getCommandLine().getOptionValue("v"));
-        } else{
-          manualVersion = new Patch(getCommandLine().getOptionValue("v"));
+      if (handler.hasNewStuff()) {
+        if (force) {
+          commandResponse.addMessage(new ErrorMessage("WARNING : Module " + moduleName + " has new, but uncommitted files."));
+        } else {
+          commandResponse.addMessage(new ErrorMessage(CommandException.UNCOMMITTED_NEW_FILES, new Object[]{moduleName}));
+          proceed = false;
         }
-
-        if (manualVersion.isLowerThan(status.getLastVersion())) {
-          throw new CommandException(
-              CommandException.MODULE_VERSION_ERROR,
-              new Object[]{manualVersion.getVersionNumber(), status.getLastVersion().getVersionNumber()}
-          );
+      }
+      if (handler.hasChangedStuff()) {
+        if (force) {
+          commandResponse.addMessage(new ErrorMessage("WARNING : Module " + moduleName + " has changed, but uncommitted files."));
+        } else {
+          commandResponse.addMessage(new ErrorMessage(CommandException.UNCOMMITTED_CHANGED_FILES, new Object[]{moduleName}));
+          proceed = false;
         }
-        nextVersion = manualVersion;
+      }
+      if (handler.hasRemovedStuff()) {
+        if (force) {
+          commandResponse.addMessage(new ErrorMessage("WARNING : Module " + moduleName + " has removed, but uncommitted files."));
+        } else {
+          commandResponse.addMessage(new ErrorMessage(CommandException.UNCOMMITTED_REMOVED_FILES, new Object[]{moduleName}));
+          proceed = false;
+        }
       }
 
-      newVersion = nextVersion;
+      if (proceed) {
 
-      // TODO check whether files exist that have not yet been committed.
-      runner.promote(module, comment, newVersion);
+        Runner runner = RunnerFactory.getRunner(module.getLocation());
+
+        ModuleStatus status = new CVSModuleStatus(module, ((CVSRunner) runner).log(module));
+        Version nextVersion = status.getNextVersion();
+
+        if (getCommandLine().getOptionValue("v") != null) {
+
+          Version manualVersion = null;
+
+          if (manifest instanceof DevelopmentManifest) {
+            manualVersion= new Version(getCommandLine().getOptionValue("v"));
+          } else{
+            manualVersion = new Patch(getCommandLine().getOptionValue("v"));
+          }
+
+          if (manualVersion.isLowerThan(status.getLastVersion())) {
+            throw new CommandException(
+                CommandException.MODULE_VERSION_ERROR,
+                new Object[]{manualVersion.getVersionNumber(), status.getLastVersion().getVersionNumber()}
+            );
+          }
+          nextVersion = manualVersion;
+        }
+
+        newVersion = nextVersion;
+
+        runner.promote(module, comment, newVersion);
+
+        commandResponse.addMessage(
+            new SuccessMessage(
+                getFrontendMessages().getString("message.MODULE_PROMOTED"),
+                new Object[]{getCommandLine().getOptionValue("m"), getNewVersion()}
+            ));
+
+      } else {
+        commandResponse.addMessage(
+            new SuccessMessage(
+                getFrontendMessages().getString("message.PROMOTE_MODULE_FAILED"),
+                new Object[]{module.getName(), moduleName}
+            ));
+      }
 
     } catch (ManifestException e) {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
@@ -114,7 +167,7 @@ public class PromoteCommand extends DefaultCommand {
   }
 
   public CommandResponse getCommandResponse() {
-    return this.commandResponse;
+    return commandResponse;
   }
 
   /**
