@@ -97,51 +97,77 @@
     interfaces. One is the command-line interface, the other is the console. 
   </p>
 
-  <h4>Linux users (and similar operation systems)</h4>
+  <h4>The Karma binary</h4>
 
   <p>
     Karma can be started in the following ways:
   </p>
 
-  <source>karma [-w &lt;working-context&gt;]</source>
-
-  <source>karma [-u] &lt;command&gt; &lt;command-options&gt;</source>
+  <source>karma</source>
 
   <p>
-    The first one starts the Karma console application for the specified
+    Prints usage information. Just using <code>karma</code> without anything
+    means nothing to Karma, as we are not Ant or Maven and for clarity we
+    don't perform a default startup procedure.
+  </p>
+
+  <source>karma [-u] [-w &lt;working-context&gt;] console</source>
+
+  <p>
+    Starts the Karma console, which is the command shell for Karma. The
+    <code>-u</code> option updates the manifest store and location store (see
+    the <a href="administration-guide.html">Administration Guide</a> for
+    in-depth coverage of these two terms). <code>-w</code> sets another
     working context (see the <a href="#wc">Working Context Configuration</a>
-    section). The second one runs the specified command only.
+    section). If ommitted, the last used working context (stored as a Java
+    preference) is used.
   </p>
 
-  <h4>Windows users</h4>
-
   <p>
-    Karma can be started in the following ways:
+    <b>Note</b>: a working context name must follow the pattern
+    <code>[a-zA-Z0-9_][a-zA-Z0-9_\-]*</code> (don't start with a
+    <code>-</code>).
   </p>
 
-  <source>karma.bat [-w &lt;working-context&gt;]</source>
-
-  <source>karma.bat [-u] &lt;command&gt; &lt;command-options&gt;</source>
+  <source>karma [-u] [-w &lt;working-context&gt;] &lt;command&gt; &lt;command-options&gt;</source>
 
   <p>
-    Karma will start up and check its environment. The following output should
-    be shown:
+    Much like <code>karma [-u] [-w &lt;working-context&gt;] console</code>,
+    but this variant executes one command, then quits, which is usefull for
+    batch processing of commands.
+  </p>
+
+  <p>
+    During startup, the following output will be shown:
   </p>
  
   <source>
-********************
-Welcome to Karma !!!
-********************
+      _________________________________
+      Welcome to Karma (R1.0)       !!!
 
-Loading working context `default` ...
-Checking manifest store configuration ...
+      K     A     R        M        A
+      .     .     .        .        .
+      Karma Ain't Remotely Maven or Ant
+      _________________________________
+
+[ console ] Logging will be written to /home/asmedes/dev/toolforge/karma-cli/logs.
+[ console ] Checking working context configuration for `default`.
+[ console ] Configuration complete. Loading working context `default` ...
+[ console ] Configuration can be manually updated in `/home/asmedes/.karma/working-contexts/default`
+
+[ console ] Starting up console ...
+
+[ init ] Updating manifests ...
+[ init ] Updating locations ...
+[ init ] Loading manifest from history ...
+[ init ] Manifest `something` has been activated.
   </source>
 
   <p>
     Karma will start and try and locate the settings for the working context
     specified with the <code>-w</code> argument. If the working context does
-    not yet exist, Karma will create the working context and ask the user for
-    some configuration settings. 
+    not yet exist, Karma will create the working context and start a
+    configurator, which will guide you through the working context setup.
   </p>
 
   </subsection>
@@ -158,15 +184,13 @@ Checking manifest store configuration ...
   <p>
     Having started Karma, you have configured your first working context. The
     properties for a working context can be changed in
-    <code>workingcontext.properties</code>, located in the working context
-    subdirectory of <code>${user.home}/.karma</code>. Please check the <a
-    href="reference/working-context/index.html">Reference Documentation</a>
-    for further reference.
+    <code>working-context.xml</code>, located in the working context
+    subdirectory of <code>${user.home}/.karma/working-contexts</code>.
   </p>
 
   <p>
-     For an in-depth discussion on working contexts, see the <a
-     href="reference/working-context/index.xml">Reference Documentation</a>.
+     For in-depth information on working contexts, see the <a
+     href="reference/working-context/index.html">Reference Documentation</a>.
   </p>
 
   </subsection>

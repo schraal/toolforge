@@ -31,13 +31,13 @@
   <p>
     Software modules are grouped in a so-called manifests. These manifests are
     xml files, following the
-    http://www.toolforge.org/specifications/karma/manifest.dtd
+    `http://www.toolforge.org/specifications/karma/manifest.dtd`
     definition. Karma is capable of checking out these manifest files from a
     (CVS) repository. The local checkout of this module (which must be named :
     manifests) is called the 'manifest-store'. During startup of Karma, the
     manifest-store configuration will be checked and asked for if missing. You
     have to provide these properties to Karma which will be written in
-    <code>$USER_HOME/.karma/&lt;working-context&gt;/workingcontext.properties.</code>
+    <code>${user.home}/.karma/working-contexts/&lt;working-context&gt;/working-context.xml</code>.
     A local CVS repository works as well.
   </p>
 
@@ -48,8 +48,8 @@
   </p>
 
   <p>
-   Create a file <code>helloworld.xml</code> and add it to your
-   <code>manifest</code> module in the CVS repository :
+   Create a file <code>helloworld.xml</code> and add it to your manifest store
+   (check it in into your manifest store module in a CVS repository:
   </p>
 
   <source>
@@ -90,8 +90,8 @@
 
   <p>
     The following could be your starter location. Create a file
-    <code>locations.xml</code> and add it to your <code>locations</code>
-    module in the CVS repository :
+    <code>locations.xml</code> and add it to your location store in the CVS
+    repository:
   </p>
 
   <source>
@@ -99,16 +99,17 @@
   <![CDATA[
 <?xml version="1.0"?>
 
-<locations>
+<loc:locations>
 
-  <location type="cvs-repository" id="local">
-    <protocol>local</protocol>
-    <host>localhost</host>
-    <port>2401</port>
-    <repository>/home/cvs</repository>
-  </location>
+  <loc:location type="cvs-repository" id="local">
+    <loc:protocol>local</loc:protocol>
+    <loc:host>localhost</loc:host>
+    <loc:port>2401</loc:port>
+    <loc:repository>/home/cvs</loc:repository>
+    <loc:module-offset></loc:module-offset>
+  </loc:location>
 
-</locations>
+</loc:locations>
   ]]>
   </source>
 
@@ -158,7 +159,7 @@
 <?xml version="1.0"?>
 
 <authenticators>
-  <authenticator id="local" username="asmedes"/>
+  <authenticator working-context="default" id="local" username="asmedes"/>
 </authenticators>
   ]]>
   </source>
@@ -166,8 +167,8 @@
   <p>
     Note that <code>asmedes</code> is the username in the CVS repository,
     although it is not required for a CVS repository that is local (the
-    <code>:local:</code> protocol), Karma still needs it to be maintain
-    history.
+    <code>:local:</code> protocol), Karma still needs it to keep track of who
+    did what (history).
   </p>
 
   </subsection>

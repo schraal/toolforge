@@ -11,99 +11,106 @@
 
   <p>
     The working set of modules, manifests, etc for a developer is logically
-    grouped in a 'working context'. A working context is used by Karma to
-    check out modules and manage manifests within a logical context. Suppose
-    you work for two different clients. For each client, you can easily
-    configure a working context and separate every client-specific setting
-    from the other. 
+    grouped in a 'working context' (a.k.a. workset). A working context is used
+    by Karma to check out modules and manage manifests within a logical
+    context. Suppose you work for two different clients. For each client, you
+    can easily configure a working context and separate every client-specific
+    setting from the other.
   </p>
 
   <p>
     The first thing that Karma does, when starting up, is locate the current
-    working context. When Karma is started using <code>karma -w
-    &lt;working-context&gt;</code>, the working-context is stored as a user
-    preference <code>karma.working-context</code> in
+    working context. When Karma is started with the <code>-w
+    &lt;working-context&gt;</code> option, the working-context is stored as a
+    Java preference <code>karma.working-context</code> in
     <code>.java/.userPrefs/prefs.xml</code>. Having set a working context, the
-    next time you use Karma, it can simply be started with <code>karma</code>
-    (or <code>karma.bat</code> for Windows users).
+    next time you use Karma, it can simply be started with <code>karma</code>.
   </p>
 
   <subsection name="Configuration Items">
 
   <p>
     The working context requires a number of configuration items. All of these
-    items are configured in <code>workingcontext.properties</code>, located in
-    <code>${user.home}/.karma/&lt;working-context&gt;</code>.
+    items are configured in <code>working-context.xml</code>, located in
+    <code>${user.home}/.karma/working-contexts/&lt;working-context&gt;</code>.
   </p>
 
   <p>
-    The following properties are defined (as your CVS administrator for the
-    correct settings).
+    The following file shows such a configuration file:
   </p>
+
+  <source>
+  <![CDATA[
+<?xml version="1.0"?>
+<wc:working-context
+  xmlns:wc="http://www.toolforge.org/specifications/working-context"
+  xmlns:loc="http://www.toolforge.org/specifications/location">
+  <wc:properties>
+    <wc:property name="project.basedir" value="/home/asmedes/karma/toolforge"/>
+    <wc:property name="manifest-store.module" value="manifests"/>
+    <wc:property name="location-store.module" value="locations"/>
+  </wc:properties>
+
+  <loc:locations>
+    <loc:location type="cvs" id="manifest-store">
+      <loc:protocol>pserver</loc:protocol>
+      <loc:host>127.0.0.1</loc:host>
+      <loc:port>2401</loc:port>
+      <loc:repository>/cvs/om-admin</loc:repository>
+      <loc:module-offset></loc:module-offset>
+    </loc:location>
+    <loc:location type="cvs" id="location-store">
+      <loc:protocol>pserver</loc:protocol>
+      <loc:host>127.0.0.1</loc:host>
+      <loc:port>2401</loc:port>
+      <loc:repository>/cvs/om-admin</loc:repository>
+      <loc:module-offset></loc:module-offset>
+    </loc:location>
+  </loc:locations>
+
+</wc:working-context>]]>
+  </source>
 
   <table>
 
   <tr>
-    <th><code>manifest-store.cvs.protocol</code></th>
+    <th><code>project.basedir</code></th>
     <td>
 
-      The protocol that the CVS repository supports. This would be
-      <code>local</code> for local repositories and <code>pserver</code> for
-      (remote), password secured servers. Note that <code>ext</code> and
-      <code>server</code> are not yet supported (working on it).
+      Specifies the directory where your project work is stored. Modules are
+      checked out in this directory (grouped by manifest) and all other
+      project related work is performed in this directory.
 
     </td>
   </tr>
 
   <tr>
-    <th><code>manifest-store.cvs.host</code></th>
+    <th><code>manifest-store.module</code></th>
     <td>
 
-      The host (ip-adres or hostname) where the CVS repository resides. This
-      property is ignored when <code>manifest-store.cvs.protocol</code> is
-      <code>local</code>.
-
-    </td>
-
-  </tr>
-
-  <tr>
-    <th><code>manifest-store.cvs.port</code></th>
-    <td>
-
-      The server port at which the CVS repository is listening. Generally,
-      this would be 2401 (the default port).
+      Manifests are version controlled xml files containing all modules for a
+      software application or component. They are stored in a version control
+      system (currently, only CVS is supported) in a module. The module can be
+      specified with this property. Examples of module names are:
+      <code>manifests</code> or <code>admin/manifests</code>. When manifests
+      are checked out of the repository, they will be stored in
+      <code>${project.basedir}/.admin/manifest-store/${manifest-store.module}</code>.
 
     </td>
   </tr>
 
   <tr>
-    <th><code>manifest-store.cvs.repository</code></th>
+    <th><code>location-store.module</code></th>
     <td>
 
-      The repository (directory) on the CVS server.
-
-    </td>
-  </tr>
-
-  <tr>
-    <th><code>manifest-store.cvs.module</code></th>
-    <td>
-
-      The module in the CVS repository where the manifest files are
-      managed. Specify the full path to the module. If the module is located
-      in <code>manifests/development-manifests</code>, then use the full
-      module name for the <code>manifest-store.cvs.module</code> property.
-
-    </td>
-  </tr>
-
-  <tr>
-    <th><code>manifest-store.cvs.username</code></th>
-    <td>
-
-      The username that is configured on the CVS server and allows you (at
-      least read-)access to the manifest store.
+      Locations are version controlled xml files containing definitions of
+      locations where modules are located (a CVS repository, for
+      example). They are stored in a version control system (currently, only
+      CVS is supported) in a module. The module can be specified with this
+      property. Examples of module names are: <code>locations</code> or
+      <code>admin/locations</code>. When locations are checked out of the
+      repository, they will be stored in
+      <code>${project.basedir}/.admin/location-store/${location-store.module}</code>.
 
     </td>
   </tr>
@@ -111,11 +118,17 @@
   </table>
 
   <p>
-    A flaw in Karma R1.0 is the way we lookup authentication data. You will
-    have to login to the CVS repository once to create the required password
-    entry in <code>${user.home}/.cvspass</code> (on Windows, you will even
-    have to create this file yourself (see : <a href="">authentication
-    issues</a>.
+    Location configuration is required to specify where manifests and
+    locations can be found. This is done through the
+    <code>&lt;loc:location&gt;</code>-elements. Check the example. It should
+    be sufficient to configure your manifest and location stores.
+  </p>
+
+  <p>
+    Authentication data for a CVS repository can be found in
+    <code>${user.home}/.karma/authenticators.xml</code>, which will contain a
+    mapping for the <code>manifest-store</code> and
+    <code>location-store</code> for the current working context.
   </p>
 
   </subsection>
@@ -125,7 +138,12 @@
   <section name="Best Practices">
 
   <p>
-    [ It is a good practice to define a new working context when ... ]
+    Working contexts are ideal to group software development projects together
+    on a per-client basis. You are free to collect all your project work
+    together in one working context, but for clarity, it is good practice to
+    have several working contexts. You don't need to restart the command shell
+    to get access to another working context. There's a command to quickly
+    change to another working context.
   </p>
   
   </section>

@@ -14,7 +14,6 @@
     your local harddisk. The following default structure is available:
   </p>
 
-  <p>
     <table>
 
     <tr>
@@ -43,54 +42,68 @@
     </tr>
 
     <tr>
-      <td><code>${user.home}/.karma/&lt;working-context&gt;</code></td>
+      <td><code>${user.home}/.karma/working-contexts</code></td>
       <td>
-      Each working context has its own configuration directory. Right now,
-      the only file that is stored here is
-      <code>workingcontext.properties</code>, which contains the configuration
-      for the manifest-store and the location-store.
+
+        Each working context has its own configuration directory. They are all
+        stored under this one.
+
       </td>
     </tr>
 
     <tr>
-      <td><code>${user.home}/karma</code></td>
-      <td><strong>IMPORTANT:</strong>due to a bug in the NetBeans Libraries the
-        full path to this directory must not contain any links.
-      </td>
-    </tr>
+      <td><code>${user.home}/.karma/working-contexts/&lt;working-context&gt;</code></td>
+      <td> 
 
-    <tr>
-      <td><code>${user.home}/karma/.admin</code></td>
-      <td>
-      </td>
-    </tr>
-
-    <tr>
-      <td><code>${user.home}/karma/&lt;working-context&gt;</code></td>
-      <td>
-      </td>
-    </tr>
-
-    <tr>
-      <td><code>${user.home}/karma/&lt;working-context&gt;/.admin/manifest-store</code></td>
-      <td>
-      </td>
-    </tr>
-
-    <tr>
-      <td><code>${user.home}/karma/&lt;working-context&gt;/.admin/location-store</code></td>
-      <td>
-      </td>
-    </tr>
-
-    <tr>
-      <td><code>${user.home}/karma/&lt;working-context&gt;/projects</code></td>
-      <td>
+        Each working context has its own configuration directory. Right now,
+        the only file that is stored here is <code>working-context.xml</code>,
+        which contains the configuration for the working context.
+       
       </td>
     </tr>
 
     </table>
-  </p>
+
+    <p>
+      Depending on the value of the <code>${project.basedir}</code> property
+      in the working context configuration file, the following directories are
+      also created (in some cases only when they are required).
+    </p>
+
+    <table>
+
+    <tr>
+      <td><code>${project.basedir}/.admin</code></td>
+      <td>
+
+        The base directory for administrative data for the working context.
+
+      </td>
+    </tr>
+
+    <tr>
+      <td><code>${project.basedir}/.admin/manifest-store</code></td>
+      <td>
+
+        Directory where the manifest store is located. A directory will be
+        created (<code>${manifest-store.module}</code>) when the manifest
+        store is checked out by Karma.
+
+      </td>
+    </tr>
+
+    <tr>
+      <td><code>${project.basedir}/.admin/location-store</code></td>
+      <td>
+
+        Directory where the location store is located. A directory will be
+        created (<code>${location-store.module}</code>) when the location
+        store is checked out by Karma.
+
+      </td>
+    </tr>
+
+    </table>
 
   </section>
 
@@ -100,9 +113,8 @@
     When a manifest is updated locally (i.e. through the
     <code>update-all-modules</code> command - see the <a
     href="../commands/index.html">commands</a> section -), a directory
-    structure is created under
-    <code>${user.home}/karma/&lt;working-context&gt;/projects</code>; the
-    manifests' subdirectory is always the manifests' name.
+    structure is created such as 
+    <code>${project.basedir}/&lt;manifest-name&gt;</code>.
   </p>
 
   <p>
@@ -111,29 +123,15 @@
   </p>
 
   <source>
-${user.home}/karma/product-dev/projects/oracle-10g-dev/
+${project.basedir}/oracle-10g-dev
   </source>
 
   <p>
-    All of a manifests' modules get their own subdirectory. The modules' name
-    is the the subdirectory name.
+    All of a manifests' modules are checked out in
+    <code>${project.basedir}/&lt;manifest-name&gt;/modules</code>.
   </p>
 
   </section>
-
-  <section name="Module Temporary Structure">
-
-  <p>
-    Besides a modules' inherent structure (which is contained in a version
-    control system), a module also has a temporary structure which is used by
-    Karma during its operations.
-  </p>
-
-  <p>
-    [ TO BE DONE ]
-  </p>
-
-  </section>  
 
 </body>
 
