@@ -16,16 +16,41 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-package nl.toolforge.karma.core.vc.subversion;
+package nl.toolforge.karma.core.vc.svnimpl;
 
-import nl.toolforge.karma.core.vc.Revision;
+import nl.toolforge.karma.core.location.BaseLocation;
+import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.location.LocationType;
 
 /**
- * Subversion revision container. A revision contains one or more files, directories etc. Note the difference between
- * a revision between Subversion and CVS. See {@link nl.toolforge.karma.core.vc.cvsimpl.CVSRevision}.
- *
  * @author D.A. Smedes
  * @version $Id$
  */
-public class SubversionRevision implements Revision {
+public final class SubversionLocationImpl extends BaseLocation {
+
+	private String username = null;
+	private String password = null;
+
+	public SubversionLocationImpl(String id) {
+		super(id, LocationType.SUBVERSION);
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public void setPassword(String encodedPassword) {
+
+		// TODO some encoding scheme should be applied.
+		//
+		password = encodedPassword;
+	}
+
+  /**
+   * Always true; Subversion not yet supported.
+   * @return
+   */
+  public boolean isAvailable() {
+    return true;
+  }
 }

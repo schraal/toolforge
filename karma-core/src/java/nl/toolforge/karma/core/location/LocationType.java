@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2004 Your Corporation. All Rights Reserved.
+ */
 package nl.toolforge.karma.core.location;
 
 /**
@@ -15,7 +18,7 @@ public final class LocationType {
   /**
    * A Subversion repository location
    */
-  public static final LocationType SUBVERSION = new LocationType("subversion");
+  public static final LocationType SUBVERSION = new LocationType("svn");
 
   public static final LocationType DIRECTORY = new LocationType("directory");
 
@@ -27,7 +30,8 @@ public final class LocationType {
 
   public static LocationType getTypeInstance(String type) throws LocationException{
 
-    if (!type.matches("cvs|subversion|directory")) {
+    if (!type.matches(CVS+"|"+SUBVERSION+"|"+DIRECTORY)) {
+      System.out.println("Undefined location type specified: "+type);
       throw new LocationException(LocationException.LOCATION_CONFIGURATION_ERROR);
     }
     return new LocationType(type);

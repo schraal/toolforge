@@ -1,12 +1,11 @@
-/**
- * @author D.A. Smedes
- * @version $Id$
+/*
+ * Copyright (c) 2004 Your Corporation. All Rights Reserved.
  */
 package nl.toolforge.karma.core.location;
 
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.vc.cvs.CVSRepository;
-import nl.toolforge.karma.core.vc.subversion.SubversionRepository;
+import nl.toolforge.karma.core.vc.cvsimpl.CVSRepository;
+import nl.toolforge.karma.core.vc.svnimpl.SubversionRepository;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 
 public class LocationFactory {
@@ -52,6 +51,6 @@ public class LocationFactory {
 
       return cvsLocation;
     }
-    throw new KarmaRuntimeException("Not implemented for other types than 'cvs' and 'subversion' ");
+    throw new KarmaRuntimeException("Not implemented for other types than '"+LocationType.CVS+"' and '"+LocationType.SUBVERSION+"' ");
   }
 }

@@ -1,3 +1,6 @@
+/*
+ * Copyright (c) 2004 Your Corporation. All Rights Reserved.
+ */
 package nl.toolforge.karma.core.location;
 
 import junit.framework.TestCase;
@@ -12,7 +15,7 @@ public class TestLocationType extends TestCase {
     try {
       assertEquals(LocationType.CVS, LocationType.getTypeInstance("cvs"));
       assertEquals(LocationType.DIRECTORY, LocationType.getTypeInstance("directory"));
-      assertEquals(LocationType.SUBVERSION, LocationType.getTypeInstance("subversion"));
+      assertEquals(LocationType.SUBVERSION, LocationType.getTypeInstance("svn"));
     } catch (LocationException e) {
       fail(e.getMessage());
     }
