@@ -18,6 +18,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.cli.cmd;
 
+import java.text.SimpleDateFormat;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
@@ -30,12 +38,6 @@ import nl.toolforge.karma.core.history.ModuleHistoryException;
 import nl.toolforge.karma.core.history.ModuleHistoryFactory;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Renders the contents of the <code>history.xml</code> to the console.
@@ -60,9 +62,6 @@ public class ViewModuleHistory extends DefaultCommand {
     if (!getContext().isManifestLoaded()) {
       throw new CommandException(ManifestException.NO_ACTIVE_MANIFEST);
     }
-
-//    SuccessMessage message = new SuccessMessage("Checking manifest status, please wait ...");
-//    commandResponse.addMessage(message);
 
     String moduleName = getCommandLine().getOptionValue("m");
     Module module = null;
@@ -99,16 +98,16 @@ public class ViewModuleHistory extends DefaultCommand {
     String h4 = "Timestamp";
     String h5 = "Comment";
 
-    final int MAX_DATETIME = 30;
+    final int MAX_DATETIME = 23;
     final int MAX_COMMENT = 60;
 
-    buffer.append(h1 + StringUtils.repeat(" ", 20 - h1.length()) + "| ");
+    buffer.append(h1 + StringUtils.repeat(" ", 18 - h1.length()) + "| ");
     buffer.append(h2 + StringUtils.repeat(" ", 15 - h2.length()) + "| ");
-    buffer.append(h3 + StringUtils.repeat(" ", 10 - h3.length()) + "| ");
+    buffer.append(h3 + StringUtils.repeat(" ", 8 - h3.length()) + "| ");
     buffer.append(h4 + StringUtils.repeat(" ", MAX_DATETIME - h4.length()) + "| ");
-    buffer.append(h5 + StringUtils.repeat(" ", MAX_COMMENT - h5.length()) + "| ");
+    buffer.append(h5);
     buffer.append("\n");
-    buffer.append(StringUtils.repeat("_", 144));
+    buffer.append(StringUtils.repeat("_", 100));
     buffer.append("\n\n");
 
     List events = history.getEvents();
@@ -117,10 +116,11 @@ public class ViewModuleHistory extends DefaultCommand {
 
       ModuleHistoryEvent event = (ModuleHistoryEvent) i.next();
 
-      buffer.append(event.getType() + StringUtils.repeat(" ",  20 - event.getType().length()) + "| ");
+      buffer.append(event.getType() + StringUtils.repeat(" ",  18 - event.getType().length()) + "| ");
       buffer.append(event.getAuthor() + StringUtils.repeat(" ",  15 - event.getAuthor().length()) + "| ");
-      buffer.append(event.getVersion().getVersionNumber() + StringUtils.repeat(" ",  10 - event.getVersion().getVersionNumber().length()) + "| ");
-      buffer.append(event.getDatetime() + StringUtils.repeat(" ",  MAX_DATETIME - event.getDatetime().toString().length()) + "| ");
+      buffer.append(event.getVersion().getVersionNumber() + StringUtils.repeat(" ",  8 - event.getVersion().getVersionNumber().length()) + "| ");
+      String date = new SimpleDateFormat("dd-MMM-yyyy HH:mm z").format(event.getDatetime());
+      buffer.append(date + StringUtils.repeat(" ",  MAX_DATETIME - date.length()) + "| ");
 
       String comment = null;
       if (event.getComment().length() > MAX_COMMENT) {
@@ -128,8 +128,7 @@ public class ViewModuleHistory extends DefaultCommand {
       } else {
         comment = event.getComment();
       }
-
-      buffer.append(comment + StringUtils.repeat(" ",  MAX_COMMENT - comment.length()) + "|\n");
+      buffer.append(comment+"\n");
     }
 
     commandResponse.addEvent(new MessageEvent(new SimpleMessage(buffer.toString())));

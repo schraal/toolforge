@@ -77,10 +77,10 @@ public class ViewManifestImpl extends ViewManifest {
       buffer.append(h3 + StringUtils.repeat(" ",  7 - h3.length()) + "| ");
       buffer.append(h4 + StringUtils.repeat(" ",  9 - h4.length()) + "| ");
       buffer.append(h5 + StringUtils.repeat(" ",  7 - h5.length()) + "| ");
-      buffer.append(h6 + StringUtils.repeat(" ", 20 - h6.length()) + "| ");
+      buffer.append(h6 + StringUtils.repeat(" ", 15 - h6.length()) + "| ");
       buffer.append(h7 + StringUtils.repeat(" ", 10 - h7.length()) + "| ");
-      buffer.append(h8 + StringUtils.repeat(" ", 25 - h8.length()) + "|\n");
-      buffer.append(StringUtils.repeat("_", 131));
+      buffer.append(h8 + "\n");
+      buffer.append(StringUtils.repeat("_", 100));
       buffer.append("\n");
 
       for (Iterator i = renderedData.iterator(); i.hasNext();) {
@@ -97,9 +97,9 @@ public class ViewManifestImpl extends ViewManifest {
         buffer.append(data[2] + StringUtils.repeat(" ",  7 - data[2].length()) + "| ");
         buffer.append(data[3] + StringUtils.repeat(" ",  9 - data[3].length()) + "| ");
         buffer.append(data[4] + StringUtils.repeat(" ",  7 - data[4].length()) + "| ");
-        buffer.append(data[5] + StringUtils.repeat(" ", 20 - data[5].length()) + "| ");
+        buffer.append(data[5] + StringUtils.repeat(" ", 15 - data[5].length()) + "| ");
         buffer.append(data[6] + StringUtils.repeat(" ", 10 - data[6].length()) + "| ");
-        buffer.append(data[7] + StringUtils.repeat(" ", 25 - data[7].length()) + "|\n");
+        buffer.append(data[7] + "\n");
       }
 
     } else {
@@ -114,27 +114,27 @@ public class ViewManifestImpl extends ViewManifest {
       String h6 = "STATE";
       String h7 = "LOCATION";
 
-      buffer.append(h1 + StringUtils.repeat(" ", 30 - h1.length()) + "| ");
+      buffer.append(h1 + StringUtils.repeat(" ", 25 - h1.length()) + "| ");
       buffer.append(h2 + StringUtils.repeat(" ",  8 - h2.length()) + "| ");
       buffer.append(h3 + StringUtils.repeat(" ",  7 - h3.length()) + "| ");
       buffer.append(h4 + StringUtils.repeat(" ",  9 - h4.length()) + "| ");
       buffer.append(h5 + StringUtils.repeat(" ",  7 - h5.length()) + "| ");
       buffer.append(h6 + StringUtils.repeat(" ", 20 - h6.length()) + "| ");
-      buffer.append(h7 + StringUtils.repeat(" ", 25 - h7.length()) + "|\n");
-      buffer.append(StringUtils.repeat("_", 105 + 11));
+      buffer.append(h7 + "\n");
+      buffer.append(StringUtils.repeat("_", 100));
       buffer.append("\n");
 
       for (Iterator i = renderedData.iterator(); i.hasNext();) {
 
         String[] data = (String[]) i.next();
-        buffer.append(data[0] + StringUtils.repeat(" ", 30 - data[0].length()) + "| ");
+        buffer.append(data[0] + StringUtils.repeat(" ", 25 - data[0].length()) + "| ");
         buffer.append(data[1] + StringUtils.repeat(" ",  8 - data[1].length()) + "| ");
         buffer.append(data[2] + StringUtils.repeat(" ",  7 - data[2].length()) + "| ");
         buffer.append(data[3] + StringUtils.repeat(" ",  9 - data[3].length()) + "| ");
         buffer.append(data[4] + StringUtils.repeat(" ",  7 - data[4].length()) + "| ");
         // No fifth column
         buffer.append(data[6] + StringUtils.repeat(" ", 20 - data[6].length()) + "| ");
-        buffer.append(data[7] + StringUtils.repeat(" ", 25 - data[7].length()) + "|\n");
+        buffer.append(data[7] + "\n");
       }
     }
 
