@@ -76,6 +76,13 @@ public final class TestLocalEnvironment extends TestCase {
     assertEquals(new File(workingContext, "locations"), LocalEnvironment.getLocationStore());
   }
 
+  public void testGetLocalRepository() {
+    assertEquals(
+        new File(System.getProperty("user.home"), ".karma" + File.separator + "repository"),
+        LocalEnvironment.getLocalRepository()
+    );
+  }
+
   /**
    * Leave as last ...
    */

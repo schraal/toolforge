@@ -166,6 +166,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
   protected Module module = null;
 
   private File tempBuildFileLocation = null; // Maintains a hook to a temp location for the Ant build file.
+  private Project project = null;
 
   /**
    * Creates a command by initializing the command through its <code>CommandDescriptor</code>.
@@ -388,8 +389,6 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
     return moduleDeps + jarDeps;
   }
 
-  private Project project = null;
-
   /**
    * Gets an Ant <code>Project</code> for a module.
    *
@@ -528,6 +527,29 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
     }
   }
 
+  public void executeDelete(File dir) throws CommandException {
+
+    if (project == null) {
+      throw new KarmaRuntimeException("Ant project not initialized.");
+    }
+
+    try {
+
+      // <delete>
+      //
+      Delete delete = new Delete();
+      delete.setProject(project);
+
+      if (dir.equals(new File("."))) {
+        throw new KarmaRuntimeException("We don't do that stuff here ...");
+      }
+
+      delete.setDir(dir);
+      delete.execute();
+    } catch (RuntimeException r) {
+      throw new CommandException(CommandException.BUILD_FAILED, new Object[]{r.getMessage()});
+    }
+  }
 
   private File getBuildFile(String buildFile) throws IOException {
 

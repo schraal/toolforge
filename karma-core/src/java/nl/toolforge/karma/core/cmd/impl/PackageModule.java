@@ -22,12 +22,14 @@ import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.AntErrorMessage;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Copy;
 import org.apache.tools.ant.taskdefs.Jar;
 import org.apache.tools.ant.taskdefs.War;
@@ -60,95 +62,13 @@ public class PackageModule extends AbstractBuildCommand {
 
     super.execute();
 
-//    Project project = getAntProject();
-
-    Project project = getProjectInstance();
-
-//
-//    War war = new War();
-//    war.setProject(project);
-//    war.setDestFile(new File("/tmp/blaat.war"));
-//    war.setBasedir(new File("/home/asmedes/karma/contrado/projects/om/build/webapp-om/package/"));
-//    war.setWebxml(new File(getCurrentModule().getBaseDir(), "WEB-INF/web.xml".replace('/', File.separatorChar)));
-//
-//    war.execute();
-
-
     try {
-//
-//      project.setProperty(MODULE_BUILD_DIR_PROPERTY, getModuleBuildDirectory().getPath());
-//      project.setProperty(MODULE_COMPILE_DIR_PROPERTY, getCompileDirectory().getPath());
-//      project.setProperty(MODULE_PACKAGE_DIR_PROPERTY, getPackageDirectory().getPath());
-//
+
       File packageName = new File(getModuleBuildDirectory(), getCurrentManifest().resolveArchiveName(getCurrentModule()));
-//      project.setProperty(MODULE_PACKAGE_NAME_PROPERTY, packageName);
-//      project.setProperty(MODULE_BASEDIR_PROPERTY, getCurrentModule().getBaseDir().getPath());
-//
+
       if (getCurrentModule().getDeploymentType().equals(Module.WEBAPP)) {
 
-        executeDelete(getModuleBuildDirectory(), "*.war");
-        executeMkdir(getPackageDirectory());
-
-        Copy copy = null;
-
-        copy = new Copy();
-        copy.setProject(project);
-        copy.setTodir(getPackageDirectory());
-        copy.setOverwrite(true);
-
-        FileSet fileSet = new FileSet();
-        fileSet.setDir(getCurrentModule().getBaseDir());
-        fileSet.setIncludes("web/**, WEB-INF/**");
-
-        copy.addFileset(fileSet);
-
-
-        copy.execute();
-
-
-        // Copy dependencies
-        //
-
-        String moduleDeps = getModuleDependencies(getCurrentModule().getDependencies(), true, DEPENDENCY_SEPARATOR_CHAR);
-        String jarDeps = getJarDependencies(getCurrentModule().getDependencies(), true, DEPENDENCY_SEPARATOR_CHAR);
-
-        if (moduleDeps != null && !"".equals(moduleDeps) && jarDeps != null && !"".equals(moduleDeps)) {
-
-          copy = new Copy();
-          copy.setProject(project);
-          copy.setTodir(new File(getPackageDirectory(), "WEB-INF/lib"));
-          copy.setFlatten(true);
-
-          // Module dependencies
-          //
-          if (moduleDeps != null && !"".equals(moduleDeps)) {
-            fileSet = new FileSet();
-            fileSet.setDir(getCurrentManifest().getDirectory());
-            fileSet.setIncludes(moduleDeps);
-            copy.addFileset(fileSet);
-          }
-
-          // Jar dependencies
-          //
-          if (jarDeps != null && !"".equals(moduleDeps)) {
-            fileSet = new FileSet();
-            fileSet.setDir(LocalEnvironment.getLocalRepository());
-            fileSet.setIncludes(jarDeps);
-            copy.addFileset(fileSet);
-          }
-
-          copy.execute();
-        }
-
-        // Create a war file.
-        //
-        War war = new War();
-        war.setProject(project);
-        war.setDestFile(packageName);
-        war.setBasedir(getPackageDirectory());
-        war.setWebxml(new File(getCurrentModule().getBaseDir(), "WEB-INF/web.xml".replace('/', File.separatorChar)));
-
-        war.execute();
+        packageWar(packageName);
 
       } else if (getCurrentModule().getDeploymentType().equals(Module.EAPP)) {
 //
@@ -206,76 +126,175 @@ public class PackageModule extends AbstractBuildCommand {
 //        project.executeTarget(BUILD_TARGET_EAR);
       } else {
 
-        executeDelete(getModuleBuildDirectory(), "*.jar");
-
-        Copy copy = null;
-
-        copy = new Copy();
-        copy.setProject(project);
-        copy.setTodir(getPackageDirectory());
-        copy.setOverwrite(true);
-
-        FileSet fileSet = new FileSet();
-        fileSet.setDir(new File(getCurrentModule().getBaseDir(), "resources"));
-        fileSet.setIncludes("**/*");
-
-        copy.addFileset(fileSet);
-
-
-
-        copy = new Copy();
-        copy.setProject(project);
-        copy.setTodir(getPackageDirectory());
-        copy.setOverwrite(true);
-
-        fileSet = new FileSet();
-        fileSet.setDir(getCurrentModule().getBaseDir());
-        fileSet.setIncludes("META-INF/**");
-        fileSet.setExcludes("resources");
-
-        copy.addFileset(fileSet);
-
-        // Copy all class files to the package directory.
-        //
-        copy = new Copy();
-        copy.setProject(project);
-        copy.setTodir(getPackageDirectory());
-        copy.setOverwrite(true);
-
-        fileSet = new FileSet();
-        fileSet.setDir(getCompileDirectory());
-        fileSet.setIncludes("**/*.class");
-
-        copy.addFileset(fileSet);
-
-        copy.execute();
-
-        Jar jar = new Jar();
-        jar.setProject(project);
-        jar.setDestFile(packageName);
-        jar.setBasedir(getPackageDirectory());
-        jar.setExcludes("*.jar");
-
-        jar.execute();
-
+        packageJar(packageName);
       }
-//
-//      CommandMessage message =
-//          new SuccessMessage(
-//              getFrontendMessages().getString("message.MODULE_PACKAGED"),
-//              new Object[] {getCurrentModule().getName(), packageName});
-//      commandResponse.addMessage(message);
-//
+
+      CommandMessage message =
+          new SuccessMessage(
+              getFrontendMessages().getString("message.MODULE_PACKAGED"),
+              new Object[] {getCurrentModule().getName(), packageName});
+      commandResponse.addMessage(message);
+
     } catch (ManifestException m) {
       throw new CommandException(m.getErrorCode(), m.getMessageArguments());
-//    }catch (BuildException e) {
-////      e.printStackTrace();
-//      if (logger.isDebugEnabled()) {
-//        commandResponse.addMessage(new AntErrorMessage(e));
-//      }
-//      throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
+    } catch (RuntimeException e) {
+//      e.printStackTrace();
+      if (logger.isDebugEnabled()) {
+        commandResponse.addMessage(new AntErrorMessage(e));
+      }
+      throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
     }
   }
+
+  private void packageJar(File packageName) throws CommandException {
+
+
+    executeDelete(getModuleBuildDirectory(), "*.jar");
+
+    Copy copy = null;
+
+    copy = new Copy();
+    copy.setProject(getProjectInstance());
+    copy.setTodir(getPackageDirectory());
+    copy.setOverwrite(true);
+
+    FileSet fileSet = new FileSet();
+    fileSet.setDir(new File(getCurrentModule().getBaseDir(), "resources"));
+    fileSet.setIncludes("**/*");
+
+    copy.addFileset(fileSet);
+
+
+
+    copy = new Copy();
+    copy.setProject(getProjectInstance());
+    copy.setTodir(getPackageDirectory());
+    copy.setOverwrite(true);
+
+    fileSet = new FileSet();
+    fileSet.setDir(getCurrentModule().getBaseDir());
+    fileSet.setIncludes("META-INF/**");
+    fileSet.setExcludes("resources");
+
+    copy.addFileset(fileSet);
+
+    // Copy all class files to the package directory.
+    //
+    copy = new Copy();
+    copy.setProject(getProjectInstance());
+    copy.setTodir(getPackageDirectory());
+    copy.setOverwrite(true);
+
+    fileSet = new FileSet();
+    fileSet.setDir(getCompileDirectory());
+    fileSet.setIncludes("**/*.class");
+
+    copy.addFileset(fileSet);
+
+    copy.execute();
+
+    Jar jar = new Jar();
+    jar.setProject(getProjectInstance());
+    jar.setDestFile(packageName);
+    jar.setBasedir(getPackageDirectory());
+    jar.setExcludes("*.jar");
+
+    jar.execute();
+
+
+  }
+
+  private void packageWar(File packageName) throws CommandException {
+
+    try {
+      executeDelete(getModuleBuildDirectory(), "*.war");
+      executeDelete(getPackageDirectory());
+      executeMkdir(getPackageDirectory());
+
+      Copy copy = null;
+
+      copy = new Copy();
+      copy.setProject(getProjectInstance());
+      copy.setTodir(getPackageDirectory());
+      copy.setOverwrite(true);
+
+      FileSet fileSet = new FileSet();
+      fileSet.setDir(getCurrentModule().getBaseDir());
+      fileSet.setIncludes("WEB-INF/**");
+
+      copy.addFileset(fileSet);
+
+      // Fileset that copies contents of 'web' to the package directory.
+      //
+      fileSet = new FileSet();
+      fileSet.setDir(new File(getCurrentModule().getBaseDir(), "web"));
+      fileSet.setIncludes("**");
+      fileSet.setExcludes("web");
+
+      copy.addFileset(fileSet);
+
+      copy.execute();
+
+      // Copy dependencies
+      //
+
+      String moduleDeps = getModuleDependencies(getCurrentModule().getDependencies(), true, DEPENDENCY_SEPARATOR_CHAR);
+      String jarDeps = getJarDependencies(getCurrentModule().getDependencies(), true, DEPENDENCY_SEPARATOR_CHAR);
+
+      if (moduleDeps != null && !"".equals(moduleDeps) && jarDeps != null && !"".equals(moduleDeps)) {
+
+        copy = new Copy();
+        copy.setProject(getProjectInstance());
+        copy.setTodir(new File(getPackageDirectory(), "WEB-INF/lib"));
+        copy.setFlatten(true);
+
+        // Module dependencies
+        //
+        if (moduleDeps != null && !"".equals(moduleDeps)) {
+          fileSet = new FileSet();
+          fileSet.setDir(getCurrentManifest().getDirectory());
+          fileSet.setIncludes(moduleDeps);
+          copy.addFileset(fileSet);
+        }
+
+        // Jar dependencies
+        //
+        if (jarDeps != null && !"".equals(moduleDeps)) {
+          fileSet = new FileSet();
+          fileSet.setDir(LocalEnvironment.getLocalRepository());
+          fileSet.setIncludes(jarDeps);
+          copy.addFileset(fileSet);
+        }
+
+        copy.execute();
+      }
+
+      // Create a war file.
+      //
+      War war = new War();
+      war.setProject(getProjectInstance());
+      war.setDestFile(packageName);
+      war.setBasedir(getPackageDirectory());
+      war.setWebxml(new File(getCurrentModule().getBaseDir(), "WEB-INF/web.xml".replace('/', File.separatorChar)));
+
+      war.execute();
+    } catch (ManifestException m) {
+      throw new CommandException(m.getErrorCode(), m.getMessageArguments());
+    }
+
+  }
+
+  private void packageEar(File packageName) throws CommandException {
+
+    try {
+    } catch (ManifestException m) {
+      throw new CommandException(m.getErrorCode(), m.getMessageArguments());
+    }
+
+
+  }
+
+
 
   public CommandResponse getCommandResponse() {
     return commandResponse;

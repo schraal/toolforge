@@ -38,15 +38,6 @@ for JAR in $JARS ; do
 done
 CLASSPATH=$CLASSPATH:$JAVA_HOME/lib/tools.jar
 
-# Karma needs configuration files, we assume them in the $HOME/.karma directory
-# and make sure the directory exists
-#
-if [ "x$KARMA_CONFIG_DIR" = "x" ]; then
-	KARMA_CONFIG_DIR=`echo $HOME/.karma`
-fi
-export KARMA_CONFIG_DIR
-mkdir -p $KARMA_CONFIG_DIR
-
 if [ "x$1" = "x" ]; then
     LOGLEVEL=INFO
 fi
@@ -55,7 +46,6 @@ fi
 
 # Now finally we are able to run karma
 #
-#$JAVACMD -cp $CLASSPATH -Dbootstrap.configuration=$HOME/.karma/karma.properties  -Druntime.mode=COMMAND_LINE nl.toolforge.karma.cli.CLI $@
 $JAVACMD -Dkarma.home=$KARMA_HOME -Dloglevel=$LOGLEVEL -cp $CLASSPATH nl.toolforge.karma.cli.CLI $@
 
 

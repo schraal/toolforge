@@ -372,6 +372,7 @@ public final class LocalEnvironment {
     configuration.store(new FileOutputStream(configFile), header);
 
     logger.info("Karma configuration created in " + configFile.getPath());
+
     throw new KarmaException(KarmaException.DEFAULT_CONFIGURATION_CREATED, new Object[]{configFile});
   }
 
@@ -535,15 +536,15 @@ public final class LocalEnvironment {
    */
   public static File getLocalRepository() {
 
-    File defaultJarRepository = new File(System.getProperty("user.home"), ".karma" + File.separator + "repository");
-    File configuredJarRepository = new File((String)configuration.get(JAR_REPOSITORY));
+    File localRepository = null;
 
     if (configuration.get(JAR_REPOSITORY) == null) {
-      defaultJarRepository.mkdirs();
+      localRepository = new File(System.getProperty("user.home"), ".karma" + File.separator + "repository");
     } else {
-      configuredJarRepository.mkdirs();
+      localRepository = new File((String)configuration.get(JAR_REPOSITORY));
     }
+    localRepository.mkdirs();
 
-    return ((String)configuration.get(JAR_REPOSITORY) == null ? defaultJarRepository : configuredJarRepository);
+    return localRepository;
   }
 }
