@@ -26,6 +26,8 @@ import java.io.File;
 /**
  * The BuildEnvironment
  *
+ * @todo This class is completely java source module specific. We need something more generic.
+ *
  * @author D.A. Smedes
  * @version $Id$
  */
@@ -33,17 +35,19 @@ public class BuildEnvironment {
 
   private Manifest manifest;
   private Module module;
+  
+  private File moduleSourceDirectory = null;
+  private File moduleBuildRootDirectory = null;
+  private File moduleBuildDirectory = null;
+  private File moduleJavadocDirectory = null;
+  private File modulePackageDirectory = null;
+  private File moduleTestBuildDirectory = null;
+  private File moduleTestSourceDirectory = null;
+  
 
   public BuildEnvironment(Manifest manifest, Module module) {
     this.manifest = manifest;
     this.module = module;
-  }
-
-  /**
-   * @deprecated Use {@link Manifest#getBuildBaseDirectory()} instead.
-   */
-  public File getBuildRootDirectory() {
-    return manifest.getBuildBaseDirectory();
   }
 
   /**
@@ -53,7 +57,11 @@ public class BuildEnvironment {
    * @return
    */
   public File getModuleBuildRootDirectory() {
-    return new File(getBuildRootDirectory(), module.getName());
+    if (moduleBuildRootDirectory == null) {
+      moduleBuildRootDirectory = new File(manifest.getBuildBaseDirectory(), module.getName());
+    }
+    
+    return moduleBuildRootDirectory;
   }
 
   /**
@@ -62,7 +70,11 @@ public class BuildEnvironment {
    * @return
    */
   public File getModuleBuildDirectory() {
-    return new File(getModuleBuildRootDirectory(), "build");
+    if (moduleBuildDirectory == null) {
+      moduleBuildDirectory = new File(getModuleBuildRootDirectory(), "build");
+    }
+    
+    return moduleBuildDirectory;
   }
 
   /**
@@ -71,31 +83,45 @@ public class BuildEnvironment {
    * @return
    */
   public File getModuleTestBuildDirectory() {
-    return new File(getModuleBuildRootDirectory(), "test");
+    if (moduleTestBuildDirectory == null) {
+      moduleTestBuildDirectory = new File(getModuleBuildRootDirectory(), "test");
+    }
+    
+    return moduleTestBuildDirectory;
   }
 
   public File getModuleJavadocDirectory() {
-    return new File(getModuleBuildRootDirectory(), "javadoc");
+    if (moduleJavadocDirectory == null) {
+      moduleJavadocDirectory = new File(getModuleBuildRootDirectory(), "javadoc");
+    }
+    
+    return moduleJavadocDirectory;
   }
 
   public File getModulePackageDirectory() {
-    return new File(getModuleBuildRootDirectory(), "package");
+    if (modulePackageDirectory == null) {
+      modulePackageDirectory = new File(getModuleBuildRootDirectory(), "package");
+    }
+    
+    return modulePackageDirectory;
   }
 
   public File getModuleSourceDirectory() {
-    return new File(module.getBaseDir(), "src" + File.separator + "java");
+    if (moduleSourceDirectory == null) {
+      moduleSourceDirectory = new File(module.getBaseDir(), "src" + File.separator + "java");
+    }
+    
+    return moduleSourceDirectory;
   }
 
   public File getModuleTestSourceDirectory() {
-    return new File(module.getBaseDir(), "test" + File.separator + "java");
+    if (moduleTestSourceDirectory == null) {
+      moduleTestSourceDirectory = new File(module.getBaseDir(), "test" + File.separator + "java");
+    }
+    
+    return moduleTestSourceDirectory;
   }
 
-  /**
-   * @deprecated Use {@link Manifest#getBuildBaseDirectory()} instead.
-   */
-  public File getManifestBuildDirectory() {
-//    return new File(manifest.getBaseDirectory(), "build");
-    return manifest.getBuildBaseDirectory();
-  }
+
 
 }
