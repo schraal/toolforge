@@ -8,111 +8,119 @@ import java.util.Properties;
 
 /**
  * The Repository represents the local storage of jar files.
- *
+ * 
  * @author W.M. Oosterom
  */
-class LocalRepository
-{
-	// Singleton implementation
-	//
-	private static LocalRepository instance = null;
+class LocalRepository {
+    // Singleton implementation
+    //
+    private static LocalRepository instance = null;
 
-	/**
-	 * Get the local repository. The default location is
-	 * 1) $HOME/.karma/repository.
-	 * This default location can be overridden by the following settings:
-	 * 2) $HOME/.karma/karma.repository.local (overrides default)
-	 * 3) The system property karma.repository.local (override all)
-	 */
-	static synchronized LocalRepository getInstance() throws IOException {
-		if (instance == null) {
-			instance = new LocalRepository();
-		}
-		return instance;
-	}
+    /**
+     * Get the local repository. The default location is 1)
+     * $HOME/.karma/repository. This default location can be overridden by the
+     * following settings: 2) $HOME/.karma/karma-launcher.properties (overrides
+     * default) 3) The system property karma.repository.local (override all)
+     */
+    static synchronized LocalRepository getInstance() throws IOException {
+        if (instance == null) {
+            instance = new LocalRepository();
+        }
+        return instance;
+    }
 
-	private static final String LOCAL_REPOSITORY_FILE = "karma-launcher.properties";
-	private static final String LOCAL_REPOSITORY_PROPERTY = "karma.repository.local";
+    private static final String REPOSITORY_FILE = "karma-launcher.properties";
 
-	private static final String defaultRepositoryLocation =
-		System.getProperty("user.home") +  File.separator + ".karma"+ File.separator + "repository";
+    private static final String REPOSITORY_PROPERTY = "karma.repository.local";
 
-	private String repositoryLocation = defaultRepositoryLocation;
+    private static final String defaultRepositoryLocation = System
+            .getProperty("user.home")
+            + File.separator + ".karma" + File.separator + "repository";
 
-	private LocalRepository() throws IOException {
+    private String repositoryLocation = defaultRepositoryLocation;
 
-		// If there is a $HOME/.karma/karma-launcher.properties file, the karma.repository.local property is supposed to
-		// point to a repository location. This will override the default repository location
-		//
-		File f = new File
-			(System.getProperty("user.home") +  File.separator + ".karma"+ File.separator + LOCAL_REPOSITORY_FILE);
+    private LocalRepository() throws IOException {
 
-		if (f.exists()) {
-			Properties props = new Properties();
-			props.load(new FileInputStream(f));
+        // If there is a $HOME/.karma/karma-launcher.properties file, the
+        // karma.repository.local property is supposed to
+        // point to a repository location. This will override the default
+        // repository location
+        //
+        File f = new File(System.getProperty("user.home") + File.separator
+                + ".karma" + File.separator + REPOSITORY_FILE);
 
-			repositoryLocation = props.getProperty(LOCAL_REPOSITORY_PROPERTY, repositoryLocation);
-		}
+        if (f.exists()) {
+            Properties props = new Properties();
+            props.load(new FileInputStream(f));
 
-		// If there is a system property called karma.repository.local, the value of that system
-		// property is supposed to point to a repository location. This will override
-		// all previous settings.
-		//
-		repositoryLocation = System.getProperty(LOCAL_REPOSITORY_PROPERTY, repositoryLocation);
+            repositoryLocation = props.getProperty(REPOSITORY_PROPERTY,
+                    repositoryLocation);
+        }
 
-		if (repositoryLocation.equals(defaultRepositoryLocation)) {
-			// We need to be sure the defaultRepositoryLocation exists
-			//
-			(new File(defaultRepositoryLocation)).mkdirs();
-		}
+        // If there is a system property called karma.repository.local, the
+        // value of that system
+        // property is supposed to point to a repository location. This will
+        // override
+        // all previous settings.
+        //
+        repositoryLocation = System.getProperty(REPOSITORY_PROPERTY,
+                repositoryLocation);
 
-		//System.out.println("Repository location set to \"" + repositoryLocation + "\".");
-	}
+        if (repositoryLocation.equals(defaultRepositoryLocation)) {
+            // We need to be sure the defaultRepositoryLocation exists
+            //
+            (new File(defaultRepositoryLocation)).mkdirs();
+        }
 
-	File getJarByVersion(String id, String version) throws FileNotFoundException {
+        //System.out.println("Repository location set to \"" +
+        // repositoryLocation + "\".");
+    }
 
-		File jarFile = new File
-			(repositoryLocation + File.separator + id + File.separator + "jars" + File.separator +
-			id + "-" + version + ".jar");
+    File getJarByVersion(String id, String version)
+            throws FileNotFoundException {
 
-		if (jarFile.exists()) {
-			return jarFile;
-		} else {
-			throw new FileNotFoundException(jarFile.getName());
-		}
-	}
+        File jarFile = new File(repositoryLocation + File.separator + id
+                + File.separator + "jars" + File.separator + id + "-" + version
+                + ".jar");
 
-	File getJarByName(String id, String name) throws FileNotFoundException {
+        if (jarFile.exists()) {
+            return jarFile;
+        } else {
+            throw new FileNotFoundException(jarFile.getName());
+        }
+    }
 
-		File jarFile = new File
-			(repositoryLocation + File.separator + id + File.separator + "jars" + File.separator +
-			name);
+    File getJarByName(String id, String name) throws FileNotFoundException {
 
-		if (jarFile.exists()) {
-			return jarFile;
-		} else {
-			throw new FileNotFoundException(jarFile.getName());
-		}
-	}
+        File jarFile = new File(repositoryLocation + File.separator + id
+                + File.separator + "jars" + File.separator + name);
 
-	void putJarByVersion(String id, String version, File jarFile) throws IOException {
+        if (jarFile.exists()) {
+            return jarFile;
+        } else {
+            throw new FileNotFoundException(jarFile.getName());
+        }
+    }
 
-		(new File(repositoryLocation + File.separator + id + File.separator + "jars")).mkdirs();
-		File dest = new File
-			(repositoryLocation + File.separator + id + File.separator + "jars" + File.separator +
-			id + "-" + version + ".jar");
-		FileUtil.copy(jarFile, dest);
-	}
+    void putJarByVersion(String id, String version, File jarFile)
+            throws IOException {
 
-	void putJarByName(String id, String name, File jarFile) throws IOException {
+        (new File(repositoryLocation + File.separator + id + File.separator
+                + "jars")).mkdirs();
+        File dest = new File(repositoryLocation + File.separator + id
+                + File.separator + "jars" + File.separator + id + "-" + version
+                + ".jar");
+        FileUtil.copy(jarFile, dest);
+    }
 
-		(new File(repositoryLocation + File.separator + id + File.separator + "jars")).mkdirs();
-		File dest = new File
-			(repositoryLocation + File.separator + id + File.separator + "jars" + File.separator +
-			name);
-		FileUtil.copy(jarFile, dest);
-	}
+    void putJarByName(String id, String name, File jarFile) throws IOException {
 
+        (new File(repositoryLocation + File.separator + id + File.separator
+                + "jars")).mkdirs();
+        File dest = new File(repositoryLocation + File.separator + id
+                + File.separator + "jars" + File.separator + name);
+        FileUtil.copy(jarFile, dest);
+    }
 
 }
 

@@ -1,25 +1,21 @@
 package nl.toolforge.karma.launcher;
 
 /**
- *
+ * 
  * @author W.M. Oosterom
  */
-final class ByteUtil
-{
-    private static char[] HEX_CHARS = new char[] { 
-        '0', '1', '2', '3', '4', '5', '6', '7',
-        '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-    
+final class ByteUtil {
+    private static char[] HEX_CHARS = new char[] { '0', '1', '2', '3', '4',
+            '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
     private ByteUtil() {
-	// Empty
+        // Empty
     }
 
     /**
-     * This method will convert a byte array into
-     * a string representation in hexadecimal format
-     * The length of the string returned is twice
-     * the size of the byte array given as an argument.
+     * This method will convert a byte array into a string representation in
+     * hexadecimal format The length of the string returned is twice the size of
+     * the byte array given as an argument.
      */
     public static String toHexString(byte[] b) {
         StringBuffer hexString = new StringBuffer();

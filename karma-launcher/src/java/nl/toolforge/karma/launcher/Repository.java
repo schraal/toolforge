@@ -5,64 +5,60 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- *
+ * 
  * @author W.M. Oosterom
  */
-final class Repository
-{
+final class Repository {
 
-	// Singleton implementation
-	//
-	private static Repository instance = null;
+    // Singleton implementation
+    //
+    private static Repository instance = null;
 
-	static synchronized Repository getInstance() throws IOException {
-		if (instance == null) {
-			instance = new Repository();
-		}
-		return instance;
-	}
+    static synchronized Repository getInstance() throws IOException {
+        if (instance == null) {
+            instance = new Repository();
+        }
+        return instance;
+    }
 
-	private LocalRepository localRepository = null;
-	private RemoteRepository remoteRepository = null;
+    private LocalRepository localRepository = null;
 
-	private Repository() throws IOException {
-		localRepository = LocalRepository.getInstance();
-		remoteRepository = RemoteRepository.getInstance();
-	}
+    private RemoteRepository remoteRepository = null;
 
-	File getJarByVersion(String id, String version) throws FileNotFoundException, IOException {
-		File jarFile = null;
+    private Repository() throws IOException {
+        localRepository = LocalRepository.getInstance();
+        remoteRepository = RemoteRepository.getInstance();
+    }
 
-		try {
-			jarFile = localRepository.getJarByVersion(id, version);
-		}
-		catch (FileNotFoundException fnfe) {
-			jarFile = remoteRepository.getJarByVersion(id, version);
-			localRepository.putJarByVersion(id, version, jarFile);
-			jarFile = localRepository.getJarByVersion(id, version);
-		}
+    File getJarByVersion(String id, String version)
+            throws FileNotFoundException, IOException {
+        File jarFile = null;
 
-		return jarFile;
-	}
+        try {
+            jarFile = localRepository.getJarByVersion(id, version);
+        } catch (FileNotFoundException fnfe) {
+            jarFile = remoteRepository.getJarByVersion(id, version);
+            localRepository.putJarByVersion(id, version, jarFile);
+            jarFile = localRepository.getJarByVersion(id, version);
+        }
 
-	File getJarByName(String id, String name) throws FileNotFoundException, IOException {
+        return jarFile;
+    }
 
-		File jarFile = null;
+    File getJarByName(String id, String name) throws FileNotFoundException,
+            IOException {
 
-		try {
-			jarFile = localRepository.getJarByName(id, name);
-		}
-		catch (FileNotFoundException fnfe) {
-			jarFile = remoteRepository.getJarByName(id, name);
-			localRepository.putJarByName(id, name, jarFile);
-			jarFile = localRepository.getJarByName(id, name);
-		}
+        File jarFile = null;
 
-		return jarFile;
-	}
+        try {
+            jarFile = localRepository.getJarByName(id, name);
+        } catch (FileNotFoundException fnfe) {
+            jarFile = remoteRepository.getJarByName(id, name);
+            localRepository.putJarByName(id, name, jarFile);
+            jarFile = localRepository.getJarByName(id, name);
+        }
+
+        return jarFile;
+    }
 }
-
-
-
-
 
