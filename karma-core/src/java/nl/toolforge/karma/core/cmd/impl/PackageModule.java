@@ -282,7 +282,7 @@ e.printStackTrace();
 
         // Module dependencies
         //
-        if (moduleDeps.size() > 0) {
+        if (!moduleDeps.isEmpty()) {
           fileSet = new FileSet();
           fileSet.setDir(getBuildEnvironment().getBuildRootDirectory());
 //System.out.println(CollectionUtil.concat(moduleDeps, ','));
@@ -293,7 +293,7 @@ e.printStackTrace();
         // Jar dependencies
         //
         try {
-          if (jarDeps != null && !"".equals(jarDeps)) {
+          if (!jarDeps.isEmpty()) {
             fileSet = new FileSet();
             fileSet.setDir(WorkingContext.getLocalRepository());
 //System.out.println(CollectionUtil.concat(jarDeps, ','));
@@ -365,7 +365,12 @@ e.printStackTrace();
         if (m.matches()) {
           moduleName = m.group(1);
           Module module = getCurrentManifest().getModule(moduleName);
+
           map.put(moduleName, helper.resolveArchiveName(module));
+          //todo: check whether the module is in the dependencies
+          if (!helper.hasModuleDependency(getCurrentModule(), module, true)) {
+            throw new DependencyException(DependencyException.EAR_DEPENDENCY_NOT_DEFINED, new Object[]{moduleName});
+          }
         } else {
           //todo: throw new Exception();
         }
@@ -419,34 +424,41 @@ e.printStackTrace();
       copy.addFileset(fileSet);
       copy.execute();
 
-      commandResponse.addMessage(new StatusMessage("Copying module dependencies"));
-      copy = new Copy();
-      copy.setProject(getProjectInstance());
-      copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
-      copy.setFlatten(true);
-
       //copy the module dependencies from the application.xml
-//todo: this has to be done depending on the dependencies.
-      fileSet = new FileSet();
+      commandResponse.addMessage(new StatusMessage("Copying module dependencies"));
+      Set moduleDeps = helper.getModuleDependencies(getCurrentModule(), true, true);
+      if (!moduleDeps.isEmpty()) {
+        copy = new Copy();
+        copy.setProject(getProjectInstance());
+        copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
+        copy.setFlatten(true);
 
-      fileSet.setDir(getBuildEnvironment().getManifestBuildDirectory());
-      fileSet.setIncludesfile(new File(getBuildEnvironment().getModuleBuildDirectory(), ARCHIVES_INCLUDES));
-      copy.addFileset(fileSet);
-      copy.execute();
+        fileSet = new FileSet();
+        fileSet.setDir(getBuildEnvironment().getBuildRootDirectory());
+        fileSet.setIncludes(CollectionUtil.concat(moduleDeps, ','));
+        copy.addFileset(fileSet);
+        copy.execute();
+      } else {
+        logger.info("No module dependencies to package.");
+      }
 
       //copy the non-module dependencies to /lib
-      copy = new Copy();
-      copy.setProject(getProjectInstance());
-      copy.setTodir(new File(getBuildEnvironment().getModulePackageDirectory(), "lib"));
-      copy.setFlatten(true);
+      commandResponse.addMessage(new StatusMessage("Copying jar dependencies"));
+      Set jarDeps = helper.getJarDependencies(getCurrentModule(), true, true);
+      if (!jarDeps.isEmpty()) {
+        copy = new Copy();
+        copy.setProject(getProjectInstance());
+        copy.setTodir(new File(getBuildEnvironment().getModulePackageDirectory(), "lib"));
+        copy.setFlatten(true);
 
-      fileSet = new FileSet();
-//System.out.println("repo root: "+ WorkingContext.getLocalRepository());
-      fileSet.setDir(WorkingContext.getLocalRepository());
-//System.out.println("jar deps: "+CollectionUtil.concat(helper.getJarDependencies(getCurrentModule()), ','));
-      fileSet.setIncludes(CollectionUtil.concat(helper.getJarDependencies(getCurrentModule(), true, true), ','));
-      copy.addFileset(fileSet);
-      copy.execute();
+        fileSet = new FileSet();
+        fileSet.setDir(WorkingContext.getLocalRepository());
+        fileSet.setIncludes(CollectionUtil.concat(jarDeps, ','));
+        copy.addFileset(fileSet);
+        copy.execute();
+      } else {
+        logger.info("No jar dependencies to package.");
+      }
 
       commandResponse.addMessage(new StatusMessage("Creating ear"));
 
