@@ -215,7 +215,7 @@
       <option opt="c" longOpt="comment" hasArgs="true" required="true" description="The developer's comment">
         <arg>comment</arg>
       </option>
-      <option opt="v" longOpt="version" hasArgs="true" required="false" description="The new version number for the module">
+      <option opt="v" longOpt="version" hasArgs="false" required="false" description="Promote the module to the next major version.">
         <arg>new-version</arg>
       </option>
       <option opt="f" longOpt="force" hasArgs="false" required="false" description="Promote with uncommitted work as well"/>
@@ -225,7 +225,8 @@
 
     <help lang="en">
       Promoting a module is a core feature of Karma's version management. When a module is promoted, it means that
-      the developer has labelled the module as 'stable', iso the working copy, which is generally unstable.
+      the developer has labelled the module as 'stable', unlike the working copy, which is generally unstable.
+      Use the -v option to increase the "major" version of the module (for example from 0-3 to 1-0).
     </help>
 
   </command>

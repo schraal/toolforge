@@ -102,17 +102,38 @@ public class CVSModuleStatus implements ModuleStatus {
 
       return null;
     }
+    
     Version nextVersion = null;
+    
     try {
       nextVersion = (Version) ((Version) matchingList.get(matchingList.size() - 1)).clone();
     } catch (CloneNotSupportedException e) {
-      throw new KarmaRuntimeException(e.getMessage());
+      throw new KarmaRuntimeException(e.getMessage(), e);
     }
+    
     nextVersion.increase();
 
     return nextVersion;
   }
 
+  public Version getNextMajorVersion() {
+    if (matchingList.size() == 0) {
+      return null;
+    }
+    
+    Version nextVersion = null;
+    
+    try {
+      nextVersion = (Version) ((Version) matchingList.get(matchingList.size() - 1)).clone();
+    } catch (CloneNotSupportedException e) {
+      throw new KarmaRuntimeException(e.getMessage(), e);
+    }
+    
+    nextVersion.increaseMajor();
+
+    return nextVersion;
+  }
+  
   /**
    * The latest promoted version of the module in the version control system.
    *

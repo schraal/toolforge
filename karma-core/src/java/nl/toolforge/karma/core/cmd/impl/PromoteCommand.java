@@ -60,6 +60,7 @@ public class PromoteCommand extends DefaultCommand {
 
   /**
    * Promotes a module to the next version number in the branch it is active in within the active manifest.
+   * @throws CommandException if execution fails.
    */
   public void execute() throws CommandException {
 
@@ -115,29 +116,19 @@ public class PromoteCommand extends DefaultCommand {
       }
 
       if (proceed) {
-
         Runner runner = RunnerFactory.getRunner(module.getLocation());
 
         ModuleStatus status = new CVSModuleStatus(module, ((CVSRunner) runner).log(module));
-        Version nextVersion = status.getNextVersion();
+        Version nextVersion = null;
 
-        if (getCommandLine().getOptionValue("v") != null) {
-
-          Version manualVersion = null;
-
-          if (manifest instanceof DevelopmentManifest) {
-            manualVersion= new Version(getCommandLine().getOptionValue("v"));
-          } else{
-            manualVersion = new Patch(getCommandLine().getOptionValue("v"));
-          }
-
-          if (manualVersion.isLowerThan(status.getLastVersion())) {
-            throw new CommandException(
-                CommandException.MODULE_VERSION_ERROR,
-                new Object[]{manualVersion.getVersionNumber(), status.getLastVersion().getVersionNumber()}
-            );
-          }
-          nextVersion = manualVersion;
+        if (getCommandLine().hasOption("v")) {
+          if (! (manifest instanceof DevelopmentManifest)) {
+            throw new CommandException(CommandException.PROMOTE_WITH_INCREASE_MAJOR_VERSION_NOT_ALLOWED_ON_RELEASE_MANIFEST);
+          } 
+          
+          nextVersion = status.getNextMajorVersion();
+        } else {
+          nextVersion = status.getNextVersion();
         }
 
         newVersion = nextVersion;
