@@ -54,14 +54,20 @@ public interface Manifest {
 	public int countJarModules();
 
 	/**
-	 * Checks if a module is present locally within the context of the manifest. Implementations of user interfaces that
-	 * wish to have multiple instances of a manifest within one JVM should build in support for the specific
-	 * thread as well. The latter is not performed by this implementation.
+	 * Checks if a module is present locally within the context of the manifest.
 	 *
 	 * @param module The module that should be checked.
 	 * @return <code>true</code> if the module is present locally.
 	 */
-	public boolean isLocal(Module module) throws KarmaException;
+	public boolean isLocal(Module module);
+
+  /**
+   * Checks if the manifest has been checked-out before. This method checks the existence of all the manifests'
+   * modules' directories only. When a module directory is not present, a <code>ManifestException</code> is thrown.
+   *
+   * @return
+   */
+  public boolean isLocal();
 
 	/**
 	 * A manifest on a users' local disk is located in a directory relative to {@link LocalEnvironment#getDevelopmentHome}.

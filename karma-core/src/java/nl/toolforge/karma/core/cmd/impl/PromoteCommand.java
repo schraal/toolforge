@@ -3,10 +3,12 @@ package nl.toolforge.karma.core.cmd.impl;
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.SourceModule;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.SimpleCommandResponse;
+import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.VersionExtractor;
 import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
@@ -32,13 +34,22 @@ public class PromoteCommand extends DefaultCommand {
 	 */
 	public CommandResponse execute() throws KarmaException {
 
+    // todo : module should be in working state !!!!!
+    //
+
 		String moduleName = getCommandLine().getOptionValue("m");
 
-		// TODO extractor impl should be obtained from karma.properties or Preferences.
+		SourceModule module = (SourceModule) getContext().getCurrent().getModule(moduleName);
+
+    if (!module.hasVersion()) {
+      // todo can be replaced with the stuff that determines if a module is in working state
+      //
+      throw new CommandException(CommandException.MODULE_WITHOUT_VERSION);
+    }
+
+		// TODO extractor impl should be obtained from karma.properties or Preferences to enable configurable stuff.
 		//
 		VersionExtractor extractor = CVSVersionExtractor.getInstance();
-
-		Module module = getContext().getCurrent().getModule(moduleName);
 
 		Version nextVersion = extractor.getNextVersion(module);
 

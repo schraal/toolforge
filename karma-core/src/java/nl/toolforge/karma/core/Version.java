@@ -10,6 +10,9 @@ import java.util.StringTokenizer;
  */
 public final class Version implements Comparable {
 
+  /** The initial version for a module. */
+  public static final Version INITIAL_VERSION = new Version("0-0");
+
 	public static final int FIRST_DIGIT = 0;
 	public static final int SECOND_DIGIT = 1;
 	public static final int THIRD_DIGIT = 2;

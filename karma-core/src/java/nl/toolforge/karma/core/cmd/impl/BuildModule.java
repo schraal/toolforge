@@ -9,41 +9,44 @@ import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
 import nl.toolforge.karma.core.cmd.SimpleCommandResponse;
-import nl.toolforge.karma.core.process.common.DependencyBuilder;
+import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.scm.DependencyBuilder;
+import nl.toolforge.karma.core.scm.ModuleDependencyBuilder;
+import nl.toolforge.karma.core.scm.DependencyBuilder;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.taskdefs.Javac;
 import org.apache.tools.ant.types.Path;
+import org.apache.tools.ant.types.FileList;
 
 /**
  * Builds a module in a manifest.
  */
 public class BuildModule extends DefaultCommand {
 
-	public BuildModule(CommandDescriptor descriptor) {
-		super(descriptor);
-	}
+  public BuildModule(CommandDescriptor descriptor) {
+    super(descriptor);
+  }
 
-	public CommandResponse execute() throws KarmaException {
+  public CommandResponse execute() throws KarmaException {
 
-		String moduleName = getCommandLine().getOptionValue("m");
+    String moduleName = getCommandLine().getOptionValue("m");
 
     Manifest currentManifest = getContext().getCurrent();
     Module module = currentManifest.getModule(moduleName);
 
+    // Configure underlying ant to run a command.
+    //
+    Project project = new Project();
+    project.setName("karma"); // Required
+    project.setDefault("compile"); // Required
 
-		// Configure underlying ant to run a command.
-		//
-		Project project = new Project();
-		project.setName("karma"); // Required
-		project.setDefault("compile"); // Required
+    project.init();
 
-		project.init();
-
-		// A java compile task
-		//
-		Javac task = (Javac) project.createTask("javac");
+    // A java compile task
+    //
+    Javac task = (Javac) project.createTask("javac");
 
     // Determine the correct classpath and apply it to the Javac task
     //
@@ -67,44 +70,50 @@ public class BuildModule extends DefaultCommand {
 
     Path classPath = new Path(project);
 
-    DependencyBuilder builder = new DependencyBuilder(module, currentManifest.getDirectory());
-    classPath.addFilelist(builder.getDependencies());
+    DependencyBuilder builder = new ModuleDependencyBuilder(module);
+
+    FileList deps = new FileList();
+    deps.setFiles(builder.getDependencies());
+    classPath.addFilelist(deps);
 
 //    task.setClasspath();
 
 
-    
+
     //
     //
 
-		// A path should be made for the module at hand
-		//
+    // A path should be made for the module at hand
+    //
 
-		Path path = new Path(project);
-		path.setPath(getContext().getLocalPath(module).getPath()); // Path settings determined by CommandContext
+    Path path = new Path(project);
+    path.setPath(getContext().getLocalPath(module).getPath()); // Path settings determined by CommandContext
 
-		task.setSrcdir(path);
-		task.setDestdir(getContext().getBuildTarget(module)); // Path settings determined by CommandContext
+    task.setSrcdir(path);
+    task.setDestdir(getContext().getBuildTarget(module)); // Path settings determined by CommandContext
+    task.setClasspath(classPath);
 
-		Target target = new Target();
-		target.setName("compile");
-		target.addTask(task);
+    Target target = new Target();
+    target.setName("compile");
+    target.addTask(task);
 
-		project.addTarget(target);
+    project.addTarget(target);
 
-		try {
-			target.execute();
-		} catch (BuildException e) {
-			e.printStackTrace();
-		}
+    try {
+      target.execute();
+    } catch (BuildException e) {
+      e.printStackTrace();
+      throw new CommandException(CommandException.BUILD_FAILED);
+//			e.printStackTrace();
+    }
 
-		//project.executeTarget("compile");
+    //project.executeTarget("compile");
 
-		CommandResponse response = new SimpleCommandResponse();
-		CommandMessage message = new SimpleCommandMessage("Module " + module.getName() + " built succesfully."); // todo localize message
-		response.addMessage(message);
+    CommandResponse response = new SimpleCommandResponse();
+    CommandMessage message = new SimpleCommandMessage("Module " + module.getName() + " built succesfully."); // todo localize message
+    response.addMessage(message);
 
-		return response;
-	}
+    return response;
+  }
 
 }

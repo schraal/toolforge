@@ -179,7 +179,7 @@ public final class CVSRunner implements Runner {
 		add(module, SourceModule.MODULE_INFO, tmp);
 
 //		client.setLocalPath(tmp.getPath());
-		tag(module, new Version("0-0"), new File(tmp, module.getName()));
+		tag(module, Version.INITIAL_VERSION, new File(tmp, module.getName()));
 
 		// Remove the temporary structure.
 		//

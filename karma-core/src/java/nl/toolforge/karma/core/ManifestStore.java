@@ -7,7 +7,7 @@ import java.io.FileNotFoundException;
 
 /**
  * Container for the directory on the user's harddisk (well, why not : a network
- * disk if need be) where manifest's are stored.
+ * disk if need be) where manifests are stored.
  *
  * @author D.A. Smedes
  * @version $Id$

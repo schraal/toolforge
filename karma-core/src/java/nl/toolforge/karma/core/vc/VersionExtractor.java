@@ -1,8 +1,8 @@
 package nl.toolforge.karma.core.vc;
 
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.Module;
+import nl.toolforge.karma.core.SourceModule;
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.vc.cvs.CVSException;
 
 /**
  * <p>Modules in a version control system are manageable through their symbolic names (or tags). The tag describes the
@@ -26,11 +26,11 @@ public interface VersionExtractor {
 	 * it do any transaction management. If two developers are trying to obtain a next version and both get
 	 * <code>1-4</code>, because they got there at the -more or less- the same moment, we (you) have a problem.
 	 *
-	 * @param module The module for which the next version should be obtained.
+	 * @param module The module for which the next version should be obtained. This can only be type SourceModule or one
+   *   of its inheritants.
 	 * @return A <code>Version</code> representation of the version number that's next in line for the branch that the
-	 *         module is developed on.
-	 * @throws KarmaException When the next version number could not be determined correctly. See error codes
-	 *                        <code>CMD-</code>. TODO to be completed after implementation.
+	 *   module is developed on.
+	 * @throws CVSException When the next version number could not be determined correctly.
 	 */
-	public Version getNextVersion(Module module) throws KarmaException;
+	public Version getNextVersion(SourceModule module) throws CVSException;
 }

@@ -19,7 +19,7 @@ public class TestUtils extends LocalCVSInitializer {
 
       // First test, apparently on the MAINLINE of a module.
       //
-      assertEquals(new CVSTag(MainLine.NAME_PREFIX + "_0-0"), Utils.createSymbolicName(module, new Version("0-0")));
+      assertEquals(new CVSTag(MainLine.NAME_PREFIX + "_0-0"), Utils.createSymbolicName(module, Version.INITIAL_VERSION));
 
       module =
         new SourceModule(new SourceModuleDescriptor(DEFAULT_MODULE_1, getTestLocation(), new DevelopmentLine("B1")), getDevelopmentHome());

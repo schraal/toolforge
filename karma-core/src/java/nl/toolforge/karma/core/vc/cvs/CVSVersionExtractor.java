@@ -5,6 +5,7 @@ import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.SourceModule;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.vc.VersionExtractor;
+import nl.toolforge.karma.core.vc.VersionControlException;
 import org.netbeans.lib.cvsclient.command.log.LogInformation;
 
 import java.io.File;
@@ -43,11 +44,16 @@ public final class CVSVersionExtractor implements VersionExtractor {
 	 *
 	 * @param module The next version number <code>module</code>.
 	 * @return The next version for <code>module</code>.
-	 * @throws KarmaException TODO complete when implementation is ready.
+	 * @throws CVSException When the version is not found for the module in the repository.
 	 */
-	private static synchronized Version getNext(Module module) throws KarmaException {
+	private static synchronized Version getNext(SourceModule module) throws CVSException {
 
 		List matchingList = collectVersions(module);
+
+    if (matchingList.size() == 0) {
+      return Version.INITIAL_VERSION;
+//      throw new CVSException(CVSException.VERSION_NOT_FOUND, new Object[] { module.getVersionAsString(), module.getName() });
+    }
 
 		Version lastMatch = (Version) matchingList.get(matchingList.size() - 1);
 		lastMatch.setDigit(lastMatch.getLastDigitIndex(), lastMatch.getLastDigit() + 1);
@@ -55,7 +61,7 @@ public final class CVSVersionExtractor implements VersionExtractor {
 		return lastMatch;
 	}
 
-	public Version getNextVersion(Module module) throws KarmaException {
+	public Version getNextVersion(SourceModule module) throws CVSException {
 		return getNext(module);
 	}
 
@@ -64,12 +70,16 @@ public final class CVSVersionExtractor implements VersionExtractor {
 	 * it is the trunk) for the module. This is done by quering <code>module.info</code>.
 	 *
 	 * @param module The next version number <code>module</code>.
-	 * @return The next version for <code>module</code>.
+	 * @return The next version for <code>module</code> or <code>null</code> when none is found.
 	 * @throws KarmaException TODO complete when implementation is ready.
 	 */
 	private static synchronized Version getLast(Module module) throws KarmaException {
 
 		List matchingList = collectVersions(module);
+
+    if (matchingList.size() == 0) {
+      throw new CVSException(CVSException.VERSION_NOT_FOUND);
+    }
 
 		Version lastMatch = (Version) matchingList.get(matchingList.size() - 1);
 		lastMatch.setDigit(lastMatch.getLastDigitIndex(), lastMatch.getLastDigit());
@@ -81,13 +91,17 @@ public final class CVSVersionExtractor implements VersionExtractor {
 		return getLast(module);
 	}
 
-	private static List collectVersions(Module module) throws KarmaException {
+	private static List collectVersions(Module module) throws CVSException {
 
 //		if (module instanceof SourceModule) {
 //			if (!((SourceModule) module).hasModuleInfo()) {
 //				throw new KarmaException(KarmaException.NO_MODULE_INFO, new Object[]{module.getName()});
 //			}
 //		}
+
+    // todo : this method should probably check if the module is at all compliant with the standards set by Karma.
+    // for instance, are the basic version info and branch available ???
+    //
 
 		// Step 1 : get all symbolicnames that apply to the correct pattern
 		//

@@ -3,6 +3,7 @@ package nl.toolforge.karma.core.cmd.impl;
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.ModuleMap;
+import nl.toolforge.karma.core.ManifestException;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
@@ -33,7 +34,7 @@ public class UpdateAllModulesCommand extends DefaultCommand {
 	 * the module is already present, otherwise a checkout will be performed. The checkout directory for the module
 	 * is relative to the root directory of the <code>active</code> manifest.
 	 *
-	 * @throws KarmaException When no manifest is loaded, a {@link nl.toolforge.karma.core.cmd.CommandException#NO_MANIFEST_SELECTED} is thrown. For
+	 * @throws KarmaException When no manifest is loaded, a {@link nl.toolforge.karma.core.ManifestException#NO_MANIFEST_SELECTED} is thrown. For
 	 *                        other errors, a more generic {@link KarmaException} is thrown.
 	 */
 	public CommandResponse execute() throws KarmaException {
@@ -41,7 +42,7 @@ public class UpdateAllModulesCommand extends DefaultCommand {
 		// A manifest must be present for this command
 		//
 		if (!getContext().isManifestLoaded()) {
-			throw new CommandException(CommandException.NO_MANIFEST_SELECTED);
+			throw new ManifestException(ManifestException.NO_MANIFEST_SELECTED);
 		}
 
 		// todo what to do about jarmodules etc ?

@@ -6,7 +6,6 @@ import nl.toolforge.karma.core.ManifestException;
 import nl.toolforge.karma.core.ModuleMap;
 import nl.toolforge.karma.core.SourceModule;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
-import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.vc.VersionControlException;
@@ -24,58 +23,70 @@ import java.util.List;
  */
 public class ViewManifest extends DefaultCommand {
 
-	Log logger = LogFactory.getLog(ViewManifest.class);
+  Log logger = LogFactory.getLog(ViewManifest.class);
 
-	private List renderedList = null;
+  private List renderedList = null;
 
-	public ViewManifest(CommandDescriptor descriptor) throws ManifestException {
-		super(descriptor);
+  public ViewManifest(CommandDescriptor descriptor) {
+    super(descriptor);
 
-		renderedList = new ArrayList();
-	}
+    renderedList = new ArrayList();
+  }
 
-	public CommandResponse execute() throws VersionControlException, CommandException {
+  public CommandResponse execute() throws ManifestException {
 
-		if (!getContext().isManifestLoaded()) {
-			throw new CommandException(CommandException.NO_MANIFEST_SELECTED);
-		}
-		Manifest manifest = getContext().getCurrent();
+    if (!getContext().isManifestLoaded()) {
+      throw new ManifestException(ManifestException.NO_MANIFEST_SELECTED);
+    }
+    if (!getContext().getCurrent().isLocal()) {
+      throw new ManifestException(ManifestException.MANIFEST_NOT_UPDATED);
+    }
+    Manifest manifest = getContext().getCurrent();
 
-		ModuleMap sourceModules = manifest.getModules().getSourceModules();
+    ModuleMap sourceModules = manifest.getModules().getSourceModules();
 
-		for (Iterator i = sourceModules.values().iterator(); i.hasNext();) {
+    for (Iterator i = sourceModules.values().iterator(); i.hasNext();) {
 
-			SourceModule module = (SourceModule) i.next();
+      SourceModule module = (SourceModule) i.next();
 
-			String[] moduleData = new String[6];
-			moduleData[0] = module.getName();
-			moduleData[1] = module.getVersionAsString();
+      String[] moduleData = new String[6];
+      moduleData[0] = module.getName();
 
-			try {
-				moduleData[2] = "(" + (CVSVersionExtractor.getInstance().getLastVersion(module)).getVersionNumber() + ")";
-			} catch (KarmaException k) {
-				logger.warn("Something failed when trying to extract the latest patch level for module : " + module.getName() +
-					"; " + k.getMessage());
-				moduleData[2] = "(N/A)"; // Sort of unknown
-			}
-			moduleData[3] = (module.getDevelopmentLine() == null ? "N/A" : module.getDevelopmentLine().getName());
-			moduleData[4] = module.getStateAsString();
-			moduleData[5] = module.getLocation().getId();
+      try {
+        moduleData[1] = "(N/A)";
+        moduleData[2] = "(N/A)";
+        if (module.hasVersion()) {
+          moduleData[1] = module.getVersionAsString();
+          moduleData[2] = "(" + (CVSVersionExtractor.getInstance().getLastVersion(module)).getVersionNumber() + ")";
+        } else {
+          moduleData[1] = "";
+          moduleData[2] = "";
+        }
 
-			renderedList.add(moduleData);
-		}
+      } catch (VersionControlException v) {
+        logger.error("Version " + module.getVersionAsString() + " is non-existing in repository.");
+      } catch (KarmaException k) {
+        logger.warn("Something failed when trying to extract the latest patch level for module : " + module.getName() +
+          "; " + k.getMessage());
+      }
+      moduleData[3] = (module.getDevelopmentLine() == null ? "N/A" : module.getDevelopmentLine().getName());
+      moduleData[4] = module.getStateAsString();
+      moduleData[5] = module.getLocation().getId();
 
-		return null; // Leave this repsonse the UI class implementing the rendering. Nothing to report.
-	}
+      renderedList.add(moduleData);
+    }
 
-	/**
-	 * <p>Returns the contents of the manifest in a two-dimensional <code>String[]</code> data-structure, for easy
-	 * reference. The contents of this structure can be queried through <code>renderedList.get(i)</code>. This call
-	 * retrieves a <code>String[]</code> with the most important data items for each module.
-	 *
-	 * @return A <code>List</code> containing <code>String[]</code> instances.
-	 */
-	protected List getData() {
-		return renderedList;
-	}
+    return null; // Leave this repsonse the UI class implementing the rendering. Nothing to report.
+  }
+
+  /**
+   * <p>Returns the contents of the manifest in a two-dimensional <code>String[]</code> data-structure, for easy
+   * reference. The contents of this structure can be queried through <code>renderedList.get(i)</code>. This call
+   * retrieves a <code>String[]</code> with the most important data items for each module.
+   *
+   * @return A <code>List</code> containing <code>String[]</code> instances.
+   */
+  protected List getData() {
+    return renderedList;
+  }
 }

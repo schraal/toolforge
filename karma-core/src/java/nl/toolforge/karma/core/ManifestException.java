@@ -57,7 +57,13 @@ public final class ManifestException extends KarmaException {
 	 * No manifest store directory could be found. This directory contains all manifest XML files. This directory
 	 * is resolved through the {@link LocalEnvironment#MANIFEST_STORE_DIRECTORY} property.
 	 */
-	public static final ErrorCode NO_MANIFEST_STORE_DIRECTORY = new ErrorCode("CORE-00070");
+	public static final ErrorCode NO_MANIFEST_STORE_DIRECTORY = new ErrorCode("MFS-00070");
+
+	/** No manifest has been assigned to the <code>CommandContext</code> */
+	public static final ErrorCode NO_MANIFEST_SELECTED = new ErrorCode("MFS-00030");
+
+  /** The manifest has not been updated locally. One (or more) modules have not been checked out. */
+  public static final ErrorCode MANIFEST_NOT_UPDATED = new ErrorCode("MFS-00032");
 
 	public ManifestException(ErrorCode errorCode) {
 		super(errorCode);

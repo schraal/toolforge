@@ -8,7 +8,6 @@ import nl.toolforge.karma.core.ManifestException;
 import nl.toolforge.karma.core.ManifestLoader;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.LocationFactory;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.VersionControlException;
@@ -18,9 +17,9 @@ import nl.toolforge.karma.core.vc.cvs.CVSRunner;
 import nl.toolforge.karma.core.vc.subversion.SVNException;
 import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
 import nl.toolforge.karma.core.vc.subversion.SubversionRunner;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -96,7 +95,7 @@ public final class CommandContext {
 	 * @param manifestName
 	 * @throws ManifestException When the manifest could not be changed. See {@link ManifestException#MANIFEST_LOAD_ERROR}.
 	 */
-	public void changeCurrent(String manifestName) throws ManifestException, LocationException {
+	public void changeCurrent(String manifestName) throws ManifestException {
 		currentManifest = manifestLoader.load(manifestName);
 	}
 
@@ -231,15 +230,15 @@ public final class CommandContext {
 
     File localPath = new File(new File(getBase(), "build"), module.getName());
 
-    if (localPath.exists()) {
-      try {
-        FileUtils.deleteDirectory(new File(localPath.getParent()));
-      } catch (IOException e) {
-      // todo implement this properly
-      }
-    }
+//    if (localPath.exists()) {
+//      try {
+//        FileUtils.deleteDirectory(new File(localPath.getParent()));
+//      } catch (IOException e) {
+////       todo implement this properly
+//      }
+//    }
 
-		if (localPath.mkdirs()) {
+    if (localPath.exists() || localPath.mkdirs()) {
 			return localPath;
 		}
     logger.error("Could not create build directory for module " + module.getName());

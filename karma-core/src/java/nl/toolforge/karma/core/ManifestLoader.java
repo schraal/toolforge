@@ -194,26 +194,30 @@ public final class ManifestLoader {
             String version = node.getAttribute(SourceModuleDescriptor.VERSION_ATTRIBUTE);
 
             SourceModuleDescriptor descriptor = null;
-            if (version == null) {
-              descriptor = new SourceModuleDescriptor(moduleName, location, new Version(version));
+
+            if ("".equals(version)) {
+              descriptor = new SourceModuleDescriptor(moduleName, location);
             } else {
               descriptor = new SourceModuleDescriptor(moduleName, location, new Version(version));
             }
             manifest.addModule(descriptor);
 
-//						// SourceModule specific fields
-//						//
-//						String version = node.getAttribute(SourceModule.VERSION_ATTRIBUTE);
-//
-//						SourceModule sourceModule;
-//						if (version == null) {
-//							sourceModule = new SourceModule(moduleName, location);
-//						} else {
-//							sourceModule = new SourceModule(moduleName, location, new Version(version));
-//						}
-//						//sourceModule.setDevelopmentLine(node.getAttribute(SourceModule.BRANCH_ATTRIBUTE));
-//
-//						manifest.addModule(sourceModule);
+          } else if (nodeName.equals(MavenModuleDescriptor.ELEMENT_NAME)) {
+
+            // todo lot of duplicate code here !!!!!! Sucks.
+
+            String moduleName = node.getAttribute(ModuleDescriptor.NAME_ATTRIBUTE);
+            Location location = LocationFactory.getInstance().get(node.getAttribute(ModuleDescriptor.LOCATION_ATTRIBUTE));
+            String version = node.getAttribute(MavenModuleDescriptor.VERSION_ATTRIBUTE);
+
+            MavenModuleDescriptor descriptor = null;
+            if ("".equals(version)) {
+              descriptor = new MavenModuleDescriptor(moduleName, location);
+            } else {
+              descriptor = new MavenModuleDescriptor(moduleName, location, new Version(version));
+            }
+            manifest.addModule(descriptor);
+
           } else if (nodeName.equals(JarModule.ELEMENT_NAME)) {
 
             String moduleName = node.getAttribute(ModuleDescriptor.NAME_ATTRIBUTE);
@@ -221,20 +225,13 @@ public final class ManifestLoader {
             String version = node.getAttribute(JarModule.VERSION_ATTRIBUTE);
 
             JarModuleDescriptor descriptor = null;
-            if (version == null) {
+            if ("".equals(version)) {
+              // todo : check if this constructor is the only one.
+              //
               descriptor = new JarModuleDescriptor(moduleName, location, new Version(version));
             } else {
               descriptor = new JarModuleDescriptor(moduleName, location, new Version(version));
             }
-
-//            JarModule jarModule;
-//            if (version == null) {
-//              jarModule = new JarModule(moduleName, location);
-//            } else {
-//              jarModule = new JarModule(moduleName, location, version);
-//            }
-//
-//            manifest.addModule(jarModule);
             manifest.addModule(descriptor);
           }
 
