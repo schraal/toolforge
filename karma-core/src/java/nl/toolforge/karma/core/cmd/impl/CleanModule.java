@@ -14,10 +14,7 @@ import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.manifest.ManifestException;
 
 /**
- * Run the unit tests of a given module.
- * <p>
- * At this moment this class only supports Java/JUnit in combination with Ant.
- * </p>
+ * Remove all built stuff of the given module.
  *
  * @author W.H. Schraal
  * @version $Id$
@@ -43,7 +40,7 @@ public class CleanModule extends AbstractBuildCommand {
       if (!buildBase.exists()) {
         // No point in removing built stuff if it isn't there
         //
-        throw new CommandException(CommandException.NO_BUILD_DIR, new Object[] {getCurrentModule().getName(), getBuildDirectory().getPath()});
+        throw new CommandException(CommandException.NO_MODULE_BUILD_DIR, new Object[] {getCurrentModule().getName(), getBuildDirectory().getPath()});
       }
 
       // Configure the Ant project
@@ -59,7 +56,7 @@ public class CleanModule extends AbstractBuildCommand {
 
       } catch (BuildException e) {
         e.printStackTrace();
-        throw new CommandException(CommandException.CLEAN_FAILED, new Object[] {getBuildDirectory().getPath()});
+        throw new CommandException(CommandException.CLEAN_MODULE_FAILED, new Object[] {getBuildDirectory().getPath()});
       }
     } catch (ManifestException e) {
       e.printStackTrace();

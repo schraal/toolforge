@@ -57,20 +57,15 @@ public class TestModule extends AbstractBuildCommand {
       project.setProperty(MODULE_SOURCE_DIR_PROPERTY, srcBase.getPath());
       project.setProperty(MODULE_BUILD_DIR_PROPERTY, getBuildDirectory().getPath());
       project.setProperty(MODULE_TEST_DIR_PROPERTY, getTestDirectory().getPath());
-System.out.println("1");
       project.setProperty(MODULE_COMPILE_DIR_PROPERTY, getCompileDirectory().getPath());
-System.out.println("2");
       project.setProperty(MODULE_CLASSPATH_PROPERTY, getDependencies(getCurrentModule().getDependencies(), false, CLASSPATH_SEPARATOR_CHAR));
-System.out.println("3");
     } catch (ManifestException e) {
-      e.printStackTrace();
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
 
     try {
       project.executeTarget(TEST_MODULE_TARGET);
     } catch (BuildException e) {
-      e.printStackTrace();
       throw new CommandException(CommandException.TEST_FAILED, new Object[] {getCurrentModule().getName()});
     }
 

@@ -33,7 +33,7 @@ import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
  */
 public class UpdateModuleCommand extends DefaultCommand {
 
-  private CommandResponse response = null;
+  protected CommandResponse response = null;
 
   /**
    * Creates a <code>UpdateModuleCommand</code> for module <code>module</code> that should be updated. This module

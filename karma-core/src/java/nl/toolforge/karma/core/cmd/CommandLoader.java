@@ -55,7 +55,6 @@ public final class CommandLoader {
 	}
 
 
-	private static NodeList commands = null;
 	private static boolean loaded = false;
 	private static Document descriptorDocument = null;
 

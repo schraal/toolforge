@@ -31,7 +31,7 @@ import java.util.regex.PatternSyntaxException;
 public class PromoteCommand extends DefaultCommand {
 
   private Version newVersion = null;
-  private CommandResponse commandResponse = new ActionCommandResponse();
+  protected CommandResponse commandResponse = new ActionCommandResponse();
 
   public PromoteCommand(CommandDescriptor descriptor) {
     super(descriptor);
@@ -82,9 +82,6 @@ public class PromoteCommand extends DefaultCommand {
       }
 
       this.newVersion = nextVersion;
-
-      CommandMessage message = new SuccessMessage(getFrontendMessages().getString("message.PROMOTE_MODULE_STARTED"), new Object[]{moduleName, nextVersion});
-      commandResponse.addMessage(message);
 
       Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getCurrentManifest().getDirectory());
 

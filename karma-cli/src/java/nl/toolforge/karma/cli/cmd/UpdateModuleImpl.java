@@ -1,10 +1,8 @@
 package nl.toolforge.karma.cli.cmd;
 
-import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.CommandResponseHandler;
+import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.impl.UpdateModuleCommand;
 
 /**
@@ -21,6 +19,9 @@ public class UpdateModuleImpl extends UpdateModuleCommand {
   }
 
   public void execute() throws CommandException {
+    SuccessMessage message = new SuccessMessage("Updating module, please wait ...");
+    response.addMessage(message);
+
     super.execute();
   }
 

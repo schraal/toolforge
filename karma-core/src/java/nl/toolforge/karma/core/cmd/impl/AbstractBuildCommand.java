@@ -63,6 +63,11 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
   protected static final String CLEAN_MODULE_TARGET = "clean-module";
 
   /**
+   * Mapper to the target in <code>build-module.xml</code> to clean all modules.
+   */
+  protected static final String CLEAN_ALL_TARGET = "clean-all";
+
+  /**
    * Mapper to the target in <code>build-module.xml</code> to package a module as a <code>jar</code>-file.
    */
   protected static final String BUILD_TARGET_JAR = "package-module-as-jar";

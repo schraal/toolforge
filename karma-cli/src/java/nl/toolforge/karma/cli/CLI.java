@@ -176,6 +176,7 @@ public class CLI {
             ctx.execute(line);
           }
         } catch (CommandException e) {
+          writer.writeln("");
           writer.writeln(e.getErrorMessage());
           logger.error(e.getMessage(), e);
         }

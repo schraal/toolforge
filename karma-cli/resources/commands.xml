@@ -58,7 +58,7 @@
       </option>
     </options>
 
-    <classname>nl.toolforge.karma.core.cmd.impl.StartWorkCommand</classname>
+    <classname>nl.toolforge.karma.cli.cmd.StartWorkImpl</classname>
 
     <help/>
 
@@ -76,7 +76,7 @@
       </option>
     </options>
 
-    <classname>nl.toolforge.karma.core.cmd.impl.StopWorkCommand</classname>
+    <classname>nl.toolforge.karma.cli.cmd.StopWorkImpl</classname>
 
     <help/>
 
@@ -140,6 +140,21 @@
       <option opt="m" longOpt="module" required="true" description="The module name">
         <arg name="module-name"/>
       </option>
+    </options>
+
+    <classname>nl.toolforge.karma.core.cmd.impl.CleanModule</classname>
+
+    <help/>
+
+  </command>
+
+  <command name="clean-all" alias="cla">
+
+    <description lang="en">
+			Removes all built artifacts.
+    </description>
+
+    <options>
     </options>
 
     <classname>nl.toolforge.karma.core.cmd.impl.CleanModule</classname>

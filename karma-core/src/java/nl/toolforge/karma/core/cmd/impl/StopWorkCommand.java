@@ -22,12 +22,12 @@ import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
  */
 public class StopWorkCommand extends DefaultCommand {
 
-  private CommandResponse response = null;
+  protected CommandResponse response = null;
   /**
    *
    * @param descriptor The command descriptor for this command.
    */
-  public StopWorkCommand(CommandDescriptor descriptor) throws CommandException {
+  public StopWorkCommand(CommandDescriptor descriptor) {
 
     super(descriptor);
 

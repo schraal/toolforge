@@ -50,7 +50,6 @@ public final class CommandFactory {
   private synchronized void init() {
 
     Set descriptors = CommandLoader.getInstance().load();
-    //commands = new Hashtable();
     commandsByName = new TreeMap();
     commandsByAlias = new TreeMap();
 

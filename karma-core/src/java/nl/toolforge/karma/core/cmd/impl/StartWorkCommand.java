@@ -31,17 +31,16 @@ public class StartWorkCommand extends DefaultCommand {
 
   private static Log logger = LogFactory.getLog(AbstractManifest.class);
 
-  private CommandResponse response = null;
+  protected CommandResponse response = new ActionCommandResponse();
 
   /**
    *
    * @param descriptor The command descriptor for this command.
    */
-  public StartWorkCommand(CommandDescriptor descriptor) throws CommandException {
+  public StartWorkCommand(CommandDescriptor descriptor) {
 
     super(descriptor);
 
-    response = new ActionCommandResponse();
   }
 
   public void execute() throws CommandException {

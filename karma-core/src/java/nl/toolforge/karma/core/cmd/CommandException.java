@@ -54,7 +54,10 @@ public class CommandException extends Exception {
   public static final ErrorCode TEST_FAILED = new ErrorCode(EXCEPTION_PREFIX + "00050");
 
   /** The test of a module failed. */
-  public static final ErrorCode CLEAN_FAILED = new ErrorCode(EXCEPTION_PREFIX + "00060");
+  public static final ErrorCode CLEAN_MODULE_FAILED = new ErrorCode(EXCEPTION_PREFIX + "00060");
+
+  /** The test of a module failed. */
+  public static final ErrorCode CLEAN_ALL_FAILED = new ErrorCode(EXCEPTION_PREFIX + "00063");
 
   /**
    * When the module has a version-attribute and is therefor STATIC. Not allowed to start work on this module.
@@ -92,10 +95,14 @@ public class CommandException extends Exception {
   public static final ErrorCode NO_TEST_DIR = new ErrorCode(EXCEPTION_PREFIX + "00051");
 
   /**
-   * <code>build</code> (the default directory for a module where built files are located) is missing.
+   * <code>build/&lt;module&gt;</code> (the default directory for a module where built files are located) is missing.
    */
-  public static final ErrorCode NO_BUILD_DIR = new ErrorCode(EXCEPTION_PREFIX + "00061");
+  public static final ErrorCode NO_MODULE_BUILD_DIR = new ErrorCode(EXCEPTION_PREFIX + "00061");
 
+  /**
+   * <code>build</code> (the default directory where built files are located) is missing.
+   */
+  public static final ErrorCode NO_BUILD_DIR = new ErrorCode(EXCEPTION_PREFIX + "00062");
 
   public CommandException(ErrorCode errorCode) {
     this(errorCode, null);

@@ -104,6 +104,14 @@
     <delete dir="${module-build-dir}" />
   </target>
 
+  <!-- ************************************************************* -->
+  <!-- clean-all (cla); removes build and test stuff of all modules  -->
+  <!-- ************************************************************* -->
+
+  <target name="clean-all">
+    <delete dir="${manifest-build-dir}" />
+  </target>
+
   <!-- *************************************** -->
   <!-- package-module (pa); resulting in a jar -->
   <!-- *************************************** -->
@@ -148,13 +156,9 @@
       <fileset dir="${module-build-dir}" includes="*.war"/>
     </delete>
 
-    <echo message="1"/>
-
     <copy todir="${module-build-dir}/${module-package-dir}" overwrite="true">
       <fileset dir="${module-base-dir}" includes="${module-includes}"/>
     </copy>
-
-    <echo message="2"/>
 
     <!-- For standalone wars, all deps are copied to WEB-INF/lib and packaged as such.-->
 
@@ -162,16 +166,12 @@
       <fileset dir="${module-build-dir}/${module-package-dir}/WEB-INF/lib" includes="**"/>
     </delete>
 
-    <echo message="3"/>
-
     <copy todir="${module-build-dir}/${module-package-dir}/WEB-INF/lib" flatten="yes" >
       <!-- Module dependencies, appear as <dependency module=""/> -->
       <fileset dir="${manifest-build-dir}" includes="${module-module-dependencies}"/>
       <!-- Jar dependencies, from the jar-repository -->
       <fileset dir="${karma-jar-repository}" includes="${module-jar-dependencies}"/>
     </copy>
-
-    <echo message="4"/>
 
     <!-- Package the module -->
 
