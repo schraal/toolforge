@@ -34,10 +34,4 @@ public class AntErrorMessage extends ErrorMessage {
     // todo Hmm ...
     super("ANT ERROR : " + b.getMessage());
   }
-
-  public AntErrorMessage(RuntimeException b) {
-    // todo Hmm ...
-    super("ANT ERROR : " + b.getMessage());
-  }
-
 }

@@ -26,16 +26,29 @@ import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.AntErrorMessage;
+import nl.toolforge.karma.core.cmd.util.DescriptorReader;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.ModuleDescriptor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tools.ant.taskdefs.Copy;
 import org.apache.tools.ant.taskdefs.Jar;
 import org.apache.tools.ant.taskdefs.War;
+import org.apache.tools.ant.taskdefs.Ear;
 import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.FilterSet;
+import org.apache.tools.ant.BuildException;
+import org.xml.sax.SAXException;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.FileWriter;
+import java.util.Map;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 
 /**
@@ -67,65 +80,10 @@ public class PackageModule extends AbstractBuildCommand {
       File packageName = new File(getModuleBuildDirectory(), getCurrentManifest().resolveArchiveName(getCurrentModule()));
 
       if (getCurrentModule().getDeploymentType().equals(Module.WEBAPP)) {
-
         packageWar(packageName);
-
       } else if (getCurrentModule().getDeploymentType().equals(Module.EAPP)) {
-//
-//        // Create an ear-file
-//        //
-//        DescriptorReader reader = new DescriptorReader(DescriptorReader.APPLICATION_XML);
-//
-//        try {
-//          reader.parse(new File(getCurrentModule().getBaseDir(), "META-INF"));
-//        } catch (IOException e) {
-//          e.printStackTrace();
-////          throw new CommandException(CommandException.MISSING_DEPLOYMENT_DESCRIPTOR, new Object[]{reader.});
-//        } catch (SAXException e) {
-//          e.printStackTrace();
-//        }
-//
-//        Map map = new Hashtable();
-//        for (Iterator it = reader.getModuleNames().iterator(); it.hasNext(); ) {
-//          String moduleName = ((StringBuffer) it.next()).toString();
-//
-//          Pattern p = Pattern.compile("@("+ModuleDescriptor.NAME_PATTERN_STRING+")@");
-//          Matcher m = p.matcher(moduleName);
-//
-//          if (m.matches()) {
-//            moduleName = m.group(1);
-//            Module module = getCurrentManifest().getModule(moduleName);
-//            map.put(moduleName, getCurrentManifest().resolveArchiveName(module));
-//          } else {
-//            //todo: throw new Exception();
-//          }
-//        }
-//
-//        try {
-//          FileWriter write1 = new FileWriter(new File(getModuleBuildDirectory(), "archives.properties"));
-//          FileWriter write2 = new FileWriter(new File(getModuleBuildDirectory(), "archives.includes"));
-//
-//          for (Iterator it = map.keySet().iterator(); it.hasNext(); ) {
-//            String key = (String) it.next();
-//            String value = (String) map.get(key);
-//
-//            write1.write(key+"="+value+"\n");
-//            write2.write(key+"/"+value+"\n");
-//          }
-//
-//          write1.close();
-//          write2.close();
-//
-//        } catch (IOException e) {
-//          e.printStackTrace();
-//        }
-//
-//        project.setProperty(MODULE_APPXML_PROPERTY, new File(getModuleBuildDirectory(), "META-INF/application.xml".replace('/', File.separatorChar)).getPath());
-//        project.setProperty(MODULE_INCLUDES_PROPERTY, "META-INF/**");
-//        project.setProperty(MODULE_EXCLUDES_PROPERTY, "*.ear,archives.*");
-//        project.executeTarget(BUILD_TARGET_EAR);
+        packageEar(packageName);
       } else {
-
         packageJar(packageName);
       }
 
@@ -137,70 +95,72 @@ public class PackageModule extends AbstractBuildCommand {
 
     } catch (ManifestException m) {
       throw new CommandException(m.getErrorCode(), m.getMessageArguments());
-    } catch (RuntimeException e) {
+    }
+  }
+
+  private void packageJar(File packageName) throws CommandException {
+
+    try {
+
+      executeDelete(getModuleBuildDirectory(), "*.jar");
+
+      Copy copy = null;
+
+      copy = new Copy();
+      copy.setProject(getProjectInstance());
+      copy.setTodir(getPackageDirectory());
+      copy.setOverwrite(true);
+
+      FileSet fileSet = new FileSet();
+      fileSet.setDir(new File(getCurrentModule().getBaseDir(), "resources"));
+      fileSet.setIncludes("**/*");
+
+      copy.addFileset(fileSet);
+
+
+
+      copy = new Copy();
+      copy.setProject(getProjectInstance());
+      copy.setTodir(getPackageDirectory());
+      copy.setOverwrite(true);
+
+      fileSet = new FileSet();
+      fileSet.setDir(getCurrentModule().getBaseDir());
+      fileSet.setIncludes("META-INF/**");
+      fileSet.setExcludes("resources");
+
+      copy.addFileset(fileSet);
+
+      // Copy all class files to the package directory.
+      //
+      copy = new Copy();
+      copy.setProject(getProjectInstance());
+      copy.setTodir(getPackageDirectory());
+      copy.setOverwrite(true);
+
+      fileSet = new FileSet();
+      fileSet.setDir(getCompileDirectory());
+      fileSet.setIncludes("**/*.class");
+
+      copy.addFileset(fileSet);
+
+      copy.execute();
+
+      Jar jar = new Jar();
+      jar.setProject(getProjectInstance());
+      jar.setDestFile(packageName);
+      jar.setBasedir(getPackageDirectory());
+      jar.setExcludes("*.jar");
+
+      jar.execute();
+
+    } catch (BuildException e) {
 //      e.printStackTrace();
       if (logger.isDebugEnabled()) {
         commandResponse.addMessage(new AntErrorMessage(e));
       }
       throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
     }
-  }
-
-  private void packageJar(File packageName) throws CommandException {
-
-
-    executeDelete(getModuleBuildDirectory(), "*.jar");
-
-    Copy copy = null;
-
-    copy = new Copy();
-    copy.setProject(getProjectInstance());
-    copy.setTodir(getPackageDirectory());
-    copy.setOverwrite(true);
-
-    FileSet fileSet = new FileSet();
-    fileSet.setDir(new File(getCurrentModule().getBaseDir(), "resources"));
-    fileSet.setIncludes("**/*");
-
-    copy.addFileset(fileSet);
-
-
-
-    copy = new Copy();
-    copy.setProject(getProjectInstance());
-    copy.setTodir(getPackageDirectory());
-    copy.setOverwrite(true);
-
-    fileSet = new FileSet();
-    fileSet.setDir(getCurrentModule().getBaseDir());
-    fileSet.setIncludes("META-INF/**");
-    fileSet.setExcludes("resources");
-
-    copy.addFileset(fileSet);
-
-    // Copy all class files to the package directory.
-    //
-    copy = new Copy();
-    copy.setProject(getProjectInstance());
-    copy.setTodir(getPackageDirectory());
-    copy.setOverwrite(true);
-
-    fileSet = new FileSet();
-    fileSet.setDir(getCompileDirectory());
-    fileSet.setIncludes("**/*.class");
-
-    copy.addFileset(fileSet);
-
-    copy.execute();
-
-    Jar jar = new Jar();
-    jar.setProject(getProjectInstance());
-    jar.setDestFile(packageName);
-    jar.setBasedir(getPackageDirectory());
-    jar.setExcludes("*.jar");
-
-    jar.execute();
-
 
   }
 
@@ -280,6 +240,12 @@ public class PackageModule extends AbstractBuildCommand {
       war.execute();
     } catch (ManifestException m) {
       throw new CommandException(m.getErrorCode(), m.getMessageArguments());
+    } catch (BuildException e) {
+//      e.printStackTrace();
+      if (logger.isDebugEnabled()) {
+        commandResponse.addMessage(new AntErrorMessage(e));
+      }
+      throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
     }
 
   }
@@ -287,10 +253,110 @@ public class PackageModule extends AbstractBuildCommand {
   private void packageEar(File packageName) throws CommandException {
 
     try {
+
+
+      // Create an ear-file
+      //
+      DescriptorReader reader = new DescriptorReader(DescriptorReader.APPLICATION_XML);
+
+      try {
+        reader.parse(new File(getCurrentModule().getBaseDir(), "META-INF"));
+      } catch (IOException e) {
+        e.printStackTrace();
+//          throw new CommandException(CommandException.MISSING_DEPLOYMENT_DESCRIPTOR, new Object[]{reader.});
+      } catch (SAXException e) {
+        e.printStackTrace();
+      }
+
+      Map map = new Hashtable();
+      for (Iterator it = reader.getModuleNames().iterator(); it.hasNext(); ) {
+        String moduleName = ((StringBuffer) it.next()).toString();
+
+        Pattern p = Pattern.compile("@("+ModuleDescriptor.NAME_PATTERN_STRING+")@");
+        Matcher m = p.matcher(moduleName);
+
+        if (m.matches()) {
+          moduleName = m.group(1);
+          Module module = getCurrentManifest().getModule(moduleName);
+          map.put(moduleName, getCurrentManifest().resolveArchiveName(module));
+        } else {
+          //todo: throw new Exception();
+        }
+      }
+
+      try {
+        FileWriter write1 = new FileWriter(new File(getModuleBuildDirectory(), "archives.properties"));
+        FileWriter write2 = new FileWriter(new File(getModuleBuildDirectory(), "archives.includes"));
+
+        for (Iterator it = map.keySet().iterator(); it.hasNext(); ) {
+          String key = (String) it.next();
+          String value = (String) map.get(key);
+
+          write1.write(key+"="+value+"\n");
+          write2.write(key+"/"+value+"\n");
+        }
+
+        write1.close();
+        write2.close();
+
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
+      executeDelete(getModuleBuildDirectory(), "*.ear;archives.*");
+
+      Copy copy = null;
+
+      copy = new Copy();
+      copy.setProject(getProjectInstance());
+      copy.setTodir(getPackageDirectory());
+      copy.setOverwrite(true);
+
+      FileSet fileSet = new FileSet();
+      fileSet.setDir(getCurrentModule().getBaseDir());
+      fileSet.setIncludes("META-INF/**");
+
+      // Filtering
+      //
+      FilterSet filterSet = copy.createFilterSet();
+      filterSet.setFiltersfile(new File(getModuleBuildDirectory(), "archives.properties"));
+
+      copy.addFileset(fileSet);
+
+      copy.execute();
+
+
+      copy = new Copy();
+      copy.setProject(getProjectInstance());
+      copy.setTodir(getPackageDirectory());
+      copy.setFlatten(true);
+
+      fileSet = new FileSet();
+      fileSet.setDir(getModuleBuildDirectory());
+      fileSet.setIncludesfile(new File(getModuleBuildDirectory(), "arvices.includes"));
+
+      copy.addFileset(fileSet);
+
+      copy.execute();
+
+
+      Ear ear = new Ear();
+      ear.setProject(getProjectInstance());
+      ear.setDestFile(packageName);
+      ear.setBasedir(getPackageDirectory());
+      ear.setAppxml(new File(getModuleBuildDirectory(), "META-INF/application.xml".replace('/', File.separatorChar)));
+
+      ear.execute();
+
     } catch (ManifestException m) {
       throw new CommandException(m.getErrorCode(), m.getMessageArguments());
+    } catch (BuildException e) {
+//      e.printStackTrace();
+      if (logger.isDebugEnabled()) {
+        commandResponse.addMessage(new AntErrorMessage(e));
+      }
+      throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
     }
-
 
   }
 

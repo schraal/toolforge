@@ -25,14 +25,9 @@ import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.manifest.ManifestException;
-import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Target;
 import org.apache.tools.ant.taskdefs.Javac;
-import org.apache.tools.ant.taskdefs.Mkdir;
-import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.types.FileSet;
 
 import java.io.File;
 
