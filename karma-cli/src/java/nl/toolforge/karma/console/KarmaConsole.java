@@ -264,13 +264,19 @@ public final class KarmaConsole {
           //
         }
       }
-    } catch (RuntimeException r) {
+    } catch (Throwable e) {
       writeln("\n");
-      logger.fatal(r.getMessage(), r);
-      System.exit(1);
-    } catch (Exception e) {
-      writeln("\n");
-      logger.fatal(e.getMessage(), e);
+      logger.fatal("Exception caught by KarmaConsole catch-all. ", e);
+      
+      String logfile = System.getProperty("karma.home", System.getProperty("user.home")) + File.separator + "logs" + File.separator + "karma-default.log";
+      
+      System.out.println("Something went BOOM inside of Karma.");
+      System.out.println("Details: " + (e.getMessage() != null ? e.getMessage() : e.getClass().getName()));
+      System.out.println("See the log file (" + logfile + ") for more information.");
+      System.out.println("Please report recurring problems to the Karma developers (http://sourceforge.net/tracker/?group_id=98766).");
+      System.out.println("We apologize for the inconvenience.");
+      System.out.println();
+      
       System.exit(1);
     }
   }

@@ -1,5 +1,7 @@
 package nl.toolforge.karma.cli;
 
+import java.io.File;
+
 import nl.toolforge.karma.cli.cmd.CLICommandResponseHandler;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.boot.WorkingContextConfiguration;
@@ -85,11 +87,21 @@ public final class CLI {
       System.out.println("\n" + "[ karma ] " + e.getMessage());
 
       System.exit(1);
-    } catch (Exception e) {
-      logger.error("Exception caught by CLI catch-all.", e);
-      System.out.println("Exception caught by CLI catch-all. Message: " + e.getMessage() + "\n");
+    } catch (Throwable e) {
+      logger.fatal("Exception caught by CLI catch-all. ", e);
+      
+      String logfile = System.getProperty("karma.home", System.getProperty("user.home")) + File.separator + "logs" + File.separator + "karma-default.log";
+      
+      System.out.println("Something went BOOM inside of Karma.");
+      System.out.println("Details: " + (e.getMessage() != null ? e.getMessage() : e.getClass().getName()));
+      System.out.println("See the log file (" + logfile + ") for more information.");
+      System.out.println("Please report recurring problems to the Karma developers (http://sourceforge.net/tracker/?group_id=98766).");
+      System.out.println("We apologize for the inconvenience.");
+      System.out.println();
+      
       System.exit(1);
     }
+    
     System.exit(0);
   }
 
