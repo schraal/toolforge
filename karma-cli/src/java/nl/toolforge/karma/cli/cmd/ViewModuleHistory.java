@@ -18,6 +18,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.cli.cmd;
 
+import java.text.SimpleDateFormat;
+
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
@@ -30,15 +40,6 @@ import nl.toolforge.karma.core.history.ModuleHistoryException;
 import nl.toolforge.karma.core.history.ModuleHistoryFactory;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.module.Module;
-import nl.toolforge.karma.core.module.Module;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.text.SimpleDateFormat;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Renders the contents of the <code>history.xml</code> to the console.
@@ -99,7 +100,7 @@ public class ViewModuleHistory extends DefaultCommand {
     String h4 = "Timestamp";
     String h5 = "Comment";
 
-    final int MAX_DATETIME = 23;
+    final int MAX_DATETIME = 20;
     final int MAX_COMMENT = 60;
 
     buffer.append(h1 + StringUtils.repeat(" ", 18 - h1.length()) + "| ");
@@ -120,7 +121,9 @@ public class ViewModuleHistory extends DefaultCommand {
       buffer.append(event.getType() + StringUtils.repeat(" ",  18 - event.getType().length()) + "| ");
       buffer.append(event.getAuthor() + StringUtils.repeat(" ",  15 - event.getAuthor().length()) + "| ");
       buffer.append(event.getVersion().getVersionNumber() + StringUtils.repeat(" ",  8 - event.getVersion().getVersionNumber().length()) + "| ");
-      String date = new SimpleDateFormat("dd-MMM-yyyy HH:mm z").format(event.getDatetime());
+      
+      String date = new SimpleDateFormat("dd-MMM-yyyy HH:mm").format(event.getDatetime());
+      
       buffer.append(date + StringUtils.repeat(" ",  MAX_DATETIME - date.length()) + "| ");
 
       String comment = null;
