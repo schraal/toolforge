@@ -18,21 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.console;
 
-import nl.toolforge.karma.cli.cmd.ConsoleCommandResponseHandler;
-import nl.toolforge.karma.cli.cmd.ConsoleCommandResponseHandler;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.boot.WorkingContext;
-import nl.toolforge.karma.core.bundle.BundleCache;
-import nl.toolforge.karma.core.cmd.CommandContext;
-import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.CommandLoadException;
-import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.manifest.Manifest;
-import nl.toolforge.karma.core.manifest.ManifestException;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -43,6 +28,20 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import nl.toolforge.karma.cli.cmd.ConsoleCommandResponseHandler;
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.boot.WorkingContext;
+import nl.toolforge.karma.core.bundle.BundleCache;
+import nl.toolforge.karma.core.cmd.CommandContext;
+import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.manifest.ManifestException;
 
 /**
  * <p>The <code>KarmaConsole</code> is the command-line interface for Karma. The class presents a simple-to-use command-line
@@ -222,12 +221,12 @@ public final class KarmaConsole {
         } 
       }
     }
-    catch (IOException e) {
-      logger.error(e.getMessage(), e);
-      System.exit(1);
-    }
     catch (RuntimeException r) {
       r.printStackTrace();
+      System.exit(1);
+    }
+    catch (Exception e) {
+      logger.error(e.getMessage(), e);
       System.exit(1);
     }
   }
