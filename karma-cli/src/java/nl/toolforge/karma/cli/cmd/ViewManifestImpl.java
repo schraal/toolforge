@@ -30,6 +30,9 @@ public class ViewManifestImpl extends ViewManifest {
    */
   public void execute() throws CommandException {
 
+    SuccessMessage message = new SuccessMessage("Checking manifest status, please wait ...");
+    commandResponse.addMessage(message);
+
     super.execute(); // Ignore the response from the superclass
 
     List renderedData = getData();
@@ -117,7 +120,7 @@ public class ViewManifestImpl extends ViewManifest {
 
     // -- end of formatting
 
-    SuccessMessage message = new SuccessMessage(buffer.toString());
+    message = new SuccessMessage(buffer.toString());
     commandResponse.addMessage(message);
   }
 

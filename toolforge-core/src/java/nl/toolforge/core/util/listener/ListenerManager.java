@@ -17,8 +17,6 @@ public class ListenerManager extends Thread {
 
   private static Log logger = LogFactory.getLog(ListenerManager.class);
 
-  // todo implementation should spawn a thread for each listener.
-
   private static List listeners = null;
 
   private static ListenerManager instance = null;
@@ -37,12 +35,17 @@ public class ListenerManager extends Thread {
     listeners = new ArrayList();
   }
 
+  /**
+   * Registers a listener. At this moment, only the first listener is actually handled by this manager.
+   *
+   * @param listener
+   * @throws ListenerManagerException
+   */
   public synchronized void register(ChangeListener listener) throws ListenerManagerException {
 
-    if (listeners.contains(listener)) {
-      throw new ListenerManagerException("Listener already registered.");
+    if (!listeners.contains(listener)) {
+      listeners.add(listener);
     }
-    listeners.add(listener);
   }
 
   public void run() {
@@ -56,6 +59,9 @@ public class ListenerManager extends Thread {
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
+
+      // todo should manage the list of listeners.
+      //
 
       ((ChangeListener) listeners.get(0)).process();
     }
