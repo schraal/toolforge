@@ -80,6 +80,7 @@ public final class DependencyHelper {
    *
    * @param module The module for which a dependency-path should be determined.
    * @return See method description.
+   * @throws KarmaBuildException When a dependency for a module is not available.
    */
   public Set getModuleDependencies(Module module) throws KarmaBuildException {
 

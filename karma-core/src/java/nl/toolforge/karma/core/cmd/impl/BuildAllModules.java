@@ -24,8 +24,16 @@ import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
+import nl.toolforge.karma.core.cmd.CommandFactory;
+import nl.toolforge.karma.core.cmd.Command;
+import nl.toolforge.karma.core.cmd.ErrorMessage;
+import nl.toolforge.karma.core.cmd.CommandMessage;
+import nl.toolforge.karma.core.cmd.util.DependencyHelper;
+import nl.toolforge.karma.core.cmd.util.KarmaBuildException;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.scm.ModuleDependency;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -35,6 +43,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Builds all modules in a manifest.
@@ -51,6 +64,9 @@ public class BuildAllModules extends DefaultCommand {
   private static final String JAVAC_CLASSPATH_PROPERTY = "classpath";
 
   private CommandResponse commandResponse = new ActionCommandResponse();
+  private DependencyHelper helper = null;
+  private List orderedCollection = null;
+  private Manifest currentManifest = null;
 
   public BuildAllModules(CommandDescriptor descriptor) {
     super(descriptor);
@@ -58,131 +74,95 @@ public class BuildAllModules extends DefaultCommand {
 
   public void execute() throws CommandException {
 
-    Manifest currentManifest = getContext().getCurrentManifest();
+    currentManifest = getContext().getCurrentManifest();
 
-    Map modules = currentManifest.getAllModules();
-    for (Iterator i = modules.values().iterator(); i.hasNext();) {
+    try {
+      helper = new DependencyHelper(currentManifest);
+      orderedCollection = new ArrayList();
+
+      createBuildList(currentManifest.getAllModules().values());
+
+    } catch (KarmaBuildException e) {
+      throw new CommandException(e, CommandException.BUILD_FAILED);
+    } catch (ManifestException e) {
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+    }
+
+    for (Iterator i = orderedCollection.iterator(); i.hasNext();) {
 
       Module module = (Module) i.next();
 
-      // - copy src/java to some tmp-location
-      // - include all deps in a Set, ensuring that all deps are unique.
-      // - throw a WARNING when artifacts are look-a-likes (different version of the same api in different modules .
-
+      Command command = null;
+      try {
+        String commandLineString = "bm -m " + module.getName();
+        command = CommandFactory.getInstance().getCommand(commandLineString);
+        command.setContext(getContext());
+        command.registerCommandResponseListener(getResponseListener());
+        command.execute();
+      } catch (CommandException ce) {
+        if (ce.getErrorCode().equals(CommandException.DEPENDENCY_DOES_NOT_EXIST) ||
+            ce.getErrorCode().equals(CommandException.BUILD_FAILED) ) {
+          commandResponse.addMessage(new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments()));
+          throw new CommandException(ce, CommandException.TEST_FAILED, new Object[]{module.getName()});
+        } else {
+          CommandMessage message = new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments());
+          commandResponse.addMessage(message);
+          message = new ErrorMessage(CommandException.BUILD_WARNING);
+          commandResponse.addMessage(message);
+        }
+      } finally {
+        if ( command != null ) {
+          command.deregisterCommandResponseListener(getResponseListener());
+        }
+      }
     }
-
-    // compile the lot (all sources are in one location).
-
-
-
-
-
-
   }
 
+  private void createBuildList(Collection collection) throws ManifestException, KarmaBuildException {
 
-//  public void execute() throws CommandException {
+    for (Iterator i = collection.iterator(); i.hasNext();) {
+
+      Module module = (Module) i.next();
+
+      Set deps = module.getDependencies();
+      if (deps.size() == 0) {
+        orderedCollection.add(module);
+      } else {
+        Set mods = new HashSet();
+        for (Iterator j = deps.iterator(); j.hasNext();) {
+          ModuleDependency dep = (ModuleDependency) j.next();
+          Module mod = null;
+          if (dep.isModuleDependency()) {
+            mod = currentManifest.getModule(dep.getModule());
+            if (!orderedCollection.contains(mod)) {
+              mods.add(mod);
+            }
+          }
+        }
+
+        if (mods.size() == 0) {
+          orderedCollection.add(module);
+        } else {
+          createBuildList(mods);
+        }
+      }
+    }
+  }
 //
-//    String moduleName = getCommandLine().getOptionValue("m");
+//  private Set getModuleDependencies(Set deps) {
 //
-//    Module module = null;
-//    Manifest currentManifest = null;
-//    try {
-//      // todo move this bit to aspect-code.
-//      //
-//      currentManifest = getContext().getCurrentManifest();
-//      module = currentManifest.getModule(moduleName);
+//    Set set = new HashSet();
+//    for (Iterator i = deps.iterator(); i.hasNext();) {
 //
-//    } catch (ManifestException m) {
-//      throw new CommandException(m.getErrorCode(), m.getMessageArguments());
-//    }
-//
-//    CommandMessage message = null;
-//
-//    DefaultLogger logger = new DefaultLogger();
-//    // todo hmm, this mechanism doesn't integrate with the commandresponse mechanism
-//    //
-//    logger.setErrorPrintStream(System.out);
-//
-//    // Configure underlying ant to run a command.
-//    //
-//    Project project = new Project();
-//    project.addBuildListener(logger);
-//    project.init();
-//
-//    // Read in the build.xml file
-//    //
-//    ProjectHelper helper = new ProjectHelperImpl();
-//    File tmp = null;
-//    try {
-//      tmp = getBuildFile("build-module.xml");
-//      helper.parse(project, tmp);
-//    } finally {
-//      try {
-//        FileUtils.deleteDirectory(tmp.getParentFile());
-//      } catch (IOException e) {
-//        throw new CommandException(e, CommandException.BUILD_FAILED);
+//      ModuleDependency dep = (ModuleDependency) i.next();
+//      if (dep.isModuleDependency()) {
+//        set.add(dep);
 //      }
 //    }
-//
-//    try {
-//      // Where the src-files can be found
-//      //
-//      File srcBase = new File(new File(currentManifest.getDirectory(), moduleName), DEFAULT_SRC_PATH);
-//
-//      // Where compiled classes will be stored.
-//      //
-//      File buildDir = new File(new File(getContext().getCurrentManifest().getDirectory(), "build"), moduleName);
-//
-//      project.setProperty(JAVAC_SRC_DIR_PROPERTY, srcBase.getPath());
-//      project.setProperty(JAVAC_DEST_DIR_PROPERTY, buildDir.getPath());
-//      project.setProperty(JAVAC_CLASSPATH_PROPERTY, ((SourceModule) module).getDependencies());
-//
-//    } catch (ManifestException e) {
-//      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
-//    }
-//
-//    try {
-//      project.executeTarget("compile");
-//    } catch (BuildException e) {
-////      e.printStackTrace();
-//      throw new CommandException(CommandException.BUILD_FAILED, new Object[] {moduleName});
-//    }
-//
-//    message = new SimpleCommandMessage("Module " + module.getName() + " built succesfully."); // todo localize message
-//    commandResponse.addMessage(message);
+//    return set;
 //  }
 
   public CommandResponse getCommandResponse() {
     return this.commandResponse;
-  }
-
-  private File getBuildFile(String buildFile) throws CommandException {
-
-    File tmp = null;
-    try {
-
-      tmp = MyFileUtils.createTempDirectory();
-
-      BufferedReader in =
-          new BufferedReader(new InputStreamReader(this.getClass().getClassLoader().getResourceAsStream(buildFile)));
-      BufferedWriter out =
-          new BufferedWriter(new FileWriter(new File(tmp, buildFile)));
-
-      String str;
-      while ((str = in.readLine()) != null) {
-        out.write(str);
-      }
-      out.close();
-      in.close();
-
-      // Return a temp reference to the file
-      //
-      return new File(tmp, buildFile);
-
-    } catch (IOException e) {
-      throw new CommandException(e, CommandException.BUILD_FAILED);
-    }
-
   }
 }

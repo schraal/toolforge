@@ -179,7 +179,7 @@ public interface Module {
 
   /**
    * Gets a <code>Set</code> of <code>ModuleDependency</code> objects. This method should return an empty set if no
-   * dependencies have been specified.
+   * dependencies have been specified. Dependencies are not checked to be available. 
    *
    * @return A <code>Set</code> containing all dependencies as <code>ModuleDependency</code> objects.
    */
