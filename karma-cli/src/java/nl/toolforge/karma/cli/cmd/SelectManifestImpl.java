@@ -7,7 +7,7 @@ import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
+import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.impl.SelectManifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import org.apache.commons.logging.Log;
@@ -25,7 +25,7 @@ public class SelectManifestImpl extends SelectManifest {
 
 	private static Log logger = LogFactory.getLog(SelectManifestImpl.class);
 
-  public SelectManifestImpl(CommandDescriptor descriptor) throws ManifestException {
+  public SelectManifestImpl(CommandDescriptor descriptor) {
     super(descriptor);
   }
 
@@ -50,7 +50,7 @@ public class SelectManifestImpl extends SelectManifest {
 			logger.warn("Could not write user preferences due to java.util.prefs.BackingStoreException.");
 		}
 
-		CommandMessage message = new SimpleCommandMessage(getFrontendMessages().getString("message.MANIFEST_ACTIVATED"));
+		CommandMessage message = new SuccessMessage(getFrontendMessages().getString("message.MANIFEST_ACTIVATED"));
     CommandResponse response = new ActionCommandResponse();
     response.addMessage(message);
   }

@@ -24,19 +24,21 @@ public interface Module {
   public static final State DYNAMIC = new State("DYNAMIC");
   public static final State STATIC = new State("STATIC");
 
+  public static final DeploymentType JAR = new DeploymentType("jar");
+
   /**
    * <p>Modules that contain application server specific configuration, must have this prefix.
    *
    * <p>Check the Karma User Manual for background information about this type of module.
    */
-  public static final String CONFIG_APPSERVER_PREFIX = "config-appserver";
+  public static final DeploymentType CONFIG_APPSERVER = new DeploymentType("config-appserver");
 
   /**
    * <p>Modules that contain application server software (or the applicatin server as a whole), must have this prefix.
    *
    * <p>Check the Karma User Manual for background information about this type of module.
    */
-  public static final String APPSERVER_PREFIX = "appserver";
+  public static final DeploymentType APPSERVER = new DeploymentType("appserver");
 
   /**
    * <p>Modules containing a web application (resulting in the creation of a web application archive - WAR -, must have
@@ -44,7 +46,7 @@ public interface Module {
    *
    * <p>Check the Karma User Manual for background information about this type of module.
    */
-  public static final String WEBAPP_PREFIX = "webapp";
+  public static final DeploymentType WEBAPP = new DeploymentType("webapp");
 
   /**
    * <p>Modules containing an enterprise application (resulting in the creation of a enterprise application archive - EAR -, must have
@@ -52,13 +54,13 @@ public interface Module {
    *
    * <p>Check the Karma User Manual for background information about this type of module.
    */
-  public static final String EAPP_PREFIX = "eapp";
+  public static final DeploymentType EAPP = new DeploymentType("eapp");
 
   /**
    * Modules that should create an <code>EAR</code>-file as a means of distribution, should have a module with
    * a <code>deploy-config</code>-prefix. Each of these modules is scanned for the <code>application.xml</code> file. 
    */
-  public static final String DEPLOY_CONFIG_PREFIX = "deploy-config";
+  public static final DeploymentType DEPLOY_CONFIG = new DeploymentType("deploy-config");
 
   /**
    * The name of the mandatory file in a module. A file with this name is created by Karma or should be created
@@ -72,6 +74,10 @@ public interface Module {
    * @return The modules' name.
    */
   public String getName();
+
+  public SourceType getSourceType();
+
+  public DeploymentType getDeploymentType();
 
   /**
    * Returns the <code>Location</code> instance, which is derived from the <code>location</code>-attribute.
@@ -98,6 +104,116 @@ public interface Module {
    * @return
    */
   public String getStateAsString();
+
+  /**
+   * Types a module in the source hierarchy.
+   */
+  final class SourceType {
+
+    private String sourceType = null;
+
+    public SourceType(String sourceType) {
+
+      if (sourceType == null || !sourceType.matches(ModuleDescriptor.SOURCE_TYPE_PATTERN_STRING)) {
+        throw new PatternSyntaxException(
+            "Pattern mismatch for type-attribute. Should match " + ModuleDescriptor.SOURCE_TYPE_PATTERN_STRING, sourceType, -1);
+      }
+      this.sourceType = sourceType;
+    }
+
+    public boolean equals(Object o) {
+
+      if (o instanceof SourceType) {
+        if (((SourceType) o).getSourceType().equals(this.getSourceType())) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+      return false;
+    }
+
+
+
+    public String getSourceType() {
+      return this.sourceType;
+    }
+
+    public int hashCode() {
+      return sourceType.hashCode();
+    }
+  }
+
+  /**
+   * Types a module in the deployment hierarchy.
+   */
+  final class DeploymentType {
+
+    private static final String CONFIG_APPSERVER_PREFIX = "config-appserver";
+    private static final String APPSERVER_PREFIX = "appserver";
+    private static final String WEBAPP_PREFIX = "webapp";
+    private static final String EAPP_PREFIX = "eapp";
+    private static final String DEPLOY_CONFIG_PREFIX = "deploy-config";
+
+    private static final String DEPLOYMENT_TYPE_PATTERN_STRING =
+        CONFIG_APPSERVER_PREFIX + "|" +
+        APPSERVER_PREFIX + "|" +
+        WEBAPP_PREFIX + "|" +
+        EAPP_PREFIX + "|" +
+        DEPLOY_CONFIG_PREFIX;
+
+    private String deploymentType = null;
+
+    public DeploymentType(String moduleName) {
+
+      if (moduleName == null) {
+        throw new IllegalArgumentException("");
+      }
+
+      if (moduleName.startsWith(CONFIG_APPSERVER_PREFIX)) {
+        deploymentType = CONFIG_APPSERVER_PREFIX;
+      } else if (moduleName.startsWith(APPSERVER_PREFIX)) {
+        deploymentType = APPSERVER_PREFIX;
+      } else if (moduleName.startsWith(WEBAPP_PREFIX)) {
+        deploymentType = WEBAPP_PREFIX;
+      } else if (moduleName.startsWith(EAPP_PREFIX)) {
+        deploymentType = EAPP_PREFIX;
+      } else if (moduleName.startsWith(DEPLOY_CONFIG_PREFIX)) {
+        deploymentType = DEPLOY_CONFIG_PREFIX;
+      } else {
+        deploymentType = "jar"; // This is a JAR;
+      }
+    }
+
+    public boolean equals(Object o) {
+
+      if (o instanceof DeploymentType) {
+        if (((DeploymentType) o).getDeploymentType().equals(this.getDeploymentType())) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+      return false;
+    }
+
+    public String getDeploymentType() {
+      return this.deploymentType;
+    }
+
+    public int hashCode() {
+      return deploymentType.hashCode();
+    }
+
+    public String getPrefix() {
+
+      if (getDeploymentType().equals("jar")) {
+        return ""; // No prefix
+      } else {
+        return deploymentType;
+      }
+    }
+  }
 
   /**
    * <p>Inner class representing the 'state' of a module. Three states exist at the moment : <code>WORKING</code>,

@@ -7,7 +7,6 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.manifest.Module;
@@ -72,23 +71,22 @@ public class CreateModuleCommand extends DefaultCommand {
       Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getLocalEnvironment().getDevelopmentHome());
       runner.setCommandResponse(getCommandResponse());
 
-      if (moduleName.startsWith(Module.WEBAPP_PREFIX)) {
+      CommandMessage message = null;
+      if (module.getDeploymentType().equals(Module.WEBAPP)) {
         runner.create(module, comment, new WebappModuleLayoutTemplate());
-      } else if (moduleName.startsWith(Module.EAPP_PREFIX)) {
+        message = new SuccessMessage(getFrontendMessages().getString("message.WEBAPP_MODULE_CREATED"), new Object[]{moduleName, locationAlias});
+      } else if (module.getDeploymentType().equals(Module.EAPP)) {
         runner.create(module, comment, new EappModuleLayoutTemplate());
+        message = new SuccessMessage(getFrontendMessages().getString("message.EAPP_MODULE_CREATED"), new Object[]{moduleName, locationAlias});
       } else {
         runner.create(module, comment, new SourceModuleLayoutTemplate());
+        message = new SuccessMessage(getFrontendMessages().getString("message.SRC_MODULE_CREATED"), new Object[]{moduleName, locationAlias});
       }
-
-      // If we get to this point, creation of the module was succesfull.
-      //
-      //todo dit moet anders
-      CommandMessage message =
-          new SimpleCommandMessage(getFrontendMessages().getString("message.MODULE_CREATED"), new Object[]{moduleName, locationAlias});
 
       // Ensure that only this message is passed back to the client
       //
       commandResponse.addMessage(new SuccessMessage(message.getMessageText()));
+
     } catch (VersionControlException e) {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
       //commandResponse.addMessage(new ErrorMessage(ke));

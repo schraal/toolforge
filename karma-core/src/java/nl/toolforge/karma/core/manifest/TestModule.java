@@ -23,6 +23,32 @@ public class TestModule extends BaseTest {
     locationFactory = LocationFactory.getInstance();
   }
 
+  public void testTypes() {
+
+    Module.SourceType type = new Module.SourceType("src");
+    assertEquals(type.getSourceType(), "src");
+
+    Module.DeploymentType depl = new Module.DeploymentType("webapp-bla");
+    assertEquals(new Module.DeploymentType("webapp-bla"), Module.WEBAPP);
+    assertEquals(depl.getPrefix(), "webapp");
+
+    depl = new Module.DeploymentType("eapp-bla");
+    assertEquals(new Module.DeploymentType("eapp-bla"), Module.EAPP);
+    assertEquals(depl.getPrefix(), "eapp");
+
+    depl = new Module.DeploymentType("appserver-bla");
+    assertEquals(new Module.DeploymentType("appserver-bla"), Module.APPSERVER);
+    assertEquals(depl.getPrefix(), "appserver");
+
+    depl = new Module.DeploymentType("config-appserver-bla");
+    assertEquals(new Module.DeploymentType("config-appserver-bla"), Module.CONFIG_APPSERVER);
+    assertEquals(depl.getPrefix(), "config-appserver");
+
+    depl = new Module.DeploymentType("bla");
+    assertEquals(new Module.DeploymentType("bla"), Module.JAR);
+    assertEquals(depl.getPrefix(), "");
+  }
+
   public void testConstructor() {
 
     try {

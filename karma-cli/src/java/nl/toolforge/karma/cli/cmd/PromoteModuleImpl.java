@@ -2,10 +2,10 @@ package nl.toolforge.karma.cli.cmd;
 
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
-import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.impl.PromoteCommand;
 
 public class PromoteModuleImpl extends PromoteCommand {
@@ -21,7 +21,7 @@ public class PromoteModuleImpl extends PromoteCommand {
     super.execute();
 
     CommandMessage message =
-        new SimpleCommandMessage(
+        new SuccessMessage(
             getFrontendMessages().getString("message.MODULE_PROMOTED"),
             new Object[]{getCommandLine().getOptionValue("m"), getNewVersion()}
         );

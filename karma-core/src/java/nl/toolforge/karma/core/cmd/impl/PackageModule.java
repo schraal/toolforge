@@ -5,7 +5,7 @@ import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
+import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.util.DescriptorReader;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
@@ -50,10 +50,12 @@ public class PackageModule extends AbstractBuildCommand {
     try {
 
       project.setProperty(MODULE_BUILD_DIR_PROPERTY, getBuildDirectory().getPath());
-      project.setProperty(MODULE_PACKAGE_NAME_PROPERTY, new File(getBuildDirectory(), getCurrentManifest().resolveArchiveName(getCurrentModule())).getPath());
+
+      String packageName = new File(getBuildDirectory(), getCurrentManifest().resolveArchiveName(getCurrentModule())).getPath();
+      project.setProperty(MODULE_PACKAGE_NAME_PROPERTY, packageName);
       project.setProperty(MODULE_BASEDIR_PROPERTY, getCurrentModule().getBaseDir().getPath());
 
-      if (getCurrentModule().getName().startsWith(Module.WEBAPP_PREFIX)) {
+      if (getCurrentModule().getDeploymentType().equals(Module.WEBAPP)) {
 
         // Create a war-file
         //
@@ -66,7 +68,7 @@ public class PackageModule extends AbstractBuildCommand {
         project.setProperty(MODULE_EXCLUDES_PROPERTY, "*.war");
         project.executeTarget(BUILD_TARGET_WAR);
 
-      } else if (getCurrentModule().getName().startsWith(Module.EAPP_PREFIX)) {
+      } else if (getCurrentModule().getDeploymentType().equals(Module.EAPP)) {
 
         // Create an ear-file
         //
@@ -126,7 +128,11 @@ public class PackageModule extends AbstractBuildCommand {
         project.setProperty(MODULE_INCLUDES_PROPERTY, "META-INF/**,resources/**");
         project.executeTarget(BUILD_TARGET_JAR);
       }
-      CommandMessage message = new SimpleCommandMessage("Module " + getCurrentModule().getName() + " packaged succesfully."); // todo localize message
+
+      CommandMessage message =
+          new SuccessMessage(
+              getFrontendMessages().getString("message.MODULE_PACKAGED"),
+              new Object[] {getCurrentModule().getName(), packageName});
       commandResponse.addMessage(message);
 
     } catch (ManifestException m) {

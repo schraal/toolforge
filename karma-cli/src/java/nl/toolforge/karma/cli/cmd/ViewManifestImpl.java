@@ -4,7 +4,7 @@ import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
+import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.impl.ViewManifest;
 import nl.toolforge.karma.core.manifest.ReleaseManifest;
 import org.apache.commons.lang.StringUtils;
@@ -117,7 +117,7 @@ public class ViewManifestImpl extends ViewManifest {
 
     // -- end of formatting
 
-    SimpleCommandMessage message = new SimpleCommandMessage(buffer.toString());
+    SuccessMessage message = new SuccessMessage(buffer.toString());
     commandResponse.addMessage(message);
   }
 

@@ -111,14 +111,11 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
       module = currentManifest.getModule(moduleName);
       if (!currentManifest.isLocal(module)) {
-//      if (!currentManifest.isLocal(module) && Utils.existsInRepository(module)) {
         throw new CommandException(ManifestException.MODULE_NOT_LOCAL, new Object[]{module.getName()});
       }
 
     } catch (ManifestException m) {
       throw new CommandException(m.getErrorCode(), m.getMessageArguments());
-//    } catch (VersionControlException e) {
-//      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
   }
 
@@ -177,7 +174,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
       throw new IllegalArgumentException("Module cannot be null.");
     }
 
-    if (module.getName().startsWith(Module.WEBAPP_PREFIX)) {
+    if (module.getDeploymentType().equals(Module.WEBAPP)) {
       return new File("WEB-INF/classes");
     } else {
       return new File("");

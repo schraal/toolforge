@@ -506,9 +506,9 @@ public abstract class AbstractManifest implements Manifest {
     // todo introduce a method to determine if a module is webapp-module; maybe its own class.
     //
     String extension;
-    if (module.getName().startsWith(Module.WEBAPP_PREFIX)) {
+    if (module.getDeploymentType().equals(Module.WEBAPP)) {
       extension = ".war";
-    } else if (module.getName().startsWith(Module.EAPP_PREFIX)) {
+    } else if (module.getDeploymentType().equals(Module.WEBAPP)) {
       extension = ".ear";
     } else {
       extension = ".jar";

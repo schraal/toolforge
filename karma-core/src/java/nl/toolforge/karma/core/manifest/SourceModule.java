@@ -16,8 +16,6 @@ import java.util.Set;
 /**
  * <p>A <code>SourceModule</code> represents a module for which the developer wants to have the sources available to
  * on the local harddisk.
- * <p/>
- * <p>TODO Validation checks on setVersion and setDevelopmentLine
  *
  * @author D.A. Smedes
  * @version $Id$
@@ -122,6 +120,10 @@ public class SourceModule extends BaseModule {
     this.baseDir = baseDir;
   }
 
+  public SourceType getSourceType() {
+    return new Module.SourceType("src");
+  }
+
   public File getBaseDir() {
 
     if (baseDir == null) {
@@ -157,10 +159,6 @@ public class SourceModule extends BaseModule {
       //
       deps = (Set) digester.parse(new File(getBaseDir(), "dependencies.xml"));
     } catch (IOException e) {
-//      if (e instanceof FileNotFoundException) {
-//        throw new ManifestException(e, ManifestException.DEPENDENCY_FILE_NOT_FOUND, new Object[]{getName()});
-//      }
-//      throw new ManifestException(e, ManifestException.DEPENDENCY_FILE_NOT_FOUND, new Object[]{getName()});
 
       logger.info("No dependencies found for module : " + getName());
 

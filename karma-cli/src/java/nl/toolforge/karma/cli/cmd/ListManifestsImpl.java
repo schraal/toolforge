@@ -1,9 +1,13 @@
 package nl.toolforge.karma.cli.cmd;
 
-import nl.toolforge.karma.core.cmd.*;
+import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.QueryCommandResponse;
+import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.impl.ListManifests;
-import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.manifest.ManifestException;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -42,9 +46,9 @@ public class ListManifestsImpl extends ListManifests {
         index = manifest.indexOf(".xml");
         String manifestName = manifest.substring(0, index);
         if ((currentManifest != null) && manifestName.equals(currentManifest.getName())) {
-          response.addMessage(new SimpleCommandMessage(" -> "+manifestName+" (selected)"));
+          response.addMessage(new SuccessMessage(" -> "+manifestName+" (selected)"));
         } else {
-          response.addMessage(new SimpleCommandMessage(" -  "+manifestName));
+          response.addMessage(new SuccessMessage(" -  "+manifestName));
         }
       }
     }

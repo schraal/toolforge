@@ -20,7 +20,7 @@ public final class ModuleDescriptor {
   //
 
   public static final String NAME_PATTERN_STRING = "[A-Za-z\\-\\d]+";
-  public static final String TYPE_PATTERN_STRING = "src|maven|lib";
+  public static final String SOURCE_TYPE_PATTERN_STRING = "src|maven|lib";
   public static final String LOCATION_PATTERN_STRING = "[0-9a-z\\-\\_]+";
 
   public static final int SOURCE_MODULE = 0;
@@ -28,13 +28,10 @@ public final class ModuleDescriptor {
   public static final int LIB_MODULE = 2;
 
   private String name = null;
-  private String type = null;
+  private Module.SourceType sourceType = null;
   private String location = null;
 
   private String version = null;
-//  private Version version = null;
-//  private String developmentLine = null;
-//  private DevelopmentLine developmentLine = null;
 
   /**
    *
@@ -47,12 +44,12 @@ public final class ModuleDescriptor {
     }
     this.name = name;
 
-    if (type == null || !type.matches(TYPE_PATTERN_STRING)) {
+    if (type == null || !type.matches(SOURCE_TYPE_PATTERN_STRING)) {
       throw new PatternSyntaxException(
-          "Pattern mismatch for type-attribute. Should match " + TYPE_PATTERN_STRING, type, -1);
+          "Pattern mismatch for type-attribute. Should match " + SOURCE_TYPE_PATTERN_STRING, type, -1);
     }
 
-    this.type = type;
+    sourceType = new Module.SourceType(type);
 
     if (location == null || !location.matches(LOCATION_PATTERN_STRING)) {
       throw new PatternSyntaxException(
@@ -67,8 +64,8 @@ public final class ModuleDescriptor {
   }
 
   public int getType() {
-    if ("src".equals(type)) return SOURCE_MODULE;
-    if ("maven".equals(type)) return MAVEN_MODULE;
+    if ("src".equals(sourceType.getSourceType())) return SOURCE_MODULE;
+    if ("maven".equals(sourceType.getSourceType())) return MAVEN_MODULE;
     return LIB_MODULE;
   }
 

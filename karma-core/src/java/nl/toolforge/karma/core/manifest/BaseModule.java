@@ -19,6 +19,8 @@ public abstract class BaseModule implements Module {
   private Location location = null;
   private String name = null;
 
+  private Module.DeploymentType deploymentType = null;
+
   public BaseModule(String name, Location location) {
 
     if (!name.matches(ModuleDescriptor.NAME_PATTERN_STRING)) {
@@ -30,6 +32,7 @@ public abstract class BaseModule implements Module {
     }
 
     this.name = name;
+    setDeploymentType(name);
     this.location = location;
   }
 
@@ -40,6 +43,14 @@ public abstract class BaseModule implements Module {
    */
   public final String getName() {
     return name;
+  }
+
+  private void setDeploymentType(String moduleName) {
+    deploymentType = new Module.DeploymentType(moduleName);
+  }
+
+  public final DeploymentType getDeploymentType() {
+    return deploymentType;
   }
 
   /**

@@ -6,6 +6,7 @@ import org.apache.commons.cli.MissingOptionException;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.apache.commons.cli.UnrecognizedOptionException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -103,7 +104,7 @@ public final class CommandFactory {
     } else {
       commandName = commandLineString.trim();
     }
-    
+
     // todo wordt dit niet gesupport door commons-cli ?
     //
 
@@ -209,6 +210,9 @@ public final class CommandFactory {
       } catch (ParseException e) {
         if (e instanceof MissingOptionException) {
           throw new CommandException(e, CommandException.MISSING_OPTION, new Object[]{commandLineString});
+        }
+        if (e instanceof UnrecognizedOptionException) {
+          throw new CommandException(e, CommandException.INVALID_OPTION, new Object[]{commandLineString});
         }
         if (e instanceof MissingArgumentException) {
           throw new CommandException(e, CommandException.MISSING_ARGUMENT, new Object[]{commandLineString});
