@@ -74,8 +74,7 @@ public final class WorkingContext {
 
         Logger root = Logger.getRootLogger();
 
-        String karmaHome = System.getProperty("karma.home");
-        karmaHome = (karmaHome == null ? System.getProperty("user.home") : karmaHome);
+        String karmaHome = System.getProperty("karma.home", System.getProperty("user.home"));
 
         // Create the log directory
         //
