@@ -58,6 +58,7 @@ public class ListManifestsImpl extends ListManifests {
 
     if (headers.size() == 0) {
       response.addEvent(new MessageEvent(this, new SimpleMessage("No manifests found for this working context.")));
+      response.addEvent(new MessageEvent(this, new SimpleMessage("TIP : Try updating the manifest store with the `update-admin`-command.")));
     } else {
 
       Iterator manifestsIterator = headers.iterator();
