@@ -2,10 +2,8 @@ package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.ManifestException;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
 import nl.toolforge.karma.core.vc.subversion.SVNException;

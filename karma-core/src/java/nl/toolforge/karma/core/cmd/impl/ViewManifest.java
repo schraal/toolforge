@@ -1,11 +1,5 @@
 package nl.toolforge.karma.core.cmd.impl;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.Manifest;
 import nl.toolforge.karma.core.ManifestException;
@@ -17,6 +11,12 @@ import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.QueryCommandResponse;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This command gets the active manifest and presents it in the UI. UI implementations are responsible for the rendering

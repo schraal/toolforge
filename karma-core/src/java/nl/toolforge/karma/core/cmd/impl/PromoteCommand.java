@@ -8,8 +8,8 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.vc.Runner;
-import nl.toolforge.karma.core.vc.VersionExtractor;
 import nl.toolforge.karma.core.vc.RunnerFactory;
+import nl.toolforge.karma.core.vc.VersionExtractor;
 import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
 
 /**

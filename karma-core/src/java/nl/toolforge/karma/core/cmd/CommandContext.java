@@ -1,22 +1,12 @@
 package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.Manifest;
 import nl.toolforge.karma.core.ManifestException;
 import nl.toolforge.karma.core.ManifestLoader;
 import nl.toolforge.karma.core.Module;
-import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationFactory;
-import nl.toolforge.karma.core.vc.Runner;
-import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.cvs.CVSException;
-import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
-import nl.toolforge.karma.core.vc.cvs.CVSRunner;
-import nl.toolforge.karma.core.vc.subversion.SVNException;
-import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
-import nl.toolforge.karma.core.vc.subversion.SubversionRunner;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

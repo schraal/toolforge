@@ -1,6 +1,6 @@
 package nl.toolforge.karma.core.cmd;
 
-import nl.toolforge.karma.core.KarmaException;
+
 
 /**
  * A CommandMessage that implements a success.

@@ -1,12 +1,5 @@
 package nl.toolforge.karma.core.cmd.impl;
 
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Target;
-import org.apache.tools.ant.taskdefs.Javac;
-import org.apache.tools.ant.types.FileList;
-import org.apache.tools.ant.types.Path;
-
 import nl.toolforge.karma.core.Manifest;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
@@ -15,6 +8,12 @@ import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Target;
+import org.apache.tools.ant.taskdefs.Javac;
+import org.apache.tools.ant.types.FileList;
+import org.apache.tools.ant.types.Path;
 
 /**
  * Builds a module in a manifest.

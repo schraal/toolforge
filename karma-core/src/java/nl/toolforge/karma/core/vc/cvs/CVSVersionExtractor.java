@@ -4,8 +4,6 @@ import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.SourceModule;
 import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
-import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.vc.VersionExtractor;
 import org.netbeans.lib.cvsclient.command.log.LogInformation;
 

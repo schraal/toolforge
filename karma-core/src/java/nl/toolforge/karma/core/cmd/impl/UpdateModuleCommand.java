@@ -1,22 +1,16 @@
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.ManifestException;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.CommandResponseHandler;
-import nl.toolforge.karma.core.cmd.SimpleCommandResponse;
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
-import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
-import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
-import nl.toolforge.karma.core.vc.cvs.CVSResponseAdapter;
 
 /**
  * <p>This command updates a module on a developers' local system. When the module has not been updated before, the

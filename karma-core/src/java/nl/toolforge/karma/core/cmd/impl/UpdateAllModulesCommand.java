@@ -1,17 +1,16 @@
 package nl.toolforge.karma.core.cmd.impl;
 
-import java.util.Iterator;
-
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.ManifestException;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.ModuleMap;
-import nl.toolforge.karma.core.ManifestException;
+import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.CommandResponseHandler;
-import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
+import nl.toolforge.karma.core.cmd.DefaultCommand;
+
+import java.util.Iterator;
 
 /**
  * This command updates all modules in the active manifest on a developers' local system.
@@ -20,6 +19,7 @@ import nl.toolforge.karma.core.cmd.ActionCommandResponse;
  * @version $Id$
  */
 public class UpdateAllModulesCommand extends DefaultCommand {
+
   private CommandResponse commandResponse = new ActionCommandResponse();
 
   /**
@@ -59,9 +59,9 @@ public class UpdateAllModulesCommand extends DefaultCommand {
         //
         //getContext().execute("update-module -m ".concat(module.getName()), handler);
       }
-    } catch (CommandException ce) {
+//    } catch (CommandException ce) {
       //todo proper error handling
-      ce.printStackTrace();
+//      ce.printStackTrace();
     } catch (KarmaException ke) {
       //todo proper error handling
       ke.printStackTrace();
