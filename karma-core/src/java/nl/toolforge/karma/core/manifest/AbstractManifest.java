@@ -27,6 +27,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.List;
 
 /**
  * <p>
@@ -123,34 +124,12 @@ public abstract class AbstractManifest implements Manifest {
 
     (duplicates = new ArrayList()).add(this.getName()); // Add the root manifest.
 
-    URL rules = this.getClass().getClassLoader().getResource("manifest-rules.xml");
-    Digester digester = DigesterLoader.createDigester(rules);
-
-    Manifest manifest = null;
-    try {
-      manifest = (Manifest) digester.parse(getManifestFileAsStream(getName()));
-    } catch (IOException e) {
-      if (e instanceof FileNotFoundException) {
-        throw new ManifestException(e, ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[]{manifest.getName()});
-      }
-    } catch (SAXException e) {
-//      e.printStackTrace();
-      if (e.getException() instanceof ManifestException) {
-        // It was already a ManifestException, that one should be propagated
-        //
-        ManifestException m = (ManifestException) e.getException();
-        throw new ManifestException(m.getErrorCode(), m.getMessageArguments());
-      } else if (e.getException() instanceof LocationException) {
-        LocationException m = (LocationException) e.getException();
-        throw new ManifestException(m, m.getErrorCode(), m.getMessageArguments());
-      } else {
-        throw new ManifestException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{this.getName()});
-      }
-    }
+    ManifestFactory factory = ManifestFactory.getInstance();
+    Manifest manifest = factory.parse(getName());
 
     copyToThis((AbstractManifest) manifest);
 
-    // As a final step, check all modules in the manifest and remove modules that are not in the manifest anymore
+    // todo As a final step, check all modules in the manifest and remove modules that are not in the manifest anymore
     // but still on disk.
 
     // todo should notify the user (responselistener)
@@ -182,7 +161,6 @@ public abstract class AbstractManifest implements Manifest {
   }
 
   private void copyModules(Map newModules) {
-//    modules = new HashMap();
     getModulesForManifest().putAll(newModules);
   }
 
@@ -200,41 +178,11 @@ public abstract class AbstractManifest implements Manifest {
     }
     duplicates.add(child.getName());
 
-    URL rules = this.getClass().getClassLoader().getResource("manifest-rules.xml");
-    Digester digester = DigesterLoader.createDigester(rules);
+    ManifestFactory factory = ManifestFactory.getInstance();
+    Manifest manifest = factory.parse(child.getName());
 
-    Manifest manifest = null;
-    try {
-      manifest = (Manifest) digester.parse(getManifestFileAsStream(child.getName()));
-    } catch (IOException e) {
-      if (e instanceof FileNotFoundException) {
-        throw new ManifestException(e, ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[]{manifest.getName()});
-      }
-      throw new ManifestException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{manifest.getName()});
-    } catch (SAXException e) {
-//      e.printStackTrace();
-      if (e.getException() instanceof ManifestException) {
-        // It was already a ManifestException, that one should be propagated
-        //
-        ManifestException m = (ManifestException) e.getException();
-        throw new ManifestException(m.getErrorCode(), m.getMessageArguments());
-      } else if (e.getException() instanceof LocationException) {
-        LocationException m = (LocationException) e.getException();
-        throw new ManifestException(m.getErrorCode(), m.getMessageArguments());
-      } else {
-        throw new ManifestException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{getName()});
-      }
-    }
-
-    link(manifest);
-  }
-
-  /**
-   * Links the manifest to this manifest to retain the full tree view of included manifests for a manifest.
-   *
-   * @param manifest The manifest that should be linked to its parent.
-   */
-  private void link(Manifest manifest) {
+    // If we correctly parsed the manifest, we can link it to the current manifest.
+    //
     childManifests.add(manifest);
   }
 
@@ -389,30 +337,6 @@ public abstract class AbstractManifest implements Manifest {
 
   public int hashCode() {
     return name.hashCode();
-  }
-
-  /**
-   * Local helper method to get the manifest file from the correct resource path.
-   */
-  private InputStream getManifestFileAsStream(String id) throws ManifestException {
-
-    try {
-      String fileName = (id.endsWith(".xml") ? id : id.concat(".xml"));
-
-      if (fileName.endsWith(File.separator)) {
-        fileName = fileName.substring(0, fileName.length() - 1);
-      }
-      fileName = fileName.substring(fileName.lastIndexOf(File.separator) + 1);
-
-      logger.debug("Loading manifest " + fileName + " from " + LocalEnvironment.getManifestStore().getPath() + File.separator + fileName);
-
-      return new FileInputStream(LocalEnvironment.getManifestStore().getPath() + File.separator + fileName);
-
-    } catch (FileNotFoundException f) {
-      throw new ManifestException(f, ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[]{id});
-    } catch (NullPointerException n) {
-      throw new ManifestException(n, ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[]{id});
-    }
   }
 
   /**

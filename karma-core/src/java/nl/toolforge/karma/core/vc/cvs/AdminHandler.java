@@ -22,7 +22,9 @@ public final class AdminHandler {
   public boolean isEqualLocation(Module module) {
 
     if (!module.getBaseDir().exists()) {
-      return false;
+      // if the module has not been checked out, it is OK!
+      //
+      return true;
     }
 
     File rootFile = new File(module.getBaseDir(), "CVS/Root");

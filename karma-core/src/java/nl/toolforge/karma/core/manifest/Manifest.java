@@ -68,6 +68,14 @@ public interface Manifest {
    */
   public Map getInterdependencies() throws ManifestException;
 
+
+  /**
+   * Returns a collection containing all of a manifests' included manifests.
+   *
+   * @return Collection with Manifest instances.
+   */
+  public Collection getIncludes();
+
   /**
    * @see AbstractManifest for the time being
    */

@@ -113,14 +113,12 @@ public final class LocalEnvironment {
   public static final String MANIFEST_STORE_REPOSITORY = "manifest-store.cvs.repository";
   public static final String MANIFEST_STORE_PROTOCOL = "manifest-store.cvs.protocol";
   public static final String MANIFEST_STORE_USERNAME = "manifest-store.cvs.username";
-  public static final String MANIFEST_STORE_PASSWORD = "manifest-store.cvs.password";
 
   public static final String LOCATION_STORE_HOST = "location-store.cvs.host";
   public static final String LOCATION_STORE_PORT = "location-store.cvs.port";
   public static final String LOCATION_STORE_REPOSITORY = "location-store.cvs.repository";
   public static final String LOCATION_STORE_PROTOCOL = "location-store.cvs.protocol";
   public static final String LOCATION_STORE_USERNAME = "location-store.cvs.username";
-  public static final String LOCATION_STORE_PASSWORD = "location-store.cvs.password";
 
   private static final String PLACEHOLDER = "<...>";
 
@@ -253,7 +251,6 @@ public final class LocalEnvironment {
       //
       configItems[3] = (String) configuration.get(MANIFEST_STORE_PORT);
       configItems[4] = (String) configuration.get(MANIFEST_STORE_USERNAME);
-      configItems[5] = (String) configuration.get(MANIFEST_STORE_PASSWORD);
       if (configItems[3] == null || "".equals(configItems[3]) || configItems[3].equals(PLACEHOLDER)) {
         logger.warn(
             "Configuration of manifest-store possibly incomplete, " + MANIFEST_STORE_PORT +
@@ -264,15 +261,9 @@ public final class LocalEnvironment {
             "Configuration of manifest-store possibly incomplete, " + MANIFEST_STORE_USERNAME +
             " is missing or has invalid value.");
       }
-      if (configItems[5] == null || "".equals(configItems[5]) || configItems[5].equals(PLACEHOLDER)) {
-        logger.warn(
-            "Configuration of manifest-store possibly incomplete, " + MANIFEST_STORE_PASSWORD +
-            " is missing or has invalid value.");
-      }
 
       configItems[3] = (String) configuration.get(LOCATION_STORE_PORT);
       configItems[4] = (String) configuration.get(LOCATION_STORE_USERNAME);
-      configItems[5] = (String) configuration.get(LOCATION_STORE_PASSWORD);
       if (configItems[3] == null || "".equals(configItems[3]) || configItems[3].equals(PLACEHOLDER)) {
         logger.warn(
             "Configuration of location-store possibly incomplete, " + LOCATION_STORE_PORT +
@@ -281,11 +272,6 @@ public final class LocalEnvironment {
       if (configItems[4] == null || "".equals(configItems[4]) || configItems[4].equals(PLACEHOLDER)) {
         logger.warn(
             "Configuration of location-store possibly incomplete, " + LOCATION_STORE_USERNAME +
-            " is missing or has invalid value.");
-      }
-      if (configItems[5] == null || "".equals(configItems[5]) || configItems[5].equals(PLACEHOLDER)) {
-        logger.warn(
-            "Configuration of location-store possibly incomplete, " + LOCATION_STORE_PASSWORD +
             " is missing or has invalid value.");
       }
 
@@ -299,9 +285,6 @@ public final class LocalEnvironment {
   private void logConfiguration() {
 
     logger.info("Working context home directory : " + (String) configuration.get(WORKING_CONTEXT_DIRECTORY));
-//    logger.info("Development home directory : " + (String) configuration.get(DEVELOPMENT_STORE_DIRECTORY));
-//    logger.info("Manifest store directory : " + (String) configuration.get(MANIFEST_STORE_DIRECTORY));
-//    logger.info("Location store directory : " + (String) configuration.get(LOCATION_STORE_DIRECTORY));
 
     logger.debug("Manifest store host : " + (String) configuration.get(MANIFEST_STORE_HOST));
     logger.debug("Manifest store port : " + (String) configuration.get(MANIFEST_STORE_PORT));
@@ -351,14 +334,12 @@ public final class LocalEnvironment {
     configuration.put(MANIFEST_STORE_REPOSITORY, PLACEHOLDER);
     configuration.put(MANIFEST_STORE_PROTOCOL, PLACEHOLDER);
     configuration.put(MANIFEST_STORE_USERNAME, PLACEHOLDER);
-    configuration.put(MANIFEST_STORE_PASSWORD, PLACEHOLDER);
 
     configuration.put(LOCATION_STORE_HOST, PLACEHOLDER);
     configuration.put(LOCATION_STORE_PORT, PLACEHOLDER);
     configuration.put(LOCATION_STORE_REPOSITORY, PLACEHOLDER);
     configuration.put(LOCATION_STORE_PROTOCOL, PLACEHOLDER);
     configuration.put(LOCATION_STORE_USERNAME, PLACEHOLDER);
-    configuration.put(LOCATION_STORE_PASSWORD, PLACEHOLDER);
 
     logger.info("Karma configuration created in " + configFile.getPath());
 
@@ -453,11 +434,6 @@ public final class LocalEnvironment {
       } catch (Exception e) {
         throw new LocationException(LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_USERNAME+"'"});
       }
-      try {
-        location.setPassword(configuration.getProperty(MANIFEST_STORE_PASSWORD));
-      } catch (Exception e) {
-        throw new LocationException(LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_PASSWORD+"'"});
-      }
     }
     return location;
   }
@@ -498,11 +474,6 @@ public final class LocalEnvironment {
         location.setUsername(configuration.getProperty(LOCATION_STORE_USERNAME));
       } catch (Exception e) {
         throw new LocationException(LocationException.INVALID_LOCATION_STORE_LOCATION, new Object[]{"'"+LOCATION_STORE_USERNAME+"'"});
-      }
-      try {
-        location.setPassword(configuration.getProperty(LOCATION_STORE_PASSWORD));
-      } catch (Exception e) {
-        throw new LocationException(LocationException.INVALID_LOCATION_STORE_LOCATION, new Object[]{"'"+LOCATION_STORE_PASSWORD+"'"});
       }
     }
     return location;

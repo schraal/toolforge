@@ -15,6 +15,8 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**
+ * Class that collects all manifests.
+ *
  * @author D.A. Smedes
  * @version $Id$
  */
@@ -26,8 +28,6 @@ public class ManifestCollector {
   private static Collection manifests = new ArrayList();
 
   /**
-   *
-   *
    * @return
    */
   public static ManifestCollector getInstance() {
@@ -45,10 +45,16 @@ public class ManifestCollector {
   public Collection getAllManifests() {
     File manifestStore = LocalEnvironment.getManifestStore();
 
-    manifests = Arrays.asList(manifestStore.list(new XMLFilenameFilter()));
+    Object[] mList = manifestStore.list(new XMLFilenameFilter());
+
+    if (mList == null) {
+      return new ArrayList();
+    }
+    manifests = Arrays.asList(mList);
     if (manifests.size() == 0) {
       return new ArrayList();
     }
+
     return manifests;
   }
 

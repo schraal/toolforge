@@ -10,7 +10,6 @@ public final class AuthenticatorDescriptor {
 
   private String id = null;
   private String username = null;
-  private String password = null;
 
   public String getId() {
     return id;
@@ -28,12 +27,4 @@ public final class AuthenticatorDescriptor {
     this.username = username;
   }
 
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
-  
 }

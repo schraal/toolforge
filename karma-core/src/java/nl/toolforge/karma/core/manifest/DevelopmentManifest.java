@@ -39,8 +39,6 @@ public final class DevelopmentManifest extends AbstractManifest {
    */
   public synchronized final void addModule(ModuleDescriptor descriptor) throws LocationException, ManifestException {
 
-//    throw new KarmaRuntimeException("Must check and warn for 'old' modules not in manifest, but still on local disk.");
-
     // todo duidelijk beschrijven hoe het state mechanisme wordt aangestuurd door dit ding.
     //
 

@@ -2,10 +2,16 @@ package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.location.BaseLocation;
 import nl.toolforge.karma.core.location.Location;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.connection.Connection;
 import org.netbeans.lib.cvsclient.connection.ConnectionFactory;
 import org.netbeans.lib.cvsclient.connection.PServerConnection;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Locale;
 
 /**
@@ -16,6 +22,8 @@ import java.util.Locale;
  * @version $Id$
  */
 public final class CVSLocationImpl extends BaseLocation {
+
+  private static Log logger = LogFactory.getLog(CVSLocationImpl.class);
 
   /**
    * Default port number : <code>2401</code>
@@ -37,6 +45,8 @@ public final class CVSLocationImpl extends BaseLocation {
   private String repository = null;
 
   private String cvsRootString = null;
+  private boolean passwordSet = false;
+
 
   public CVSLocationImpl(String id) {
     super(id, Location.Type.CVS_REPOSITORY);
@@ -76,31 +86,64 @@ public final class CVSLocationImpl extends BaseLocation {
     return username;
   }
 
-  /**
-   * The CVS password in the normal (<b>* insecure *</b>) format. This password can generally be found in
-   * <code>${user.home}/.cvspass</code>.
-   *
-   * @param encodedPassword The CVS password in the normal (<b>* insecure *</b>) password.
-   */
-  public void setPassword(String encodedPassword) {
+  private String getPassword() throws CVSException {
 
-    if ((encodedPassword == null) || (encodedPassword.length() == 0)) {
-      throw new IllegalArgumentException("Password cannot be null.");
+    if (this.password == null) {
+      this.password = lookupPassword();
     }
-    // TODO some encoding scheme should be applied.
-    //
-    this.password = encodedPassword;
-  }
-
-  String getPassword() {
     return password;
   }
 
-  /**
-   * Checks if a password has been set.
-   */
-  public boolean passwordSet() {
-    return password != null;
+  public synchronized boolean passwordSet() {
+
+    if (!passwordSet) {
+      try {
+        passwordSet = (lookupPassword() != null);
+      } catch (CVSException c) {
+        return false;
+      }
+    }
+    return passwordSet;
+  }
+
+  // Copied from the netbeans api.
+  //
+  private String lookupPassword() throws CVSException {
+
+    String cvsRoot = getCVSRootAsString();
+    String passFile = System.getProperty("user.home") + File.separator + ".cvspass";
+
+    BufferedReader reader = null;
+    String password = null;
+
+    try {
+      reader = new BufferedReader(new FileReader(passFile));
+      String line;
+      while ((line = reader.readLine()) != null) {
+        if (line.startsWith("/1 ")) line = line.substring("/1 ".length());
+        if (line.startsWith(cvsRoot)) {
+          password = line.substring(cvsRoot.length() + 1);
+          break;
+        }
+      }
+    }
+    catch (IOException e) {
+      logger.error("Could not read password for CVS host: " + e);
+      return null;
+    }  finally {
+      if (reader != null) {
+        try {
+          reader.close();
+        }
+        catch (IOException e) {
+          logger.error("Warning: could not close password file.");
+        }
+      }
+    }
+    if (password == null) {
+      logger.error("Didn't find password for CVSROOT '" + cvsRoot + "'.");
+    }
+    return password;
   }
 
   /**
@@ -214,7 +257,6 @@ public final class CVSLocationImpl extends BaseLocation {
         throw new CVSException(CVSException.INVALID_CVSROOT);
       }
 
-//			buffer.append(username).append(":").append(password).append("@");
       buffer.append(username).append("@");
       buffer.append(host).append(":");
       buffer.append(port).append(repository.startsWith("/") ? "" : "/");

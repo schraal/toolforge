@@ -18,9 +18,14 @@ import org.xml.sax.Attributes;
  */
 public class ManifestCreationFactory extends AbstractObjectCreationFactory {
 
+  /**
+   * Called by the Digester framework to create the correct implementation of <code>Manifest</code>.
+   *
+   * @param attributes The attributes of the <code>&lt;manifest&gt;</code>-element in the manifest file.
+   * @return An object of type <code>DevelopmentManifest</code> or an object of type <code>ReleaseManifest</code>.
+   * @throws Exception
+   */
   public Object createObject(Attributes attributes) throws Exception {
-
-    // todo right now, for <include-manifest>-elements, 
 
     String name = attributes.getValue("name");
     String type = attributes.getValue("type");

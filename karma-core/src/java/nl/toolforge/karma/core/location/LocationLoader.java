@@ -6,7 +6,9 @@ import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.ErrorCode;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
+import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
+import nl.toolforge.karma.core.vc.VersionControlException;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,8 +39,7 @@ import java.util.Map;
 public final class LocationLoader {
 
   private static Log logger = LogFactory.getLog(LocationLoader.class);
-
-//  private static LocalEnvironment env = null; // Reference to the local environment.
+  
   private static LocationLoader instance = null;
 
   private static Map locations = null;
@@ -74,17 +75,6 @@ public final class LocationLoader {
    * @throws LocationException
    */
   public synchronized void load() throws LocationException {
-
-    /*
-
-    Scenarios:
-    A. XML can be invalid
-    B. Duplicate keys found
-    C. No authenticator for location
-    D. Authenticator is wrong for the location (missing username when location requires that)
-
-    */
-
 
     if (locationBase == null) {
       throw new KarmaRuntimeException("Local environment is not initialized. Use 'getInstance(LocalEnvironment)'.");
@@ -198,7 +188,7 @@ public final class LocationLoader {
 
     if (Location.Type.CVS_REPOSITORY.type.equals(locDescriptor.getType().toUpperCase())) {
 
-      CVSLocationImpl cvsLocation = new CVSLocationImpl(locDescriptor.getType());
+      CVSLocationImpl cvsLocation = new CVSLocationImpl(locDescriptor.getId());
 
       cvsLocation.setProtocol(locDescriptor.getProtocol());
       cvsLocation.setHost(locDescriptor.getHost());
@@ -206,20 +196,15 @@ public final class LocationLoader {
       cvsLocation.setRepository(locDescriptor.getRepository());
 
       cvsLocation.setUsername(authDescriptor.getUsername());
-      cvsLocation.setPassword(authDescriptor.getPassword());
 
       checkLocation(cvsLocation);
 
       return cvsLocation;
 
     } else if (Location.Type.SUBVERSION_REPOSITORY.type.equals(locDescriptor.getType().toUpperCase())) {
-      return new SubversionLocationImpl(locDescriptor.getType());
-    } else {
-
-// todo tricky
-//
-      return null;
+      return new SubversionLocationImpl(locDescriptor.getId());
     }
+    return null;
   }
 
   private void checkLocation(Location location) throws LocationException {
@@ -257,6 +242,11 @@ public final class LocationLoader {
 
   }
 
+  /**
+   * Returns all locations that have been loaded by the loader.
+   *
+   * @return A map containing <code>Location</code>-objects, accessible by their <code>id</code> as a key.
+   */
   public final Map getLocations() {
     return locations;
   }
@@ -272,10 +262,7 @@ public final class LocationLoader {
 
     if (locations.containsKey(locationAlias)) {
 
-      Location location = (Location) locations.get(locationAlias);
-//      checkLocation(location); // checks if authentication data is available if need be.
-
-      return location;
+      return (Location) locations.get(locationAlias);
     }
     throw new LocationException(LocationException.LOCATION_NOT_FOUND, new Object[]{locationAlias});
   }
@@ -289,50 +276,4 @@ public final class LocationLoader {
     return locations.toString();
   }
 
-//  private class LocationKey {
-//
-//    private ErrorCode errorCode = null;
-//    private String id = null;
-//
-//    LocationKey(String locationAlias, ErrorCode errorCode) {
-//
-//      if (id == null || "".equals(id)) {
-//        throw new KarmaRuntimeException("Location alias cannot be null or an empty String.");
-//      }
-//
-//      id = locationAlias;
-//
-//      if (errorCode == null) {
-//        this.errorCode = ErrorCode.NO_ERROR;
-//      } else {
-//        this.errorCode = errorCode;
-//      }
-//    }
-//
-//    String getId() {
-//      return id;
-//    }
-//
-//    ErrorCode getErrorCode() {
-//      return errorCode;
-//    }
-//
-//    public boolean equals(Object o) {
-//
-//      if (this == o) return true;
-//
-//      if (!(o instanceof LocationKey)) {
-//        return false;
-//      }
-//
-//      final LocationKey locationKey = (LocationKey) o;
-//
-//      return (id.equals(locationKey.getId()) && (errorCode.equals(locationKey.getErrorCode())));
-//    }
-//
-//    public int hashCode() {
-//      return id.hashCode();
-//    }
-//
-//  }
 }

@@ -50,6 +50,10 @@ public final class ReleaseManifest extends AbstractManifest {
     // todo if module has no version --> throw an exception. Release manifests can only contain versioned modules.
     //
 
+    if (descriptor.getVersion() == null) {
+      throw new ManifestException(ManifestException.MODULE_WITHOUT_VERSION, new Object[]{descriptor.getName()});
+    }
+
     Module module = moduleFactory.create(descriptor);
 
     if (((SourceModule)module).hasVersion()) {

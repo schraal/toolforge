@@ -60,6 +60,11 @@ public class ManifestException extends Exception {
    */
   public static final ErrorCode DEPENDENCY_FILE_LOAD_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00015");
 
+  /**
+   * When the manifest is a {@link ReleaseManifest} all modules should have a <code>version</code> attribute.
+   */
+  public static final ErrorCode MODULE_WITHOUT_VERSION = new ErrorCode(EXCEPTION_PREFIX + "00016");
+
   public ManifestException(ErrorCode errorCode) {
     this(errorCode, null);
   }

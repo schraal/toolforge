@@ -58,14 +58,12 @@ public class BaseTest extends TestCase {
     p.put(LocalEnvironment.WORKING_CONTEXT_DIRECTORY, workingContext.getPath());
 
     p.put(LocalEnvironment.MANIFEST_STORE_HOST, "localhost");
-    p.put(LocalEnvironment.MANIFEST_STORE_PASSWORD, "bla");
     p.put(LocalEnvironment.MANIFEST_STORE_PORT, "2401");
     p.put(LocalEnvironment.MANIFEST_STORE_PROTOCOL, "local");
     p.put(LocalEnvironment.MANIFEST_STORE_REPOSITORY, "/tmp/test-CVSROOT");
     p.put(LocalEnvironment.MANIFEST_STORE_USERNAME, "asmedes");
 
     p.put(LocalEnvironment.LOCATION_STORE_HOST, "localhost");
-    p.put(LocalEnvironment.LOCATION_STORE_PASSWORD, "bla");
     p.put(LocalEnvironment.LOCATION_STORE_PORT, "2401");
     p.put(LocalEnvironment.LOCATION_STORE_PROTOCOL, "local");
     p.put(LocalEnvironment.LOCATION_STORE_REPOSITORY, "/tmp/test-CVSROOT");
