@@ -18,6 +18,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
+import java.io.File;
+
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
@@ -32,6 +34,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.types.FilterSet;
+import org.apache.tools.ant.types.FileSet;
 
 /**
  * Builds a module in a manifest. Building a module means that all java sources will be compiled into the
@@ -56,14 +61,22 @@ public class BuildModule extends AbstractBuildCommand {
 
     super.execute();
 
-    BuildEnvironment env = new BuildEnvironment(getCurrentManifest(), getCurrentModule());
 
-    if (!env.getModuleSourceDirectory().exists()) {
-      // No point in building a module, if no src/java is available.
+    if (!getBuildEnvironment().getModuleSourceDirectory().exists()) {
+      // No point in building a module, if no src/java is available or no .java files are present in that dir.
       //
       throw new CommandException(CommandException.NO_SRC_DIR, new Object[] {getCurrentModule().getName(), DEFAULT_SRC_PATH});
     }
-
+    DirectoryScanner scanner = new DirectoryScanner();
+    scanner.setBasedir(getBuildEnvironment().getModuleSourceDirectory());
+    scanner.setIncludes(new String[]{"**/*.java"});
+    scanner.scan();
+    if (scanner.getIncludedFiles().length == 0) {
+      // No point in building a module, if no src/java is available or no .java files are present in that dir.
+      //
+      throw new CommandException(CommandException.NO_SRC_DIR, new Object[] {getCurrentModule().getName(), DEFAULT_SRC_PATH});
+    }
+    
     DependencyHelper helper = new DependencyHelper(getCurrentManifest());
 
     Project project = getAntProject("build-module.xml");
@@ -117,8 +130,8 @@ public class BuildModule extends AbstractBuildCommand {
 //          }
 //        }
 //      }
-      project.setProperty("module-build-dir", env.getModuleBuildDirectory().getPath());
-      project.setProperty("module-source-dir", env.getModuleSourceDirectory().getPath());
+      project.setProperty("module-build-dir", getBuildEnvironment().getModuleBuildDirectory().getPath());
+      project.setProperty("module-source-dir", getBuildEnvironment().getModuleSourceDirectory().getPath());
 
       project.executeTarget("run");
 

@@ -34,7 +34,7 @@ public class BuildEnvironment {
   public File getModuleBuildRootDirectory() {
 
     File moduleBuildDir = new File(getBuildRootDirectory(), module.getName());
-    moduleBuildDir.mkdirs();
+//    moduleBuildDir.mkdirs();
 
     return moduleBuildDir;
   }
@@ -47,7 +47,7 @@ public class BuildEnvironment {
   public File getModuleBuildDirectory() {
 
     File moduleBuildDir = new File(getModuleBuildRootDirectory(), "build");
-    moduleBuildDir.mkdirs();
+//    moduleBuildDir.mkdirs();
 
     return moduleBuildDir;
   }
@@ -60,7 +60,7 @@ public class BuildEnvironment {
   public File getModuleTestBuildDirectory() {
 
     File moduleTestDirectory = new File(getModuleBuildRootDirectory(), "test");
-    moduleTestDirectory.mkdirs();
+//    moduleTestDirectory.mkdirs();
 
     return moduleTestDirectory;
   }
@@ -68,7 +68,7 @@ public class BuildEnvironment {
   public File getModuleJavadocDirectory() {
 
     File moduleJavadocDirectory = new File(getModuleBuildRootDirectory(), "javadoc");
-    moduleJavadocDirectory.mkdirs();
+//    moduleJavadocDirectory.mkdirs();
 
     return moduleJavadocDirectory;
   }
@@ -76,7 +76,7 @@ public class BuildEnvironment {
   public File getModulePackageDirectory() {
 
     File modulePackageDirectory = new File(getModuleBuildRootDirectory(), "package");
-    modulePackageDirectory.mkdirs();
+//    modulePackageDirectory.mkdirs();
 
     return modulePackageDirectory;
   }

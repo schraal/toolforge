@@ -34,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.DirectoryScanner;
 
 import java.io.File;
 
@@ -96,6 +97,15 @@ public class TestModule extends AbstractBuildCommand {
     //
     if (!getBuildEnvironment().getModuleTestSourceDirectory().exists()) {
       // No point in building a module, if no test/java is available.
+      //
+      throw new CommandException(CommandException.NO_TEST_DIR, new Object[] {getCurrentModule().getName(), "test/java"});
+    }
+    DirectoryScanner scanner = new DirectoryScanner();
+    scanner.setBasedir(getBuildEnvironment().getModuleTestSourceDirectory());
+    scanner.setIncludes(new String[]{"**/*.java"});
+    scanner.scan();
+    if (scanner.getIncludedFiles().length == 0) {
+      // No point in building a module, if no sources available.
       //
       throw new CommandException(CommandException.NO_TEST_DIR, new Object[] {getCurrentModule().getName(), "test/java"});
     }

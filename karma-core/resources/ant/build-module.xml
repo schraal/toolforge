@@ -5,10 +5,11 @@
   <target name="run">
 
     <!-- debug -->
-    <echo level="debug" message="module-build-dir: ${module-build-dir}"/>
-    <echo level="debug" message="classpath: ${classpath}"/>
-    <echo level="debug" message="module-source-dir: ${module-source-dir}"/>
+    <echo level="info" message="module-build-dir: ${module-build-dir}"/>
+    <echo level="info" message="classpath: ${classpath}"/>
+    <echo level="info" message="module-source-dir: ${module-source-dir}"/>
 
+    <mkdir dir="${module-build-dir}"/>
     <!-- Remove the old jar file(s). -->
 
     <delete>
