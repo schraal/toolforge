@@ -791,34 +791,55 @@ public final class CVSRunner implements Runner {
   {
     ModuleHistoryFactory factory = ModuleHistoryFactory.getInstance(module.getBaseDir());
     ModuleHistory history = factory.getModuleHistory(module);
+    
     if (history != null) {
       ModuleHistoryEvent event = new ModuleHistoryEvent();
+      
       event.setType(eventType);
       event.setVersion(version);
       event.setDatetime(datetime);
       event.setAuthor(author);
       event.setComment(comment);
+      
       history.addEvent(event);
 
+      File cvsEntriesFile  = new File(module.getBaseDir(), "CVS" + File.separator + "Entries");
+      File historyFile     = history.getHistoryLocation();
+      
+      boolean isCvsEntriesFileReadOnly = ! cvsEntriesFile.canWrite();
+      boolean isHistoryFileReadOnly = ! historyFile.canWrite();
+      
       try {
-        MyFileUtils.makeWriteable(new File(module.getBaseDir(), "CVS"), false);
-        if (history.getHistoryLocation().exists()) {
-          //history already exists. commit changes.
-          MyFileUtils.makeWriteable(history.getHistoryLocation(), false);
+        if (isCvsEntriesFileReadOnly) {
+          MyFileUtils.makeWriteable(cvsEntriesFile, false);
+        }
+        
+        if (historyFile.exists()) { //history already exists. commit changes.
+          if (isHistoryFileReadOnly) {
+            MyFileUtils.makeWriteable(historyFile, false);
+          }
+          
           history.save();
 
           //development line is null, since the history.xml is always committed in the HEAD.
           commit(null, module, new File(module.getBaseDir(), ModuleHistory.MODULE_HISTORY_FILE_NAME), "History updated by Karma");
-        } else {
-          //history did not exist yet. add to CVS and commit it.
+        } else { //history did not exist yet. add to CVS and commit it.
           history.save();
-          add(module, new String[]{history.getHistoryLocation().getName()}, null);
+          
+          add(module, new String[]{historyFile.getName()}, null);
         }
-        MyFileUtils.makeReadOnly(module.getBaseDir());
       } catch (IOException ioe) {
         logger.error("Error when making history.xml readonly/writeable", ioe);
       } catch (InterruptedException ie) {
         logger.error("Error when making history.xml readonly/writeable", ie);
+      } finally {
+        if (isCvsEntriesFileReadOnly) {
+          cvsEntriesFile.setReadOnly();
+        }
+        
+        if (isHistoryFileReadOnly) {
+          historyFile.setReadOnly();
+        }
       }
     } else {
       //history wel null. EN NU?! todo
