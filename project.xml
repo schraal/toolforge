@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<project>
+  <pomVersion>3</pomVersion>
+  <name>Karma All Modules</name>
+  <groupId>toolforge</groupId>
+  <id>karma-all</id>
+  <inceptionYear>2002</inceptionYear>
+  <currentVersion>1.0-dev</currentVersion>
+  <package>nl.toolforge.karma</package>
+  <siteAddress>ssh.sf.net</siteAddress>
+  <siteDirectory>/home/groups/t/to/toolforge/htdocs/karma-core</siteDirectory>
+  <organization>
+    <name>Toolforge</name>
+    <url>http://sourceforge.net/projects/toolforge</url>
+    <logo>http://sourceforge.net/sflogo.php?group_id=98766&amp;type=5</logo>
+  </organization>
+
+  <developers>
+    <developer>
+      <name>Arjen Smedes</name>
+      <id>asmedes</id>
+      <email>d.a.smedes@toolforge.nl</email>
+      <organization>toolforge</organization>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Hilbert Schraal</name>
+      <id>hippe</id>
+      <email>w.h.schraal@toolforge.nl</email>
+      <organization>toolforge</organization>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Martin Oosterom</name>
+      <id>oosterom</id>
+      <email>w.m.oosterom@toolforge.nl</email>
+      <organization>toolforge</organization>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Wietze Helmantel</name>
+      <id>helmantel</id>
+      <email>w.helmantel@toolforge.nl</email>
+      <organization>toolforge</organization>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Chris Spelberg</name>
+      <id>clutjespelberg</id>
+      <email>c.spelberg@toolforge.nl</email>
+      <organization>toolforge</organization>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Age Mooy</name>
+      <id>amooy</id>
+      <email>a.mooy@toolforge.nl</email>
+      <organization>toolforge</organization>
+      <roles>
+        <role>Developer</role>
+        <role>Windows testing</role>
+      </roles>
+    </developer>
+  </developers>
+
+</project>
+

@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<project 
+  xmlns:j="jelly:core"
+  xmlns:maven="jelly:maven"
+  xmlns:util="jelly:util"
+  xmlns:ant="jelly:ant">
+
+  <goal name="clean">
+    <maven:reactor
+      basedir="${basedir}"
+      banner="Cleaning all modules..."
+      includes="*/project.xml"
+      excludes=""
+      goals="clean"
+      postProcessing="false"
+      ignoreFailures="false"
+    />
+  </goal>
+
+  <goal name="jar:install">
+    <maven:reactor
+      basedir="${basedir}"
+      banner="Cleaning all modules..."
+      includes="*/project.xml"
+      excludes="project-docs/project.xml"
+      goals="jar:install"
+      postProcessing="false"
+      ignoreFailures="false"
+    />
+  </goal>
+
+</project>
