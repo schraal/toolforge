@@ -64,6 +64,8 @@ public class HelpImpl extends HelpCommand {
                 );
       } else {
         renderedStuff = CommandRenderer.renderedCommands(CommandFactory.getInstance().getCommands());
+        renderedStuff += "\n" + FRONTEND_MESSAGES.getString("message.HELP_DETAILS") + "\n";
+        renderedStuff += CommandRenderer.renderCommand("help");
         message = new SuccessMessage("\n" + FRONTEND_MESSAGES.getString("message.VALID_COMMANDS") + "\n" + renderedStuff);
       }
 
