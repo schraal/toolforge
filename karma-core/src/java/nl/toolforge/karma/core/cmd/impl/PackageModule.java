@@ -414,8 +414,7 @@ public class PackageModule extends AbstractBuildCommand {
       mkdir.setDir(getBuildEnvironment().getModulePackageDirectory());
       target.addTask(mkdir);
 
-      // Fileset that copies contents of 'web' to the package directory.
-      //
+      // Copy the contents of 'web' to the package directory.
       if (webdir.exists()) {
         copy = (Copy) project.createTask("copy");
         copy.setProject(getProjectInstance());
@@ -432,9 +431,24 @@ public class PackageModule extends AbstractBuildCommand {
         target.addTask(copy);
       }
 
+      // Copy all class files to the WEB-INF/classes directory.
+      if (getCompileDirectory().exists()) {
+        copy = (Copy) project.createTask("copy");
+        copy.setProject(getProjectInstance());
+        copy.setTodir(new File(getBuildEnvironment().getModulePackageDirectory(), "WEB-INF/classes"));
+        copy.setOverwrite(true);
+        copy.setIncludeEmptyDirs(false);
+
+        fileSet = new FileSet();
+        fileSet.setDir(getCompileDirectory());
+        fileSet.setIncludes("**/*.class");
+
+        copy.addFileset(fileSet);
+        target.addTask(copy);
+      }
+      
       // Copy dependencies, but only those that need to be packaged
       //
-
       Set deps = helper.getAllDependencies(getCurrentModule(),false, true);
       if (!deps.isEmpty()) {
 

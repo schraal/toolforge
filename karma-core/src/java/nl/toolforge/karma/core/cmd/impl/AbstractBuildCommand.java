@@ -143,18 +143,11 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
    * @return
    */
   protected final File getCompileDirectory() throws ModuleTypeException {
-
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
     }
 
-    File base = env.getModuleBuildRootDirectory();
-
-    if (module.getType().equals(Module.JAVA_WEB_APPLICATION)) {
-      return new File(base, "build/WEB-INF/classes");
-    } else {
-      return new File(base, "build");
-    }
+    return new File(env.getModuleBuildRootDirectory(), "build");
   }
 
   /**
