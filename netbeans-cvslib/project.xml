@@ -3,7 +3,7 @@
 <project>
 
   <pomVersion>3</pomVersion>
-  <name>Toolforge Core Functionality</name>
+  <name>Netbeans CVSlib Patch Fork</name>
   <groupId>toolforge</groupId>
   <id>netbeans-cvslib</id>
   <currentVersion>3.6-patch</currentVersion>
