@@ -6,9 +6,7 @@
 
   <command name="create-release" alias="cr">
 
-    <description lang="en">
-			Something.
-    </description>
+    <description lang="en">todo Something.</description>
 
     <options>
       <option opt="r" longOpt="release-manifest" required="true" description="The manifest name (release manifest)">
@@ -18,7 +16,6 @@
         <arg name="manifest-name"/>
       </option>
       <option opt="l" longOpt="load-manifest" required="false" description="Load the release manifest.">
-<!--        <arg name="manifest-name"/>-->
       </option>
     </options>
 
@@ -30,9 +27,7 @@
 
   <command name="package" alias="pa">
 
-    <description lang="en">
-			Something.
-    </description>
+    <description lang="en">todo Something.</description>
 
     <options>
       <option opt="m" longOpt="module" required="true" description="The module name">
@@ -48,9 +43,7 @@
 
   <command name="start-work" alias="sw">
 
-    <description lang="en">
-			Something.
-    </description>
+    <description lang="en">todo Something.</description>
 
     <options>
       <option opt="m" longOpt="module" required="true" description="The module name">
@@ -66,9 +59,7 @@
 
   <command name="stop-work" alias="st">
 
-    <description lang="en">
-			Something.
-    </description>
+    <description lang="en">todo Something.</description>
 
     <options>
       <option opt="m" longOpt="module" required="true" description="The module name">
@@ -84,9 +75,9 @@
 
   <command name="build-all-modules" alias="ba">
 
-    <description lang="en">
-			Something.
-    </description>
+    <description lang="en">todo Something.</description>
+
+    <options/>
 
     <classname>nl.toolforge.karma.core.cmd.impl.BuildAllModules</classname>
 
@@ -96,9 +87,7 @@
 
   <command name="build-module" alias="bm">
 
-    <description lang="en">
-			Something.
-    </description>
+    <description lang="en">todo Something.</description>
 
     <options>
       <option opt="m" longOpt="module" required="true" description="The module name">
@@ -114,9 +103,7 @@
 
   <command name="test-module" alias="tm">
 
-    <description lang="en">
-			Runs the unit tests that are available in the given module.
-    </description>
+    <description lang="en">Runs the unit tests that are available in the given module.</description>
 
     <options>
       <option opt="m" longOpt="module" required="true" description="The module name">
@@ -132,9 +119,7 @@
 
   <command name="clean-module" alias="clm">
 
-    <description lang="en">
-			Removes all built artifacts of the module.
-    </description>
+    <description lang="en">Removes all built artifacts of the module.</description>
 
     <options>
       <option opt="m" longOpt="module" required="true" description="The module name">
@@ -150,14 +135,11 @@
 
   <command name="clean-all" alias="cla">
 
-    <description lang="en">
-			Removes all built artifacts.
-    </description>
+    <description lang="en">Removes all built artifacts.</description>
 
-    <options>
-    </options>
+    <options/>
 
-    <classname>nl.toolforge.karma.core.cmd.impl.CleanModule</classname>
+    <classname>nl.toolforge.karma.core.cmd.impl.CleanAll</classname>
 
     <help/>
 
@@ -165,9 +147,7 @@
 
   <command name="update-all" alias="ua">
 
-    <description lang="en">
-			Updates all modules from the active manifest.
-    </description>
+    <description lang="en">Updates all modules from the active manifest.</description>
 
     <options/>
 
@@ -179,9 +159,7 @@
 
   <command name="view-manifest" alias="vm">
 
-    <description lang="en">
-			Views the active manifest.
-    </description>
+    <description lang="en">Views the active manifest.</description>
 
     <options/>
 
@@ -195,9 +173,7 @@
 
   <command name="create-module" alias="crm">
 
-    <description lang="en">
-			Creates a module (optionally includes it in the manifest as well).
-    </description>
+    <description lang="en">Creates a module (optionally includes it in the manifest as well).</description>
 
     <options>
       <option opt="m" longOpt="module" required="true" description="The module name">
@@ -223,9 +199,7 @@
 
   <command name="promote-module" alias="pm">
 
-    <description lang="en">
-			Promotes a module to the next version.
-    </description>
+    <description lang="en">Promotes a module to the next version.</description>
 
     <options>
       <option opt="m" longOpt="module" required="true" description="The module name">
@@ -247,9 +221,7 @@
 
   <command name="select-manifest" alias="slm">
 
-    <description lang="en">
-			The select-manifest command activates a manifest by reading it from disk and loading it into Karma.
-    </description>
+    <description lang="en">The select-manifest command activates a manifest by reading it from disk and loading it into Karma.</description>
 
     <options>
       <option opt="m" longOpt="manifest" required="true" description="The manifest name">
@@ -265,12 +237,8 @@
 
   <command name="update-module" alias="upd">
 
-    <description lang="en">
-			The update command updates a module from a version control system.
-    </description>
-    <description lang="nl">
-			Het update commando doet een update op een module vanuit een versie beheer systeem.
-    </description>
+    <description lang="en">The update command updates a module from a version control system.</description>
+    <description lang="nl">Het update commando doet een update op een module vanuit een versie beheer systeem.</description>
 
     <options>
       <option opt="m" longOpt="module-name" required="true" description="The module name that should be updated">
@@ -293,9 +261,7 @@
 
   <command name="list-manifests" alias="lm">
 
-    <description>
-			The list-manifests command shows all manifests.
-    </description>
+    <description>The list-manifests command shows all manifests.</description>
 
     <options/>
 
