@@ -60,18 +60,6 @@ public class SourceModule extends BaseModule {
     this.version = version;
   }
 
-//  public SourceModule(String name, Location location, DevelopmentLine line) {
-//    this(name, location);
-//  }
-
-//  public SourceModule(String name, Location location, Version version, DevelopmentLine line) {
-//
-//    this(name, location);
-//
-//    this.version = version;
-//    this.patchLine = line;
-//  }
-
   /**
    * @return <code>null</code> if a PatchLine does not exist for this module, otherwise the <code>PatchLine</code>
    *   instance for this module.
@@ -129,18 +117,6 @@ public class SourceModule extends BaseModule {
     return false;
   }
 
-  // has to leave !!!! dit zootje gaat naar dependencyutil enzo.
-
-//  public String getDependencyName() {
-//
-//    // todo is dit wel zo ? de check op getVersion == null ??
-//
-//    if (getVersion() != null) {
-//      return getName() + "_" + getVersionAsString() + ".jar";
-//    } else
-//      return getName() + "_" + WORKING + ".jar";
-//  }
-
   /**
    * When initialized by <code>AbstractManifest</code>, a module is assigned its base directory, relative to the manifest. The
    * base directory is used internally for base-directory-aware methods.
@@ -191,12 +167,7 @@ public class SourceModule extends BaseModule {
       }
       throw new ManifestException(e, ManifestException.DEPENDENCY_FILE_NOT_FOUND, new Object[]{getName()});
     } catch (SAXException e) {
-      if (e.getException() instanceof ManifestException) {
-        // It was already a ManifestException
-        //
-        throw (ManifestException) e.getException();
-      }
-      throw new ManifestException(e, ManifestException.DEPENDENCY_FILE_NOT_FOUND, new Object[]{getName()});
+      throw new ManifestException(e, ManifestException.DEPENDENCY_FILE_LOAD_ERROR, new Object[]{getName()});
     }
 
     return deps;

@@ -11,6 +11,9 @@ import nl.toolforge.karma.core.manifest.Module;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.tools.ant.taskdefs.Copy;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.Project;
 
 import java.io.File;
 import java.io.IOException;
@@ -45,6 +48,7 @@ public class LocalCVSInitializer extends BaseTest {
 
   private static CVSLocationImpl location = null;
   private File tempDevelopmentHome = null;
+  private File localCVSRepository = null;
 
   /**
    * Can be used to access random <code>int</code>s.
@@ -68,27 +72,36 @@ public class LocalCVSInitializer extends BaseTest {
       props.load(stream);
       localPath = props.getProperty("cvs.local.path");
 
+      // To always have a clean set of a cvs repository, copy the structure in test-CVSROOT.tgz to
+      // the same directory, but with "-tmp" added to it.
+
+      Copy copy = new Copy();
+      copy.setProject(new Project());
+
+      FileSet set = new FileSet();
+      set.setDir(new File(localPath));
+      set.setIncludes("**/*");
+
+      copy.addFileset(set);
+
+      localCVSRepository = MyFileUtils.createTempDirectory();
+
+      copy.setTodir(localCVSRepository);
+      copy.execute();
+
       logger.debug("cvs.local.path = " + localPath);
 
       location = new CVSLocationImpl("local");
       location.setProtocol(CVSLocationImpl.LOCAL);
-      location.setRepository(localPath);
+      location.setRepository(localCVSRepository.getPath());
 
       tempDevelopmentHome = MyFileUtils.createTempDirectory();
 
     } catch (Exception e) {
+      e.printStackTrace();
       throw new InitializationException("Local CVS repository could not be initialized. Trying to initialize repository at : ".concat(localPath));
     }
 
-//    // Create a temporary directory in '/tmp' or 'C:\Temp' where the tests can checkout stuff. This directory gets a
-//    // random name.
-//    //
-//    try {
-//      File file = MyFileUtils.createTempDirectory();
-//      logger.info("Temporary directory " + file.getPath() + " created.");
-//    } catch (IOException e) {
-//      throw new InitializationException("Directory in " + System.getProperty("TMP_DIR") + " could not be created.");
-//    }
   }
 
   /**
@@ -100,16 +113,10 @@ public class LocalCVSInitializer extends BaseTest {
 
     try {
       FileUtils.deleteDirectory(getDevelopmentHome());
+      FileUtils.deleteDirectory(localCVSRepository);
     } catch (IOException e) {
       e.printStackTrace();
     }
-//
-//
-//		if (FileUtil.delete(getDevelopmentHome())) {
-//			logger.info("Temporary directory " + tempDevelopmentHome.getPath() + " deleted.");
-//		} else {
-//			logger.info("Temporary directory " + tempDevelopmentHome.getPath() + " could not be deleted.");
-//		}
   }
 
   /**

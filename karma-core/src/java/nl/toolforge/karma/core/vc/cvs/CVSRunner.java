@@ -12,6 +12,7 @@ import nl.toolforge.karma.core.history.ModuleHistoryFactory;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
 import nl.toolforge.karma.core.vc.ManagedFile;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.SymbolicName;
@@ -40,6 +41,13 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+
+//import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.StringTokenizer;
+import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * <p>Runner class for CVS. Executes stuff on a CVS repository.
@@ -138,7 +146,7 @@ public final class CVSRunner implements Runner {
    * @throws CVSException Errorcode <code>MODULE_EXISTS_IN_REPOSITORY</code>, when the module already exists on the
    *                      location as specified by the module.
    */
-  public void create(Module module) throws CVSException {
+  public void create(Module module, ModuleLayoutTemplate template) throws CVSException {
 
     // TODO the initial version should also be made configurable, together with the patterns for modulenames et al.
 
@@ -193,7 +201,8 @@ public final class CVSRunner implements Runner {
 
     // todo create directory structure via template.
     //
-    add(module, SourceModule.MODULE_INFO, tmp);
+//    add(module, SourceModule.MODULE_INFO, tmp);
+    add(module, template.getFileElements(), template.getDirectoryElements(), tmp);
 
     //module has been created. Now, create the module history.
     //todo: add author
@@ -309,22 +318,18 @@ public final class CVSRunner implements Runner {
 //		null;
   }
 
-  /**
-   * Adds a file to the CVS repository and implicitely commits the file (well, it tries to do so).
-   *
-   * @param module   The module that contains the file.
-   * @param fileName The fileName to add, relative to <code>contextDirectory</code>, which was set when instantiating
-   *                 this runner.
-   */
-  public void add(Module module, String fileName) throws CVSException {
-    add(module, fileName, getBasePoint());
+  public void add(Module module, String[] files, String[] dirs) throws CVSException {
+    add(module, files, dirs, getBasePoint());
   }
 
-  public void add(Module module, String fileName, File basePoint) throws CVSException {
+  private synchronized void add(Module module, String[] files, String[] dirs, File basePoint) throws CVSException {
+
+    files = (files == null ? new String[] {} : files);
+    dirs = (dirs == null ? new String[] {} : dirs);
 
     Map arguments = new Hashtable();
     arguments.put("MODULE", module.getName());
-    arguments.put("FILE", fileName);
+//    arguments.put("FILE", fileName);
 
     // Step 1 : Add the file to the CVS repository
     //
@@ -332,17 +337,62 @@ public final class CVSRunner implements Runner {
     addCommand.setMessage("Initial checkin in repository.");
 
     File modulePath = new File(basePoint, module.getName());
-    File fileToAdd = new File(modulePath, fileName);
-    if (!fileToAdd.exists()) {
-      try {
-        fileToAdd.createNewFile();
-      } catch (IOException e) {
-        e.printStackTrace();
-        throw new KarmaRuntimeException("Could not create " + fileName + " in " + modulePath.getPath());
+
+    // Create temp files
+    //
+    Collection cvsFilesCollection = new ArrayList();
+    int i,j = 0;
+    for (i=0; i < files.length; i++) {
+      File fileToAdd = new File(modulePath, files[i]);
+
+      if (!fileToAdd.exists()) {
+        try {
+
+//          if (files[i].indexOf(File.separator)) {
+          File dir = new File(modulePath, files[i]).getParentFile();
+//          }
+
+          if (dir.mkdirs()) {
+            cvsFilesCollection.add(dir);
+            j++;
+          }
+
+          fileToAdd.createNewFile();
+          logger.debug("Created file " + files[i] + " for module " + module.getName() + ".");
+        } catch (IOException e) {
+          throw new KarmaRuntimeException("Error while creating module layout for module " + module.getName());
+        }
+      }
+
+      cvsFilesCollection.add(fileToAdd);
+      j++;
+    }
+
+    // Create temp directories
+    //
+    for (i=0; i < dirs.length; i++) {
+      File dirToAdd = new File(modulePath, dirs[i]);
+
+      if (!dirToAdd.mkdirs()) {
+        throw new KarmaRuntimeException("Error while creating module layout for module " + module.getName());
+      }
+      logger.debug("Created directory " + dirs[i] + " for module " + module.getName() + ".");
+
+      // Ensure that all directories are added correctly
+      //
+      StringTokenizer tokenizer = new StringTokenizer(dirs[i], "/");
+      String base = "";
+      while (tokenizer.hasMoreTokens()) {
+        String subDir = tokenizer.nextToken();
+        base += subDir;
+        cvsFilesCollection.add(new File(modulePath, base));
+        base += "/";
+        j++;
       }
     }
 
-    addCommand.setFiles(new File[]{fileToAdd});
+    File[] cvsFiles = (File[]) cvsFilesCollection.toArray(new File[cvsFilesCollection.size()]);
+    addCommand.setFiles(cvsFiles);
 
     // A file is added against a module, thus the contextDirectory is constructed based on the basePoint and the
     // modules' name.
@@ -352,7 +402,7 @@ public final class CVSRunner implements Runner {
     // Step 2 : Commit the file to the CVS repository
     //
     CommitCommand commitCommand = new CommitCommand();
-    commitCommand.setFiles(new File[]{fileToAdd});
+    commitCommand.setFiles(cvsFiles);
     commitCommand.setMessage("File added automatically by Karma.");
 
     executeOnCVS(commitCommand, new File(basePoint, module.getName()));
@@ -618,13 +668,13 @@ public final class CVSRunner implements Runner {
    * @throws CVSException           Thrown in case something goes wrong with CVS
    */
   private void addModuleHistoryEvent(
-          File moduleCheckoutLocation,
-          Module module,
-          String eventType,
-          Version version,
-          Date datetime,
-          String author,
-          String comment) throws CVSException
+      File moduleCheckoutLocation,
+      Module module,
+      String eventType,
+      Version version,
+      Date datetime,
+      String author,
+      String comment) throws CVSException
   {
     ModuleHistoryFactory factory = ModuleHistoryFactory.getInstance(moduleCheckoutLocation);
     ModuleHistory history = factory.getModuleHistory(module.getName());
@@ -644,7 +694,7 @@ public final class CVSRunner implements Runner {
       } else {
         //history did not exist yet. add to CVS and commit it.
         //todo: add comment
-        add(module, history.getHistoryLocation().getName(), moduleCheckoutLocation);
+        add(module, new String[]{history.getHistoryLocation().getName()}, null, moduleCheckoutLocation);
       }
     }
   }

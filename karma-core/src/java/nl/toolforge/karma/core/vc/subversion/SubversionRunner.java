@@ -2,6 +2,7 @@ package nl.toolforge.karma.core.vc.subversion;
 
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.location.Location;
@@ -33,11 +34,11 @@ public final class SubversionRunner implements Runner {
     
   }
 
-  public void create(Module module) {
+  public void create(Module module, ModuleLayoutTemplate template) {
 //		return null;
 	}
 
-	public void add(Module module, String fileName) throws SVNException {
+	public void add(Module module, String[] files, String[] dirs) throws SVNException {
 //		return null;
 	}
 

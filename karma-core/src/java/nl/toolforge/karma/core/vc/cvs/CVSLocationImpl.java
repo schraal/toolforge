@@ -17,209 +17,218 @@ import java.util.Locale;
  */
 public final class CVSLocationImpl extends BaseLocation {
 
-	/**
-	 * Default port number : <code>2401</code>
-	 */
-	public static final int DEFAULT_PORT = 2401;
+  /**
+   * Default port number : <code>2401</code>
+   */
+  public static final int DEFAULT_PORT = 2401;
 
-	/**
-	 * Default protocol : <code>pserver</code>
-	 */
-	public static final String DEFAULT_PROTOCOL = "pserver";
+  /**
+   * Protocol for local CVS access
+   */
+  public static final String LOCAL = "local";
+  public static final String EXT = "ext";
+  public static final String PSERVER = "pserver";
 
-	/**
-	 * Protocol for local CVS access
-	 */
-	public static final String LOCAL = "local";
+  private String host = null;
+  private String username = null;
+  private String password = null;
+  private String protocol = null;
+  private int port = -1;
+  private String repository = null;
 
-	private String host = null;
-	private String username = null;
-	private String password = null;
-	private String protocol = null;
-	private int port = -1;
-	private String repository = null;
+  private String cvsRootString = null;
 
-	private String cvsRootString = null;
+  public CVSLocationImpl(String id) {
+    super(id, Location.Type.CVS_REPOSITORY);
+  }
 
-	public CVSLocationImpl(String id) {
-		super(id, Location.Type.CVS_REPOSITORY);
-	}
+  /**
+   * The CVS host, where the repository is maintained.
+   *
+   * @param host The CVS username path (<code>:pserver:asmedes@<b>localhost</b>:2401/home/cvsroot</code>
+   */
+  public void setHost(String host) {
 
-	/**
-	 * The CVS host, where the repository is maintained.
-	 *
-	 * @param host The CVS username path (<code>:pserver:asmedes@<b>localhost</b>:2401/home/cvsroot</code>
-	 */
-	public void setHost(String host) {
-		this.host = host;
-	}
+    if ((host == null) || (host.length() == 0)) {
+      throw new IllegalArgumentException("Host cannot be null.");
+    }
+    this.host = host;
+  }
 
-	String getHost() {
-		return host;
-	}
+  String getHost() {
+    return host;
+  }
 
-	/**
-	 * The CVS username.
-	 *
-	 * @param username The CVS username path (<code>:pserver:<b>asmedes</b>@localhost:2401/home/cvsroot</code>
-	 */
-	public void setUsername(String username) {
-		this.username = username;
-	}
+  /**
+   * The CVS username.
+   *
+   * @param username The CVS username path (<code>:pserver:<b>asmedes</b>@localhost:2401/home/cvsroot</code>
+   */
+  public void setUsername(String username) {
 
-	public String getUsername() {
-		return username;
-	}
+    if ((username == null) || (username.length() == 0)) {
+      throw new IllegalArgumentException("Username cannot be null.");
+    }
+    this.username = username;
+  }
 
-	/**
-	 * The CVS password in the normal (<b>* insecure *</b>) format. This password can generally be found in
-	 * <code>${user.home}/.cvspass</code>.
-	 *
-	 * @param encodedPassword The CVS password in the normal (<b>* insecure *</b>) password.
-	 */
-	public void setPassword(String encodedPassword) {
+  public String getUsername() {
+    return username;
+  }
 
-		// TODO some encoding scheme should be applied.
-		//
-		this.password = encodedPassword;
-	}
+  /**
+   * The CVS password in the normal (<b>* insecure *</b>) format. This password can generally be found in
+   * <code>${user.home}/.cvspass</code>.
+   *
+   * @param encodedPassword The CVS password in the normal (<b>* insecure *</b>) password.
+   */
+  public void setPassword(String encodedPassword) {
 
-	String getPassword() {
-		return password;
-	}
+    if ((encodedPassword == null) || (encodedPassword.length() == 0)) {
+      throw new IllegalArgumentException("Password cannot be null.");
+    }
+    // TODO some encoding scheme should be applied.
+    //
+    this.password = encodedPassword;
+  }
 
-	/**
-	 * Checks if a password has been set.
-	 */
-	public boolean passwordSet() {
-		return password != null;
-	}
+  String getPassword() {
+    return password;
+  }
 
-	/**
-	 * The CVS repository protocol (<code>ext</code>, <code>pserver</code>, etc).
-	 *
-	 * @param protocol The CVS protocol (<code>:<b>pserver</b>:asmedes@localhost:2401/home/cvsroot</code>. Protocol
-	 *                 strings are converted to lowercase.
-	 */
-	public void setProtocol(String protocol) {
-		if (protocol == null) {
-			protocol = DEFAULT_PROTOCOL;
-		}
-		this.protocol = protocol.toLowerCase();
-	}
+  /**
+   * Checks if a password has been set.
+   */
+  public boolean passwordSet() {
+    return password != null;
+  }
 
-	public String getProtocol() {
-		return protocol;
-	}
+  /**
+   * The CVS repository protocol (<code>ext</code>, <code>pserver</code>, etc).
+   *
+   * @param protocol The CVS protocol (<code>:<b>pserver</b>:asmedes@localhost:2401/home/cvsroot</code>. Protocol
+   *                 strings are converted to lowercase.
+   */
+  public void setProtocol(String protocol) {
+    String p = LOCAL + "|" + EXT + "|" + PSERVER;
+    if (protocol == null || !protocol.toLowerCase().matches(p)) {
+      throw new IllegalArgumentException("Protocol is invalid; should be " + p);
+    }
+    this.protocol = protocol.toLowerCase();
+  }
 
-	/**
-	 * The CVS repository port number, or zero when the port is not defined.
-	 *
-	 * @param port The CVS repository path (<code>:pserver:asmedes@localhost:<b>2401</b>/home/cvsroot</code>
-	 */
-	public void setPort(int port) {
-		this.port = port;
-	}
+  public String getProtocol() {
+    return protocol;
+  }
 
-	void setPort(String port) {
+  /**
+   * The CVS repository port number, or zero when the port is not defined.
+   *
+   * @param port The CVS repository path (<code>:pserver:asmedes@localhost:<b>2401</b>/home/cvsroot</code>
+   */
+  public void setPort(int port) {
+    this.port = port;
+  }
 
-		try {
-			this.port = Integer.parseInt(port);
-		} catch (NumberFormatException n) {
-			this.port = DEFAULT_PORT;
-		}
-	}
+  void setPort(String port) {
 
-	int getPort() {
-		return port;
-	}
+    try {
+      this.port = Integer.parseInt(port);
+    } catch (NumberFormatException n) {
+      this.port = DEFAULT_PORT;
+    }
+  }
 
-	/**
-	 * The CVS repository string.
-	 *
-	 * @param repository The CVS repository path (<code>:pserver:asmedes@localhost:2401<b>/home/cvsroot</b></code>
-	 */
-	public void setRepository(String repository) {
+  int getPort() {
+    return port;
+  }
 
-		if ((repository == null) || (repository.length() == 0)) {
-			throw new IllegalArgumentException("Repository cannot be null.");
-		}
-		this.repository = repository;
-	}
+  /**
+   * The CVS repository string.
+   *
+   * @param repository The CVS repository path (<code>:pserver:asmedes@localhost:2401<b>/home/cvsroot</b></code>
+   */
+  public void setRepository(String repository) {
 
-	String getRepository() {
-		return repository;
-	}
+    if ((repository == null) || (repository.length() == 0)) {
+      throw new IllegalArgumentException("Repository cannot be null.");
+    }
+    this.repository = repository;
+  }
 
-	/**
-	 * String representation of the CVSROOT.
-	 *
-	 * @return String representation of the CVSROOT, or the message from the {@link CVSException#INVALID_CVSROOT} exception.
-	 */
-	public String toString() {
+  String getRepository() {
+    return repository;
+  }
 
-		try {
-			return getCVSRootAsString();
-		} catch (CVSException c) {
-			return CVSException.INVALID_CVSROOT.getErrorMessage(Locale.ENGLISH);
-		}
-	}
+  /**
+   * String representation of the CVSROOT.
+   *
+   * @return String representation of the CVSROOT, or the message from the {@link CVSException#INVALID_CVSROOT} exception.
+   */
+  public String toString() {
 
-	/**
-	 * Returns a connection object to a CVS repository.
-	 *
-	 * @return A CVS Connection object.
-	 * @throws CVSException See {@link CVSException#INVALID_CVSROOT}
-	 */
-	public Connection getConnection() throws CVSException {
+    try {
+      return getCVSRootAsString();
+    } catch (CVSException c) {
+      return CVSException.INVALID_CVSROOT.getErrorMessage(Locale.ENGLISH);
+    }
+  }
 
-		if (cvsRootString != null) {
-			createCVSRoot();
-		}
+  /**
+   * Returns a connection object to a CVS repository.
+   *
+   * @return A CVS Connection object.
+   * @throws CVSException See {@link CVSException#INVALID_CVSROOT}
+   */
+  public Connection getConnection() throws CVSException {
 
-		Connection connection = ConnectionFactory.getConnection(getCVSRootAsString());
-		if (connection instanceof PServerConnection) {
-			((PServerConnection) connection).setEncodedPassword(this.getPassword());
-		}
+    if (cvsRootString != null) {
+      createCVSRoot();
+    }
 
-		return connection;
-	}
+    Connection connection = ConnectionFactory.getConnection(getCVSRootAsString());
+    if (connection instanceof PServerConnection) {
+      ((PServerConnection) connection).setEncodedPassword(this.getPassword());
+    }
 
-	private synchronized void createCVSRoot() throws CVSException {
+    return connection;
+  }
 
-		StringBuffer buffer = new StringBuffer(":" + protocol + ":");
+  private synchronized void createCVSRoot() throws CVSException {
 
-		if (buffer.toString().equals(":".concat(LOCAL).concat(":"))) {
+    StringBuffer buffer = new StringBuffer(":" + protocol + ":");
 
-			// Returns ':local:<repositoru>'
-			//
-			if (repository == null) {
-				throw new CVSException(CVSException.INVALID_CVSROOT);
-			}
+    if (buffer.toString().equals(":".concat(LOCAL).concat(":"))) {
 
-			buffer.append(repository);
+      // Returns ':local:<repositoru>'
+      //
+      if (repository == null) {
+        throw new CVSException(CVSException.INVALID_CVSROOT);
+      }
 
-		} else {
+      buffer.append(repository);
 
-			if ((getUsername() == null) || (getHost() == null) || (getPort() == -1)) {
-				throw new CVSException(CVSException.INVALID_CVSROOT);
-			}
+    } else {
+
+      if ((getUsername() == null) || (getHost() == null) || (getPort() == -1)) {
+        throw new CVSException(CVSException.INVALID_CVSROOT);
+      }
 
 //			buffer.append(username).append(":").append(password).append("@");
-			buffer.append(username).append("@");
-			buffer.append(host).append(":");
-			buffer.append(port).append(repository.startsWith("/") ? "" : "/");
-			buffer.append(repository);
-		}
-		cvsRootString = buffer.toString();
-	}
+      buffer.append(username).append("@");
+      buffer.append(host).append(":");
+      buffer.append(port).append(repository.startsWith("/") ? "" : "/");
+      buffer.append(repository);
+    }
+    cvsRootString = buffer.toString();
+  }
 
-	public String getCVSRootAsString() throws CVSException {
+  public String getCVSRootAsString() throws CVSException {
 
-		if (cvsRootString == null) {
-			createCVSRoot();
-		}
+    if (cvsRootString == null) {
+      createCVSRoot();
+    }
 
-		return cvsRootString;
-	}
+    return cvsRootString;
+  }
 }

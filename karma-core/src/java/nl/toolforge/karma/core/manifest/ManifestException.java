@@ -57,8 +57,12 @@ public class ManifestException extends Exception {
 	 * When a module has not yet been checked out for this manifest
 	 */
 	public static final ErrorCode MODULE_NOT_LOCAL = new ErrorCode(EXCEPTION_PREFIX + "00014");
+  /**
+   * When the <code>dependencies.xml</code> file could not be loaded correctly.
+   */
+  public static final ErrorCode DEPENDENCY_FILE_LOAD_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00015");
 
-	public ManifestException(ErrorCode errorCode) {
+  public ManifestException(ErrorCode errorCode) {
     this(errorCode, null);
   }
 

@@ -3,6 +3,7 @@ package nl.toolforge.karma.core.vc;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
 
 /**
  * This interface defines methods for runner classes that perform actions on a physical version control system.
@@ -19,15 +20,16 @@ public interface Runner {
 	/**
 	 * Creates a module in a version control repository.
 	 */
-	public void create(Module module) throws VersionControlException;
+	public void create(Module module, ModuleLayoutTemplate template) throws VersionControlException;
 
 	/**
 	 * Adds a file to the version control system. If the file does not exist, the file will be created.
 	 *
 	 * @param module   The module that contains the file (or will contain the file).
-	 * @param fileName The filename of the file that should be added to the version control system repository.
+	 * @param files The filenames that should be added to the version control system repository.
+	 * @param dirs The directory-paths that should be added to the version control system repository.
 	 */
-	public void add(Module module, String fileName) throws VersionControlException;
+	public void add(Module module, String[] files, String[] dirs) throws VersionControlException;
 
   /**
 	 * Checks out a module from a version control system.

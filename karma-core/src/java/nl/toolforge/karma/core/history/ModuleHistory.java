@@ -21,65 +21,65 @@ import java.util.List;
  * @author W.H. Schraal
  */
 public class ModuleHistory {
-    private static final Log logger = LogFactory.getLog(ModuleHistoryFactory.class);
+  private static final Log logger = LogFactory.getLog(ModuleHistoryFactory.class);
 
-    final static String MODULE_HISTORY_FILE_NAME = "history.xml";
+  final static String MODULE_HISTORY_FILE_NAME = "history.xml";
 
-    private List events = new ArrayList();
-    private File historyLocation = null;
+  private List events = new ArrayList();
+  private File historyLocation = null;
 
-    public ModuleHistory() {
-    }
+  public ModuleHistory() {
+  }
+  
+  public void addEvent(ModuleHistoryEvent moduleHistoryEvent) {
+    events.add(moduleHistoryEvent);
+  }
 
-    public void addEvent(ModuleHistoryEvent moduleHistoryEvent) {
-        events.add(moduleHistoryEvent);
-    }
+  public void setHistoryLocation(File historyLocation) {
+    this.historyLocation = historyLocation;
+  }
 
-    public void setHistoryLocation(File historyLocation) {
-        this.historyLocation = historyLocation;
-    }
+  public File getHistoryLocation() {
+    return this.historyLocation;
+  }
 
-    public File getHistoryLocation() {
-        return this.historyLocation;
-    }
+  public void save() {
+    if (events != null) {
+      logger.info("Saving module history");
 
-    public void save() {
-        if (events != null) {
-            logger.info("Saving module history");
+      String fileContents = "";
+      for (Iterator it = events.iterator(); it.hasNext(); ) {
+        fileContents += ((ModuleHistoryEvent) it.next()).toXml();
+      }
+      fileContents = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<history>\n" + fileContents;
+      fileContents += "</history>";
 
-            String fileContents = "";
-            for (Iterator it = events.iterator(); it.hasNext(); ) {
-                fileContents += ((ModuleHistoryEvent) it.next()).toXml();
-            }
-            fileContents = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<history>\n" + fileContents;
-            fileContents += "</history>";
-
-            logger.debug(fileContents);
-            try {
-                if (!historyLocation.exists()) {
-                  historyLocation.createNewFile();
-                }
-                Writer writer = new BufferedWriter(new FileWriter(historyLocation));
-                writer.write(fileContents);
-                writer.flush();
-                logger.info("Saved module history");
-            } catch (IOException ioe) {
-                //todo: throw new exception here
-                logger.error("Something went wrong when saving module history", ioe);
-            }
-        } else {
-            //todo: give decent error message
-            logger.warn("Save called on empty history. Skipping...");
+      logger.debug(fileContents);
+      try {
+        if (!historyLocation.exists()) {
+          historyLocation.createNewFile();
         }
+        Writer writer = new BufferedWriter(new FileWriter(historyLocation));
+        writer.write(fileContents);
+        writer.flush();
+        logger.info("Saved module history");
+      } catch (IOException ioe) {
+        //todo: throw new exception here
+        logger.error("Something went wrong when saving module history", ioe);
+      }
+    } else {
+      //todo: give decent error message
+      logger.warn("Save called on empty history. Skipping...");
     }
+  }
 
-    public String toString() {
-        String s = "location: "+historyLocation+"\n";
-        Iterator it = events.iterator();
-        while (it.hasNext()) {
-            s = s + ((ModuleHistoryEvent) it.next()).toString();
-        }
-        return s;
+  public String toString() {
+    String s = "location: "+historyLocation+"\n";
+    Iterator it = events.iterator();
+    while (it.hasNext()) {
+      s = s + ((ModuleHistoryEvent) it.next()).toString();
     }
+    return s;
+  }
 
 }

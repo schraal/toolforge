@@ -50,7 +50,7 @@ public class TestCVSRunner extends LocalCVSInitializer {
 
       Module module = new SourceModule(DEFAULT_MODULE_1, getTestLocation());
 
-      runner.add(module, getTestFileName());
+      runner.add(module, new String[]{getTestFileName()}, new String[]{"src/java/nl/test", "resources"});
 
       assertTrue(response.isOK());
 
@@ -78,7 +78,7 @@ public class TestCVSRunner extends LocalCVSInitializer {
 
       Module module = new SourceModule(DEFAULT_MODULE_1, getTestLocation());
 
-      runner.add(module, getTestFileName());
+      runner.add(module, new String[]{getTestFileName()}, new String[]{});
 
       assertTrue(runner.existsInRepository(module));
 

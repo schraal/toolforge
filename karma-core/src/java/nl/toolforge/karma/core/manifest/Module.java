@@ -45,6 +45,12 @@ public interface Module {
    */
   public static final String WEBAPP_PREFIX = "webapp";
 
+  /**
+   * Modules that should create an <code>EAR</code>-file as a means of distribution, should have a module with
+   * a <code>deploy-config</code>-prefix. Each of these modules is scanned for the <code>application.xml</code> file. 
+   */
+  public static final String DEPLOY_CONFIG_PREFIX = "deploy-config";
+
 	/**
    * Retrieves a modules' name, the <code>name</code> attribute of the module in the manifest XML file.
    *

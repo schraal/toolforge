@@ -350,8 +350,6 @@ public final class LocationFactory {
    */
   public final Location get(String locationAlias) throws LocationException {
 
-//    logger.debug(locations.toString());
-
     if (locations.containsKey(locationAlias)) {
 
       Location location = (Location) locations.get(locationAlias);

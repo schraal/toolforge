@@ -170,13 +170,18 @@ public abstract class AbstractManifest implements Manifest {
         throw new ManifestException(e, ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[]{manifest.getName()});
       }
     } catch (SAXException e) {
-      e.printStackTrace();
+//      e.printStackTrace();
       if (e.getException() instanceof ManifestException) {
         // It was already a ManifestException, that one should be propagated
         //
-        throw new ManifestException(((ManifestException) e.getException()).getErrorCode());
+        ManifestException m = (ManifestException) e.getException();
+        throw new ManifestException(m.getErrorCode(), m.getMessageArguments());
+      } else if (e.getException() instanceof LocationException) {
+        LocationException m = (LocationException) e.getException();
+        throw new ManifestException(m.getErrorCode(), m.getMessageArguments());
+      } else {
+        throw new ManifestException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{this.getName()});
       }
-      throw new ManifestException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{manifest.getName()});
     }
 
     copyToThis((AbstractManifest) manifest);
@@ -209,7 +214,7 @@ public abstract class AbstractManifest implements Manifest {
   }
 
   /**
-   * Includes another manifest in this manifest and links them as 'parent-child'. This method is called by
+   * Includes another manifest in the manifest and links them as 'parent-child'. This method is called by
    * <a href="http://jakarta.apache.org/commons/digester">Digester</a>
    *
    * @param child
@@ -234,12 +239,18 @@ public abstract class AbstractManifest implements Manifest {
       }
       throw new ManifestException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{manifest.getName()});
     } catch (SAXException e) {
+//      e.printStackTrace();
       if (e.getException() instanceof ManifestException) {
-        // It was already a ManifestException
+        // It was already a ManifestException, that one should be propagated
         //
-        throw new ManifestException(((ManifestException) e.getException()).getErrorCode());
+        ManifestException m = (ManifestException) e.getException();
+        throw new ManifestException(m.getErrorCode(), m.getMessageArguments());
+      } else if (e.getException() instanceof LocationException) {
+        LocationException m = (LocationException) e.getException();
+        throw new ManifestException(m.getErrorCode(), m.getMessageArguments());
+      } else {
+        throw new ManifestException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{getName()});
       }
-      throw new ManifestException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{manifest.getName()});
     }
 
     link(manifest);
@@ -494,7 +505,7 @@ public abstract class AbstractManifest implements Manifest {
    * @param module
    * @return Interdependencies for <code>module</code> or an empty <code>Collection</code>.
    */
-  public final Collection getModuleInterdependencies(Module module) {
+  public final Collection getModuleInterdependencies(Module module) throws ManifestException {
 
     Collection deps = (Collection) getInterdependencies().get(module.getName());
 
@@ -510,7 +521,7 @@ public abstract class AbstractManifest implements Manifest {
    *
    * @return
    */
-  public final Map getInterdependencies() {
+  public final Map getInterdependencies() throws ManifestException {
 
     Map interDependencies = new Hashtable();
 
@@ -529,11 +540,11 @@ public abstract class AbstractManifest implements Manifest {
         //
 
         Set moduleDependencies = null;
-        try {
+//        try {
           moduleDependencies = ((SourceModule) module).getDependencies();
-        } catch (ManifestException e) {
-          e.printStackTrace();
-        }
+//        } catch (ManifestException e) {
+//          e.printStackTrace();
+//        }
 
         // Iterate over all dependencies. If it is a module dep, check if we already have an
         // entry in the interdep-collection; create one when necessary.
