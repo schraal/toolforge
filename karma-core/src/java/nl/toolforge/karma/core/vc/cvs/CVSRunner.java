@@ -262,6 +262,7 @@ public final class CVSRunner implements Runner {
     } else {
       checkoutCommand.setResetStickyOnes(true);
     }
+    checkoutCommand.setPruneDirectories(true);
 
     executeOnCVS(checkoutCommand, basePoint, arguments);
   }

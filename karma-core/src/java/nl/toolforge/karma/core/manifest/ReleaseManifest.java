@@ -69,7 +69,7 @@ public final class ReleaseManifest extends AbstractManifest {
     try {
         if (module instanceof SourceModule) {
           File manifestDirectory = new File(LocalEnvironment.getDevelopmentHome(), getName());
-          ((SourceModule) module).setBaseDir(new File(manifestDirectory, module.getName()));
+          module.setBaseDir(new File(manifestDirectory, module.getName()));
         }
     } catch(Exception e) {
       // Basically, if we can't do this, we have nothing ... really a RuntimeException

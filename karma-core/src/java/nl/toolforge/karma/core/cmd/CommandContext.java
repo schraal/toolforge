@@ -15,6 +15,7 @@ import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.cvs.AdminHandler;
 import nl.toolforge.core.util.listener.ListenerManager;
 import nl.toolforge.core.util.listener.ListenerManagerException;
 import nl.toolforge.core.util.listener.ListenerManager;
@@ -62,12 +63,22 @@ public final class CommandContext implements ChangeListener {
     // Update the manifest-store.
     //
 
-    Module manifestStore = new SourceModule("manifests", LocalEnvironment.getManifestStoreLocation());
+    Module manifestModule = new SourceModule("manifests", LocalEnvironment.getManifestStoreLocation());
+    manifestModule.setBaseDir(LocalEnvironment.getManifestStore());
 
     if (LocalEnvironment.getWorkingContext().exists()) {
+
+      // Check if the locally existing manifest module has the same location (cvsroot e.g.) as the
+      // requested update.
+      //
+      AdminHandler adminHandler = new AdminHandler();
+      if (!adminHandler.isEqualLocation(manifestModule)) {
+        throw new LocationException(LocationException.LOCATION_MISMATCH, new Object[]{manifestModule.getName()});
+      }
+
       try {
-        Runner runner = RunnerFactory.getRunner(manifestStore.getLocation(), LocalEnvironment.getWorkingContext());
-        runner.checkout(manifestStore);
+        Runner runner = RunnerFactory.getRunner(manifestModule.getLocation(), LocalEnvironment.getWorkingContext());
+        runner.checkout(manifestModule);
       } catch (VersionControlException e) {
         // todo some sort of notification would be nice ...
         //
@@ -82,12 +93,19 @@ public final class CommandContext implements ChangeListener {
 
     // Update the location-store.
     //
-    Module locationStore = new SourceModule("locations", LocalEnvironment.getLocationStoreLocation());
+    Module locationModule = new SourceModule("locations", LocalEnvironment.getLocationStoreLocation());
+    locationModule.setBaseDir(LocalEnvironment.getLocationStore());
 
     if (LocalEnvironment.getWorkingContext().exists()) {
+
+      AdminHandler adminHandler = new AdminHandler();
+      if (!adminHandler.isEqualLocation(locationModule)) {
+        throw new LocationException(LocationException.LOCATION_MISMATCH, new Object[]{locationModule.getName()});
+      }
+
       try {
-        Runner runner = RunnerFactory.getRunner(locationStore.getLocation(), LocalEnvironment.getWorkingContext());
-        runner.checkout(locationStore);
+        Runner runner = RunnerFactory.getRunner(locationModule.getLocation(), LocalEnvironment.getWorkingContext());
+        runner.checkout(locationModule);
       } catch (VersionControlException e) {
         // todo some sort of notification would be nice ...
         //
@@ -110,19 +128,22 @@ public final class CommandContext implements ChangeListener {
     ManifestCollector collector = ManifestCollector.getInstance();
     currentManifest = collector.loadFromHistory();
 
-    setFileModificationTimes();
-
     // Register the command context with the listener to allow automaic updates of the manifest.
     //
 
-    manager = ListenerManager.getInstance();
-    try {
-      manager.register(this);
-    } catch (ListenerManagerException e) {
-      e.printStackTrace();
-    }
+    if (currentManifest != null) {
 
-    manager.start();
+      setFileModificationTimes();
+
+      manager = ListenerManager.getInstance();
+      try {
+        manager.register(this);
+      } catch (ListenerManagerException e) {
+        e.printStackTrace();
+      }
+
+      manager.start();
+    }
   }
 
 //  private static Map modificationMap = new Hashtable();
@@ -145,7 +166,11 @@ public final class CommandContext implements ChangeListener {
 //      modificationMap.put(m.getName(), lastModified);
 //    }
 
-    lastmodified = new File(LocalEnvironment.getManifestStore(), currentManifest.getName() + ".xml").lastModified();
+    try {
+      lastmodified = new File(LocalEnvironment.getManifestStore(), currentManifest.getName() + ".xml").lastModified();
+    } catch (Exception e) {
+      lastmodified = 0;
+    }
   }
 
   /**
@@ -213,6 +238,15 @@ public final class CommandContext implements ChangeListener {
     currentManifest = newManifest;
 
     setFileModificationTimes();
+
+    manager = ListenerManager.getInstance();
+    try {
+      manager.register(this);
+    } catch (ListenerManagerException e) {
+      e.printStackTrace();
+    }
+
+    manager.start();
   }
 
 

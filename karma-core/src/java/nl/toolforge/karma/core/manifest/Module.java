@@ -84,7 +84,19 @@ public interface Module {
    */
   public Location getLocation();
 
+  /**
+   * A module has a base directory, which is relative to the manifest that requires it. When the manifest is loaded, the
+   * base directory can be set.
+   *
+   * @param baseDir The base directory of the module relative to the active manifest.
+   */
+  public void setBaseDir(File baseDir);
 
+  /**
+   * The base directory of the module relative to the active manifest.
+   *
+   * @return The base directory of the module relative to the active manifest.
+   */
   public File getBaseDir();
 
   /**

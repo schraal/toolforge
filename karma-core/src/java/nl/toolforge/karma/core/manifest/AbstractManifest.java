@@ -1,29 +1,23 @@
 package nl.toolforge.karma.core.manifest;
 
-import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
-import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.cvs.CVSException;
-import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
+import nl.toolforge.karma.core.vc.cvs.AdminHandler;
 import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.xmlrules.DigesterLoader;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.netbeans.lib.cvsclient.CVSRoot;
 import org.xml.sax.SAXException;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -560,45 +554,56 @@ public abstract class AbstractManifest implements Manifest {
 
     // todo this method is not abstract ! handles CVS only.
 
-    if (isLocal(module))  {
-
-      File rootFile = new File(module.getBaseDir(), "CVS/Root");
-
-      String cvsRootString = null;
+    AdminHandler handler = new AdminHandler();
+    if (handler.isEqualLocation(module)) {
       try {
-        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(rootFile)));
-
-        cvsRootString = in.readLine();
-        in.close();
-
-      } catch (FileNotFoundException e) {
-        // We guess the user has created a module and not stored in a version control repository.
-        //
+        FileUtils.deleteDirectory(module.getBaseDir());
+      } catch (IOException e) {
         return false;
-      } catch (IOException e) {
-        throw new KarmaRuntimeException(e.getMessage());
-      }
-
-      CVSRoot cvsRoot = CVSRoot.parse(cvsRootString);
-
-      Location loc = module.getLocation();
-      try {
-        if (loc instanceof CVSLocationImpl) {
-          if (!cvsRoot.toString().equals(((CVSLocationImpl) loc).getCVSRootAsString())) {
-            FileUtils.deleteDirectory(module.getBaseDir());
-            logger.info("Mismatch between local module and definition in manifest solved (manifest:" + this.getName() + ", module:" + module.getName() + ")");
-          }
-
-          return true;
-        }
-      } catch (CVSException e) {
-        e.printStackTrace();
-        // todo excception handling
-      } catch (IOException e) {
-        throw new KarmaRuntimeException(e.getMessage());
       }
     }
-    return false;
+
+    return true;
+    
+//    if (isLocal(module))  {
+//
+//      File rootFile = new File(module.getBaseDir(), "CVS/Root");
+//
+//      String cvsRootString = null;
+//      try {
+//        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(rootFile)));
+//
+//        cvsRootString = in.readLine();
+//        in.close();
+//
+//      } catch (FileNotFoundException e) {
+//        // We guess the user has created a module and not stored in a version control repository.
+//        //
+//        return false;
+//      } catch (IOException e) {
+//        throw new KarmaRuntimeException(e.getMessage());
+//      }
+//
+//      CVSRoot cvsRoot = CVSRoot.parse(cvsRootString);
+//
+//      Location loc = module.getLocation();
+//      try {
+//        if (loc instanceof CVSLocationImpl) {
+//          if (!cvsRoot.toString().equals(((CVSLocationImpl) loc).getCVSRootAsString())) {
+//            FileUtils.deleteDirectory(module.getBaseDir());
+//            logger.info("Mismatch between local module and definition in manifest solved (manifest:" + this.getName() + ", module:" + module.getName() + ")");
+//          }
+//
+//          return true;
+//        }
+//      } catch (CVSException e) {
+//        e.printStackTrace();
+//        // todo exception handling
+//      } catch (IOException e) {
+//        throw new KarmaRuntimeException(e.getMessage());
+//      }
+//    }
+//    return false;
   }
 
 }

@@ -73,6 +73,12 @@ public final class LocationException extends Exception {
    */
   public static final ErrorCode LOCATION_LOAD_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00017");
 
+  /**
+   * A <code>LOCATION_MISMATCH</code> occurs when a module is locally available and an update is requested from
+   * another location. A version control system generally gives an error for this.
+   */
+  public static final ErrorCode LOCATION_MISMATCH = new ErrorCode(EXCEPTION_PREFIX + "00018");
+
   public LocationException(ErrorCode errorCode) {
     this(errorCode, null);
   }
