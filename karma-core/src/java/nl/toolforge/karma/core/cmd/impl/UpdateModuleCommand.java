@@ -92,34 +92,40 @@ public class UpdateModuleCommand extends DefaultCommand {
       throw new CommandException(e.getErrorCode(),e.getMessageArguments());
     }
 
+    // If the module is in working state, we don't need to determine a version.
+    //
     Version version = null;
-    if (getCommandLine().getOptionValue("v") != null) {
-      // The module should be updated to a specific version.
-      //
-      try {
 
-        // Are we requesting a patch or a normal version ?
+    if (!manifest.getState(module).equals(Module.WORKING)) { // Saves time ...
+
+      if (getCommandLine().getOptionValue("v") != null) {
+        // The module should be updated to a specific version.
         //
-        String manualVersion = getCommandLine().getOptionValue("v");
-        if (manualVersion.matches(Patch.VERSION_PATTERN_STRING)) {
-          version = new Patch(manualVersion);
-        } else {
-          version = new Version(manualVersion);
+        try {
+
+          // Are we requesting a patch or a normal version ?
+          //
+          String manualVersion = getCommandLine().getOptionValue("v");
+          if (manualVersion.matches(Patch.VERSION_PATTERN_STRING)) {
+            version = new Patch(manualVersion);
+          } else {
+            version = new Version(manualVersion);
+          }
+        } catch (PatternSyntaxException pse) {
+          throw new CommandException(CommandException.INVALID_ARGUMENT,
+              new Object[]{getCommandLine().getOptionValue("v"),
+                           "Version has to be <number>-<number>[-<number>], e.g. '0-0'"});
         }
-      } catch (PatternSyntaxException pse) {
-        throw new CommandException(CommandException.INVALID_ARGUMENT,
-            new Object[]{getCommandLine().getOptionValue("v"),
-                         "Version has to be <number>-<number>[-<number>], e.g. '0-0'"});
-      }
-    } else if (manifest.getState(module).equals(Module.STATIC)) {
-      version = module.getVersion();
-    } else if (manifest.getState(module).equals(Module.DYNAMIC)) {
-      // todo CVSVersionExtractor should be retrieved through a Factory.
-      //
-      try {
-        version = Utils.getLastVersion(module);
-      } catch (VersionControlException e) {
-        throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+      } else if (manifest.getState(module).equals(Module.STATIC)) {
+        version = module.getVersion();
+      } else if (manifest.getState(module).equals(Module.DYNAMIC)) {
+        // todo CVSVersionExtractor should be retrieved through a Factory.
+        //
+        try {
+          version = Utils.getLastVersion(module);
+        } catch (VersionControlException e) {
+          throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+        }
       }
     }
 
@@ -144,7 +150,11 @@ public class UpdateModuleCommand extends DefaultCommand {
 
         //todo check whether the requested version does exist for the module.
 
-        runner.checkout(module, version);
+        if (manifest.getState(module).equals(Module.WORKING) && manifest instanceof ReleaseManifest) {
+          runner.checkout(module, module.getPatchLine(), null);
+        } else {
+          runner.checkout(module, version);
+        }
 
         SimpleMessage message = null;
         // todo message to be internationalized.
