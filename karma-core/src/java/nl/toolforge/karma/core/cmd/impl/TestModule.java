@@ -1,5 +1,11 @@
 package nl.toolforge.karma.core.cmd.impl;
 
+import java.io.File;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Diagnostics;
+
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
@@ -7,28 +13,21 @@ import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.Module;
-import org.apache.commons.io.FileUtils;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
- * Builds a module in a manifest. Building a module means that all java sources will be compiled into the
- * modules' build directory on disk.
+ * Run the unit tests of a given module.
+ * <p>
+ * At this moment this class only supports Java/JUnit in combination with Ant.
+ * </p>
  *
- * @author D.A. Smedes
+ * @author W.H. Schraal
  * @version $Id$
  */
-public class BuildModule extends AbstractBuildCommand {
-
-  private static final String DEFAULT_SRC_PATH = "src/java";
+public class TestModule extends AbstractBuildCommand {
 
   private CommandResponse commandResponse = new ActionCommandResponse();
 
-  public BuildModule(CommandDescriptor descriptor) {
+  public TestModule(CommandDescriptor descriptor) {
     super(descriptor);
   }
 
@@ -41,15 +40,16 @@ public class BuildModule extends AbstractBuildCommand {
     Project project = getAntProject();
 
     try {
-      // Define the location where java source files are store for a module (the default location in the context of
+      // Define the location where junit source files are stored for a module (the default location in the context of
       // a manifest).
       //
       File srcBase = getSourceDirectory();
+System.out.println("sourcedir: "+srcBase);
       if (!srcBase.exists()) {
         // No point in building a module, if no src/java is available.
         //
-        //todo: make the source dir dynamic (getSourceDir()).
-        throw new CommandException(CommandException.NO_SRC_DIR, new Object[] {getCurrentModule().getName()});
+        //todo: make the test dir dynamic (getSourceDir()).
+        throw new CommandException(CommandException.NO_TEST_DIR, new Object[] {getCurrentModule().getName()});
       }
 
       // Configure the Ant project
@@ -60,30 +60,20 @@ public class BuildModule extends AbstractBuildCommand {
       project.setProperty(MODULE_CLASSPATH_PROPERTY, getDependencies(getCurrentModule().getDependencies()));
 
     } catch (ManifestException e) {
-//      e.printStackTrace();
+      e.printStackTrace();
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
 
     try {
-      project.executeTarget(BUILD_MODULE_TARGET);
+//System.out.println(project);
+//Diagnostics.doReport(System.out);
+      project.executeTarget(TEST_MODULE_TARGET);
     } catch (BuildException e) {
       e.printStackTrace();
-      throw new CommandException(CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
-    }
-    finally {
-      try {
-        // Remove temporary directory.
-        //
-
-        // todo Should be moved to AbstractBuildCommand.
-        //
-        FileUtils.deleteDirectory(project.getBaseDir());
-      } catch (IOException e) {
-        throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
-      }
+      throw new CommandException(CommandException.TEST_FAILED, new Object[] {getCurrentModule().getName()});
     }
 
-    message = new SuccessMessage(getFrontendMessages().getString("message.MODULE_BUILT"), new Object[] {getCurrentModule().getName()});
+    message = new SuccessMessage("Module " + getCurrentModule().getName() + " tested succesfully."); // todo localize message
     commandResponse.addMessage(message);
   }
 
@@ -105,7 +95,7 @@ public class BuildModule extends AbstractBuildCommand {
 
     // the rest, for the time being.
     //
-    return new File(new File(getCurrentManifest().getDirectory(), "build"), getCurrentModule().getName());
+    return new File(new File(getCurrentManifest().getDirectory(), "test"), getCurrentModule().getName());
   }
 
   /**
@@ -120,11 +110,7 @@ public class BuildModule extends AbstractBuildCommand {
       throw new IllegalArgumentException("Module cannot be null.");
     }
 
-    if (module.getDeploymentType().equals(Module.WEBAPP)) {
-      return new File("WEB-INF/classes");
-    } else {
-      return new File("");
-    }
+    return new File("");
   }
 
   protected File getSourceDirectory() throws ManifestException {
@@ -132,7 +118,8 @@ public class BuildModule extends AbstractBuildCommand {
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
     }
-    return new File(new File(getCurrentManifest().getDirectory(), getCurrentModule().getName()), DEFAULT_SRC_PATH);
+    return new File(new File(getCurrentManifest().getDirectory(), getCurrentModule().getName()), "test/java");
   }
+
 
 }

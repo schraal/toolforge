@@ -34,13 +34,17 @@ import java.util.Set;
  */
 public abstract class AbstractBuildCommand extends DefaultCommand {
 
-  private static final String DEFAULT_SRC_PATH = "src/java";
   private static final String DEFAULT_BUILD_DIR = "build";
 
   /**
    * Mapper to the target in <code>build-module.xml</code> to build a module.
    */
   protected static final String BUILD_MODULE_TARGET = "build-module";
+
+  /**
+   * Mapper to the target in <code>build-module.xml</code> to test a module.
+   */
+  protected static final String TEST_MODULE_TARGET = "test-module";
 
   /**
    * Mapper to the target in <code>build-module.xml</code> to package a module as a <code>jar</code>-file.
@@ -84,7 +88,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
    */
   protected static final String MODULE_BASEDIR_PROPERTY = "module-base-dir";
 
-  private Module module = null;
+  protected Module module = null;
   private Manifest currentManifest = null;
 
   /**
@@ -151,16 +155,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
    * @return
    * @throws ManifestException
    */
-  protected File getBuildDirectory() throws ManifestException {
-
-    if (module == null) {
-      throw new IllegalArgumentException("Module cannot be null.");
-    }
-
-    // the rest, for the time being.
-    //
-    return new File(new File(getCurrentManifest().getDirectory(), "build"), getCurrentModule().getName());
-  }
+  protected abstract File getBuildDirectory() throws ManifestException;
 
   /**
    * Returns the compile directory for a module.
@@ -168,26 +163,15 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
    * @return
    * @throws ManifestException
    */
-  protected File getCompileDirectory() throws ManifestException {
+  protected abstract File getCompileDirectory() throws ManifestException;
 
-    if (module == null) {
-      throw new IllegalArgumentException("Module cannot be null.");
-    }
-
-    if (module.getDeploymentType().equals(Module.WEBAPP)) {
-      return new File("WEB-INF/classes");
-    } else {
-      return new File("");
-    }
-  }
-
-  protected File getSourceDirectory() throws ManifestException {
-
-    if (module == null) {
-      throw new IllegalArgumentException("Module cannot be null.");
-    }
-    return new File(new File(getCurrentManifest().getDirectory(), getCurrentModule().getName()), DEFAULT_SRC_PATH);
-  }
+  /**
+   * Returns the source directory for a module.
+   *
+   * @return
+   * @throws ManifestException
+   */
+  protected abstract File getSourceDirectory() throws ManifestException;
 
   protected String getDependencies(Set dependencies) throws ManifestException, CommandException {
 
@@ -244,7 +228,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
 
     DefaultLogger logger = new DefaultLogger();
-
+// logger.setMessageOutputLevel(Project.MSG_DEBUG);
     // todo hmm, this mechanism doesn't integrate with the commandresponse mechanism
     //
     logger.setOutputPrintStream(System.out);
@@ -256,8 +240,10 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
     //
     Project project = new Project();
     project.addBuildListener(logger);
+//    project.setProperty("ant.home", ".");
+//    project.setProperty("ANT_HOME", ".");
+//    System.setProperty("ant.home", ".");
     project.init();
-
     // Read in the build.xml file
     //
     ProjectHelper helper = new ProjectHelperImpl();

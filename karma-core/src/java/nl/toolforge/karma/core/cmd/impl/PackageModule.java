@@ -30,10 +30,10 @@ import java.util.regex.Pattern;
 public class PackageModule extends AbstractBuildCommand {
 
   private static final String MODULE_PACKAGE_NAME_PROPERTY = "module-package-name";
-  private static  final String MODULE_APPXML_PROPERTY = "module-appxml";
-  private static  final String MODULE_WEBXML_PROPERTY = "module-webxml";
-  private static  final String MODULE_INCLUDES_PROPERTY = "module-includes";
-  private static  final String MODULE_EXCLUDES_PROPERTY = "module-excludes";
+  private static final String MODULE_APPXML_PROPERTY = "module-appxml";
+  private static final String MODULE_WEBXML_PROPERTY = "module-webxml";
+  private static final String MODULE_INCLUDES_PROPERTY = "module-includes";
+  private static final String MODULE_EXCLUDES_PROPERTY = "module-excludes";
 
   private CommandResponse commandResponse = new ActionCommandResponse();
 
@@ -146,5 +146,27 @@ public class PackageModule extends AbstractBuildCommand {
   public CommandResponse getCommandResponse() {
     return commandResponse;
   }
+
+  protected File getBuildDirectory() throws ManifestException {
+
+    if (module == null) {
+      throw new IllegalArgumentException("Module cannot be null.");
+    }
+
+    // the rest, for the time being.
+    //
+    return new File(new File(getCurrentManifest().getDirectory(), "build"), getCurrentModule().getName());
+  }
+
+  protected File getCompileDirectory() throws ManifestException {
+    //package does not compile anything.
+    return null;
+  }
+
+  protected File getSourceDirectory() throws ManifestException {
+    //package does not need the sources.
+    return null;
+  }
+
 
 }
