@@ -244,7 +244,7 @@ public final class CVSRunner implements Runner {
 
     //todo: proper exception handling
     try {
-      MyFileUtils.makeWriteable(module.getBaseDir());
+      MyFileUtils.makeWriteable(module.getBaseDir(), true);
     } catch (Exception e) {
       logger.error("Exception when making module writeable just before checking it out.", e);
     }
@@ -687,10 +687,10 @@ public final class CVSRunner implements Runner {
       history.addEvent(event);
 
       try {
-        MyFileUtils.makeWriteable(new File(module.getBaseDir(), "CVS"));
+        MyFileUtils.makeWriteable(new File(module.getBaseDir(), "CVS"), false);
         if (history.getHistoryLocation().exists()) {
            //history already exists. commit changes.
-          MyFileUtils.makeWriteable(history.getHistoryLocation());
+          MyFileUtils.makeWriteable(history.getHistoryLocation(), false);
           history.save();
 
           //development line is null, since the history.xml is always committed in the HEAD.

@@ -24,7 +24,7 @@ import java.util.prefs.Preferences;
 public final class CLI {
 
   private static Log logger = LogFactory.getLog(CLI.class);
-  
+
 
   public static void main(String[] args) {
 
@@ -92,46 +92,14 @@ public final class CLI {
     WorkingContext workingContext =
         new WorkingContext(Preferences.userRoot().get(WorkingContext.WORKING_CONTEXT_PREFERENCE, WorkingContext.DEFAULT));
 
-//    File configurationFile = Karma.getConfigurationFile(workingContext);
     WorkingContextConfiguration configuration = new WorkingContextConfiguration(workingContext);
 
-
-
-
-//
-    // todo : moet nog anders, alhoewel het inmiddels beter is.
-    //
-//    ManifestStore manifestStore = null;
-//    LocationStore locationStore  = null;
     try {
       configuration.load();
-//      //
-//      manifestStore = new ManifestStore(workingContext);
-//      configuration.getManifestStoreLocation().setWorkingContext(workingContext);
-//      manifestStore.setLocation(configuration.getManifestStoreLocation());
-//      manifestStore.setModuleName("manifests");
-//      workingContext.setManifestStore(manifestStore);
-//      //
-//      locationStore = new LocationStore(workingContext);
-//      configuration.getLocationStoreLocation().setWorkingContext(workingContext);
-//      locationStore.setLocation(configuration.getLocationStoreLocation());
-//      locationStore.setModuleName("locations");
-//      workingContext.setLocationStore(locationStore);
-
     } catch (WorkingContextException e) {
       //
-    } catch (RuntimeException r) {
-      //
     }
-
-    // todo het feit dat dit eerst moet sucked.
-    //
     workingContext.configure(configuration);
-
-
-
-
-
 
     System.out.println("[ karma ] Checking command ...");
 

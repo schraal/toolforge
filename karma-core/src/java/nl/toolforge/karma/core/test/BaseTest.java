@@ -102,9 +102,9 @@ public class BaseTest extends TestCase {
 
   public void tearDown() {
     try {
-      MyFileUtils.makeWriteable(wcBaseDir);
-      MyFileUtils.makeWriteable(projectBaseDir);
-      MyFileUtils.makeWriteable(localRepo);
+      MyFileUtils.makeWriteable(wcBaseDir, true);
+      MyFileUtils.makeWriteable(projectBaseDir, true);
+      MyFileUtils.makeWriteable(localRepo, true);
 
       FileUtils.deleteDirectory(wcBaseDir);
       FileUtils.deleteDirectory(projectBaseDir);
