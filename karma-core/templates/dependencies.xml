@@ -12,4 +12,8 @@
 
   <dependency id="" jar=""/>
 
+  <!-- Resolved as <getDevelopmentHome>/<manifest>/build/<module>/classes; included as a directory in the classpath. -->
+
+  <dependency module=""/>
+
 </dependencies>
