@@ -6,6 +6,11 @@ import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.location.LocationFactory;
 import nl.toolforge.karma.core.prefs.Preferences;
+import nl.toolforge.core.util.file.MyFileUtils;
+
+import java.util.Properties;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * This testclass is highly recommended when writing JUnit testclasses for Karma. It initializes some basic stuff
@@ -15,6 +20,8 @@ import nl.toolforge.karma.core.prefs.Preferences;
  * @version $Id$
  */
 public class BaseTest extends TestCase {
+
+	private Properties p = null;
 
 	public void setUp() {
 
@@ -31,15 +38,37 @@ public class BaseTest extends TestCase {
 //		System.setProperty(LocalEnvironment.BOOTSTRAP_CONFIGURATION_DIRECTORY, "test/test-karma.properties");
 //todo remove
 
+		File f1 = null;
+		File f2 = null;
+		File f3 = null;
+
+		try {
+			f1 = MyFileUtils.createTempDirectory();
+			f2 = MyFileUtils.createTempDirectory();
+			f3 = MyFileUtils.createTempDirectory();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		p = new Properties();
+		p.put(LocalEnvironment.DEVELOPMENT_HOME_DIRECTORY, f1.getPath());
+		p.put(LocalEnvironment.MANIFEST_STORE_DIRECTORY  , f2.getPath());
+		p.put(LocalEnvironment.LOCATION_STORE_DIRECTORY  , f3.getPath());
+
 		// Initialize the LocationFactory
 		//
 		try {
 			LocationFactory locationFactory = LocationFactory.getInstance();
 			locationFactory.load(getClass().getClassLoader().getResourceAsStream("test/locations.xml"),
-					getClass().getClassLoader().getResourceAsStream("test/location-authentication.xml"));
+				getClass().getClassLoader().getResourceAsStream("test/location-authentication.xml"));
 
 		} catch (KarmaException e) {
 			throw new KarmaRuntimeException("BaseTest setup error", e);
 		}
 	}
+
+	public final Properties getProperties() {
+		return p;
+	}
+
 }

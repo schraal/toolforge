@@ -1,13 +1,11 @@
 package nl.toolforge.karma.core;
 
-import nl.toolforge.karma.core.expr.VersionExpression;
+import nl.toolforge.karma.core.expr.Expressions;
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.prefs.Preferences;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
 
-import java.io.File;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * <p>A <code>SourceModule</code> represents a module for which the developer wants to have the sources available to
@@ -61,17 +59,16 @@ public class SourceModule extends BaseModule {
 	/**
 	 * Creates a <code>SourceModule</code> instance; the module contains a <code>version</code> attribute.
 	 *
-	 * @param moduleName The name of the module. Module names are matched against
-	 *                   a {@link nl.toolforge.karma.core.expr.ModuleNameExpression} instance.
+	 * @param moduleName The name of the module. Module names are matched against {@link Expressions#MODULE_NAME}.
 	 * @param location
-	 * @param version    The version of the module. Versionnumbers are matched against a {@link VersionExpression}.
+	 * @param version    The version of the module. Versionnumbers are matched against {@link Expressions#VERSION}.
 	 * @throws KarmaException When input parameters don't match their patterns.
 	 */
 	protected SourceModule(String moduleName, Location location, Version version) throws KarmaException {
 
 		super(moduleName, location);
 
-		Pattern pattern = Pattern.compile(new VersionExpression().getPatternString());
+		Pattern pattern = Expressions.getPattern("VERSION");
 		Matcher matcher = pattern.matcher(version.getVersionNumber());
 
 		if (matcher.matches()) {

@@ -1,6 +1,11 @@
 package nl.toolforge.karma.core;
 
 import nl.toolforge.karma.core.test.BaseTest;
+import nl.toolforge.core.util.file.MyFileUtils;
+
+import java.util.Properties;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @author D.A. Smedes
@@ -10,7 +15,7 @@ public class TestManifestLoader extends BaseTest {
 
 	public void testParse1() {
 
-		LocalEnvironment env = LocalEnvironment.getInstance();
+		LocalEnvironment env = LocalEnvironment.getInstance(getProperties());
 
 		ManifestLoader ml = ManifestLoader.getInstance(env);
 

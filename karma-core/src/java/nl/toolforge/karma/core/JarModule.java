@@ -1,8 +1,7 @@
 package nl.toolforge.karma.core;
 
-import nl.toolforge.karma.core.expr.ModuleNameExpression;
-import nl.toolforge.karma.core.expr.VersionExpression;
 import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.expr.Expressions;
 
 import java.io.File;
 import java.util.regex.Pattern;
@@ -32,7 +31,7 @@ public class JarModule extends BaseModule {
 	/**
 	 * Constructs a <code>SourceModule</code> instance.
 	 *
-	 * @param moduleName The name of the module. Module names are matched against a {@link ModuleNameExpression}.
+	 * @param moduleName The name of the module.
 	 * @throws KarmaException When input parameters don't match their respective patterns
 	 */
 	JarModule(String moduleName, Location location) throws KarmaException {
@@ -43,7 +42,7 @@ public class JarModule extends BaseModule {
 	/**
 	 * Creates a <code>Module</code> instance; the module contains a <code>version</code> attribute.
 	 *
-	 * @param moduleName The name of the module. Module names are matched against a {@link ModuleNameExpression}.
+	 * @param moduleName The name of the module.
 	 * @param location   The location of the jar module.
 	 * @param version
 	 * @throws KarmaException When input parameters don't match their respective patterns
@@ -52,7 +51,7 @@ public class JarModule extends BaseModule {
 
 		super(moduleName, location);
 
-		Pattern pattern = Pattern.compile(new VersionExpression().getPatternString());
+		Pattern pattern = Expressions.getPattern("VERSION");
 		Matcher matcher = pattern.matcher(version);
 
 		if (matcher.matches()) {

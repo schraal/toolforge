@@ -1,6 +1,6 @@
 package nl.toolforge.karma.core;
 
-import nl.toolforge.karma.core.expr.ModuleNameExpression;
+import nl.toolforge.karma.core.expr.Expressions;
 import nl.toolforge.karma.core.location.Location;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,8 +24,7 @@ public abstract class BaseModule implements Module {
 	/**
 	 * Constructs the basis for a module.
 	 *
-	 * @param moduleName The name of the module. Module names are matched against
-	 *                   a {@link nl.toolforge.karma.core.expr.ModuleNameExpression} instance.
+	 * @param moduleName The name of the module. Module names are matched against a pattern.
 	 * @param location   The location descriptor for the module.
 	 * @throws KarmaException When input parameters don't match their respective patterns
 	 */
@@ -35,15 +34,15 @@ public abstract class BaseModule implements Module {
 			throw new IllegalArgumentException("Location cannot be null.");
 		}
 
-		// TODO to be checked.
-//		Pattern pattern = Pattern.compile(new ModuleNameExpression().getPatternString());
-//
+		Pattern pattern = Expressions.getPattern("MODULE_NAME");
+
 //		if (pattern.matcher(moduleName).matches()) {
 //			this.name = moduleName;
 //		} else {
 //			throw new KarmaException(KarmaException.DATAFORMAT_ERROR);
 //		}
 
+		this.name = moduleName; // Temporary
 		this.location = location;
 	}
 

@@ -105,6 +105,11 @@ public class TestExpressions extends TestCase {
 		version = "0-3--0";
 		m = p.matcher(version);
 		assertFalse("Checking " + version, m.matches());
+
+		version = "CORE-test-module-1";
+		m = p.matcher(version);
+		assertFalse("Checking " + version, m.matches());
+
 	}
 
 	public void testSymbolicNamePattern() {
@@ -135,8 +140,8 @@ public class TestExpressions extends TestCase {
 		assertFalse("Checking " + symbolicName, m.matches());
 	}
 
-	public void testBranchPattern() {
-		fail("No tests implemented, i.e. not tested.");
-	}
+//	public void testBranchPattern() {
+//		fail("No tests implemented, i.e. not tested.");
+//	}
 
 }

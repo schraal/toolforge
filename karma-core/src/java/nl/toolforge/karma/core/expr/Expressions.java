@@ -1,5 +1,9 @@
 package nl.toolforge.karma.core.expr;
 
+import java.util.regex.Pattern;
+import java.util.Map;
+import java.util.HashMap;
+
 /**
  * Class defining pattern strings for model elements, such as module names, version numbers and the like. This class can
  * be extended by implementations of Karma where other requirements exist.
@@ -30,4 +34,16 @@ public class Expressions {
 	 * Branch names start with the letter <code>B</code>
 	 */
 	public static String BRANCH_NAME = "B{1}\\d{1,}_{1}" + MODULE_NAME;
+
+	private static Map patterns = new HashMap();
+
+	static {
+		patterns.put("MODULE_NAME", Pattern.compile(MODULE_NAME));
+		patterns.put("VERSION", Pattern.compile(VERSION));
+		patterns.put("SYMBOLIC_NAME", Pattern.compile(SYMBOLIC_NAME));
+	}
+
+	public static Pattern getPattern(String key) {
+		return (Pattern) patterns.get(key);
+	}
 }
