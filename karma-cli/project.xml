@@ -5,7 +5,7 @@
 	<pomVersion>3</pomVersion>
 	<name>Karma CLI  Module</name>
 	<id>karma-cli</id>
-	<currentVersion>1.0-alpha1</currentVersion>
+	<currentVersion>1.0-dev</currentVersion>
 	<organization>
 		<name>Sourceforge</name>
 		<url>http://toolforge.sourceforge.net/</url>

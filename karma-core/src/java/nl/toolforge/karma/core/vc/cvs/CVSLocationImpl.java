@@ -95,7 +95,7 @@ public final class CVSLocationImpl extends BaseLocation {
    */
   public boolean ping() {
     if (host != null && port != -1) {
-      return Ping.ping(host, port, 500);
+      return Ping.ping(host, port, 1000);
     } else {
       return true; // Local, apparently.
     }
