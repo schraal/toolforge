@@ -113,7 +113,7 @@
 
 
   <command name="test-module" alias="tm">
-    <description lang="en">Runs the unit tests that are available in the given module.</description>
+    <description lang="en">Runs the module's unit tests.</description>
 
     <options>
       <option opt="m" longOpt="module" hasArgs="true" required="true" description="The module name">
@@ -141,7 +141,7 @@
 
 
   <command name="doc-module" alias="dm">
-    <description lang="en">Generate API documentation for the given module.</description>
+    <description lang="en">Generate the module's API documentation.</description>
     <options>
       <option opt="m" longOpt="module" hasArgs="true" required="true" description="The module name">
         <arg>module-name</arg>
@@ -162,7 +162,7 @@
 
 
   <command name="clean-module" alias="clm">
-    <description lang="en">Removes all built artifacts of the module.</description>
+    <description lang="en">Removes the module's built artifacts.</description>
     <options>
       <option opt="m" longOpt="module" hasArgs="true" required="true" description="The module name">
         <arg>module-name</arg>
@@ -181,8 +181,7 @@
 
 
   <command name="update-module" alias="um">
-    <description lang="en">The update command updates a module from a version control system.</description>
-    <description lang="nl">Het update commando doet een update op een module vanuit een versie beheer systeem.</description>
+    <description lang="en">Update a module from the vcs.</description>
     <options>
       <option opt="m" longOpt="module-name" hasArgs="true" required="true" description="The module name that should be updated">
         <arg>module-name</arg>
@@ -200,7 +199,7 @@
   </command>
 
   <command name="update-all-modules" alias="uam">
-    <description lang="en">Updates all modules from the active manifest.</description>
+    <description lang="en">Updates all modules of the active manifest.</description>
     <classname>nl.toolforge.karma.cli.cmd.UpdateAllModulesImpl</classname>
     <help lang="en"/>
   </command>
@@ -216,14 +215,14 @@
 
 
   <command name="view-module-history" alias="vmh">
-    <description lang="en">Shows the history af the given module.</description>
+    <description lang="en">Shows the module's history.</description>
     <classname>nl.toolforge.karma.core.cmd.impl.ViewModuleHistory</classname>
     <help lang="en"/>
   </command>
 
 
   <command name="create-module" alias="crm">
-    <description lang="en">Creates a module (optionally includes it in the manifest as well).</description>
+    <description lang="en">Creates a module.</description>
 
     <options>
       <option opt="m" longOpt="module" hasArgs="true" required="true" description="The module name">
@@ -275,7 +274,7 @@
 
   <command name="select-manifest" alias="slm">
 
-    <description lang="en">The select-manifest command activates a manifest by reading it from disk and loading it into Karma.</description>
+    <description lang="en">Activates the given manifest.</description>
 
     <options>
       <option opt="m" longOpt="manifest" hasArgs="true" required="true" description="The manifest name">
@@ -293,7 +292,7 @@
 
   <command name="list-manifests" alias="lm">
 
-    <description>The list-manifests command shows all manifests.</description>
+    <description>Shows all manifests.</description>
 
     <classname>nl.toolforge.karma.cli.cmd.ListManifestsImpl</classname>
 
