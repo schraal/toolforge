@@ -41,7 +41,6 @@ import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.VersionControlSystem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.io.FileUtils;
 import org.netbeans.lib.cvsclient.Client;
 import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
 import org.netbeans.lib.cvsclient.command.CommandException;
