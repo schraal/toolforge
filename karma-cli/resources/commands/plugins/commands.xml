@@ -5,7 +5,7 @@
 <commands>
 
 
-  <command name="view-working-contexts" alias="lw,vwc">
+  <command name="view-working-contexts" alias="lw vwc">
     <description lang="en">Shows all working contexts.</description>
 
     <classname>nl.toolforge.karma.cli.cmd.ViewWorkingContextsImpl</classname>
