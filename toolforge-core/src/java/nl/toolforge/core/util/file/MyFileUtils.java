@@ -18,13 +18,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.core.util.file;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.NameFileFilter;
+import org.apache.tools.ant.DirectoryScanner;
+
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Random;
 
 
 /**
- * File utilities.
+ * File utilities. Stuff that is not implemented by <code>org.apache.commons.io.FileUtils</code>.
  *
  * @author D.A. Smedes
  *
@@ -32,17 +38,68 @@ import java.util.Random;
  */
 public final class MyFileUtils {
 
-	public static File createTempDirectory() throws IOException {
+  /**
+   * Creates a temporary directory with some random positive <code>int</code> as its name.
+   *
+   * @return A <code>File</code> reference to the temporary directory.
+   *
+   * @throws IOException When some IO error occurred.
+   */
+  public static File createTempDirectory() throws IOException {
 
-		Random randomizer = new Random();
+    Random randomizer = new Random();
 
-		int someInt = randomizer.nextInt();
-		someInt = (someInt< 0 ? someInt * -1 : someInt); // > 0
+    int someInt = randomizer.nextInt();
+    someInt = (someInt< 0 ? someInt * -1 : someInt); // > 0
 
-		File tmp = File.createTempFile("" + someInt, null);
-		tmp.delete();
-		tmp.mkdir();
+    File tmp = File.createTempFile("" + someInt, null);
+    tmp.delete();
+    tmp.mkdir();
 
-		return tmp;
-	}
+    return tmp;
+  }
+
+  /**
+   * Makes all files in <code>dir</code> and all its subdirectories writeable.
+   *
+   * @param dir Starting directory.
+   */
+  public static void makeWriteable(File dir) {
+
+    String osName = System.getProperty("os.name");
+    try {
+      if (osName.equalsIgnoreCase("WINDOWS NT") || osName.equals("Windows 2000")) {
+        Runtime.getRuntime().exec("cmd.exe /c attrib -r *.*");
+      } else {
+        Process Proc = Runtime.getRuntime().exec("chmod -R u+w " + dir + File.separator);
+      }
+//      Thread.currentThread().sleep(100);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+  }
+
+  /**
+   * Makes all files in <code>dir</code> and all its subdirectories read-only. Uses the Ant
+   * <code>DirectoryScanner</code>.
+   *
+   * @param dir Starting directory.
+   */
+  public static void makeReadOnly(File dir) {
+
+    DirectoryScanner scanner = new DirectoryScanner();
+    scanner.setBasedir(dir);
+    scanner.setIncludes(new String[]{"**/*"});
+    scanner.scan();
+
+    String[] files = scanner.getIncludedFiles();
+    String[] dirs = scanner.getIncludedDirectories();
+
+    for (int i = 0; i < files.length; i++) {
+      new File(dir, files[i]).setReadOnly();
+    }
+    for (int i = 0; i < dirs.length; i++) {
+      new File(dir, dirs[i]).setReadOnly();
+    }
+  }
 }
