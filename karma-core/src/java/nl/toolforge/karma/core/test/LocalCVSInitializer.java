@@ -19,6 +19,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 import java.util.Random;
 
@@ -63,7 +64,13 @@ public class LocalCVSInitializer extends BaseTest {
 
     try {
       Properties props = new Properties();
-      props.load(getClass().getClassLoader().getResourceAsStream("test/test-cvs.properties"));
+      InputStream stream = getClass().getClassLoader().getResourceAsStream("test/test-cvs.properties");
+      if (stream == null) {
+        //properties file does not exist
+        //log an error. Nullpointer will follow... ;)
+        logger.error("could not find properties file: test/test-cvs.properties");
+      }
+      props.load(stream);
       localPath = props.getProperty("cvs.local.path");
 
       logger.debug("cvs.local.path = " + localPath);
