@@ -69,7 +69,7 @@ public class DependencyPath {
    * @return  Whether or not the dependency exists.
    */
   public boolean exists() {
-    return new File(pathPrefix, relativePath.getPath()).exists();
+    return getFullPath().exists();
   }
 
   /**
