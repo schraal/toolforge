@@ -353,7 +353,7 @@ public final class Manifest {
     return true;
   }
 
-  public  File getDirectory() throws ManifestException {
+  public File getDirectory() throws ManifestException {
 
     File file = null;
     try {
@@ -363,40 +363,6 @@ public final class Manifest {
     }
 
     return file;
-  }
-
-
-  // todo uitwerken !!!
-  public String getDependencies(Module module) {
-
-    // 1. Get the correct module type. If type == maven, get project.xml, else get module.xml.
-    //
-    StringBuffer buf = new StringBuffer();
-//
-//    DependencyReader reader = new MavenDependencyReader();
-//    dependencies = reader.parse(new File(getModuleDirectory(), "project.xml"));
-//
-//    for (Iterator i = dependencies.iterator(); i.hasNext();) {
-//      Dependency dep = (Dependency) i.next();
-//      String jarDir =
-//        MavenEnvironment.getMavenRepository() + File.separator +
-//        dep.getArtifactDirectory() + File.separator +
-//        "jars" + File.separator +
-//        dep.getArtifactId();
-//      if (dep.getVersion() != null) {
-//        jarDir += "-" + dep.getVersion();
-//      }
-//      jarDir += ".jar";
-//
-//      buf.append(jarDir);
-//      if (i.hasNext()) {
-//        // Separator char for classpath parts
-//        //
-//        buf.append(":");
-//      }
-//    }
-
-    return buf.toString();
   }
 
   /**

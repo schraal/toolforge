@@ -2,8 +2,15 @@
 # is used by the KarmaClassLoaderRepository to start the main
 # class.
 #
+
+# <karma.root>
+#   <dependency id="ant" version="1.6.1"/>
+#   <dependency id="ant-launcher" version="1.6.1"/>
+# </karma.root>
+
 [karma.root]
-	id=ant, version=1.5.4
+	id=ant, version=1.6.1
+	id=ant, jar=ant-launcher-1.6.1.jar
 	id=log4j, version=1.2.8
 	id=netbeans, jar=netbeans-cvs-beta3.6.jar
 	id=commons-lang, version=1.0.1
