@@ -21,15 +21,14 @@ package nl.toolforge.karma.core.manifest;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.vc.PatchLine;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
+import nl.toolforge.karma.core.vc.PatchLine;
 import org.apache.commons.digester.Digester;
 import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -47,11 +46,9 @@ public class SourceModule extends BaseModule {
   private boolean patchLine = false;
   private boolean developmentLine = false;
   private File baseDir = null;
-  protected static List dependencies = null; // Lazy loading, the first time it is initialized and cached.
 
   /**
-   * Constructs a SourceModule; this module variant has not <code>&lt;version&gt;</code>- or
-   * <code>&lt;development-line&gt;</code>-attribute assigned.
+   * Constructs a <code>SourceModule</code> with a <code>name</code> and <code>location</code>.
    *
    * @param name Mandatory parameter; name of the module.
    * @param location Mandatory parameter; location of the module.
@@ -61,7 +58,7 @@ public class SourceModule extends BaseModule {
   }
 
   /**
-   *
+   * Constructs a <code>SourceModule</code> with a <code>name</code>, <code>location</code> and <code>version</code>.
    */
   public SourceModule(String name, Location location, Version version) {
 
@@ -78,27 +75,18 @@ public class SourceModule extends BaseModule {
     return false;
   }
 
-  //
-  //
   public final void markDevelopmentLine(boolean mark) {
     developmentLine = mark;
   }
 
-  //
-  //
   public final DevelopmentLine getPatchLine() {
-      return new PatchLine(getVersion());
-//    throw new KarmaRuntimeException("Patchline is set when the manifest is loaded. If false, this method cannot be used.");
+    return new PatchLine(getVersion());
   }
 
-  //
-  //
   public final void markPatchLine(boolean mark) {
     patchLine = true;
   }
 
-  //
-  //
   public final Version getVersion() {
     return version;
   }
@@ -113,11 +101,6 @@ public class SourceModule extends BaseModule {
     return (version == null ? "N/A" : version.getVersionNumber());
   }
 
-  /**
-   * Checks if this module has a version number.
-   *
-   * @return <code>true</code> when this module has a version number, <code>false</code> if it hasn't.
-   */
   public boolean hasVersion() {
     return version != null;
   }
@@ -193,26 +176,5 @@ public class SourceModule extends BaseModule {
     }
 
     return deps;
-  }
-
-  public void setState(State state) {
-
-    if (state == null) {
-      throw new IllegalArgumentException("Parameter state cannot be null.");
-    }
-    this.state = state;
-  }
-
-  /**
-   * Gets the modules' state. State is identified by the manifest that loaded the module.
-   *
-   * @return The state of the module. See {@link Module}.
-   */
-  public final State getState() {
-    return state;
-  }
-
-  public final String getStateAsString() {
-    return (state == null ? "N/A" : state.toString());
   }
 }

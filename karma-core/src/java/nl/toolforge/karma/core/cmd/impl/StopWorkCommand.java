@@ -25,15 +25,14 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.ReleaseManifest;
 import nl.toolforge.karma.core.manifest.SourceModule;
-import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.cvs.CVSModuleStatus;
-import nl.toolforge.karma.core.vc.cvs.CVSRunner;
 import nl.toolforge.karma.core.vc.cvs.Utils;
 
 /**
@@ -83,13 +82,14 @@ public class StopWorkCommand extends DefaultCommand {
 //    }
 
 
-    if (!Module.WORKING.equals(((SourceModule)module).getState())) {
+    if (!Module.WORKING.equals(getContext().getCurrentManifest().getState(module))) {
 
       // todo throw commandexception
       response.addMessage(new SuccessMessage("You are not working on module " + module.getName() + "."));
 
     } else {
 
+      Manifest m = getContext().getCurrentManifest();
       try {
 
         Version version = Utils.getLastVersion(module);
@@ -101,18 +101,22 @@ public class StopWorkCommand extends DefaultCommand {
         Runner runner = RunnerFactory.getRunner(module.getLocation());
         runner.checkout(module, version);
 
-        getContext().getCurrentManifest().setState(module, Module.DYNAMIC);
-
-      } catch (ManifestException e) {
-        throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+        if (m instanceof ReleaseManifest) {
+          m.setState(module, Module.STATIC);
+        } else {
+          // Only development manifests can have dynamic modules.
+          //
+          m.setState(module, Module.DYNAMIC);
+        }
       } catch (VersionControlException e) {
         throw new CommandException(e.getErrorCode(), e.getMessageArguments());
       }
-      // todo message to be internationalized.
-      //
       // todo message handling to karma-cli ???
       //
-      response.addMessage(new SuccessMessage("You have stopped working on module " + module.getName() + "; state changed to DYNAMIC."));
+      response.addMessage(
+          new SuccessMessage(
+              getFrontendMessages().getString("message.STOP_WORK_SUCCESFULL"),
+              new Object[]{module.getName(), m.getState(module).toString()}));
     }
   }
 

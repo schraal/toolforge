@@ -95,10 +95,10 @@ public class StartWorkCommand extends DefaultCommand {
 
     Manifest currentManifest = getContext().getCurrentManifest();
 
-    if (module.getState().equals(Module.STATIC) && currentManifest.getType().equals(Manifest.DEVELOPMENT_MANIFEST)) {
+    if (currentManifest.getState(module).equals(Module.STATIC) && currentManifest.getType().equals(Manifest.DEVELOPMENT_MANIFEST)) {
       throw new CommandException(CommandException.START_WORK_NOT_ALLOWED_ON_STATIC_MODULE, new Object[] {module.getName()});
     }
-    if (Module.WORKING.equals(module.getState())) {
+    if (Module.WORKING.equals(currentManifest.getState(module))) {
 
       // todo message to be internationalized.
       //
@@ -175,9 +175,6 @@ public class StartWorkCommand extends DefaultCommand {
         response.addMessage(
             new SuccessMessage("You can start working on module " + module.getName() + "; state changed to WORKING."));
 
-      } catch (ManifestException e) {
-        throw new CommandException(e.getErrorCode(), e.getMessageArguments());
-//      }
       } catch (VersionControlException e) {
         throw new CommandException(e.getErrorCode(), e.getMessageArguments());
       }

@@ -75,9 +75,16 @@ public final class Utils {
         } else {
           return new CVSTag(developmentLine.getName() + "_" + version.getVersionNumber());
         }
+      } else if (version instanceof Patch) {
+
+        // If the version argument is in fact a Patch instance, we have to create something like : PATCHLINE|p_0-0-0-
+        //
+        return new CVSTag(PatchLine.NAME_PREFIX + PatchLine.PATCH_SEPARATOR + version.getVersionNumber());
+
       } else {
         return new CVSTag(MainLine.NAME_PREFIX + "_" + version.getVersionNumber());
       }
+
     }
     return new CVSTag("");
   }

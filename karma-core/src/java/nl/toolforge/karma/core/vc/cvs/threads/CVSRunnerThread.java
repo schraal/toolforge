@@ -55,9 +55,12 @@ public class CVSRunnerThread extends RunnerThread {
 
       LogInformation logInfo = null;
       try {
+
+        moduleStatus = new CVSModuleStatus(getModule());
+
         logInfo = runner.log(getModule());
 
-        moduleStatus = new CVSModuleStatus(getModule(), logInfo);
+        moduleStatus.setLogInformation(logInfo);
 
         // The log method would have thrown a CVSException ..
         //

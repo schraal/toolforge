@@ -122,6 +122,8 @@ public class CommandException extends Exception {
    */
   public static final ErrorCode NO_BUILD_DIR = new ErrorCode(EXCEPTION_PREFIX + "00062");
 
+  public static final ErrorCode MODULE_VERSION_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00064");
+
   public CommandException(ErrorCode errorCode) {
     this(errorCode, null);
   }

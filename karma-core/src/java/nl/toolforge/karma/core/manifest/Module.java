@@ -43,6 +43,7 @@ public interface Module {
   public static final State WORKING = new State("WORKING");
   public static final State DYNAMIC = new State("DYNAMIC");
   public static final State STATIC = new State("STATIC");
+  public static final State UNDEFINED = new State("UNDEFINED");
 
   public static final DeploymentType JAR = new DeploymentType("jar");
 
@@ -120,31 +121,6 @@ public interface Module {
   public File getBaseDir();
 
   /**
-   * Returns a modules' state.
-   *
-   * @return
-   */
-  public State getState();
-
-  /**
-   * <p>Sets a modules' state.</p>
-   *
-   * <p>This method currently only applies to SourceModule implementations, but has been included here to allow for
-   * easier future enhancement to Karma.</p>
-   *
-   * @param state
-   */
-  public void setState(State state);
-
-  /**
-   * <p>This method currently only applies to SourceModule implementations, but has been included here to allow for
-   * easier future enhancement to Karma.</p>
-   *
-   * @return
-   */
-  public String getStateAsString();
-
-  /**
    * Returns the <code>PatchLine</code> for this module, if the module matches the correct criteria as specified in
    * {@link #markPatchLine(boolean)}.
    *
@@ -186,7 +162,15 @@ public interface Module {
   public Version getVersion();
 
   /**
-   * Check if a module has a &lt;version&gt;-attribute.
+   * If the module element in the manifest contains a <code>version</code> attribute, this method will return the
+   * value of that attribute.
+   *
+   * @return The module version, or <code>N/A</code>, when no version number exists.
+   */
+  public String getVersionAsString();
+
+  /**
+   * Checks if a module has a &lt;version&gt;-attribute.
    *
    * @return <ode>true</code> if the module has a &lt;version&gt;-attribute or <code>false</code> if it hasn't.
    */
@@ -240,13 +224,6 @@ public interface Module {
     private static final String EAPP_PREFIX = "eapp";
     private static final String DEPLOY_CONFIG_PREFIX = "deploy-config";
 
-    private static final String DEPLOYMENT_TYPE_PATTERN_STRING =
-        CONFIG_APPSERVER_PREFIX + "|" +
-        APPSERVER_PREFIX + "|" +
-        WEBAPP_PREFIX + "|" +
-        EAPP_PREFIX + "|" +
-        DEPLOY_CONFIG_PREFIX;
-
     private String deploymentType = null;
 
     public DeploymentType(String moduleName) {
@@ -283,7 +260,7 @@ public interface Module {
     }
 
     public String getDeploymentType() {
-      return this.deploymentType;
+      return deploymentType;
     }
 
     public int hashCode() {
@@ -323,9 +300,9 @@ public interface Module {
      */
     public State(String stateString) {
 
-      if (!stateString.matches("WORKING|DYNAMIC|STATIC")) {
+      if (!stateString.matches("WORKING|DYNAMIC|STATIC|UNDEFINED")) {
         throw new PatternSyntaxException(
-            "Pattern mismatch for 'state'; pattern must match 'WORKING|DYNAMIC|STATIC'", stateString, -1);
+            "Pattern mismatch for 'state'; pattern must match 'WORKING|DYNAMIC|STATIC|UNDEFINED'", stateString, -1);
       }
       this.state = stateString;
     }

@@ -24,7 +24,21 @@ package nl.toolforge.karma.core;
  */
 public class Patch extends Version {
 
-  public static final String PATCH_POSTFIX = "-{1}\\d{1,4}";
+  public static final String PATCH_PATTERN_POSTFIX = "-{1}\\d{1,2}";
+
+  /**
+   * Override for {@link Version.VERSION_PATTERN_STRING}. A patch can have one more digit.
+   *
+   * @see #PATCH_PATTERN_POSTFIX
+   */
+  public static final String VERSION_PATTERN_STRING = Version.VERSION_PATTERN_STRING + PATCH_PATTERN_POSTFIX;
+
+  /**
+   * Override for {@link Version.INITIAL_VERSION}. The initial patch level is <code>0-0-0</code>.
+   *
+   * @see Version.INITIAL_VERSION
+   */
+  public static Version INITIAL_VERSION = new Patch("0-0-0");
 
   /**
    * Patches have the following format : <code>0-0-x</code>, where x is the actual patch number within the
@@ -37,7 +51,7 @@ public class Patch extends Version {
   }
 
   public String getPatternString() {
-    return super.getPatternString() + PATCH_POSTFIX;
+    return VERSION_PATTERN_STRING;
   }
 
 }

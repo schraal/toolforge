@@ -30,49 +30,49 @@ import java.util.regex.PatternSyntaxException;
  */
 public class Version implements Comparable {
 
-  public static final String VERSION_PATTERN_STRING = "\\d{1,4}-\\d{1,4}";
+  public static String VERSION_PATTERN_STRING = "\\d{1,2}-\\d{1,2}";
 
   /** Separator for version digits. */
   public static final String VERSION_SEPARATOR_CHAR = "-";
 
   /** The initial version for a module. */
-  public static final Version INITIAL_VERSION = new Version("0-0");
+  public static Version INITIAL_VERSION = new Version("0-0");
 
-	public static final int FIRST_DIGIT = 0;
-	public static final int SECOND_DIGIT = 1;
-	public static final int THIRD_DIGIT = 2;
+  public static final int FIRST_DIGIT = 0;
+  public static final int SECOND_DIGIT = 1;
+  public static final int THIRD_DIGIT = 2;
 
-	private String versionNumber = null;
+  private String versionNumber = null;
 
-	private int[] versionDigits = null;
+  private int[] versionDigits = null;
 
-	/**
-	 * Constructs a version number using the <code>versionIdentifier</code> parameter.
-	 *
-	 * @param versionIdentifier
-	 */
-	public Version(String versionIdentifier) {
+  /**
+   * Constructs a version number using the <code>versionIdentifier</code> parameter.
+   *
+   * @param versionIdentifier
+   */
+  public Version(String versionIdentifier) {
 
     if (!versionIdentifier.matches(getPatternString())) {
       throw new PatternSyntaxException(
           "Pattern mismatch for version. Should match " + getPatternString(), versionIdentifier, -1);
     }
 
-		this.versionNumber = versionIdentifier;
 
-		StringTokenizer tokenizer = new StringTokenizer(versionIdentifier, "-");
+    StringTokenizer tokenizer = new StringTokenizer(versionIdentifier, VERSION_SEPARATOR_CHAR);
 
-		this.versionDigits = new int[tokenizer.countTokens()];
-		int i = 0;
-		while (tokenizer.hasMoreTokens()) {
-			this.versionDigits[i] = new Integer(tokenizer.nextToken()).intValue();
-			i++;
-		}
-	}
+    versionDigits = new int[tokenizer.countTokens()];
+    int i = 0;
+    while (tokenizer.hasMoreTokens()) {
+      versionDigits[i] = new Integer(tokenizer.nextToken()).intValue();
+      i++;
+    }
 
+    createVersionNumber();
+  }
 
   public String getPatternString() {
-    return "\\d{1,4}-{1}\\d{1,4}";
+    return VERSION_PATTERN_STRING;
   }
 
   /**
@@ -94,13 +94,13 @@ public class Version implements Comparable {
     return new Patch(getVersionNumber() + VERSION_SEPARATOR_CHAR + patchNumber);
   }
 
-	/**
-	 * Constructs a version number concatenating each item in <code>versionDigits</code>, using the <code>'-'</code>
-	 * separator. <code>{1, 0, 9}</code> translates into a version number <code>1-0-9</code>.
-	 *
-	 * @param versionDigits An array, containing all version components (maximum of three is allowed).
-	 */
-	public Version(int[] versionDigits) {
+  /**
+   * Constructs a version number concatenating each item in <code>versionDigits</code>, using the <code>'-'</code>
+   * separator. <code>{1, 0, 9}</code> translates into a version number <code>1-0-9</code>.
+   *
+   * @param versionDigits An array, containing all version components (maximum of three is allowed).
+   */
+  public Version(int[] versionDigits) {
 
     if (versionDigits.length < 2) {
       throw new IllegalArgumentException(
@@ -114,97 +114,109 @@ public class Version implements Comparable {
       if (i < versionDigits.length - 1);
     }
 
-		this.versionDigits = versionDigits;
+    this.versionDigits = versionDigits;
 
-		createVersionNumber();
-	}
+    createVersionNumber();
+  }
 
-	private void createVersionNumber() {
+  private void createVersionNumber() {
 
-		// For the time being, let it go ... if a runtime occurs, fine, then I know I have to do something.
-		//
-		this.versionNumber = "" + versionDigits[0];
-		for (int i = 1; i < versionDigits.length; i++) {
-			this.versionNumber += "-" + versionDigits[i];
-		}
-	}
+    // For the time being, let it go ... if a runtime occurs, fine, then I know I have to do something.
+    //
+    this.versionNumber = "" + versionDigits[0];
+    for (int i = 1; i < versionDigits.length; i++) {
+      this.versionNumber += VERSION_SEPARATOR_CHAR + versionDigits[i];
+    }
+  }
 
-	public String getVersionNumber() {
-		return versionNumber;
-	}
+  public String getVersionNumber() {
+    return versionNumber;
+  }
 
-	public int getDigit(int index) {
+  private int getLastDigit() {
+    return versionDigits[versionDigits.length - 1];
+  }
 
-		if (index > 2) {
-			throw new IllegalArgumentException("Only three digits are supported.");
-		}
-		return versionDigits[index];
-	}
+  private int getLastDigitIndex() {
+    return versionDigits.length - 1;
+  }
 
-	public int getLastDigit() {
-		return versionDigits[versionDigits.length - 1];
-	}
+  /**
+   * Gets the string representation of this version.
+   *
+   * @return A string representation of this version.
+   */
+  public String toString() {
+    return versionNumber;
+  }
 
-	public int getLastDigitIndex() {
-		return versionDigits.length - 1;
-	}
+  public final int hashCode() {
+    return versionNumber.hashCode();
+  }
 
-	/**
-	 * Gets the string representation of this version.
-	 *
-	 * @return A string representation of this version.
-	 */
-	public String toString() {
-		return versionNumber;
-	}
+  public final boolean equals(Object o) {
+    if (!(o instanceof Version)) {
+      return false;
+    }
 
-	public int hashCode() {
-		return versionNumber.hashCode();
-	}
+    return ((Version) o).versionNumber.equals(this.versionNumber);
+  }
 
-	public boolean equals(Object o) {
-		if (!(o instanceof Version)) {
-			return false;
-		}
+  /**
+   * Compares two <code>Version</code> instances.
+   *
+   * @param o The other <code>Version</code> instance to match against.
+   * @return Returns <code>-1</code> when <code>this < o</code>, <code>0</code> when
+   *         <code>this == o</code> or <code>1</code> when <code>this > o</code>.
+   */
+  public final int compareTo(Object o) {
 
-		return ((Version) o).versionNumber.equals(this.versionNumber);
-	}
+    int[] zis = versionDigits;
+    int[] zat = ((Version) o).versionDigits;
 
-	/**
-	 * Compares two <code>Version</code> instances.
-	 *
-	 * @param o The other <code>Version</code> instance to match against.
-	 * @return Returns <code>-1</code> when <code>this < o</code>, <code>0</code> when
-	 *         <code>this == o</code> or <code>1</code> when <code>this > o</code>.
-	 */
-	public int compareTo(Object o) {
+    if (zis[0] < zat[0]) {
+      return -1;
+    } else if (zis[0] == zat[0]) {
+      if (zis[1] < zat[1]) {
+        return -1;
+      } else if (zis[1] == zat[1]) {
+        if (o instanceof  Patch) {
+          // We also have a third digit to take into account.
+          //
+          if (zis[2] < zat[2]) {
+            return -1;
+          } else if (zis[2] == zat[2]) {
+            return 0;
+          } else {
+            return 1;
+          }
+        }
+        return 0;
+      } else {
+        return 1;
+      }
+    } else {
+      return 1;
+    }
+  }
 
-		Version that = (Version) o;
+  public void setDigit(int index, int nextDigit) {
+    versionDigits[index] = nextDigit;
+    createVersionNumber();
+  }
 
-		double firstDigit = that.versionDigits[0] * 1000000000;
-		double secondDigit = that.versionDigits[1] * 1000000;
-		double thirdDigit = that.versionDigits[1] * 1000;
+  public final boolean isLowerThan(Version version) {
+    return this.compareTo(version) == -1;
+  }
 
-		double thatDouble = firstDigit + secondDigit + thirdDigit;
+  public final boolean isHigherThan(Version version) {
+    return this.compareTo(version) == 1;
+  }
 
-		firstDigit = this.versionDigits[0] * 1000000000;
-		secondDigit = this.versionDigits[1] * 1000000;
-		thirdDigit = this.versionDigits[1] * 1000;
-
-		double thisDouble = firstDigit + secondDigit + thirdDigit;
-
-		if (thisDouble < thatDouble) {
-			return -1;
-		} else if (thisDouble == thatDouble) {
-			return 0;
-		} else {
-			return 1;
-		}
-	}
-
-	public void setDigit(int index, int nextDigit) {
-		versionDigits[index] = nextDigit;
-		createVersionNumber();
-	}
-
+  /**
+   * Increases this versions' last digit by 1.
+   */
+  public final void increase() {
+    setDigit(getLastDigitIndex(), getLastDigit() + 1);
+  }
 }

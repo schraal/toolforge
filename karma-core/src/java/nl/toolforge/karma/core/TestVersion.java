@@ -36,8 +36,8 @@ public class TestVersion extends TestCase {
 
     try {
       v = new Version("0-1");
-      v = new Version("0000-1");
-      v = new Version("0000-1111");
+      v = new Version("00-1");
+      v = new Version("00-11");
 
       v = new Version("1-0");
       v = new Version("0-1");
@@ -65,8 +65,6 @@ public class TestVersion extends TestCase {
       v = new Version("0-1-1-");
       v = new Version("0-1-1-1");
 
-      v = new Version("00000-1");
-      v = new Version("0000--1");
       v = new Version("0--1");
       v = new Version("0--1-0");
 
@@ -87,11 +85,25 @@ public class TestVersion extends TestCase {
     assertEquals("0-1-3", v.getVersionNumber());
   }
 
+  public void testVersionParsing() {
+
+    Version v = new Version("1-00");
+    assertEquals(new Version("1-0"), v);
+
+    v = new Version("1-01");
+    assertEquals(new Version("1-1"), v);
+    assertEquals(v.getVersionNumber(), "1-1");
+
+    v = new Version("01-01");
+    assertNotSame(new Version("01-10").getVersionNumber(), "01-10");
+  }
+
+
   public void testCompare() {
 
     Version v1 = new Version("0-2");
     Version v2 = new Version("1-1");
-    Version v3 = new Version("0-2");
+    Version v3 = new Version("0-3");
 
     List s = new ArrayList();
     s.add(v1);
@@ -105,14 +117,50 @@ public class TestVersion extends TestCase {
     assertEquals(v3, (Version) s.get(1));
   }
 
+  public void testBoundaries1() {
+
+    Version v1 = new Version("0-2");
+    Version v2 = new Version("0-3");
+
+    assertTrue(v1.isLowerThan(v2));
+    assertTrue(v2.isHigherThan(v1));
+  }
+
+  public void testBoundaries2() {
+
+    Version v1 = new Version("0-2");
+    Version v2 = new Version("1-3");
+
+    assertTrue(v1.isLowerThan(v2));
+    assertTrue(v2.isHigherThan(v1));
+  }
+
+  public void testBoundaries3() {
+
+    Version v1 = new Version("0-11");
+    Version v2 = new Version("0-2");
+
+    assertTrue(v2.isLowerThan(v1));
+    assertTrue(v1.isHigherThan(v2));
+  }
+
+  public void testBoundaries4() {
+
+    Version v1 = new Version("1-0");
+    Version v2 = new Version("0-1");
+
+    assertTrue(v2.isLowerThan(v1));
+    assertTrue(v1.isHigherThan(v2));
+  }
+
   public void testPatch() {
 
     Version v = null;
 
     try {
       v = new Patch("0-0-1");
-      v = new Patch("0000-1-9");
-      v = new Patch("0000-1111-9999");
+      v = new Patch("00-1-9");
+//      v = new Patch("0000-1111-9999");
 
       assertTrue(true);
 

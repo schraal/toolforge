@@ -57,7 +57,12 @@ public interface Manifest {
    * @return
    */
   public File getDirectory();
-//  public File getDirectory() throws ManifestException;
+
+  public void setState(Module module, Module.State state);
+
+  public boolean isLocal(Module module);
+
+  public Module.State getState(Module module);
 
   /**
    * @see AbstractManifest for the time being
@@ -99,18 +104,6 @@ public interface Manifest {
    * @see AbstractManifest for the time being
    */
   public void load() throws ManifestException;
-
-  /**
-   * @see AbstractManifest for the time being
-   */
-  public void setState(Module module, Module.State working) throws ManifestException;
-
-  /**
-   * @see AbstractManifest for the time being
-   *
-   * @return
-   */
-  public boolean isLocal(Module module);
 
   public String getType();
 }

@@ -29,6 +29,12 @@ public class VersionCreationFactory extends AbstractObjectCreationFactory {
 
     String value = attributes.getValue("value");
 
-    return new Version(value);
+    // todo Hmm, hack !
+
+    if (value.matches(Patch.VERSION_PATTERN_STRING)) {
+      return new Patch(value);
+    } else {
+      return new Version(value);
+    }
   }
 }

@@ -57,11 +57,12 @@ public class PatchLine extends DevelopmentLine {
   }
 
   public String getPatternString() {
-
-//    String p = "PATCHLINE\\|v_\\d{1,4}-\\d{1,4}";
-    String p = NAME_PREFIX + VERSION_SEPARATOR_PATTERN + Version.VERSION_PATTERN_STRING;
-    return p;
+    return NAME_PREFIX + VERSION_SEPARATOR_PATTERN + Version.VERSION_PATTERN_STRING;
   }
+
+//  public String getSymbolicName() {
+//    return NAME_PREFIX + PATCH_SEPARATOR + version.getVersionNumber();
+//  }
 
   /**
    * Given the patch line for a module, a matching pattern is required to select the corresponding patch versions. A
@@ -72,6 +73,7 @@ public class PatchLine extends DevelopmentLine {
    * @return See the method description.
    */
   public String getMatchingPattern() {
-    return NAME_PREFIX + PATCH_SEPARATOR_PATTERN + version.getVersionNumber() + Patch.PATCH_POSTFIX;
+    // Something like should be returned, where 0-0 is the version to which the patch applies: PATCHLINE|p_0-0-{1}\\d{1,2}
+    return NAME_PREFIX + PATCH_SEPARATOR_PATTERN + version.getVersionNumber() + Patch.PATCH_PATTERN_POSTFIX;
   }
 }

@@ -62,25 +62,23 @@ public final class DevelopmentManifest extends AbstractManifest {
 
     Module module = moduleFactory.create(descriptor);
 
-    if (((SourceModule)module).hasVersion()) {
-      module.setState(Module.STATIC);
-    } else {
-      if (!isLocal(module)) {
-        module.setState(Module.DYNAMIC);
-      } else {
-        module.setState(getLocalState(module));
-      }
-    }
-
     try {
-        if (module instanceof SourceModule) {
-          File manifestDirectory = new File(LocalEnvironment.getDevelopmentHome(), getName());
-          module.setBaseDir(new File(manifestDirectory, module.getName()));
-        }
+      if (module instanceof SourceModule) {
+        File manifestDirectory = new File(LocalEnvironment.getDevelopmentHome(), getName());
+        module.setBaseDir(new File(manifestDirectory, module.getName()));
+      }
     } catch(Exception e) {
       // Basically, if we can't do this, we have nothing ... really a RuntimeException
       //
       throw new KarmaRuntimeException("Could not set base directory for module " + module.getName());
+    }
+
+    if (((SourceModule)module).hasVersion()) {
+      setState(module, Module.STATIC);
+    } else {
+      if (isLocal(module)) {
+        setState(module, Module.DYNAMIC);
+      }
     }
 
     if (getModulesForManifest().containsKey(module.getName())) {
@@ -92,96 +90,4 @@ public final class DevelopmentManifest extends AbstractManifest {
     //
     removeLocal((SourceModule) module);
   }
-
-  /**
-   * A <code>Module</code> can be in different states as defined in {@link Module}. This methods sets
-   * the state of the module in its current context of the manifest.
-   *
-   * @param module
-   * @param state The (new) state of the module.
-   */
-  public final synchronized void setState(Module module, Module.State state) throws ManifestException {
-
-    if (module == null || state == null) {
-      throw new IllegalArgumentException("Parameters module and or state cannot be null.");
-    }
-
-    if (!getAllModules().keySet().contains(module.getName())) {
-      throw new ManifestException(ManifestException.MODULE_NOT_FOUND, new Object[] { module.getName() });
-    }
-
-    // The following blocks form a 'transaction'.
-    //
-    try {
-
-      // Remove old state files ...
-      //
-
-      FilenameFilter filter = new FilenameFilter() {
-        public boolean accept(File dir, String name) {
-          if ((name != null) && ((".WORKING".equals(name)) || (".STATIC".equals(name)) || (".DYNAMIC".equals(name)))) {
-            return true;
-          } else {
-            return false;
-          }
-        }
-      };
-
-      String[] stateFiles = new File(getDirectory(), module.getName()).list(filter);
-
-      if (stateFiles != null) {
-        for (int i = 0; i < stateFiles.length; i++) {
-          new File(new File(getDirectory(), module.getName()), stateFiles[i]).delete();
-        }
-      }
-
-      File stateFile = new File(new File(getDirectory(), module.getName()), state.getHiddenFileName());
-      stateFile.createNewFile();
-
-    } catch (Exception e) {
-      throw new ManifestException(ManifestException.STATE_UPDATE_FAILURE, new Object[] { module.getName(), state.toString()});
-    }
-
-    // If we were able to create that hidden file, the we'll update the modules' state.
-    //
-    module.setState(state);
-  }
-
-  public final Module.State getLocalState(Module module) {
-
-    if (!isLocal(module)) {
-      if (((SourceModule) module).hasVersion()) {
-        return Module.STATIC;
-      } else {
-        return Module.DYNAMIC;
-      }
-    } else {
-
-      FilenameFilter filter = new FilenameFilter() {
-        public boolean accept(File dir, String name) {
-          if ((name != null) && name.matches(".WORKING|.STATIC|.DYNAMIC")) {
-            return true;
-          } else {
-            return false;
-          }
-        }
-      };
-
-      String[] stateFiles = new File(getDirectory(), module.getName()).list(filter);
-
-      if (stateFiles == null || stateFiles.length == 0 ) {
-        if (((SourceModule) module).hasVersion()) {
-          return Module.STATIC;
-        } else {
-          return Module.DYNAMIC;
-        }
-      }
-
-      if (stateFiles.length > 0 && ".WORKING".equals(stateFiles[0])) {
-        return Module.WORKING;
-      }
-      return Module.DYNAMIC;
-    }
-  }
-
 }

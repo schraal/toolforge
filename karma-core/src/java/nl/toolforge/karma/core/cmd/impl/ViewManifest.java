@@ -111,7 +111,7 @@ public class ViewManifest extends DefaultCommand {
 
       try {
 
-        if (module.getState().equals(Module.WORKING)) {
+        if (manifest.getState(module).equals(Module.WORKING)) {
           moduleData[1] = "   ";
         } else {
           Version localVersion = moduleStatus.getLocalVersion();
@@ -119,26 +119,23 @@ public class ViewManifest extends DefaultCommand {
         }
 
         if (existsInRepository) {
-          moduleData[2] = "(" + moduleStatus.getLastVersion() + ")";
+          Version remoteVersion = moduleStatus.getLastVersion();
+          moduleData[2] = (remoteVersion == null ? "   " : "(" + remoteVersion.getVersionNumber() + ")");
         } else {
           moduleData[2] = "";
         }
-
+        
       } catch (VersionControlException v) {
         // Version for the module is non-existing in the repository.
         //
         throw new CommandException(v.getErrorCode(), v.getMessageArguments());
       }
 
-      if (module.getState().equals(Module.STATIC)) {
-        moduleData[3] = "(" + module.getVersion().getVersionNumber() + ")";
-      } else {
-        moduleData[3] = "";
-      }
+      moduleData[3] = "(" + module.getVersionAsString() + ")";
       moduleData[4] = (module.hasPatchLine() ? "!!!" : "");
 
       if (existsInRepository) {
-        moduleData[5] = module.getStateAsString();
+        moduleData[5] = manifest.getState(module).toString();
         moduleData[6] = module.getLocation().getId();
       } else {
         moduleData[5] = "";

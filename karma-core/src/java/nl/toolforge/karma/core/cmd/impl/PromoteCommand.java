@@ -22,21 +22,17 @@ import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.CVSModuleStatus;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
-
-import java.util.regex.PatternSyntaxException;
 
 /**
  * Implementation of the 'codeline freeze' concept. Karma increases a modules' version (using whichever pattern is
@@ -72,39 +68,34 @@ public class PromoteCommand extends DefaultCommand {
       String moduleName = getCommandLine().getOptionValue("m");
       String comment = getCommandLine().getOptionValue("c");
 
-      SourceModule module = (SourceModule) getContext().getCurrentManifest().getModule(moduleName);
+      Manifest manifest = getContext().getCurrentManifest();
+      Module module = manifest.getModule(moduleName);
 
-      if (!module.getState().equals(Module.WORKING)) {
+      if (!manifest.getState(module).equals(Module.WORKING)) {
         throw new CommandException(CommandException.PROMOTE_ONLY_ALLOWED_ON_WORKING_MODULE, new Object[]{moduleName});
       }
 
-      Version nextVersion = null;
-      if (getCommandLine().getOptionValue("v") != null) {
-        // The module should be promoted to a specific version.
-        //
-        try {
-          nextVersion = new Version(getCommandLine().getOptionValue("v"));
-        } catch (PatternSyntaxException p) {
-          throw new CommandException(CommandException.INVALID_ARGUMENT, new Object[]{"-v " + getCommandLine().getOptionValue("v")});
-        }
-
-        // todo nextVersion MUST be greater than the getNextVersion() that can be called.
-        // todo rules: if current version is x-y then next version can be (x+1)-y or x-(y+1)
-        // todo rules ctnd: if version is x-y-z then next version can only be x-y-(z+1)
-
-      } else {
-
-        Runner runner = RunnerFactory.getRunner(module.getLocation());
-
-        ModuleStatus status = new CVSModuleStatus(module, ((CVSRunner) runner).log(module));
-        nextVersion = status.getNextVersion();
-      }
-
-      this.newVersion = nextVersion;
       Runner runner = RunnerFactory.getRunner(module.getLocation());
 
+      ModuleStatus status = new CVSModuleStatus(module, ((CVSRunner) runner).log(module));
+      Version nextVersion = status.getNextVersion();
+
+      if (getCommandLine().getOptionValue("v") != null) {
+
+        Version manualVersion = new Version(getCommandLine().getOptionValue("v"));
+        if (manualVersion.isLowerThan(status.getLastVersion())) {
+          throw new CommandException(
+              CommandException.MODULE_VERSION_ERROR,
+              new Object[]{manualVersion.getVersionNumber(), status.getLastVersion().getVersionNumber()}
+          );
+        }
+        nextVersion = manualVersion;
+      }
+
+      newVersion = nextVersion;
+
       // TODO check whether files exist that have not yet been committed.
-      runner.promote(module, comment, nextVersion);
+      runner.promote(module, comment, newVersion);
 
     } catch (ManifestException e) {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());

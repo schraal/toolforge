@@ -89,14 +89,14 @@ public class ViewManifestImpl extends ViewManifest {
         //
         buffer.append(data[0] + StringUtils.repeat(" ", 30 - data[0].length()) + "| ");
 
-        // Cols 2-5
+        // Cols 2-7
         //
+        buffer.append(data[1] + StringUtils.repeat(" ",  8 - data[1].length()) + "| ");
         buffer.append(data[2] + StringUtils.repeat(" ",  8 - data[2].length()) + "| ");
         buffer.append(data[3] + StringUtils.repeat(" ",  8 - data[3].length()) + "| ");
-        buffer.append(data[4] + StringUtils.repeat(" ",  8 - data[4].length()) + "| ");
+        buffer.append(data[4] + StringUtils.repeat(" ", 20 - data[4].length()) + "| ");
         buffer.append(data[5] + StringUtils.repeat(" ", 20 - data[5].length()) + "| ");
-        buffer.append(data[6] + StringUtils.repeat(" ", 20 - data[6].length()) + "| ");
-        buffer.append(data[7] + StringUtils.repeat(" ", 20 - data[7].length()) + "|\n");
+        buffer.append(data[6] + StringUtils.repeat(" ", 20 - data[6].length()) + "|\n");
       }
 
     } else {
@@ -127,13 +127,13 @@ public class ViewManifestImpl extends ViewManifest {
         //
         buffer.append(data[0] + StringUtils.repeat(" ", 30 - data[0].length()) + "| ");
 
-        // Column 2
+        // Column 2-4
         //
         buffer.append(data[1] + StringUtils.repeat(" ",  8 - data[1].length()) + "| ");
         buffer.append(data[2] + StringUtils.repeat(" ",  8 - data[2].length()) + "| ");
         buffer.append(data[3] + StringUtils.repeat(" ",  8 - data[3].length()) + "| ");
 
-        // Cols 3-5
+        // Cols 5-6
         //
         buffer.append(data[5] + StringUtils.repeat(" ", 20 - data[5].length()) + "| ");
         buffer.append(data[6] + StringUtils.repeat(" ", 25 - data[6].length()) + "|\n");

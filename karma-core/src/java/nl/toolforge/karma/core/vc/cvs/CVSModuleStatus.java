@@ -66,75 +66,92 @@ public class CVSModuleStatus implements ModuleStatus {
    */
   public CVSModuleStatus(Module module, LogInformation logInfo) {
     this.module = module;
-    this.logInfo = logInfo;
+    setLogInformation(logInfo);
+  }
 
-    // Cache some data
-    //
+  public CVSModuleStatus(Module module) {
+    this.module = module;
+  }
+
+  public void setLogInformation(Object logInfo) {
+    this.logInfo = (LogInformation) logInfo;
     matchingList = collectVersions(module);
   }
 
+  /**
+   * Returns a Version instance representing the next possible version (major or patch) for the module.
+   *
+   * @return
+   */
   public Version getNextVersion() {
 
-    if (nextVersion == null) {
+    if (matchingList.size() == 0) {
 
-      if (matchingList.size() == 0) {
-        return Version.INITIAL_VERSION;
+      // If the module is in a ReleaseManifest and has a PatchLine already, we can savely
+      // return the initial patch level for the module.
+      //
+      // todo hmm (see sourceforge issue 1019628). Not totally convinced. What if the module doesn't have a patchline ?
+      // todo there is something to this logic.
+
+      if (module.hasPatchLine()) {
+        return Patch.INITIAL_VERSION;
       }
-      nextVersion = (Version) matchingList.get(matchingList.size() - 1);
-      nextVersion.setDigit(nextVersion.getLastDigitIndex(), nextVersion.getLastDigit() + 1);
+
+      return null;
     }
+    nextVersion = (Version) matchingList.get(matchingList.size() - 1);
+    nextVersion.increase();
+
     return nextVersion;
   }
 
+  /**
+   * The latest promoted version of the module in the version control system.
+   *
+   * @return
+   */
   public Version getLastVersion() {
 
-    if (lastVersion == null) {
-
-      if (matchingList.size() == 0) {
-        // todo replace by CVSRuntimeException with ErrorCode instance.
-        //
-        throw new KarmaRuntimeException(
-            "Module " + module.getName() +
-            " is invalid in repository " + module.getLocation().getId() +
-            "; no version info available.");
-      }
-      lastVersion = (Version) matchingList.get(matchingList.size() - 1);
-      lastVersion.setDigit(lastVersion.getLastDigitIndex(), lastVersion.getLastDigit());
+    if (matchingList.size() == 0) {
+      return null;
     }
+    lastVersion = (Version) matchingList.get(matchingList.size() - 1);
 
     return lastVersion;
   }
 
   public Version getLocalVersion() throws CVSException {
 
-    if (localVersion == null) {
+    StandardAdminHandler handler = new StandardAdminHandler();
 
-      StandardAdminHandler handler = new StandardAdminHandler();
+    try {
+      Entry[] entries = handler.getEntriesAsArray(module.getBaseDir());
 
+      Entry moduleInfo = null;
+      for (int i = 0; i < entries.length; i++) {
+
+        if (entries[i].getName().equals(Module.MODULE_INFO)) {
+          moduleInfo = entries[i];
+        }
+      }
       try {
-        Entry[] entries = handler.getEntriesAsArray(module.getBaseDir());
-
-        Entry moduleInfo = null;
-        for (int i = 0; i < entries.length; i++) {
-
-          if (entries[i].getName().equals(Module.MODULE_INFO)) {
-            moduleInfo = entries[i];
-          }
+        if (moduleInfo == null || moduleInfo.getTag() == null || moduleInfo.getTag().matches(DevelopmentLine.DEVELOPMENT_LINE_PATTERN_STRING)) {
+          // We have the HEAD of a DevelopmentLine.
+          //
+          return null;
         }
-        try {
-          if (moduleInfo == null || moduleInfo.getTag() == null || moduleInfo.getTag().matches(DevelopmentLine.DEVELOPMENT_LINE_PATTERN_STRING)) {
-            // We have the HEAD of a DevelopmentLine.
-            //
-            return null;
-          }
+        if (moduleInfo.getTag().startsWith(PatchLine.NAME_PREFIX)) {
+          localVersion = new Patch(moduleInfo.getTag().substring(moduleInfo.getTag().indexOf("_") + 1));
+        } else {
           localVersion = new Version(moduleInfo.getTag().substring(moduleInfo.getTag().indexOf("_") + 1));
-        } catch (Exception e) {
-          throw new CVSException(CVSException.LOCAL_MODULE_ERROR, new Object[]{module.getName()});
         }
 
-      } catch (IOException e) {
+      } catch (Exception e) {
         throw new CVSException(CVSException.LOCAL_MODULE_ERROR, new Object[]{module.getName()});
       }
+
+    } catch (IOException e) {
+      throw new CVSException(CVSException.LOCAL_MODULE_ERROR, new Object[]{module.getName()});
     }
     return localVersion;
   }
@@ -148,6 +165,10 @@ public class CVSModuleStatus implements ModuleStatus {
   }
 
   private List collectVersions(Module module) {
+
+    if (logInfo == null) {
+      return new ArrayList();
+    }
 
     // Step 1 : get all symbolicnames that apply to the correct pattern
     //
@@ -163,6 +184,7 @@ public class CVSModuleStatus implements ModuleStatus {
       // We are working on the PatchLine of a module.
       //
       pattern = Pattern.compile(((PatchLine) module.getPatchLine()).getMatchingPattern());
+//      pattern = Pattern.compile("PATCHLINE|p_0-0-{1}\\d{1,2}");
 
     } else {
       // We are doing MAINLINE development.

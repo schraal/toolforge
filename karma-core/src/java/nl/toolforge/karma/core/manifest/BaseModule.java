@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -36,6 +37,7 @@ public abstract class BaseModule implements Module {
 
   private Location location = null;
   private String name = null;
+  private Manifest manifest = null;
 
   private Module.DeploymentType deploymentType = null;
 
@@ -51,6 +53,7 @@ public abstract class BaseModule implements Module {
 
     this.name = name;
     setDeploymentType(name);
+
     this.location = location;
   }
 
@@ -79,9 +82,6 @@ public abstract class BaseModule implements Module {
   public final Location getLocation() {
     return location;
   }
-
-
-//  public abstract String getDependencyName();
 
   public boolean equals(Object obj) {
 

@@ -51,6 +51,8 @@ public interface ModuleStatus {
 
   public Version getLocalVersion() throws VersionControlException;
 
+  public void setLogInformation(Object logInfo);
+
   public void setExistsInRepository(boolean exists);
 
   public boolean existsInRepository();

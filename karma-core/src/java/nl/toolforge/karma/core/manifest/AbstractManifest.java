@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.vc.VersionControlException;
@@ -28,6 +29,7 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -264,20 +266,12 @@ public abstract class AbstractManifest implements Manifest {
   public final Module getModule(String moduleName) throws ManifestException {
 
     Map allModules = getAllModules();
-    
+
     if (allModules.containsKey(moduleName)) {
       return (Module) allModules.get(moduleName);
     } else {
       throw new ManifestException(ManifestException.MODULE_NOT_FOUND, new Object[]{moduleName});
     }
-  }
-
-  public final boolean isLocal(Module module) {
-//    try {
-      return new File(getDirectory(), module.getName()).exists();
-//    } catch (ManifestException e) {
-//      return false;
-//    }
   }
 
   public final boolean isLocal() {
@@ -287,7 +281,7 @@ public abstract class AbstractManifest implements Manifest {
       Module m = (Module) i.next();
 
       // If we stumble upon a non local module, return false
-      if (!this.isLocal(m)) {
+      if (!isLocal(m)) {
         return false;
       }
     }
@@ -295,17 +289,12 @@ public abstract class AbstractManifest implements Manifest {
     return true;
   }
 
-//  public final File getDirectory() throws ManifestException {
+  public final boolean isLocal(Module module) {
+    return new File(getDirectory(), module.getName()).exists();
+  }
+
   public final File getDirectory() {
-
-    File file = null;
-//    try {
-      file = new File(LocalEnvironment.getDevelopmentHome(), getName());
-//    } catch (Exception e) {
-//      throw new ManifestException(ManifestException.INVALID_LOCAL_PATH, new Object[]{getName()});
-//    }
-
-    return file;
+    return new File(LocalEnvironment.getDevelopmentHome(), getName());
   }
 
   /**
@@ -318,17 +307,7 @@ public abstract class AbstractManifest implements Manifest {
     return childManifests;
   }
 
-
-  /**
-   * A <code>Module</code> can be in different states as defined in {@link Module}. This methods sets
-   * the state of the module in its current context of the manifest.
-   *
-   * @param module
-   * @param state The (new) state of the module.
-   */
-  public abstract void setState(Module module, Module.State state) throws ManifestException;
-
-  public abstract Module.State getLocalState(Module module);
+//  public abstract Module.State getLocalState(Module module);
 
   /**
    * Saves the manifest to disk, including all its included manifests.
@@ -393,9 +372,9 @@ public abstract class AbstractManifest implements Manifest {
     }
 
     try {
-      if (((SourceModule) module).getState().equals(Module.WORKING)) {
+      if (getState(module).equals(Module.WORKING)) {
         jar += Module.WORKING.toString();
-      } else if (((SourceModule) module).getState().equals(Module.DYNAMIC)) {
+      } else if (getState(module).equals(Module.DYNAMIC)) {
         jar += (Utils.getLocalVersion(module));
       } else { // STATIC module
         jar += ((SourceModule) module).getVersionAsString();
@@ -509,5 +488,88 @@ public abstract class AbstractManifest implements Manifest {
 
     return true;
   }
+
+  /**
+   * Sets a modules' state when the module is locally available.
+   *
+   * @param module
+   * @param state
+   */
+  public final void setState(Module module, Module.State state) {
+
+    if (state == null) {
+      throw new IllegalArgumentException("Parameter state cannot be null.");
+    }
+
+    if (!isLocal(module)) {
+      return;
+    }
+
+    try {
+
+      // Remove old state files ...
+      //
+      FilenameFilter filter = new FilenameFilter() {
+        public boolean accept(File dir, String name) {
+          if ((name != null) && ((".WORKING".equals(name)) || (".STATIC".equals(name)) || (".DYNAMIC".equals(name)))) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      };
+
+      String[] stateFiles = module.getBaseDir().list(filter);
+
+      if (stateFiles != null) {
+        for (int i = 0; i < stateFiles.length; i++) {
+          new File(module.getBaseDir(), stateFiles[i]).delete();
+        }
+      }
+
+      File stateFile = new File(module.getBaseDir(), state.getHiddenFileName());
+      stateFile.createNewFile();
+
+    } catch (Exception e) {
+      throw new KarmaRuntimeException(e.getMessage());
+    }
+  }
+
+  public final Module.State getState(Module module) {
+
+    if (!isLocal(module)) {
+      if (module.hasVersion() || this instanceof ReleaseManifest) {
+        return Module.STATIC;
+      } else {
+        return Module.DYNAMIC;
+      }
+    }
+
+    FilenameFilter filter = new FilenameFilter() {
+      public boolean accept(File dir, String name) {
+        if ((name != null) && name.matches(".WORKING|.STATIC|.DYNAMIC")) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    };
+
+    String[] stateFiles = module.getBaseDir().list(filter);
+
+    if ((stateFiles == null || stateFiles.length == 0)) {
+      return Module.STATIC;
+    }
+
+    if (stateFiles.length > 0 && ".WORKING".equals(stateFiles[0])) {
+      return Module.WORKING;
+    }
+
+    if (this instanceof ReleaseManifest) {
+      return Module.STATIC;
+    }
+    return Module.DYNAMIC;
+  }
+
 
 }

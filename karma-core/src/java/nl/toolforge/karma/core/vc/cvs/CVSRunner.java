@@ -205,7 +205,7 @@ public final class CVSRunner implements Runner {
 
     //module has been created. Now, create the module history.
     String author = ((CVSLocationImpl) module.getLocation()).getUsername();
-    addModuleHistoryEvent(tmp, module, ModuleHistoryEvent.CREATE_MODULE_EVENT, Version.INITIAL_VERSION, new Date(), author, comment);
+    addModuleHistoryEvent(module.getBaseDir(), module, ModuleHistoryEvent.CREATE_MODULE_EVENT, Version.INITIAL_VERSION, new Date(), author, comment);
 
     tag(module, Version.INITIAL_VERSION);
 
@@ -686,7 +686,8 @@ public final class CVSRunner implements Runner {
       String comment) throws CVSException
   {
     ModuleHistoryFactory factory = ModuleHistoryFactory.getInstance(moduleCheckoutLocation);
-    ModuleHistory history = factory.getModuleHistory(module.getName());
+//    ModuleHistory history = factory.getModuleHistory(module.getName());
+    ModuleHistory history = factory.getModuleHistory(module);
     if (history != null) {
       ModuleHistoryEvent event = new ModuleHistoryEvent();
       event.setType(eventType);

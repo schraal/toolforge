@@ -20,6 +20,7 @@ package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.vc.VersionControlException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.command.FileInfoContainer;
@@ -215,7 +216,7 @@ public final class CVSResponseAdapter implements CVSListener {
 //      }
     } else if (message.startsWith("cvs server: cannot find module")) {
 
-      throw new CVSRuntimeException(CVSException.NO_SUCH_MODULE_IN_REPOSITORY, getArguments("MODULE, REPOSITORY"));
+      throw new CVSRuntimeException(VersionControlException.MODULE_NOT_IN_REPOSITORY, getArguments("MODULE, REPOSITORY"));
 
     } else if (message.startsWith("cvs add:") && message.indexOf("already exists") >= 0) {
 

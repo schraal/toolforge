@@ -38,7 +38,7 @@ public class TestModuleHistoryFactory extends LocalCVSInitializer {
           ModuleHistoryFactory factory = ModuleHistoryFactory.getInstance(projectRoot);
           assertNotNull(factory);
 
-          ModuleHistory moduleHistory = factory.getModuleHistory(DEFAULT_MODULE_1);
+          ModuleHistory moduleHistory = factory.getModuleHistory(checkoutDefaultModule1());
           assertNotNull(moduleHistory);
 
           ModuleHistoryEvent event = new ModuleHistoryEvent();

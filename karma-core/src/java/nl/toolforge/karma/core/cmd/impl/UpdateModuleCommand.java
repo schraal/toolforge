@@ -18,8 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import java.util.regex.PatternSyntaxException;
-
+import nl.toolforge.karma.core.Patch;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
@@ -28,13 +27,16 @@ import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.manifest.ReleaseManifest;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.Utils;
+
+import java.util.regex.PatternSyntaxException;
 
 /**
  * <p>This command updates a module on a developers' local system. When the module has not been updated before, the
@@ -77,6 +79,7 @@ public class UpdateModuleCommand extends DefaultCommand {
 
     String moduleName = "";
     Module module = null;
+    Manifest manifest = null;
 
     // A manifest must be present for this command
     //
@@ -88,7 +91,8 @@ public class UpdateModuleCommand extends DefaultCommand {
 
     moduleName = getCommandLine().getOptionValue("m");
     try {
-      module = getContext().getCurrentManifest().getModule(moduleName);
+      manifest = getContext().getCurrentManifest();
+      module = manifest.getModule(moduleName);
     } catch (ManifestException e) {
       throw new CommandException(e.getErrorCode(),e.getMessageArguments());
     }
@@ -98,13 +102,23 @@ public class UpdateModuleCommand extends DefaultCommand {
       // The module should be updated to a specific version.
       //
       try {
-        version = new Version(getCommandLine().getOptionValue("v"));
+
+        // Are we requesting a patch or a normal version ?
+        //
+        String manualVersion = getCommandLine().getOptionValue("v");
+        if (manualVersion.matches(Patch.VERSION_PATTERN_STRING)) {
+          version = new Patch(manualVersion);
+        } else {
+          version = new Version(manualVersion);
+        }
       } catch (PatternSyntaxException pse) {
-        throw new CommandException(CommandException.INVALID_ARGUMENT, new Object[]{getCommandLine().getOptionValue("v"), "Version has to be <number>-<number>, e.g. '0-0'"});
+        throw new CommandException(CommandException.INVALID_ARGUMENT,
+            new Object[]{getCommandLine().getOptionValue("v"),
+                         "Version has to be <number>-<number>[-<number>], e.g. '0-0'"});
       }
-    } else if (((SourceModule) module).getState().equals(Module.STATIC)) {
-      version = ((SourceModule) module).getVersion();
-    } else if (((SourceModule) module).getState().equals(Module.DYNAMIC)) {
+    } else if (manifest.getState(module).equals(Module.STATIC)) {
+      version = module.getVersion();
+    } else if (manifest.getState(module).equals(Module.DYNAMIC)) {
       // todo CVSVersionExtractor should be retrieved through a Factory.
       //
       try {
@@ -142,9 +156,23 @@ public class UpdateModuleCommand extends DefaultCommand {
         //
         CommandMessage message = null;
         if (version == null) {
+          // No state change.
+          //
           message = new SuccessMessage("Module " + module.getName() + " updated.");
         } else {
-          message = new SuccessMessage("Module " + module.getName() + " updated with version " + version.toString());
+          if (manifest instanceof ReleaseManifest) {
+            manifest.setState(module, Module.STATIC);
+            message = new SuccessMessage("Module " + module.getName() + " updated with version " + version.toString() + "; state changed to STATIC.");
+          } else {
+            if (manifest.getState(module).equals(Module.STATIC)) {
+              // The module was static.
+              //
+              message = new SuccessMessage("Module " + module.getName() + " updated.");
+            } else {
+              manifest.setState(module, Module.DYNAMIC);
+              message = new SuccessMessage("Module " + module.getName() + " updated with version " + version.toString() + "; state changed to DYNAMIC.");
+            }
+          }
         }
         response.addMessage(message);
       }
