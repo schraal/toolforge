@@ -31,7 +31,7 @@ import nl.toolforge.karma.core.cmd.impl.UpdateAllModulesCommand;
  */
 public class UpdateAllModulesImpl extends UpdateAllModulesCommand {
 
-  public UpdateAllModulesImpl(CommandDescriptor descriptor) throws CommandException {
+  public UpdateAllModulesImpl(CommandDescriptor descriptor) {
     super(descriptor);
   }
 
