@@ -31,6 +31,7 @@ public class CLI {
 
 	private static Log logger = LogFactory.getLog(CLI.class);
 
+  private static String lastLine = "";
 
 	/**
 	 * Startup class for the command line interface.
@@ -79,9 +80,18 @@ public class CLI {
 
 				String line = reader.readLine().trim();
 
+        //System.out.println("Keystroke = " + line);
+
 				if ((line == null) || ("".equals(line.trim()))) {
 					continue;
 				}
+
+        if ("[A".equals(line)) {
+          line = lastLine;
+          writer.writeln(line);
+        } else {
+          lastLine = line;
+        }
 
 				// Check if the user wants to exit
 				//
