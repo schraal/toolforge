@@ -18,12 +18,12 @@
 
 		<classname>nl.toolforge.karma.core.cmd.impl.CommandFaker</classname>
 
-		<dependencies>
-			<dependency type="vc-support" name="cvs"/>
-			<dependency type="vc-support" name="subversion"/>
-			<dependency type="module-support" name="lib"/>
-			<dependency type="module-support" name="source"/>
-		</dependencies>
+<!--		<dependencies>-->
+<!--			<dependency type="vc-support" name="cvs"/>-->
+<!--			<dependency type="vc-support" name="subversion"/>-->
+<!--			<dependency type="module-support" name="lib"/>-->
+<!--			<dependency type="module-support" name="source"/>-->
+<!--		</dependencies>-->
 
 		<help/>
 
@@ -31,7 +31,7 @@
 
 	<command name="show-manifest" alias="sm">
 
-		<description>   sho
+		<description>
 			The show-manifest command shows the contents of the manifest.
 		</description>
 
@@ -43,12 +43,7 @@
 
 		<classname>nl.toolforge.karma.core.cmd.impl.CommandFaker</classname>
 
-		<dependencies>
-			<dependency type="vc-support" name="cvs"/>
-			<dependency type="vc-support" name="subversion"/>
-			<dependency type="module-support" name="lib"/>
-			<dependency type="module-support" name="source"/>
-		</dependencies>
+		<dependencies/>
 
 		<help>
 			There is a central repository (generally maintained in a version control system), which contains all the
@@ -60,240 +55,27 @@
 
 	</command>
 
+	<command name="list-manifests" alias="lm">
 
-	<!--
-	<command internal="false" needsManifest="false" extraArgumentsAllowed="false">
-	<full-name>help</full-name>
-	<alias>-</alias>
-	<description>Show extensive help for a command if available.</description>
-	<classname>nl.toolforge.karma.command.impl.HelpCommand</classname>
-	<arguments>
-	<argument required="true">
-	<description>command-name</description>
-	</argument>
-	</arguments>
-	<module-support>
-	<module-type>lib</module-type>
-	<module-type>source</module-type>
-	</module-support>
+		<description>
+			The list-manifests command shows all manifests.
+		</description>
+
+		<options/>
+
+		<classname>nl.toolforge.karma.core.cmd.impl.CommandFaker</classname>
+
+		<dependencies/>
+
+		<help>
+			There is a central repository (generally maintained in a version control system), which contains all the
+			available manifests. This repository is configured in the builder.properties file. There
+			can be only one such a repository configured in the builder. With the update-manifests command manifests
+			are downloaded from the manifest repository and put on the local file system. The list-manifests command
+			lists these local manifests. Only these manifests are available for the Karma runtime.
+		</help>
+
 	</command>
-	<command internal="false" needsManifest="false" extraArgumentsAllowed="false">
-	<full-name>select-manifest</full-name>
-	<alias>semf</alias>
-	<description>Select a manifest to work on.</description>
-	<classname>nl.toolforge.karma.command.impl.SelectManifestCommand</classname>
-	<arguments>
-	<argument required="true">
-	<description>manifest-name</description>
-	</argument>
-	</arguments>
-	</command>
-	<command internal="false" needsManifest="false" extraArgumentsAllowed="false">
-	<full-name>update-manifests</full-name>
-	<alias>upmf</alias>
-	<description>Update/Checkout manifests in the manifest repository</description>
-	<classname>nl.toolforge.karma.command.impl.UpdateManifestsCommand</classname>
-	</command>
-	<command internal="false" needsManifest="false" extraArgumentsAllowed="false">
-	<full-name>list-manifests</full-name>
-	<alias>limf</alias>
-	<description>List all the locally available manifests.</description>
-	<classname>nl.toolforge.karma.command.impl.ListManifestsCommand</classname>
-	<help>
-	There is a central, cvs based, repository which contains all the available
-	manifests. This repository is configured in the builder.properties file. There
-	can be only one such a repository configured in the builder. With the
-	update-manifests command manifests are downloaded from the manifest repository
-	and put on the local file system. The list-manifests command lists these local
-	manifests. Only these manifests are available to the builder.
-	</help>
-	</command>
-	<command internal="false" needsManifest="false" extraArgumentsAllowed="false">
-	<full-name>list-repositories</full-name>
-	<alias>lire</alias>
-	<description>List all configured repositories.</description>
-	<classname>nl.toolforge.karma.command.impl.ListRepositoriesCommand</classname>
-	</command>
-	<command internal="false" needsManifest="false" extraArgumentsAllowed="false">
-	<full-name>select-repository</full-name>
-	<alias>sere</alias>
-	<description>Select a repository as the default repository.</description>
-	<classname>nl.toolforge.karma.command.impl.SelectRepositoryCommand</classname>
-	<arguments>
-	<argument required="true">
-	<description>repository-name</description>
-	</argument>
-	</arguments>
-	</command>
-	<command internal="false" needsManifest="false" extraArgumentsAllowed="false">
-	<full-name>list-commands</full-name>
-	<alias>lico</alias>
-	<description>Show all valid commands.</description>
-	<classname>nl.toolforge.karma.command.impl.ListCommand</classname>
-	</command>
-	<command internal="false" needsManifest="true" extraArgumentsAllowed="false">
-	<full-name>build</full-name>
-	<alias>b</alias>
-	<description>Build a module.</description>
-	<classname>nl.toolforge.karma.command.impl.BuildCommand</classname>
-	<arguments>
-	<argument required="true">
-	<description>module-name</description>
-	</argument>
-	</arguments>
-	</command>
-	<command internal="false" needsManifest="true" extraArgumentsAllowed="false">
-	<full-name>build-all</full-name>
-	<alias>ba</alias>
-	<description>Build all modules available in the manifest.</description>
-	<classname>nl.toolforge.karma.command.impl.BuildAllCommand</classname>
-	</command>
-	<command internal="false" needsManifest="true" extraArgumentsAllowed="false">
-	<full-name>start-work</full-name>
-	<alias>start</alias>
-	<description>Start development on a module.</description>
-	<classname>nl.toolforge.karma.command.impl.StartWorkCommand</classname>
-	<arguments>
-	<argument required="true">
-	<description>module-name</description>
-	</argument>
-	</arguments>
-	</command>
-	<command internal="false" needsManifest="true" extraArgumentsAllowed="false">
-	<full-name>stop-work</full-name>
-	<alias>stop</alias>
-	<description>Stop development on a module. All non-commited changes are lost.</description>
-	<classname>nl.toolforge.karma.command.impl.StopWorkCommand</classname>
-	<arguments>
-	<argument required="true">
-	<description>module-name</description>
-	</argument>
-	</arguments>
-	</command>
-	<command internal="true" needsManifest="true" extraArgumentsAllowed="false">
-	<full-name>checkout</full-name>
-	<alias>co</alias>
-	<description>Internal Command</description>
-	<classname>nl.toolforge.karma.command.impl.CheckoutCommand</classname>
-	<arguments>
-	<argument required="true">
-	<description>module-name</description>
-	</argument>
-	<argument required="true">
-	<description>switch</description>
-	<allowed-values>
-	<allowed-value>-m</allowed-value>
-	<allowed-value>-w</allowed-value>
-	<allowed-value>-s</allowed-value>
-	</allowed-values>
-	</argument>
-	<argument required="true">
-	<description>tag</description>
-	</argument>
-	</arguments>
-	</command>
-	<command internal="false" needsManifest="true" extraArgumentsAllowed="false">
-	<full-name>promote</full-name>
-	<alias>-</alias>
-	<description>Promote a module.</description>
-	<classname>nl.toolforge.karma.command.impl.PromoteCommand</classname>
-	<arguments>
-	<argument required="true">
-	<description>module-name</description>
-	</argument>
-	</arguments>
-	</command>
-	<command internal="false" needsManifest="true" extraArgumentsAllowed="false">
-	<full-name>update-module</full-name>
-	<alias>updm</alias>
-	<description>Update single module to the latest or specified module version.</description>
-	<classname>nl.toolforge.karma.command.impl.UpdateModuleCommand</classname>
-	<arguments>
-	<argument required="true">
-	<description>module-name</description>
-	</argument>
-	<argument required="false">
-	<description>version-number</description>
-	</argument>
-	</arguments>
-	</command>
-	<command internal="false" needsManifest="true" extraArgumentsAllowed="false">
-	<full-name>update-all-modules</full-name>
-	<alias>upda</alias>
-	<description>Updates all modules to the latest module version.</description>
-	<classname>nl.toolforge.karma.command.impl.UpdateAllModulesCommand</classname>
-	</command>
-	<command internal="false" needsManifest="false" extraArgumentsAllowed="false">
-	<full-name>create-module</full-name>
-	<alias>crmo</alias>
-	<description>Creates a module in a repository.</description>
-	<classname>nl.toolforge.karma.command.impl.CreateModuleCommand</classname>
-	<arguments>
-	<argument required="true">
-	<description>module-name</description>
-	</argument>
-	<argument required="false">
-	<description>repository</description>
-	</argument>
-	</arguments>
-	<help>
-	Creates a module in the specified repository. This command only supports first level imports
-	in a CVS repository. Constructs like wisdom/module-1 and wisdom/module-2 (where 'crmo module-1'
-	is used to create it under the wisdom module, don't work (yet).
-	</help>
-	</command>
-	<command internal="false" needsManifest="false" extraArgumentsAllowed="false">
-	<full-name>create-branch</full-name>
-	<alias>crbr</alias>
-	<description>Creates a branch on a module in a repository.</description>
-	<classname>nl.toolforge.karma.command.impl.CreateBranchCommand</classname>
-	<arguments>
-	<argument required="true">
-	<description>module-name</description>
-	</argument>
-	<argument required="true">
-	<description>branch-name</description>
-	</argument>
-	<argument required="false">
-	<description>version-number</description>
-	</argument>
-	</arguments>
-	<help>
-	Creates a branch on a module.
-	</help>
-	</command>
-	<command internal="false" needsManifest="true" extraArgumentsAllowed="false">
-	<full-name>stop-dev</full-name>
-	<alias>-</alias>
-	<description>Stop development on a branch by promoting the latest changes.</description>
-	<classname>nl.toolforge.karma.command.impl.StopDevelopmentCommand</classname>
-	<arguments>
-	<argument required="true">
-	<description>module-name</description>
-	</argument>
-	<argument required="true">
-	<description>tag</description>
-	</argument>
-	</arguments>
-	</command>
-	<command internal="false" needsManifest="true" extraArgumentsAllowed="false">
-	<full-name>create-notes</full-name>
-	<alias>cn</alias>
-	<description>Create release notes for a module.</description>
-	<classname>nl.toolforge.karma.command.impl.CreateNotesCommand</classname>
-	</command>
-	<command internal="false" needsManifest="false" extraArgumentsAllowed="false">
-	<full-name>set-default-repository</full-name>
-	<alias>sdre</alias>
-	<description>Sets the users' default repository.</description>
-	<classname>nl.toolforge.karma.command.impl.SetDefaultRepositoryCommand</classname>
-	<arguments>
-	<argument required="true">
-	<description>repository-label</description>
-	</argument>
-	</arguments>
-	</command>
-	-->
 
 </commands>
 

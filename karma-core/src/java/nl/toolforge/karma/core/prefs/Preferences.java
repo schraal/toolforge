@@ -10,6 +10,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * <p>This class is used to store configuration settings. If Karma is used from the command line, then settings will be
  * stored in a file, otherwise the preferences will not be persisted, to enable multiple longer running instances to run
@@ -46,7 +49,7 @@ import java.util.*;
  */
 public final class Preferences
 {
-	//private static Log logger = LogFactory.getLog(Preferences.class);
+	private static Log logger = LogFactory.getLog(Preferences.class);
 
 	private static final boolean COMMAND_LINE_MODE = System.getProperty("MODE", "UNKNOWN").equals("COMMAND_LINE_MODE");
 
@@ -58,6 +61,8 @@ public final class Preferences
 	 * harddisk.
 	 */
 	public static final String DEVELOPMENT_HOME_DIRECTORY_PROPERTY = "karma.development.home";
+
+	public static final String LOCALE_PROPERTY = "locale";
 
 	/**
 	 * <p>The property that represents the directory on a user's local system where Karma administration files
@@ -177,10 +182,6 @@ public final class Preferences
 		//
 		Properties props = new Properties();
 		try {
-			System.out.println(">> Karma properties " + new File(getConfigurationDirectoryAsString() + File.separator + "karma.properties").getPath());
-
-			//System.setProperty(Preferences.CONFIGURATION_DIRECTORY_PROPERTY, "/home/asmedes/.karma");
-
 			props.load(new FileInputStream(new File(getConfigurationDirectoryAsString() + File.separator + "karma.properties")));
 
 			for (Enumeration e = props.propertyNames(); e.hasMoreElements();) {
@@ -188,7 +189,7 @@ public final class Preferences
 				put(prop, props.getProperty(prop));
 			}
 		} catch (Exception e) {
-			//logger.error("Could not load " + Preferences.CONFIGURATION_DIRECTORY_PROPERTY + "/karma.properties, exiting...");
+			logger.error("Could not load " + Preferences.CONFIGURATION_DIRECTORY_PROPERTY + "/karma.properties, exiting...");
 			throw new KarmaRuntimeException("Could not load karma.properties. Has the configuration dir been set ? Exiting...", e);
 		}
 
@@ -201,7 +202,6 @@ public final class Preferences
 
 		// Determine the Operation System the user works on
 		//
-		//operatingSystemFamily = Os.getFamily(System.getProperty("os.name"));
 		operatingSystem = System.getProperty("os.name");
 
 		// Try to obtain the 'karma.configuration.directory property, which was optionally
@@ -360,7 +360,7 @@ public final class Preferences
 				}
 			}
 		} else {
-			System.out.println(getClass().getName() + " >> not in COMMAND_LINE_MODE");
+			logger.info("NOT in COMMAND_LINE_MODE");
 		}
 	}
 
@@ -478,7 +478,7 @@ public final class Preferences
 		File home = null;
 
 		try {
-			System.out.println(">>>>> Manifest store directory: " + get(MANIFEST_STORE_DIRECTORY_PROPERTY));
+			logger.debug("Manifest store directory: " + get(MANIFEST_STORE_DIRECTORY_PROPERTY));
 
 			home = new File(get(MANIFEST_STORE_DIRECTORY_PROPERTY));
 		} catch (NullPointerException n) {
@@ -488,6 +488,22 @@ public final class Preferences
 		}
 
 		return home;
+	}
+
+
+	/**
+	 * Constructs a <code>Locale</code> fromt the <code>locale</code>-property value from <code>karma.properties</code>.
+	 *
+	 * @return A <code>Locale</code> objects. Returns the default locale <code>Locale.ENGLISH</code> when the property
+	 *         is not found.
+	 */
+	public final Locale getLocale() {
+
+		try {
+			return new Locale(get(LOCALE_PROPERTY));
+		} catch (UnavailableValueException u) {
+			return Locale.ENGLISH;
+		}
 	}
 }
 

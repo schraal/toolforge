@@ -8,9 +8,7 @@ import nl.toolforge.karma.core.location.LocationFactory;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.PosixParser;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * <p>The command context is the class that provides a runtime for commands to run in. The command context maintains
@@ -28,7 +26,7 @@ public class CommandContext {
 
 	// Reference to all loaded commands
 	//
-	private Set commands = null;
+	private Map commands = null;
 
 	// Reference ro all command names
 	//
@@ -55,12 +53,20 @@ public class CommandContext {
 	public synchronized void init() throws KarmaException {
 
 		if (!initialized) {
-			commands = CommandLoader.getInstance().load();
+			Set descriptors = CommandLoader.getInstance().load();
+      commands = new Hashtable();
+
+			// Store all commands by name in a hash
+			//
+			for (Iterator i = descriptors.iterator(); i.hasNext();) {
+				CommandDescriptor descriptor = (CommandDescriptor) i.next();
+				commands.put(descriptor.getName(), descriptor);
+			}
 
 			// Create a set of all command names.
 			//
 			commandNames = new HashSet();
-			for (Iterator i = commands.iterator(); i.hasNext();) {
+			for (Iterator i = descriptors.iterator(); i.hasNext();) {
 				CommandDescriptor descriptor = (CommandDescriptor) i.next();
 				commandNames.add(descriptor.getName());
 				commandNames.add(descriptor.getAlias());
@@ -131,7 +137,7 @@ public class CommandContext {
 
 		// A command is extracted from the commandLine
 		//
-		Command command = null;
+		Command command = commands.;
 
 		return execute(command);
 	}

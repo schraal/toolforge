@@ -1,6 +1,11 @@
 package nl.toolforge.karma.core;
 
 import nl.toolforge.karma.core.exception.ErrorCode;
+import nl.toolforge.karma.core.prefs.Preferences;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
+import java.util.Locale;
 
 /**
  * Root exception for <code>nl.toolforge.karma</code> classes. A <code>KarmaException</code> can be initialized with a
@@ -11,7 +16,10 @@ import nl.toolforge.karma.core.exception.ErrorCode;
  */
 public class KarmaException extends Exception {
 
-  // TODO : Work trough all errorcodes and come up with a nice setup of codes.
+  private static Log logger = LogFactory.getLog(KarmaException.class);
+	private static Preferences prefs = Preferences.getInstance();
+
+	// TODO : Work trough all errorcodes and come up with a nice setup of codes.
 	//
 
 
@@ -120,13 +128,13 @@ public class KarmaException extends Exception {
 		if (errorCode == null) {
 			return getMessage();
 		} else {
-			return errorCode.getErrorMessage();
+			return errorCode.getErrorMessage(prefs.getLocale());
 		}
 	}
 
 	public void printStackTrace() {
 
-		System.err.println("ERRORCODE : " + errorCode.getErrorCode());
+		logger.error("ERRORCODE : " + errorCode.getErrorCode());
 
 		super.printStackTrace();
 	}

@@ -63,8 +63,6 @@ public final class LocationFactory {
 
 		String[] files = locationFilesPath.list(new XMLFilenameFilter());
 
-		System.out.println("locationPath " + locationFilesPath.getPath());
-
 		if (files.length <= 0) {
            throw new KarmaException(KarmaException.NO_LOCATION_DATA_FOUND);
 		}
@@ -136,13 +134,6 @@ public final class LocationFactory {
 
 		}
 		catch (Exception e) {
-			// Of course this is serious, we had an error in creating our repositories, we should throw
-			// a real high prio exception
-			//
-			// TODO have a proper exception ErrorCode over here,
-
-			e.printStackTrace();
-
 			throw new KarmaException(KarmaException.LAZY_BASTARD, e);
 		}
 	}

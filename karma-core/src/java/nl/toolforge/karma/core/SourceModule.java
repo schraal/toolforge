@@ -27,14 +27,14 @@ public class SourceModule extends DefaultModule {
 
 	private String version = null;
 
-    /**
-     * Constructs a <code>SourceModule</code> instance.
-     *
-     * @param moduleName The name of the module. Module names are matched against
-     *                   a {@link nl.toolforge.karma.core.expr.ModuleNameExpression} instance.
+	/**
+	 * Constructs a <code>SourceModule</code> instance.
+	 *
+	 * @param moduleName The name of the module. Module names are matched against
+	 *                   a {@link nl.toolforge.karma.core.expr.ModuleNameExpression} instance.
 	 *
 	 * @throws KarmaException When input parameters don't match their respective patterns
-     */
+	 */
 	SourceModule(String moduleName) throws KarmaException {
 
 		create(moduleName);
@@ -54,15 +54,13 @@ public class SourceModule extends DefaultModule {
 
 		// TODO : refactor out to DefaultModule
 
-        create(moduleName);
+		create(moduleName);
 
 		Pattern pattern = Pattern.compile(new VersionExpression().getPatternString());
 
 		if (pattern.matcher(version).matches()) {
 			this.version = version;
 		} else {
-			// log.debug("Version in module " + moduleName +
-			//	" does not comply to pattern " + new VersionExpression().getPatternString());
 			throw new KarmaException(KarmaException.DATAFORMAT_ERROR);
 		}
 	}
@@ -74,8 +72,6 @@ public class SourceModule extends DefaultModule {
 		if (pattern.matcher(moduleName).matches()) {
 			setName(moduleName);
 		} else {
-			// log.debug("Version in module " + moduleName +
-			//	" does not comply to pattern " + new VersionExpression().getPatternString());
 			throw new KarmaException(KarmaException.DATAFORMAT_ERROR);
 		}
 	}

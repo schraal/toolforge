@@ -1,5 +1,9 @@
 package nl.toolforge.karma.core;
 
+import nl.toolforge.karma.core.location.Location;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 
 /**
  *
@@ -7,8 +11,10 @@ package nl.toolforge.karma.core;
  */
 public abstract class DefaultModule implements Module {
 
+	protected static Log logger = LogFactory.getLog(DefaultModule.class);
+
 	private State state = null;
-    private nl.toolforge.karma.core.location.Location location = null;
+	private Location location = null;
 	private String name = null;
 
 	/**
@@ -16,9 +22,9 @@ public abstract class DefaultModule implements Module {
 	 *
 	 * @see {@link Module#getName}
 	 */
-    public final String getName() {
-        return name;
-    }
+	public final String getName() {
+		return name;
+	}
 
 	protected void setName(String name) {
 		this.name = name;

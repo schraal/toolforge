@@ -4,7 +4,7 @@
 
 	<pomVersion>3</pomVersion>
 	<name>Karma Core Module</name>
-        <groupId>toolforge</groupId>
+	<groupId>toolforge</groupId>
 	<id>karma-core</id>
 	<currentVersion>2.0-dev</currentVersion>
 	<package>nl.toolforge</package>
@@ -100,6 +100,7 @@
 				<includes>
 					<include>**/*.xml</include>
 					<include>**/*.dtd</include>
+					<include>**/*.properties</include>
 				</includes>
 			</resource>
 		</resources>

@@ -64,7 +64,7 @@ public final class CommandLoader {
 		// TODO : I would like to parse this thing using a Digester, yet my first attempts failed.
 
 		Set descriptors = new HashSet();
-        Set uniqueAliasses = new HashSet();
+		Set uniqueAliasses = new HashSet();
 
 		try {
 			// We do need to load the configuration file from the classpath.
@@ -170,7 +170,7 @@ public final class CommandLoader {
 					if (!descriptors.contains(descriptor)) {
 						descriptors.add(descriptor);
 					} else {
-                        throw new KarmaException(KarmaException.DUPLICATE_COMMAND);
+						throw new KarmaException(KarmaException.DUPLICATE_COMMAND);
 					}
 				}
 			}

@@ -4,6 +4,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -24,12 +26,14 @@ import nl.toolforge.core.util.file.XMLFilenameFilter;
  */
 public final class ManifestLoader {
 
+	private static Log logger = LogFactory.getLog(ManifestLoader.class);
+
 	private static ManifestLoader instance = null;
 
 	//private Manifest currentManifest = null;
 
 	private static Preferences prefs = Preferences.getInstance(true);
-  private static ClassLoader classLoader = null;
+	private static ClassLoader classLoader = null;
 	private static String resourceDir = null;
 
 	public synchronized static ManifestLoader getInstance() {
@@ -50,13 +54,13 @@ public final class ManifestLoader {
 
 		Set all = new HashSet();
 
-    String[] names = prefs.getManifestStore().list(new XMLFilenameFilter());
+		String[] names = prefs.getManifestStore().list(new XMLFilenameFilter());
 
-    for (int i = 0; i < names.length; i++) {
+		for (int i = 0; i < names.length; i++) {
 			all.add(names[i]);
 		}
 
-    return all;
+		return all;
 	}
 
 	/**
@@ -103,7 +107,7 @@ public final class ManifestLoader {
 		classLoader = loader;
 		resourceDir = dir;
 
-    return load(id);
+		return load(id);
 	}
 
 	/**
@@ -130,10 +134,11 @@ public final class ManifestLoader {
 		try {
 
 			// TODO the following two statements can disappear when the <name>-attribute for a Manifest disappears
-      //
+			//
 			DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			Document manifestDocument = documentBuilder.parse(getManifestFile(id));
-			// logger.debug("Retrieved manifest file to obtain its <name>-attribute.");
+
+			logger.debug("Retrieved manifest file to obtain its <name>-attribute.");
 
 			// Create the actual Manifest instance
 			//
@@ -151,7 +156,6 @@ public final class ManifestLoader {
 		} catch (IOException i) {
 			throw new ManifestException(ManifestException.MANIFEST_LOAD_ERROR, i);
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new KarmaRuntimeException(e.getMessage(), e);
 		}
 
@@ -166,11 +170,12 @@ public final class ManifestLoader {
 		// Check if included manifest has already been loaded, to prevent looping
 		//
 		if (duplicates.contains(id)) {
-			//throw new ManifestLoadException("Recursive declaration of manifest.");
+			throw new ManifestException(ManifestException.MANIFEST_LOAD_RECURSION);
 		}
 
 		duplicates.add(id);
-		//log.debug("Loading modules from manifest file " + manifestFile.getName());
+
+		logger.debug("Loading modules from manifest file " + id);
 
 		try {
 
@@ -188,7 +193,7 @@ public final class ManifestLoader {
 				if (node.getNodeName().equals(SourceModule.ELEMENT_NAME)) {
 
 					SourceModule sourceModule = new SourceModule(node.getAttribute(Module.NAME_ATTRIBUTE));
-                    sourceModule.setVersion(node.getAttribute(SourceModule.VERSION_ATTRIBUTE));
+					sourceModule.setVersion(node.getAttribute(SourceModule.VERSION_ATTRIBUTE));
 					//sourceModule.setBranch(node.getAttribute(SourceModule.BRANCH_ATTRIBUTE));
 
 					manifest.addModule(sourceModule);
@@ -199,7 +204,7 @@ public final class ManifestLoader {
 					String version = node.getAttribute(JarModule.VERSION_ATTRIBUTE);
 
 					JarModule jarModule = new JarModule(moduleName);
-                    jarModule.setVersion(version);
+					jarModule.setVersion(version);
 
 					manifest.addModule(jarModule);
 
@@ -229,15 +234,14 @@ public final class ManifestLoader {
 			String fileName = (id.endsWith(".xml") ? id : id.concat(".xml"));
 
 			if (classLoader == null) {
-				System.out.println(">>> Loading manifest " + fileName + " from file-system ...");
+				logger.debug("Loading manifest " + fileName + " from file-system ...");
 				return new FileInputStream(prefs.getManifestStore().getPath() + File.separator + fileName);
 			} else {
-				System.out.println(">>> Loading manifest " + fileName + " from classpath ...");
+				logger.debug("Loading manifest " + fileName + " from file-system ...");
 
 				InputStream inputStream = classLoader.getResourceAsStream(resourceDir + File.separator + fileName);
 
 				if (inputStream == null) {
-					// logger.debug();
 					throw new ManifestException(ManifestException.MANIFEST_FILE_NOT_FOUND);
 				}
 

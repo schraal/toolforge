@@ -35,6 +35,9 @@ public final class ManifestException extends KarmaException {
 	/** Container for 'general' errors during a manifest load */
 	public static final ErrorCode MANIFEST_LOAD_ERROR = new ErrorCode("MNFS-00004");
 
+		/** Container for 'general' errors during a manifest load */
+	public static final ErrorCode MANIFEST_LOAD_RECURSION = new ErrorCode("MNFS-00005");
+
  	public ManifestException() {}
 
 	public ManifestException(ErrorCode errorCode) {
