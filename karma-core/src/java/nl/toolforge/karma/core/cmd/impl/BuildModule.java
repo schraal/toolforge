@@ -113,7 +113,6 @@ public class BuildModule extends DefaultCommand {
       //
       BuildUtil util = new BuildUtil(currentManifest);
 
-//<<<<<<< BuildModule.java
       // Configure the Ant project
       //
 
@@ -128,17 +127,12 @@ public class BuildModule extends DefaultCommand {
       // <jar> 'basedir'-attribute
       project.setProperty(JAR___BASE_DIR_PROPERTY, buildDir.getPath());
 
-//=======
-//      project.setProperty(JAR_JAR_FILE_PROPERTY, module.getDependencyName());
-//>>>>>>> 1.20
     } catch (ManifestException e) {
       e.printStackTrace();
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
 
     try {
-//      project.executeTarget("compile");
-
       project.executeTarget("jar");
     } catch (BuildException e) {
       e.printStackTrace();
