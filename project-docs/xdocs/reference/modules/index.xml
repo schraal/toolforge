@@ -12,6 +12,16 @@
         a directory structure, containing source code, unit tests, documentation,
         configuration and the like.
       </p>
+      <p>
+        Karma manages modules by putting them under version control. For a high
+        level overview of the version control Karma offers see the page about
+        <a href='../configuration-management/version-control.html'>version management</a>.
+        For detailed information see <a href='module-versions.html' >module versions</a>.
+      </p>
+      <p>
+        Modules optionally also can be build, tested and packaged. See
+        <a href='../configuration-management/build-management.html'>build management</a> for a high level overview.
+      </p>
       <subsection name="Module name">
         <p>
           A module name must be composed from the characters: <code>A-Z</code>,

@@ -8,6 +8,17 @@
   <body>
     <section name="Java enterprise application modules">
       <p>
+        This type of module defines one Java enterprise application. A Java enterprise
+        application is basically a collection of Java web applications, EJBs, libraries,
+        etc. It does not contain any sources and therefor also no unit tests.
+      </p>
+      <p>
+        The sub-applications and libraries are defined using dependencies. The
+        descriptor files and other resources are stored in this module.
+      </p>
+      <p>
+        This type of module is typically build, tested and packaged into an <code>.ear</code>
+        (Enterprise ARchive) file.
       </p>
     </section>
     <section name="Layout">
@@ -17,21 +28,53 @@
             <th>Source</th>
             <th>Build</th>
             <th>Package</th>
+            <th>Description</th>
           </tr>
           <tr>
             <td>src/META-INF</td>
             <td>-</td>
             <td>/META-INF</td>
+            <td>
+              Contains the deployment descriptors and other resources of the
+              enterprise application.
+              <br/>
+              A special file is the <code>application.xml</code>. This is the
+              main descriptor file and is therefor mandatory.
+              <p>
+                <b>Note:</b> the descriptor files typically contain references
+                to <code>.jar</code> files, <code>.war</code> files and web applications.
+                Since these files and applications are version managed by Karma they
+                automatically recieve a version number in their (file) name, which
+                is dynamic. To handle this, without the need to change the descriptor files
+                everytime a version changes, Karma offers keyword replacement for this.
+                <br/>
+                When Karma encounters a tag like <code>@module_name@</code> in the resource
+                files, this tag will be replaced by <code>module_artifact</code>. E.g.
+                <code>@karma-core@</code> might be replaced with <code>karma-core_1-0</code>.
+              </p>
+            </td>
           </tr>
           <tr>
             <td>&lt;module dependencies&gt;</td>
             <td>-</td>
             <td>/</td>
+            <td>
+              Module dependencies will be packaged into the <code>.ear</code> file
+              when the dependency's attribute <code>package</code> equals <code>true</code>.
+              The module dependencies are placed into the root of the <code>.ear</code>
+              file.
+            </td>
           </tr>
           <tr>
             <td>&lt;jar dependencies&gt;</td>
             <td>-</td>
             <td>/lib</td>
+            <td>
+              Jar dependencies will be packaged into the <code>.ear</code> file
+              when the dependency's attribute <code>package</code> equals <code>true</code>.
+              The jar dependencies are placed into the <code>/lib</code> directory
+              of the <code>.ear</code> file.
+            </td>
           </tr>
         </table>
       </p>

@@ -8,6 +8,9 @@
   <body>
     <section name="Module versions">
       <p>
+        This document describes the gory details of module versions. For a more
+        high level overview see <a href='../configuration-management/version-control.html'>
+        version management</a>.
       </p>
     </section>
  </body>

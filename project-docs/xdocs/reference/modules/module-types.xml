@@ -34,7 +34,8 @@
             a <code>.jar</code> file.</td>
           </tr>
           <tr>
-            <td><a href='app-module.html'>Java application module</a></td>
+<!--            <td><a href='app-module.html'>Java application module</a></td> -->
+            <td>Java application module</td>
             <td>N/A</td>
             <td>This module type is not implemented yet (but is intended to in
             version 1.0 of Karma).</td>

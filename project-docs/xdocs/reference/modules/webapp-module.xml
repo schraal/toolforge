@@ -8,6 +8,13 @@
   <body>
     <section name="Java web application modules">
       <p>
+        This type of module defines one Java web application. It contains all Java
+        sources (for the servlets, e.g.), web content (JSPs and HTML, e.g.) and
+        resources that are needed for the web application.
+      </p>
+      <p>
+        This type of module is typically build, tested and packaged into a <code>.war</code>
+        (Web ARchive) file.
       </p>
     </section>
     <section name="Layout">
@@ -17,46 +24,109 @@
             <th>Source</th>
             <th>Build</th>
             <th>Package</th>
+            <th>Description</th>
           </tr>
           <tr>
             <td>src/java</td>
             <td>build/WEB-INF/classes</td>
             <td>/WEB-INF/classes</td>
+            <td>
+              Contains all java source files needed for the web application. Typically,
+              these will be Servlet classes, action classes, etc.
+              <br/>
+              When packaged, the built classes end up in the <code>WEB-INF/classes</code>
+              directory of the <code>.war</code> file, which is on the classpath of a web
+              application.
+            </td>
           </tr>
           <tr>
             <td>src/resources</td>
             <td>-</td>
             <td>/WEB-INF/classes</td>
+            <td>
+              The resources needed when testing and running the web application. These
+              resources are on the classpath when running the unit tests. They end
+              up in the <code>WEB-INF/classes</code> directory of the <code>.war</code>
+              file, which puts them in the runtime classpath as well.
+            </td>
           </tr>
           <tr>
             <td>test/java</td>
             <td>test</td>
             <td>-</td>
+            <td>
+              Contains the unit tests for the Java sources in this module. There
+              is no limitation on the class name of the unit tests. All classes in
+              this directory are supposed to be unit tests.
+              <br/>
+              During the test step the compiled tests end up in the test directory
+              of the module's Karma build directory.
+              <br/>
+              The unit test classes are not packaged into the <code>.war</code> file.
+            </td>
           </tr>
           <tr>
             <td>test/resources</td>
             <td>-</td>
             <td>-</td>
+            <td>
+              Contains resources used by the unit tests. The files in this directory
+              are placed on the classpath when running the unit tests.
+            </td>
           </tr>
           <tr>
             <td>src/web</td>
             <td>-</td>
             <td>/</td>
+            <td>
+              Contains the web content of the web application that needs to be
+              reacheable from the outside (by clients).
+              <br/>
+              Typically, this content will be HTML files, images and JSP files.
+              <br/>
+              The content of this directory is put in the root of the <code>.war</code>
+              file.
+            </td>
           </tr>
           <tr>
             <td>src/web/WEB-INF</td>
             <td>-</td>
             <td>/WEB-INF</td>
+            <td>
+              This directory contains all web content that is not meant to be called
+              from outside the application.
+              <br/>
+              Typically, this content will be HTML files, images and JSP files.
+              <br/>
+              One special files is the <code>web.xml</code> file, which is the
+              descriptor of the web application. This file needs to be present.
+            </td>
           </tr>
           <tr>
             <td>&lt;module dependencies&gt;</td>
             <td>-</td>
             <td>/WEB-INF/lib</td>
+            <td>
+              Module dependencies are used during building and testing. They are
+              put on the classpath at that time.
+              <br/>
+              Module dependencies of which the attribute <code>package</code> equals
+              <code>true</code>, are packaged into the <code>.war</code> file. They
+              are placed in the <code>WEB-INF/lib</code> directory.
+            </td>
           </tr>
           <tr>
             <td>&lt;jar dependencies&gt;</td>
             <td>-</td>
             <td>/WEB-INF/lib</td>
+            <td>
+              Jar dependencies are used during building and testing. They are
+              put on the classpath at that time.
+              <br/>
+              Jar dependencies of which the attribute <code>package</code> equals
+              <code>true</code>, are packaged into the <code>.war</code> file. They
+              are placed in the <code>WEB-INF/lib</code> directory.
+            </td>
           </tr>
         </table>
       </p>
