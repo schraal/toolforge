@@ -30,28 +30,50 @@ import nl.toolforge.karma.core.cmd.impl.HelpCommand;
 
 import java.util.ResourceBundle;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * @author W.G.Helmantel
  * @version $Id$
  */
 public class HelpImpl extends HelpCommand {
 
-	private static final ResourceBundle FRONTEND_MESSAGES = BundleCache.getInstance().getBundle(BundleCache.FRONTEND_MESSAGES_KEY);
+  private static final ResourceBundle FRONTEND_MESSAGES = BundleCache.getInstance().getBundle(BundleCache.FRONTEND_MESSAGES_KEY);
 
-	public HelpImpl(CommandDescriptor descriptor) {
-		super(descriptor);
-	}
+  public HelpImpl(CommandDescriptor descriptor) {
+    super(descriptor);
+  }
 
-	public void execute() throws CommandException {
+  public void execute() throws CommandException {
 
-    CommandMessage message = null;
+    String commandName = getCommandLine().getOptionValue("c");
+
     try {
-      message = new SuccessMessage("\n\n" + FRONTEND_MESSAGES.getString("message.VALID_COMMANDS") + "\n" + CommandRenderer.renderedCommands(CommandFactory.getInstance().getCommands()));
+      String renderedStuff = null;
+      CommandMessage message = null;
+
+      if (commandName != null) {
+        renderedStuff = CommandRenderer.renderCommand(commandName);
+
+        int usage = FRONTEND_MESSAGES.getString("message.COMMAND_HELP").length() + commandName.length();
+
+        message =
+            new SuccessMessage(
+                "\n" + FRONTEND_MESSAGES.getString("message.COMMAND_HELP") + "\n" + StringUtils.repeat("-", usage) + "\n" + renderedStuff,
+                new Object[]{commandName}
+                );
+      } else {
+        renderedStuff = CommandRenderer.renderedCommands(CommandFactory.getInstance().getCommands());
+        message = new SuccessMessage("\n" + FRONTEND_MESSAGES.getString("message.VALID_COMMANDS") + "\n" + renderedStuff);
+      }
+
+      response.addMessage(message);
+
     } catch (CommandLoadException e) {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
-    response.addMessage(message);
-		super.execute();
-	}
+
+//		super.execute();
+  }
 
 }
