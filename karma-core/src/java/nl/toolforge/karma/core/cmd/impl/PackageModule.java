@@ -1,30 +1,26 @@
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.build.BuildUtil;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
-import nl.toolforge.karma.core.cmd.CommandMessage;
-import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.manifest.ModuleDescriptor;
-
+import org.apache.commons.digester.Digester;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.apache.commons.digester.Digester;
 import org.xml.sax.SAXException;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.FileWriter;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

@@ -1,4 +1,4 @@
-package nl.toolforge.karma.core.build;
+package nl.toolforge.karma.core.cmd.util;
 
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.manifest.Manifest;
