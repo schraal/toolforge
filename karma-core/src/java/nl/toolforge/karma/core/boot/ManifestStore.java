@@ -94,6 +94,7 @@ public final class ManifestStore extends AdminStore {
     public ModuleLayoutTemplate getLayoutTemplate() {
       return null;
     }
+
   }
 
 }

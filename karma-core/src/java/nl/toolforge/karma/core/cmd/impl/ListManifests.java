@@ -70,22 +70,29 @@ public class ListManifests extends DefaultCommand {
 
     File baseDir = getWorkingContext().getConfiguration().getManifestStore().getModule().getBaseDir();
 
-    DirectoryScanner scanner = new DirectoryScanner();
-    scanner.setBasedir(baseDir);
-    scanner.setIncludes(new String[] {"**/*.xml"});
-    scanner.scan();
+    if (!baseDir.exists()) {
+      // Is possible when the manifest store has not been checked out.
+      //
+      return;
+    } else {
 
-    String[] manifestFiles = scanner.getIncludedFiles();
+      DirectoryScanner scanner = new DirectoryScanner();
+      scanner.setBasedir(baseDir);
+      scanner.setIncludes(new String[] {"**/*.xml"});
+      scanner.scan();
 
-    for (int i = 0; i < manifestFiles.length; i++) {
-      try {
-        ManifestHeader header = (ManifestHeader) getDigester().parse(new File(baseDir, manifestFiles[i]));
-        header.setName(manifestFiles[i].substring(0, manifestFiles[i].lastIndexOf(".xml")));
-        headers.add(header);
-      } catch (IOException e) {
-        throw new CommandException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{manifestFiles[i]});
-      } catch (SAXException e) {
-        throw new CommandException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{manifestFiles[i]});
+      String[] manifestFiles = scanner.getIncludedFiles();
+
+      for (int i = 0; i < manifestFiles.length; i++) {
+        try {
+          ManifestHeader header = (ManifestHeader) getDigester().parse(new File(baseDir, manifestFiles[i]));
+          header.setName(manifestFiles[i].substring(0, manifestFiles[i].lastIndexOf(".xml")));
+          headers.add(header);
+        } catch (IOException e) {
+          throw new CommandException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{manifestFiles[i]});
+        } catch (SAXException e) {
+          throw new CommandException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{manifestFiles[i]});
+        }
       }
     }
   }

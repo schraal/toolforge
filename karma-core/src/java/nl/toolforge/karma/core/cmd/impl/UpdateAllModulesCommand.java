@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
@@ -26,8 +25,8 @@ import nl.toolforge.karma.core.cmd.CommandFactory;
 import nl.toolforge.karma.core.cmd.CommandLoadException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.CompositeCommand;
-import nl.toolforge.karma.core.cmd.event.ErrorEvent;
-import nl.toolforge.karma.core.cmd.threads.ParallelCommandWrapper;
+import nl.toolforge.karma.core.cmd.event.MessageEvent;
+import nl.toolforge.karma.core.cmd.event.SimpleMessage;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.module.Module;
 
@@ -77,50 +76,72 @@ public class UpdateAllModulesCommand extends CompositeCommand {
 
     Collection modules = getContext().getCurrentManifest().getAllModules().values();
 
-    // Initialize an array of threads.
-    //
-    ParallelCommandWrapper[] threads = new ParallelCommandWrapper[modules.size()];
+    try {
+      for (Iterator i = modules.iterator(); i.hasNext();) {
+        Module module = (Module) i.next();
 
-    int j = 0;
-    for (Iterator i = modules.iterator(); i.hasNext();) {
-      Module module = (Module) i.next();
-
-      String commandLineString = "um -m " + module.getName();
-      Command clone = null;
-      try {
-        clone = CommandFactory.getInstance().getCommand(commandLineString);
-      } catch (CommandLoadException e) {
-        throw new CommandException(e.getErrorCode(), e.getMessageArguments());
-      }
-      clone.setContext(getContext());
-
-      threads[j] = new ParallelCommandWrapper(clone, getResponseListener());
-      try {
-        Thread.currentThread().sleep(25);
-      } catch (InterruptedException iex) {
-      }
-      threads[j].start();
-      j++;
-    }
-
-    int totalThreads = threads.length;
-
-    for (int i = 0; i < totalThreads; i++) {
-
-      try {
-        threads[i].join();
-
-        if (threads[i].getException() != null) {
-          getCommandResponse().addEvent(
-              new ErrorEvent(
-                  threads[i].getException().getErrorCode(),
-                  threads[i].getException().getMessageArguments()
-              )
-          );
+        String commandLineString = "um -m " + module.getName();
+        Command clone = null;
+        try {
+          clone = CommandFactory.getInstance().getCommand(commandLineString);
+        } catch (CommandLoadException e) {
+          throw new CommandException(e.getErrorCode(), e.getMessageArguments());
         }
-      } catch (InterruptedException e) {
-        throw new KarmaRuntimeException(e.getMessage());
+        clone.setContext(getContext());
+
+        clone.registerCommandResponseListener(getResponseListener());
+        clone.execute();
+        clone.deregisterCommandResponseListener(getResponseListener());
+
       }
+    } catch (CommandException c) {
+      commandResponse.addEvent(new MessageEvent(this, new SimpleMessage(c.getMessage())));
     }
+
+//    // Initialize an array of threads.
+//    //
+//    ParallelCommandWrapper[] threads = new ParallelCommandWrapper[modules.size()];
+//
+//    int j = 0;
+//    for (Iterator i = modules.iterator(); i.hasNext();) {
+//      Module module = (Module) i.next();
+//
+//      String commandLineString = "um -m " + module.getName();
+//      Command clone = null;
+//      try {
+//        clone = CommandFactory.getInstance().getCommand(commandLineString);
+//      } catch (CommandLoadException e) {
+//        throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+//      }
+//      clone.setContext(getContext());
+//
+//      threads[j] = new ParallelCommandWrapper(clone, getResponseListener());
+//      try {
+//        Thread.currentThread().sleep(25);
+//      } catch (InterruptedException iex) {
+//      }
+//      threads[j].start();
+//      j++;
+//    }
+//
+//    int totalThreads = threads.length;
+//
+//    for (int i = 0; i < totalThreads; i++) {
+//
+//      try {
+//        threads[i].join();
+//
+//        if (threads[i].getException() != null) {
+//          getCommandResponse().addEvent(
+//              new ErrorEvent(
+//                  threads[i].getException().getErrorCode(),
+//                  threads[i].getException().getMessageArguments()
+//              )
+//          );
+//        }
+//      } catch (InterruptedException e) {
+//        throw new KarmaRuntimeException(e.getMessage());
+//      }
+//    }
   }
 }

@@ -567,6 +567,34 @@ public final class CVSRunner implements Runner {
     }
   }
 
+  /*
+
+  DISABLED, DO NOT DELETE, EXPERIMENTAL
+
+  public LogInformation log(Manifest manifest) throws CVSException {
+
+
+    RlogCommand logCommand = new RlogCommand();
+
+    String[] modules = new String[manifest.getAllModules().size()];
+    int j = 0;
+    for (Iterator i = manifest.getAllModules().values().iterator(); i.hasNext();) {
+      modules[j] = getModuleOffset((Module) i.next()) + "/" + Module.MODULE_DESCRIPTOR;
+      j++;
+    }
+
+    logCommand.setModules(modules);
+
+    executeOnCVS(logCommand, new File("."), null);
+
+    // Another hook into ext support.
+    //
+    return ((CVSResponseAdapter) this.listener).getLogInformation();
+  }
+  
+  */
+
+
   /**
    * Checks if the module has a CVS branch tag <code>module.getPatchLine().getName()</code> attached.
    *
@@ -679,9 +707,14 @@ public final class CVSRunner implements Runner {
         // A CVSResponseAdapter is registered as a listener for the response from CVS. This one adapts to Karma
         // specific stuff.
         //
+
+        long start = System.currentTimeMillis();
+
         ((CVSResponseAdapter) listener).setArguments(args);
         client.getEventManager().addCVSListener(listener);
         client.executeCommand(command, globalOptions);
+
+        logger.debug("CVS command finished in " + (System.currentTimeMillis() - start) + " ms.");
 
       } catch (CommandException e) {
         logger.error(e.getMessage(), e);

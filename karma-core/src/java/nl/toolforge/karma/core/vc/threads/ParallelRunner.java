@@ -21,6 +21,8 @@ package nl.toolforge.karma.core.vc.threads;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.module.Module;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
@@ -36,6 +38,8 @@ import java.util.Map;
  * @version $Id$
  */
 public class ParallelRunner {
+
+  Log logger = LogFactory.getLog(ParallelRunner.class);
 
   private Map results = null;
 
@@ -91,6 +95,7 @@ public class ParallelRunner {
    */
   public void execute(int blockSize, long delayInMilliseconds) {
 
+
     // todo abstract should work for all subtypes...
 
     // todo implement blockSize mechanism
@@ -107,6 +112,7 @@ public class ParallelRunner {
 
     int index = 0;
 
+    logger.info("Starting " + modules.size() + " threads, with a delay of " + delayInMilliseconds + " ms.");
 
     // Start each task in parallel ...
     //
