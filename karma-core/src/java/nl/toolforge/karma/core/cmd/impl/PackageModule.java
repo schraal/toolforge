@@ -426,11 +426,11 @@ public class PackageModule extends AbstractBuildCommand {
       executeDelete(getBuildEnvironment().getModuleBuildDirectory(), "*.ear");
 
       commandResponse.addMessage(new StatusMessage("Copying META-INF dir."));
-      Copy copy = (Copy) project.createTask("copy");
-      copy.setProject(getProjectInstance());
-      copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
-      copy.setOverwrite(true);
-      copy.setIncludeEmptyDirs(false);
+      Copy copyMetaInf = (Copy) project.createTask("copy");
+      copyMetaInf.setProject(getProjectInstance());
+      copyMetaInf.setTodir(getBuildEnvironment().getModulePackageDirectory());
+      copyMetaInf.setOverwrite(true);
+      copyMetaInf.setIncludeEmptyDirs(false);
 
       FileSet fileSet = new FileSet();
       fileSet.setDir(new File(getCurrentModule().getBaseDir(), "src"));
@@ -438,18 +438,17 @@ public class PackageModule extends AbstractBuildCommand {
 
       // Filtering
       //
-      FilterSet filterSet = copy.createFilterSet();
+      FilterSet filterSet = copyMetaInf.createFilterSet();
       filterSet.setFiltersfile(new File(getBuildEnvironment().getModuleBuildDirectory(), ARCHIVES_PROPERTIES));
 
-      copy.addFileset(fileSet);
-//      copy.execute();
-      target.addTask(copy);
+      copyMetaInf.addFileset(fileSet);
+      target.addTask(copyMetaInf);
 
       //copy the module dependencies from the application.xml
       commandResponse.addMessage(new StatusMessage("Copying module dependencies"));
       Set moduleDeps = helper.getModuleDependencies(getCurrentModule(), true);
       if (!moduleDeps.isEmpty()) {
-        copy = (Copy) project.createTask("copy");
+        Copy copy = (Copy) project.createTask("copy");
         copy.setProject(getProjectInstance());
         copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
         copy.setFlatten(true);
@@ -462,7 +461,6 @@ public class PackageModule extends AbstractBuildCommand {
           fileSet.setFile(path.getFullPath());
           copy.addFileset(fileSet);
         }
-//        copy.execute();
         target.addTask(copy);
       } else {
         logger.info("No module dependencies to package.");
@@ -472,7 +470,7 @@ public class PackageModule extends AbstractBuildCommand {
       commandResponse.addMessage(new StatusMessage("Copying jar dependencies"));
       Set jarDeps = helper.getJarDependencies(getCurrentModule(), true);
       if (!jarDeps.isEmpty()) {
-        copy = (Copy) project.createTask("copy");
+        Copy copy = (Copy) project.createTask("copy");
         copy.setProject(getProjectInstance());
         copy.setTodir(new File(getBuildEnvironment().getModulePackageDirectory(), "lib"));
         copy.setFlatten(true);
@@ -485,13 +483,18 @@ public class PackageModule extends AbstractBuildCommand {
           fileSet.setFile(path.getFullPath());
           copy.addFileset(fileSet);
         }
-//        copy.execute();
         target.addTask(copy);
       } else {
         logger.info("No jar dependencies to package.");
       }
+      project.executeTarget("run");
 
       commandResponse.addMessage(new StatusMessage("Creating ear"));
+      Target target2 = new Target();
+      target2.setName("ear");
+      target2.setProject(project);
+
+      project.addTarget(target2);
 
       Ear ear = (Ear) project.createTask("ear");
       ear.setProject(getProjectInstance());
@@ -500,9 +503,8 @@ public class PackageModule extends AbstractBuildCommand {
       ear.setExcludes("META-INF/application.xml");
       ear.setAppxml(new File(getBuildEnvironment().getModulePackageDirectory(), "META-INF/application.xml".replace('/', File.separatorChar)));
 
-//      ear.execute();
-      target.addTask(ear);
-      project.executeTarget("run");
+      target2.addTask(ear);
+      project.executeTarget("ear");
     } catch (ManifestException m) {
       m.printStackTrace();
       throw new CommandException(m.getErrorCode(), m.getMessageArguments());
