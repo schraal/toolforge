@@ -49,38 +49,33 @@ public class CleanAll extends AbstractBuildCommand {
 
     Project project = getAntProject();
 
+    File buildBase = getBuildDirectory();
+    if (!buildBase.exists()) {
+      // No point in removing built stuff if it isn't there
+      //
+      throw new CommandException(CommandException.NO_BUILD_DIR);
+    }
+
+    // Configure the Ant project
+    //
+    // The base dir
+    //
+    project.setProperty(MANIFEST_BUILD_DIR, buildBase.getPath());
+
     try {
-      File buildBase = getBuildDirectory();
-      if (!buildBase.exists()) {
-        // No point in removing built stuff if it isn't there
-        //
-        throw new CommandException(CommandException.NO_BUILD_DIR);
-      }
+      project.executeTarget(CLEAN_ALL_TARGET);
 
-      // Configure the Ant project
-      //
-      // The base dir
-      //
-      project.setProperty(MANIFEST_BUILD_DIR, buildBase.getPath());
+      // todo: localize message
+      CommandMessage message = new SuccessMessage("All modules cleaned succesfully.");
+      commandResponse.addMessage(message);
 
-      try {
-        project.executeTarget(CLEAN_ALL_TARGET);
-
-        // todo: localize message
-        CommandMessage message = new SuccessMessage("All modules cleaned succesfully.");
-        commandResponse.addMessage(message);
-
-      } catch (BuildException e) {
-        e.printStackTrace();
-        throw new CommandException(CommandException.CLEAN_ALL_FAILED);
-      }
-    } catch (ManifestException e) {
+    } catch (BuildException e) {
       e.printStackTrace();
-      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+      throw new CommandException(CommandException.CLEAN_ALL_FAILED);
     }
   }
 
-  protected File getSourceDirectory() throws ManifestException {
+  protected File getSourceDirectory() {
     //dummy impl. method is not used by this command.
     return null;
   }

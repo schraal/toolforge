@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
@@ -29,6 +28,7 @@ import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.scm.ModuleDependency;
+import nl.toolforge.core.util.file.MyFileUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,13 +36,16 @@ import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.helper.ProjectHelperImpl;
+import org.apache.tools.ant.taskdefs.Delete;
+import org.apache.tools.ant.taskdefs.Mkdir;
+import org.apache.tools.ant.types.FileSet;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -219,15 +222,11 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
   }
 
   /**
-   * Returns the build directory.
-   *
-   * @return
-   * @throws ManifestException
+   * Returns the build directory. The build directory is the <code>build</code> subdirectory of the current
+   * manifest. For instance : <code>/home/asmedes/karma/projects/blaat/build</code>, where <code>blaat</code> is the
+   * current manifest name.
    */
-  protected final File getBuildDirectory() throws ManifestException {
-
-    // the rest, for the time being.
-    //
+  protected final File getBuildDirectory() {
     return new File(getContext().getCurrentManifest().getDirectory(), "build");
   }
 
@@ -235,9 +234,8 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
    * Returns the build directory for a module.
    *
    * @return
-   * @throws ManifestException
    */
-  protected final File getModuleBuildDirectory() throws ManifestException {
+  protected final File getModuleBuildDirectory() {
 
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
@@ -250,7 +248,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
 
   /**
-   * Returns the compile directory for a module.
+   * Returns the compile directory for a module, relative to the manifests' <code>build</code> directory.
    *
    * @return
    */
@@ -260,10 +258,12 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
       throw new IllegalArgumentException("Module cannot be null.");
     }
 
+    File base = getModuleBuildDirectory();
+
     if (module.getDeploymentType().equals(Module.WEBAPP)) {
-      return new File("build/WEB-INF/classes");
+      return new File(base, "build/WEB-INF/classes");
     } else {
-      return new File("build");
+      return new File(base, "build");
     }
   }
 
@@ -278,7 +278,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
       throw new IllegalArgumentException("Module cannot be null.");
     }
 
-    return new File(DEFAULT_TEST_BUILD_DIRECTORY);
+    return  new File(getModuleBuildDirectory(), DEFAULT_TEST_BUILD_DIRECTORY);
   }
 
   /**
@@ -292,7 +292,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
       throw new IllegalArgumentException("Module cannot be null.");
     }
 
-    return new File(DEFAULT_PACKAGE_DIRECTORY);
+    return new File(getModuleBuildDirectory(), DEFAULT_PACKAGE_DIRECTORY);
   }
 
   /**
@@ -303,7 +303,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
    */
   protected abstract File getSourceDirectory() throws ManifestException;
 
-  
+
   protected String getJarDependencies(Set dependencies, boolean relative, char separator) throws ManifestException, CommandException {
 
     StringBuffer buffer = new StringBuffer();
@@ -388,30 +388,35 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
     return moduleDeps + jarDeps;
   }
 
+  private Project project = null;
+
   /**
    * Gets an Ant <code>Project</code> for a module.
    *
-   * @return
-   * @throws CommandException
+   * @deprecated Use
    */
   protected Project getAntProject() throws CommandException {
 
+    if (project == null) {
 
-    DefaultLogger logger = new DefaultLogger();
-    // todo hmm, this mechanism doesn't integrate with the commandresponse mechanism
-    //
-    logger.setOutputPrintStream(System.out);
-    logger.setErrorPrintStream(System.out);
 
-    logger.setMessageOutputLevel(Project.MSG_INFO); // Always handy ...
+      DefaultLogger logger = new DefaultLogger();
+      // todo hmm, this mechanism doesn't integrate with the commandresponse mechanism
+      //
+      logger.setOutputPrintStream(System.out);
+      logger.setErrorPrintStream(System.out);
+
+      logger.setMessageOutputLevel(Project.MSG_INFO); // Always handy ...
 //    logger.setMessageOutputLevel(Project.MSG_VERBOSE); // Always handy ...
 //    logger.setMessageOutputLevel(Project.MSG_DEBUG); // Always handy ...
 
-    // Configure underlying ant to run a command.
-    //
-    Project project = new Project();
-    project.addBuildListener(logger);
-    project.init();
+      // Configure underlying ant to run a command.
+      //
+      project = new Project();
+      project.addBuildListener(logger);
+      project.init();
+
+    }
 
     // Read in the build.xml file
     //
@@ -429,6 +434,100 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
     return project;
   }
+
+
+  /**
+   * Gets an Ant <code>Project</code> for a module.
+   *
+   * @return
+   * @throws CommandException
+   */
+  protected Project getProjectInstance() throws CommandException {
+
+    if (project == null) {
+
+
+      DefaultLogger logger = new DefaultLogger();
+      // todo hmm, this mechanism doesn't integrate with the commandresponse mechanism
+      //
+      logger.setOutputPrintStream(System.out);
+      logger.setErrorPrintStream(System.out);
+
+      logger.setMessageOutputLevel(Project.MSG_INFO); // Always handy ...
+//    logger.setMessageOutputLevel(Project.MSG_VERBOSE); // Always handy ...
+//    logger.setMessageOutputLevel(Project.MSG_DEBUG); // Always handy ...
+
+      // Configure underlying ant to run a command.
+      //
+      project = new Project();
+      project.addBuildListener(logger);
+      project.init();
+
+    }
+
+//    // Read in the build.xml file
+//    //
+//    ProjectHelper helper = new ProjectHelperImpl();
+//    File tmp = null;
+//    try {
+//      tmp = getBuildFile("build-module.xml");
+//      helper.parse(project, tmp);
+//    } catch (IOException e) {
+//      throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {module.getName()});
+//    }
+//
+//    setBuildFileLocation(tmp);
+
+
+    return project;
+  }
+
+  /**
+   * Performs an &lt;mkdir&gt;-task on this commands' Ant project.
+   */
+  public void executeMkdir(File dir) throws CommandException {
+
+    if (project == null) {
+      throw new KarmaRuntimeException("Ant project not initialized.");
+    }
+
+    try {
+      Mkdir mkdir = new Mkdir();
+      mkdir.setProject(project);
+      mkdir.setDir(dir);
+      mkdir.execute();
+    } catch (RuntimeException r) {
+      throw new CommandException(CommandException.BUILD_FAILED, new Object[]{r.getMessage()});
+    }
+  }
+
+  /**
+   * Performs a &lt;delete&gt;-task on this commands' Ant project.
+   */
+  public void executeDelete(File dir, String includes) throws CommandException {
+
+    if (project == null) {
+      throw new KarmaRuntimeException("Ant project not initialized.");
+    }
+
+    try {
+
+      // <delete>
+      //
+      Delete delete = new Delete();
+      delete.setProject(project);
+
+      FileSet fileset = new FileSet();
+      fileset.setDir(dir);
+      fileset.setIncludes(includes);
+
+      delete.addFileset(fileset);
+      delete.execute();
+    } catch (RuntimeException r) {
+      throw new CommandException(CommandException.BUILD_FAILED, new Object[]{r.getMessage()});
+    }
+  }
+
 
   private File getBuildFile(String buildFile) throws IOException {
 
@@ -463,7 +562,9 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
   public final void cleanUp() {
 
     try {
-      FileUtils.deleteDirectory(tempBuildFileLocation.getParentFile());
+      if (tempBuildFileLocation != null) {
+        FileUtils.deleteDirectory(tempBuildFileLocation.getParentFile());
+      }
     } catch (IOException e) {
       logger.warn("Could not remove temporary directory for Ant build file.");
     }

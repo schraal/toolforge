@@ -273,11 +273,11 @@ public abstract class AbstractManifest implements Manifest {
   }
 
   public final boolean isLocal(Module module) {
-    try {
+//    try {
       return new File(getDirectory(), module.getName()).exists();
-    } catch (ManifestException e) {
-      return false;
-    }
+//    } catch (ManifestException e) {
+//      return false;
+//    }
   }
 
   public final boolean isLocal() {
@@ -295,14 +295,15 @@ public abstract class AbstractManifest implements Manifest {
     return true;
   }
 
-  public final File getDirectory() throws ManifestException {
+//  public final File getDirectory() throws ManifestException {
+  public final File getDirectory() {
 
     File file = null;
-    try {
+//    try {
       file = new File(LocalEnvironment.getDevelopmentHome(), getName());
-    } catch (Exception e) {
-      throw new ManifestException(ManifestException.INVALID_LOCAL_PATH, new Object[]{getName()});
-    }
+//    } catch (Exception e) {
+//      throw new ManifestException(ManifestException.INVALID_LOCAL_PATH, new Object[]{getName()});
+//    }
 
     return file;
   }

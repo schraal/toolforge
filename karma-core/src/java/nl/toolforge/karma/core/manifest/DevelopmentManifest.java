@@ -167,12 +167,7 @@ public final class DevelopmentManifest extends AbstractManifest {
         }
       };
 
-      String[] stateFiles = null;
-      try {
-        stateFiles = new File(getDirectory(), module.getName()).list(filter);
-      } catch (ManifestException e) {
-        throw new KarmaRuntimeException(e.getErrorMessage());
-      }
+      String[] stateFiles = new File(getDirectory(), module.getName()).list(filter);
 
       if (stateFiles == null || stateFiles.length == 0 ) {
         if (((SourceModule) module).hasVersion()) {

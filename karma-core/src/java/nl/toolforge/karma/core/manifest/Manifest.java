@@ -56,7 +56,8 @@ public interface Manifest {
    *
    * @return
    */
-  public File getDirectory() throws ManifestException;
+  public File getDirectory();
+//  public File getDirectory() throws ManifestException;
 
   /**
    * @see AbstractManifest for the time being

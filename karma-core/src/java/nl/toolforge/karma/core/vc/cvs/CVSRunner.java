@@ -179,20 +179,27 @@ public final class CVSRunner implements Runner {
       throw new KarmaRuntimeException("Panic! Failed to create temporary directory for module " + module.getName());
     }
 
-    executeOnCVS(importCommand, moduleDirectory); // Use module as context directory
+    executeOnCVS(importCommand, moduleDirectory, null); // Use module as context directory
 
     // Remove the temporary structure.
     //
     try {
       FileUtils.deleteDirectory(tmp);
     } catch (IOException e) {
-      e.printStackTrace();
+      throw new KarmaRuntimeException(e.getMessage());
     }
 
     // Step 2 : checkout the module to be able to create module.info
     //
+    try {
+      tmp = MyFileUtils.createTempDirectory();
+    } catch (IOException e) {
+      throw new KarmaRuntimeException("Panic! Failed to create temporary directory.");
+    }
+//    module.setBaseDir(new File(tmp)); //todo hmm.
+    module.setBaseDir(new File(tmp, module.getName()));
 
-    checkout(module);
+    checkout(module, null, null);
 
     add(module, template.getFileElements(), template.getDirectoryElements());
 
@@ -201,6 +208,12 @@ public final class CVSRunner implements Runner {
     addModuleHistoryEvent(tmp, module, ModuleHistoryEvent.CREATE_MODULE_EVENT, Version.INITIAL_VERSION, new Date(), author, comment);
 
     tag(module, Version.INITIAL_VERSION);
+
+    try {
+      FileUtils.deleteDirectory(tmp);
+    } catch (IOException e) {
+      throw new KarmaRuntimeException(e.getMessage());
+    }
   }
 
   /**
@@ -229,6 +242,10 @@ public final class CVSRunner implements Runner {
   }
 
   public void checkout(Module module, DevelopmentLine developmentLine, Version version) throws CVSException {
+//    checkout(module, developmentLine, version, module.getBaseDir());
+//  }
+//
+//  private void checkout(Module module, DevelopmentLine developmentLine, Version version, File baseDir) throws CVSException {
 
     Map arguments = new Hashtable();
     arguments.put("MODULE", module.getName());
@@ -251,6 +268,7 @@ public final class CVSRunner implements Runner {
 
     executeOnCVS(checkoutCommand, module.getBaseDir().getParentFile(), arguments);
   }
+
 
   public void update(Module module) throws CVSException {
     update(module, null);
@@ -329,7 +347,6 @@ public final class CVSRunner implements Runner {
 
           if (dir.mkdirs()) {
             cvsFilesCollection.add(dir);
-//            j++;
           }
 
           fileToAdd.createNewFile();
@@ -340,7 +357,6 @@ public final class CVSRunner implements Runner {
       }
 
       cvsFilesCollection.add(fileToAdd);
-//      j++;
     }
 
     // Create temp directories
@@ -362,7 +378,6 @@ public final class CVSRunner implements Runner {
         base += subDir;
         cvsFilesCollection.add(new File(modulePath, base));
         base += "/";
-//        j++;
       }
     }
 
@@ -380,7 +395,7 @@ public final class CVSRunner implements Runner {
     commitCommand.setFiles(cvsFiles);
     commitCommand.setMessage("File added automatically by Karma.");
 
-    executeOnCVS(commitCommand, new File(module.getName()));
+    executeOnCVS(commitCommand, module.getBaseDir(), arguments);
   }
 
   /**
@@ -397,7 +412,7 @@ public final class CVSRunner implements Runner {
     commitCommand.setRecursive(true);
     commitCommand.setMessage(message);
 
-    executeOnCVS(commitCommand, module.getBaseDir());
+    executeOnCVS(commitCommand, module.getBaseDir(), null);
   }
 
   public void promote(Module module, String comment, Version version) throws CVSException {
@@ -426,7 +441,7 @@ public final class CVSRunner implements Runner {
     tagCommand.setTag(symbolicName.getSymbolicName());
     tagCommand.setMakeBranchTag(branch);
 
-    executeOnCVS(tagCommand, module.getBaseDir());
+    executeOnCVS(tagCommand, module.getBaseDir(), null);
   }
 
   /**
@@ -472,7 +487,7 @@ public final class CVSRunner implements Runner {
       File moduleInfo = new File(new File(tmp, module.getName()), Module.MODULE_INFO);
       logCommand.setFiles(new File[]{moduleInfo});
 
-      executeOnCVS(logCommand, new File(tmp, module.getName()));
+      executeOnCVS(logCommand, new File(tmp, module.getName()), arguments);
 
     } catch (IOException e) {
       throw new KarmaRuntimeException("Panic! Failed to create temporary directory for module " + module.getName());
@@ -532,7 +547,7 @@ public final class CVSRunner implements Runner {
     }
 
     try {
-      executeOnCVS(checkoutCommand, tmp);
+      executeOnCVS(checkoutCommand, tmp, arguments);
     } catch (CVSException e) {
       if (e.getErrorCode().equals(CVSException.MODULE_EXISTS_IN_REPOSITORY)) {
         // If the module already exists in the repository.
@@ -589,10 +604,10 @@ public final class CVSRunner implements Runner {
     return symbolicNames.contains(symbolicName.getSymbolicName());
   }
 
-  private void executeOnCVS(org.netbeans.lib.cvsclient.command.Command command,
-                            File contextDirectory) throws CVSException {
-    executeOnCVS(command, contextDirectory, null);
-  }
+//  private void executeOnCVS(org.netbeans.lib.cvsclient.command.Command command,
+//                            File contextDirectory) throws CVSException {
+//    executeOnCVS(command, contextDirectory, null);
+//  }
 
   /**
    * Runs a CVS command on the repository (through the Netbeans API). contextDirectory is assigned to client.setLocalPath()

@@ -18,33 +18,23 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.xml.sax.SAXException;
-
 import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
-import nl.toolforge.karma.core.cmd.AntErrorMessage;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
-import nl.toolforge.karma.core.cmd.util.DescriptorReader;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.ModuleDescriptor;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.Copy;
+import org.apache.tools.ant.taskdefs.Jar;
+import org.apache.tools.ant.taskdefs.War;
+import org.apache.tools.ant.types.FileSet;
+
+import java.io.File;
+
 
 /**
  * @author D.A. Smedes
@@ -70,127 +60,220 @@ public class PackageModule extends AbstractBuildCommand {
 
     super.execute();
 
-    Project project = getAntProject();
+//    Project project = getAntProject();
+
+    Project project = getProjectInstance();
+
+//
+//    War war = new War();
+//    war.setProject(project);
+//    war.setDestFile(new File("/tmp/blaat.war"));
+//    war.setBasedir(new File("/home/asmedes/karma/contrado/projects/om/build/webapp-om/package/"));
+//    war.setWebxml(new File(getCurrentModule().getBaseDir(), "WEB-INF/web.xml".replace('/', File.separatorChar)));
+//
+//    war.execute();
+
 
     try {
-
-      project.setProperty(MODULE_BUILD_DIR_PROPERTY, getModuleBuildDirectory().getPath());
-      project.setProperty(MODULE_COMPILE_DIR_PROPERTY, getCompileDirectory().getPath());
-      project.setProperty(MODULE_PACKAGE_DIR_PROPERTY, getPackageDirectory().getPath());
-
-      String packageName = new File(getModuleBuildDirectory(), getCurrentManifest().resolveArchiveName(getCurrentModule())).getPath();
-      project.setProperty(MODULE_PACKAGE_NAME_PROPERTY, packageName);
-      project.setProperty(MODULE_BASEDIR_PROPERTY, getCurrentModule().getBaseDir().getPath());
-
+//
+//      project.setProperty(MODULE_BUILD_DIR_PROPERTY, getModuleBuildDirectory().getPath());
+//      project.setProperty(MODULE_COMPILE_DIR_PROPERTY, getCompileDirectory().getPath());
+//      project.setProperty(MODULE_PACKAGE_DIR_PROPERTY, getPackageDirectory().getPath());
+//
+      File packageName = new File(getModuleBuildDirectory(), getCurrentManifest().resolveArchiveName(getCurrentModule()));
+//      project.setProperty(MODULE_PACKAGE_NAME_PROPERTY, packageName);
+//      project.setProperty(MODULE_BASEDIR_PROPERTY, getCurrentModule().getBaseDir().getPath());
+//
       if (getCurrentModule().getDeploymentType().equals(Module.WEBAPP)) {
 
-        // Create a war-file
-        //
-        project.setProperty(MODULE_WEBXML_PROPERTY, new File(getCurrentModule().getBaseDir(), "WEB-INF/web.xml".replace('/', File.separatorChar)).getPath());
+        executeDelete(getModuleBuildDirectory(), "*.war");
+        executeMkdir(getPackageDirectory());
 
-        // Relative to Module.getBaseDir().
-        //
-        project.setProperty(
-            MODULE_INCLUDES_PROPERTY,
-            "WEB-INF/**"
-        );
+        Copy copy = null;
 
-        // The base dir for module dependencies.
-        //
-        project.setProperty(MANIFEST_BUILD_DIR, getModuleBuildDirectory().getParent());
+        copy = new Copy();
+        copy.setProject(project);
+        copy.setTodir(getPackageDirectory());
+        copy.setOverwrite(true);
 
-        // Include all module-dependencies --> copied to WEB-INF/lib
+        FileSet fileSet = new FileSet();
+        fileSet.setDir(getCurrentModule().getBaseDir());
+        fileSet.setIncludes("web/**, WEB-INF/**");
+
+        copy.addFileset(fileSet);
+
+
+        copy.execute();
+
+
+        // Copy dependencies
         //
+
         String moduleDeps = getModuleDependencies(getCurrentModule().getDependencies(), true, DEPENDENCY_SEPARATOR_CHAR);
-        project.setProperty(MODULE_MODULE_DEPENDENCIES_PROPERTY, moduleDeps);
-
-        // Set the base location for jar dependencies.
-        //
-        project.setProperty(KARMA_JAR_REPOSITORY_PROPERTY, LocalEnvironment.getLocalRepository().getPath());
-
-        // Include all jar dependencies --> copied to WEB-INF/lib
-        //
         String jarDeps = getJarDependencies(getCurrentModule().getDependencies(), true, DEPENDENCY_SEPARATOR_CHAR);
-        project.setProperty(MODULE_JAR_DEPENDENCIES_PROPERTY, jarDeps);
 
-//        project.setProperty(MODULE_EXCLUDES_PROPERTY, "*.war");
-        project.executeTarget(BUILD_TARGET_WAR);
+        if (moduleDeps != null && !"".equals(moduleDeps) && jarDeps != null && !"".equals(moduleDeps)) {
+
+          copy = new Copy();
+          copy.setProject(project);
+          copy.setTodir(new File(getPackageDirectory(), "WEB-INF/lib"));
+          copy.setFlatten(true);
+
+          // Module dependencies
+          //
+          if (moduleDeps != null && !"".equals(moduleDeps)) {
+            fileSet = new FileSet();
+            fileSet.setDir(getCurrentManifest().getDirectory());
+            fileSet.setIncludes(moduleDeps);
+            copy.addFileset(fileSet);
+          }
+
+          // Jar dependencies
+          //
+          if (jarDeps != null && !"".equals(moduleDeps)) {
+            fileSet = new FileSet();
+            fileSet.setDir(LocalEnvironment.getLocalRepository());
+            fileSet.setIncludes(jarDeps);
+            copy.addFileset(fileSet);
+          }
+
+          copy.execute();
+        }
+
+        // Create a war file.
+        //
+        War war = new War();
+        war.setProject(project);
+        war.setDestFile(packageName);
+        war.setBasedir(getPackageDirectory());
+        war.setWebxml(new File(getCurrentModule().getBaseDir(), "WEB-INF/web.xml".replace('/', File.separatorChar)));
+
+        war.execute();
 
       } else if (getCurrentModule().getDeploymentType().equals(Module.EAPP)) {
-
-        // Create an ear-file
-        //
-        DescriptorReader reader = new DescriptorReader(DescriptorReader.APPLICATION_XML);
-
-        try {
-          reader.parse(new File(getCurrentModule().getBaseDir(), "META-INF"));
-        } catch (IOException e) {
-          e.printStackTrace();
-        } catch (SAXException e) {
-          e.printStackTrace();
-        }
-
-        Map map = new Hashtable();
-        for (Iterator it = reader.getModuleNames().iterator(); it.hasNext(); ) {
-          String moduleName = ((StringBuffer) it.next()).toString();
-
-          Pattern p = Pattern.compile("@("+ModuleDescriptor.NAME_PATTERN_STRING+")@");
-          Matcher m = p.matcher(moduleName);
-
-          if (m.matches()) {
-            moduleName = m.group(1);
-            Module module = getCurrentManifest().getModule(moduleName);
-            map.put(moduleName, getCurrentManifest().resolveArchiveName(module));
-          } else {
-            //todo: throw new Exception();
-          }
-        }
-
-        try {
-          FileWriter write1 = new FileWriter(new File(getModuleBuildDirectory(), "archives.properties"));
-          FileWriter write2 = new FileWriter(new File(getModuleBuildDirectory(), "archives.includes"));
-
-          for (Iterator it = map.keySet().iterator(); it.hasNext(); ) {
-            String key = (String) it.next();
-            String value = (String) map.get(key);
-
-            write1.write(key+"="+value+"\n");
-            write2.write(key+"/"+value+"\n");
-          }
-
-          write1.close();
-          write2.close();
-
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-
-        project.setProperty(MODULE_APPXML_PROPERTY, new File(getModuleBuildDirectory(), "META-INF/application.xml".replace('/', File.separatorChar)).getPath());
-        project.setProperty(MODULE_INCLUDES_PROPERTY, "META-INF/**");
-        project.setProperty(MODULE_EXCLUDES_PROPERTY, "*.ear,archives.*");
-        project.executeTarget(BUILD_TARGET_EAR);
+//
+//        // Create an ear-file
+//        //
+//        DescriptorReader reader = new DescriptorReader(DescriptorReader.APPLICATION_XML);
+//
+//        try {
+//          reader.parse(new File(getCurrentModule().getBaseDir(), "META-INF"));
+//        } catch (IOException e) {
+//          e.printStackTrace();
+////          throw new CommandException(CommandException.MISSING_DEPLOYMENT_DESCRIPTOR, new Object[]{reader.});
+//        } catch (SAXException e) {
+//          e.printStackTrace();
+//        }
+//
+//        Map map = new Hashtable();
+//        for (Iterator it = reader.getModuleNames().iterator(); it.hasNext(); ) {
+//          String moduleName = ((StringBuffer) it.next()).toString();
+//
+//          Pattern p = Pattern.compile("@("+ModuleDescriptor.NAME_PATTERN_STRING+")@");
+//          Matcher m = p.matcher(moduleName);
+//
+//          if (m.matches()) {
+//            moduleName = m.group(1);
+//            Module module = getCurrentManifest().getModule(moduleName);
+//            map.put(moduleName, getCurrentManifest().resolveArchiveName(module));
+//          } else {
+//            //todo: throw new Exception();
+//          }
+//        }
+//
+//        try {
+//          FileWriter write1 = new FileWriter(new File(getModuleBuildDirectory(), "archives.properties"));
+//          FileWriter write2 = new FileWriter(new File(getModuleBuildDirectory(), "archives.includes"));
+//
+//          for (Iterator it = map.keySet().iterator(); it.hasNext(); ) {
+//            String key = (String) it.next();
+//            String value = (String) map.get(key);
+//
+//            write1.write(key+"="+value+"\n");
+//            write2.write(key+"/"+value+"\n");
+//          }
+//
+//          write1.close();
+//          write2.close();
+//
+//        } catch (IOException e) {
+//          e.printStackTrace();
+//        }
+//
+//        project.setProperty(MODULE_APPXML_PROPERTY, new File(getModuleBuildDirectory(), "META-INF/application.xml".replace('/', File.separatorChar)).getPath());
+//        project.setProperty(MODULE_INCLUDES_PROPERTY, "META-INF/**");
+//        project.setProperty(MODULE_EXCLUDES_PROPERTY, "*.ear,archives.*");
+//        project.executeTarget(BUILD_TARGET_EAR);
       } else {
-        // Create a jar-file
+
+        executeDelete(getModuleBuildDirectory(), "*.jar");
+
+        Copy copy = null;
+
+        copy = new Copy();
+        copy.setProject(project);
+        copy.setTodir(getPackageDirectory());
+        copy.setOverwrite(true);
+
+        FileSet fileSet = new FileSet();
+        fileSet.setDir(new File(getCurrentModule().getBaseDir(), "resources"));
+        fileSet.setIncludes("**/*");
+
+        copy.addFileset(fileSet);
+
+
+
+        copy = new Copy();
+        copy.setProject(project);
+        copy.setTodir(getPackageDirectory());
+        copy.setOverwrite(true);
+
+        fileSet = new FileSet();
+        fileSet.setDir(getCurrentModule().getBaseDir());
+        fileSet.setIncludes("META-INF/**");
+        fileSet.setExcludes("resources");
+
+        copy.addFileset(fileSet);
+
+        // Copy all class files to the package directory.
         //
-        project.setProperty(MODULE_EXCLUDES_PROPERTY, "*.jar");
-        project.setProperty(MODULE_INCLUDES_PROPERTY, "META-INF/**");
-        project.executeTarget(BUILD_TARGET_JAR);
+        copy = new Copy();
+        copy.setProject(project);
+        copy.setTodir(getPackageDirectory());
+        copy.setOverwrite(true);
+
+        fileSet = new FileSet();
+        fileSet.setDir(getCompileDirectory());
+        fileSet.setIncludes("**/*.class");
+
+        copy.addFileset(fileSet);
+
+        copy.execute();
+
+        Jar jar = new Jar();
+        jar.setProject(project);
+        jar.setDestFile(packageName);
+        jar.setBasedir(getPackageDirectory());
+        jar.setExcludes("*.jar");
+
+        jar.execute();
+
       }
-
-      CommandMessage message =
-          new SuccessMessage(
-              getFrontendMessages().getString("message.MODULE_PACKAGED"),
-              new Object[] {getCurrentModule().getName(), packageName});
-      commandResponse.addMessage(message);
-
+//
+//      CommandMessage message =
+//          new SuccessMessage(
+//              getFrontendMessages().getString("message.MODULE_PACKAGED"),
+//              new Object[] {getCurrentModule().getName(), packageName});
+//      commandResponse.addMessage(message);
+//
     } catch (ManifestException m) {
       throw new CommandException(m.getErrorCode(), m.getMessageArguments());
-    }catch (BuildException e) {
-//      e.printStackTrace();
-      if (logger.isDebugEnabled()) {
-        commandResponse.addMessage(new AntErrorMessage(e));
-      }
-      throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
+//    }catch (BuildException e) {
+////      e.printStackTrace();
+//      if (logger.isDebugEnabled()) {
+//        commandResponse.addMessage(new AntErrorMessage(e));
+//      }
+//      throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
     }
   }
 

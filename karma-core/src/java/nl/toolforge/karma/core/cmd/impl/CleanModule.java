@@ -53,7 +53,7 @@ public class CleanModule extends AbstractBuildCommand {
 
     Project project = getAntProject();
 
-    try {
+//    try {
       File buildBase = getModuleBuildDirectory();
       if (!buildBase.exists()) {
         // No point in removing built stuff if it isn't there
@@ -76,10 +76,10 @@ public class CleanModule extends AbstractBuildCommand {
         e.printStackTrace();
         throw new CommandException(CommandException.CLEAN_MODULE_FAILED, new Object[] {getModuleBuildDirectory().getPath()});
       }
-    } catch (ManifestException e) {
-      e.printStackTrace();
-      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
-    }
+//    } catch (ManifestException e) {
+//      e.printStackTrace();
+//      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+//    }
   }
 
   public CommandResponse getCommandResponse() {
