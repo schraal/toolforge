@@ -34,6 +34,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
  * <p>Loads command-descriptors from an <code>XML</code>-file. The default filename
@@ -170,8 +171,14 @@ public final class CommandLoader {
 					String commandName = commandElement.getAttribute("name");
 					String alias = commandElement.getAttribute("alias");
 
-					if (!uniqueAliasses.add(alias)) {
-						throw new KarmaRuntimeException("Duplicate command alias.");
+					// if we're dealing with an alias list, split it up and check whether all parts are unique.
+					if( alias.indexOf(" ") != -1) {
+						StringTokenizer tokenizer = new StringTokenizer(alias," ");
+						while( tokenizer.hasMoreTokens()) {
+							if (!uniqueAliasses.add(tokenizer.nextToken())) {
+								throw new KarmaRuntimeException("Duplicate command alias.");
+							}
+						}
 					}
 
           Node child = commandElement.getElementsByTagName("classname").item(0).getFirstChild();
@@ -215,8 +222,6 @@ public final class CommandLoader {
 					//
 
 					// Check if the command has not yet been added.
-					//
-					// TODO : Check if the alias has not been used before either.
 					if (!descriptors.contains(descriptor)) {
 						descriptors.add(descriptor);
 					} else {

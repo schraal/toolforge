@@ -79,9 +79,24 @@ public final class CommandFactory {
       CommandDescriptor descriptor = (CommandDescriptor) i.next();
 
       commandsByName.put(descriptor.getName(), descriptor);
-      commandsByAlias.put(descriptor.getAlias(), descriptor);
-      commandNames.add(descriptor.getName());
-      commandNames.add(descriptor.getAlias());
+			commandNames.add(descriptor.getName());
+
+			// An alias may consist of several aliases. When we encounter a space character, split the alias
+			// up into several parts, otherwise simply add the descriptor as such.
+			if( descriptor.getAlias().indexOf(" ") != -1) {
+
+				StringTokenizer tokenizer = new StringTokenizer(descriptor.getAlias(), " ");
+				String alias = "";
+				while( tokenizer.hasMoreTokens()) {
+					alias = tokenizer.nextToken();
+					commandsByAlias.put(alias, descriptor);
+      		commandNames.add(alias);
+				}
+			} else {
+				commandsByAlias.put(descriptor.getAlias(), descriptor);
+				commandNames.add(descriptor.getAlias());
+			}
+
     }
   }
 
