@@ -81,7 +81,7 @@
 			</option>
 		</options>
 
-		<classname>nl.toolforge.karma.core.cmd.impl.PromoteCommand</classname>
+		<classname>nl.toolforge.karma.cli.cmd.PromoteModuleImpl</classname>
 
 		<!--		<dependencies>-->
 		<!--			<dependency type="vc-support" name="cvs"/>-->

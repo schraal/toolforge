@@ -2,6 +2,7 @@ package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.Module;
+import nl.toolforge.karma.core.Version;
 
 /**
  * <p>Modules in a version control system are manageable through their symbolic names (or tags). The tag describes the
@@ -29,11 +30,11 @@ public interface VersionExtractor {
    *
    * @param module The module for which the next version should be obtained.
    *
-   * @return A <code>String</code> representation of the version number that's next in line for the branch that the
+   * @return A <code>Version</code> representation of the version number that's next in line for the branch that the
    *         module is developed on.
    *
    * @throws KarmaException When the next version number could not be determined correctly. See error codes
    *         <code>CMD-</code>. TODO to be completed after implementation.
    */
-  public String getNextVersion(Module module) throws KarmaException;
+  public Version getNextVersion(Module module) throws KarmaException;
 }

@@ -72,4 +72,8 @@ public final class SubversionRunner implements Runner {
 	public CommandResponse tag(Module module, SymbolicName tag) {
 		return null;
 	}
+
+	public CommandResponse tag(Module module, Version version) {
+		return null;
+	}
 }

@@ -22,9 +22,9 @@ public final class Utils {
 			SourceModule m = (SourceModule) module;
 
 			if (m.hasDevelopmentLine()) {
-				return new CVSTag(m.getDevelopmentLine().getName() + "_" + version.getVersionIdentifier());
+				return new CVSTag(m.getDevelopmentLine().getName() + "_" + version.getVersionNumber());
 			}
-			return new CVSTag(MainLine.NAME_PREFIX + "_" + version.getVersionIdentifier());
+			return new CVSTag(MainLine.NAME_PREFIX + "_" + version.getVersionNumber());
 		}
 		return new CVSTag("");
 	}

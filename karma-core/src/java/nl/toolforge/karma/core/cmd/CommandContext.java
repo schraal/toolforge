@@ -16,6 +16,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Set;
+import java.io.File;
 
 /**
  * <p>The command context is the class that provides a runtime for commands to run in. The command context maintains
@@ -137,23 +138,10 @@ public final class CommandContext {
 		// Store a reference to this context in the command
 		//
 		command.setContext(this);
-
 		CommandResponse response = command.execute();
-
-//    storeCommandOptions(command.getOptions());
-//    resetCommandOptions(command);
 
 		return response;
 	}
-
-//  private void resetCommandOptions(Options options) {
-//
-//    this.savedOptions = options;
-//  }
-//
-//  private void storeCommandOptions(Command command) {
-//
-//  }
 
 	/**
 	 * A <code>Runner</code> might be required for a command to execute something on a version control system. A module
@@ -170,6 +158,7 @@ public final class CommandContext {
 		try {
 			if (location instanceof CVSLocationImpl) {
 				logger.debug("Getting new CVSRunner instance.");
+//				return new CVSRunner(location, new File(getCurrent().getLocalPath(), module.getName()));
 				return new CVSRunner(location, getCurrent().getLocalPath());
 			}
 		} catch (ManifestException m) {

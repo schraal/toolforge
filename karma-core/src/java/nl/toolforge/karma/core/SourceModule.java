@@ -70,7 +70,7 @@ public class SourceModule extends BaseModule {
 
 		Pattern pattern = Pattern.compile(new VersionExpression().getPatternString());
 
-		if (pattern.matcher(version.getVersionIdentifier()).matches()) {
+		if (pattern.matcher(version.getVersionNumber()).matches()) {
 			this.version = version;
 		} else {
 			throw new KarmaException(KarmaException.DATAFORMAT_ERROR);
@@ -130,7 +130,7 @@ public class SourceModule extends BaseModule {
 	 * @return The module version, or N/A, when no version number exists.
 	 */
 	public final String getVersionAsString() {
-		return (version == null ? "N/A" : version.getVersionIdentifier());
+		return (version == null ? "N/A" : version.getVersionNumber());
 	}
 
 	/**

@@ -1,11 +1,16 @@
 package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.Module;
+import nl.toolforge.karma.core.SourceModule;
+import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.SimpleCommandResponse;
 import nl.toolforge.karma.core.vc.VersionExtractor;
+import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.vc.model.MainLine;
 import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
 
 /**
@@ -19,22 +24,41 @@ import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
  */
 public class PromoteCommand extends DefaultCommand {
 
-  public PromoteCommand(CommandDescriptor descriptor) {
-    super(descriptor);
-  }
+	private Version newVersion = null;
 
-  /**
-   * Promotes a module to the next version number in the branch it is active in within the active manifest.
-   */
-  public CommandResponse execute() throws KarmaException {
+	public PromoteCommand(CommandDescriptor descriptor) {
+		super(descriptor);
+	}
 
-    String moduleName = getCommandLine().getOptionValue("m");
+	/**
+	 * Promotes a module to the next version number in the branch it is active in within the active manifest.
+	 */
+	public CommandResponse execute() throws KarmaException {
 
-    // TODO extractor impl should be obtained from karma.properties or Preferences.
-    //
-    VersionExtractor extractor = CVSVersionExtractor.getInstance();
-    String nextVersion = extractor.getNextVersion(getContext().getCurrent().getModule(moduleName));
+		String moduleName = getCommandLine().getOptionValue("m");
 
-    return new SimpleCommandResponse();
-  }
+		// TODO extractor impl should be obtained from karma.properties or Preferences.
+		//
+		VersionExtractor extractor = CVSVersionExtractor.getInstance();
+
+		Module module = getContext().getCurrent().getModule(moduleName);
+
+		Version nextVersion = extractor.getNextVersion(module);
+
+		Runner runner = getContext().getRunner(module);
+		runner.tag(module, nextVersion);
+
+		this.newVersion = nextVersion;
+
+		return new SimpleCommandResponse();
+	}
+
+	/**
+	 * Returns the new version number for the module, or null when no version number could be set.
+	 * @return
+	 */
+	protected final Version getNewVersion() {
+		return newVersion;
+	}
 }
+

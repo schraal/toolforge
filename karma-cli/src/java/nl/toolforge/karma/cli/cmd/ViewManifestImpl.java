@@ -52,10 +52,10 @@ public class ViewManifestImpl extends ViewManifest {
 
 			String[] data = (String[]) i.next();
 			buffer.append(data[0] + StringUtils.repeat(" ", 20 - data[0].length()) + "| ");
-			buffer.append(data[1] + StringUtils.repeat(" ", 20 - data[1].length()) + "| ");
-			buffer.append(data[2] + StringUtils.repeat(" ", 30 - data[2].length()) + "| ");
-			buffer.append(data[3] + StringUtils.repeat(" ", 20 - data[3].length()) + "| ");
-			buffer.append(data[4] + StringUtils.repeat(" ", 20 - data[4].length()) + "|\n");
+			buffer.append(data[1] + " " + data[2] + StringUtils.repeat(" ", 20 - data[1].length() - data[2].length() - 1) + "| ");
+			buffer.append(data[3] + StringUtils.repeat(" ", 30 - data[3].length()) + "| ");
+			buffer.append(data[4] + StringUtils.repeat(" ", 20 - data[4].length()) + "| ");
+			buffer.append(data[5] + StringUtils.repeat(" ", 20 - data[5].length()) + "|\n");
 		}
 
 		// -- end of formatting

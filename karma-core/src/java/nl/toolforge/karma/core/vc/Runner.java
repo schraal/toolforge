@@ -2,6 +2,7 @@ package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 
 /**
@@ -107,4 +108,6 @@ public interface Runner {
 	 */
 	public CommandResponse tag(Module module, SymbolicName tag) throws VersionControlException;
 
+	public CommandResponse tag(Module module, Version version) throws VersionControlException;
+	
 }

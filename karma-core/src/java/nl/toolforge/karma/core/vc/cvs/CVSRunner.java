@@ -203,7 +203,7 @@ public final class CVSRunner implements Runner {
 	 */
 	public CommandResponse checkout(Module module, Version version) throws CVSException {
 
-		return checkout(module, version, null);
+		return checkout(module, version, getBasePoint());
 	}
 
 	/**
@@ -218,7 +218,7 @@ public final class CVSRunner implements Runner {
 	 *         in the repository and <code>INVALID_SYMBOLIC_NAME</code>, when the version does not exists for the module.
 	 */
 	public CommandResponse checkout(Module module) throws CVSException {
-		return checkout(module, null, null);
+		return checkout(module, null, getBasePoint());
 	}
 
 	//
@@ -281,7 +281,7 @@ public final class CVSRunner implements Runner {
 		CVSResponseAdapter adapter = executeOnCVS(updateCommand, new File(basePoint, module.getName()));
 
 		if (adapter.hasStatus(CVSResponseAdapter.SYMBOLIC_NAME_NOT_FOUND)) {
-			throw new CVSException(CVSException.VERSION_NOT_FOUND, new Object[]{version.getVersionIdentifier(), module.getName()});
+			throw new CVSException(CVSException.VERSION_NOT_FOUND, new Object[]{version.getVersionNumber(), module.getName()});
 		}
 		if (adapter.hasStatus(CVSResponseAdapter.INVALID_SYMBOLIC_NAME)) {
 			throw new CVSException(CVSException.INVALID_SYMBOLIC_NAME);
@@ -386,16 +386,16 @@ public final class CVSRunner implements Runner {
 	}
 
 	public CommandResponse tag(Module module, SymbolicName tag) throws CVSException {
-		return tag(tag, getBasePoint());
+		return tag(tag, new File(getBasePoint(), module.getName()));
 	}
 
 	public CommandResponse tag(Module module, Version version) throws CVSException {
-		return tag(module, version, getBasePoint());
+		return tag(module, version, new File(getBasePoint(), module.getName()));
 	}
 
 	private CommandResponse tag(Module module, Version version, File basePoint) throws CVSException {
 		if (hasVersion(module, version)) {
-			throw new CVSException(VersionControlException.DUPLICATE_VERSION, new Object[]{module.getName(), version.getVersionIdentifier()});
+			throw new CVSException(VersionControlException.DUPLICATE_VERSION, new Object[]{module.getName(), version.getVersionNumber()});
 		}
 		return tag(Utils.createSymbolicName(module, version), basePoint);
 	}

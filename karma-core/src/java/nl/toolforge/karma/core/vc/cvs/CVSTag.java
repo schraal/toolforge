@@ -38,7 +38,7 @@ public class CVSTag implements SymbolicName {
 //
 //		// TODO this implementation is temporary, and should reflect the actual situation in a better way.
 //		//
-//		symbolicName = module.getName().concat("_").concat(version.getVersionIdentifier());
+//		symbolicName = module.getName().concat("_").concat(version.getVersionNumber());
 //	}
 
 	public boolean isBranch() {
