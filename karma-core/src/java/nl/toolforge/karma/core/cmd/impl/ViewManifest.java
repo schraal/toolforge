@@ -18,8 +18,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
@@ -33,15 +42,6 @@ import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.threads.CVSLogThread;
 import nl.toolforge.karma.core.vc.threads.ParallelRunner;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This command gets the active manifest and presents it in the UI. UI implementations are responsible for the rendering
@@ -134,6 +134,9 @@ public class ViewManifest extends DefaultCommand {
       }
 
       moduleData[3] = "(" + module.getVersionAsString() + ")";
+      if ( moduleData[3].equals("(N/A)") ) {
+        moduleData[3] = "";
+      }
       moduleData[4] = (module.hasPatchLine() ? "available" : "not available");
 
       if (existsInRepository) {
