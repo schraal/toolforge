@@ -222,6 +222,10 @@ public interface Module {
       return shortType;
     }
 
+    public String toString() {
+      return getType();
+    }
+    
     public int hashCode() {
       return type.hashCode();
     }

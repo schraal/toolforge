@@ -223,7 +223,6 @@ public abstract class BaseModule implements Module {
     digester.addCallMethod("module-descriptor/type", "setType", 0);
 
     try {
-      Type t = (Type) digester.parse(new File(getBaseDir(), Module.MODULE_DESCRIPTOR).getPath());
       return (Type) digester.parse(new File(getBaseDir(), Module.MODULE_DESCRIPTOR).getPath());
     } catch (IOException e) {
       throw new KarmaRuntimeException(e.getMessage());
@@ -231,6 +230,10 @@ public abstract class BaseModule implements Module {
       e.printStackTrace();
       throw new KarmaRuntimeException(e.getMessage());
     }
+  }
+
+  public String toString() {
+    return getName();
   }
 
 }
