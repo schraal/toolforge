@@ -48,27 +48,33 @@ public class ModuleHistoryFactory {
      * @return ModuleHistory of the given module or null when no module history can be found.
      */
     public ModuleHistory getModuleHistory(String moduleName) {
+        ModuleHistory moduleHistory = null;
+
         try {
-            File historyLocation = new File(manifestHome, moduleName+File.separator+"history.xml");
+            File historyLocation = new File(manifestHome, moduleName+File.separator+ModuleHistory.MODULE_HISTORY_FILE_NAME);
             logger.info("loading history from: "+historyLocation);
 
-            Digester digester = new Digester();
-            digester.setValidating(false);   //todo: dit moet true worden
-            digester.addObjectCreate("history", "nl.toolforge.karma.core.history.ModuleHistory");
-            digester.addObjectCreate("history/event", "nl.toolforge.karma.core.history.ModuleHistoryEvent");
-            digester.addSetProperties("history/event");
-            digester.addObjectCreate("history/event/datetime", "java.util.Date");
-            digester.addSetProperties("history/event/datetime");
-            digester.addFactoryCreate("history/event/version", "nl.toolforge.karma.core.VersionCreationFactory");
-            digester.addSetNext("history/event/version", "setVersion", "nl.toolforge.karma.core.Version");
-            digester.addSetNext("history/event/datetime", "setDatetime", "java.util.Date");
-            digester.addSetNext("history/event", "addEvent", "nl.toolforge.karma.core.history.ModuleHistoryEvent");
 
-            ModuleHistory moduleHistory = (ModuleHistory) digester.parse(historyLocation);
+            if (historyLocation.exists()) {
+                Digester digester = new Digester();
+                digester.setValidating(false);   //todo: dit moet true worden
+                digester.addObjectCreate("history", "nl.toolforge.karma.core.history.ModuleHistory");
+                digester.addObjectCreate("history/event", "nl.toolforge.karma.core.history.ModuleHistoryEvent");
+                digester.addSetProperties("history/event");
+                digester.addObjectCreate("history/event/datetime", "java.util.Date");
+                digester.addSetProperties("history/event/datetime");
+                digester.addFactoryCreate("history/event/version", "nl.toolforge.karma.core.VersionCreationFactory");
+                digester.addSetNext("history/event/version", "setVersion", "nl.toolforge.karma.core.Version");
+                digester.addSetNext("history/event/datetime", "setDatetime", "java.util.Date");
+                digester.addSetNext("history/event", "addEvent", "nl.toolforge.karma.core.history.ModuleHistoryEvent");
+
+                moduleHistory = (ModuleHistory) digester.parse(historyLocation);
+                logger.debug(moduleHistory);
+            } else {
+                moduleHistory = new ModuleHistory();
+                logger.info("Module history did not exist yet. Created new one.");
+            }
             moduleHistory.setHistoryLocation(historyLocation);
-
-            logger.debug(moduleHistory);
-            return moduleHistory;
 
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -77,7 +83,7 @@ public class ModuleHistoryFactory {
             se.printStackTrace();
             //todo: fatsoenlijke foutmelding geven
         }
-        return null;
+        return moduleHistory;
     }
 
 }
