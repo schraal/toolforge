@@ -21,7 +21,7 @@
     <developer>
       <name>Arjen Smedes</name>
       <id>asmedes</id>
-      <email>asmedes@toolforge.nl</email>
+      <email>d.a.smedes@toolforge.nl</email>
       <organization>toolforge</organization>
       <roles>
         <role>Developer</role>
@@ -30,7 +30,7 @@
     <developer>
       <name>Hilbert Schraal</name>
       <id>hippe</id>
-      <email>schraal@toolforge.nl</email>
+      <email>w.h.schraal@toolforge.nl</email>
       <organization>toolforge</organization>
       <roles>
         <role>Developer</role>
@@ -39,13 +39,42 @@
     <developer>
       <name>Martin Oosterom</name>
       <id>oosterom</id>
-      <email>oosterom@toolforge.nl</email>
+      <email>w.m.oosterom@toolforge.nl</email>
+      <organization>toolforge</organization>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Wietze Helmantel</name>
+      <id>helmantel</id>
+      <email>w.helmantel@toolforge.nl</email>
+      <organization>toolforge</organization>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Chris Spelberg</name>
+      <id>clutjespelberg</id>
+      <email>c.spelberg@toolforge.nl</email>
       <organization>toolforge</organization>
       <roles>
         <role>Developer</role>
       </roles>
     </developer>
   </developers>
+
+  <contributors>
+    <contributor>
+      <name>Age Mooy</name>
+      <id>amooy</id>
+      <email>a.mooy@wisdom.nl</email>
+      <roles>
+        <role>Windows testing</role>
+      </roles>
+    </contributor>
+  </contributors>
 
   <repository>
     <connection>scm:cvs:pserver:anonymous@cvs.sourceforge.net:/cvsroot/toolforge:karma-core</connection>
@@ -136,6 +165,12 @@
       <groupId>netbeans</groupId>
       <artifactId>cvslib</artifactId>
       <version>3.6</version>
+    </dependency>
+
+    <dependency>
+      <groupId>sillyexceptions</groupId>
+      <artifactId>sillyexceptions</artifactId>
+      <version>1-0-1</version>
     </dependency>
 
   </dependencies>
