@@ -6,7 +6,7 @@
 	<name>Karma Launcher Module</name>
         <groupId>toolforge</groupId>
       	<id>karma-launcher</id>
-	<currentVersion>1.2</currentVersion>
+	<currentVersion>1.3</currentVersion>
         <inceptionYear>2002</inceptionYear>
         <package>nl.toolforge.karma.launcher</package>
         <siteAddress>toolforge.sourceforge.net</siteAddress>
