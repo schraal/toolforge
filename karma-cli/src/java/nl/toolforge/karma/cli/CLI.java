@@ -4,6 +4,9 @@ import nl.toolforge.karma.cli.cmd.CLICommandResponseHandler;
 import nl.toolforge.karma.core.boot.Karma;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.boot.WorkingContextConfiguration;
+import nl.toolforge.karma.core.boot.ManifestStore;
+import nl.toolforge.karma.core.boot.LocationStore;
+import nl.toolforge.karma.core.boot.WorkingContextException;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandContext;
 import nl.toolforge.karma.core.cmd.CommandException;
@@ -96,7 +99,44 @@ public final class CLI {
     File configurationFile = Karma.getConfigurationFile(workingContext);
     WorkingContextConfiguration configuration = new WorkingContextConfiguration(configurationFile);
 
-		workingContext.configure(configuration);
+
+
+
+
+
+//
+    // todo : moet nog anders, alhoewel het inmiddels beter is.
+    //
+    ManifestStore manifestStore = null;
+    LocationStore locationStore  = null;
+    try {
+      configuration.load();
+      //
+      manifestStore = new ManifestStore(workingContext);
+      configuration.getManifestStoreLocation().setWorkingContext(workingContext);
+      manifestStore.setLocation(configuration.getManifestStoreLocation());
+      manifestStore.setModuleName("manifests");
+      workingContext.setManifestStore(manifestStore);
+      //
+      locationStore = new LocationStore(workingContext);
+      configuration.getLocationStoreLocation().setWorkingContext(workingContext);
+      locationStore.setLocation(configuration.getLocationStoreLocation());
+      locationStore.setModuleName("locations");
+      workingContext.setLocationStore(locationStore);
+
+    } catch (WorkingContextException e) {
+      //
+    } catch (RuntimeException r) {
+      //
+    }
+
+    // todo het feit dat dit eerst moet sucked.
+    //
+    workingContext.configure(configuration);
+
+
+
+
 
 
     System.out.println("[ karma ] Checking command ...");
