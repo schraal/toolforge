@@ -41,6 +41,7 @@ import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.VersionControlSystem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.io.FileUtils;
 import org.netbeans.lib.cvsclient.Client;
 import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
 import org.netbeans.lib.cvsclient.command.CommandException;
@@ -555,8 +556,23 @@ public final class CVSRunner implements Runner {
 
     RlogCommand logCommand = new RlogCommand();
     logCommand.setModule(getModuleOffset(module) + "/" + Module.MODULE_DESCRIPTOR);
+    logCommand.setRecursive(false);
 
-    executeOnCVS(logCommand, new File("."), arguments);
+
+    File tmp = null;
+    try {
+      tmp = MyFileUtils.createTempDirectory();
+    } catch (IOException e) {
+      //
+    }
+
+    executeOnCVS(logCommand, tmp, arguments);
+
+    try {
+      FileUtils.deleteDirectory(tmp);
+    } catch (IOException e) {
+      //
+    }
 
     // Another hook into ext support.
     //
@@ -591,7 +607,7 @@ public final class CVSRunner implements Runner {
     //
     return ((CVSResponseAdapter) this.listener).getLogInformation();
   }
-  
+
   */
 
 
