@@ -4,6 +4,17 @@
 
 <commands>
 
+  <command name="update-admin" alias="upd">
+    <description lang="en">Updates a working contexts' admin data.</description>
+
+    <classname>nl.toolforge.karma.core.cmd.impl.UpdateAdmin</classname>
+
+    <help lang="en">
+      Updates the manifest-store.
+    </help>
+
+  </command>
+
   <command name="delete-working-context" alias="dwc">
     <description lang="en">Removes a working context configuration (not the project data).</description>
 
