@@ -379,7 +379,7 @@ public class LogInformation extends FileInfoContainer {
         this.date = DATE_FORMAT.parse(dateString);
       }
       catch (Exception ex) {
-        BugLog.getInstance().bug("Couldn't parse date " + dateString);
+        BugLog.getInstance().bug("Couldn't parse date `" + dateString + "'.");
       }
     }
 
