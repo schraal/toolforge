@@ -67,9 +67,9 @@ public interface Module {
 
   /**
    * The name of the mandatory file in a module. A file with this name is created by Karma or should be created
-   * manually and contain all data (symbolic names) that should be available for existing manifests.
+   * manually and is used by Karma to log the modules' version control status.
    */
-  public static final String MODULE_INFO = "module.info";
+  public static final String MODULE_INFO = ".module.info";
 
   /**
    * Retrieves a modules' name, the <code>name</code> attribute of the module in the manifest XML file.

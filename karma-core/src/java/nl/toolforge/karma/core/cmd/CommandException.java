@@ -129,6 +129,10 @@ public class CommandException extends Exception {
     return getErrorCode().getErrorMessage();
   }
 
+  public String getMessage() {
+    return getErrorMessage();
+  }
+
   /**
    * Gets the exceptions' {@link nl.toolforge.karma.core.ErrorCode}.
    * @return

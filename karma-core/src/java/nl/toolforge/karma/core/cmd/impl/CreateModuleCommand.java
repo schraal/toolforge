@@ -70,13 +70,15 @@ public class CreateModuleCommand extends DefaultCommand {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
 
+    CommandMessage message = new SuccessMessage(getFrontendMessages().getString("message.CREATE_MODULE_STARTED"), new Object[]{moduleName, locationAlias});
+    commandResponse.addMessage(message);
+
     try {
       // Part 2 of the transaction is the creation in a version control system.
       //
       Runner runner = RunnerFactory.getRunner(module.getLocation(), LocalEnvironment.getDevelopmentHome());
       runner.setCommandResponse(getCommandResponse());
 
-      CommandMessage message = null;
       if (module.getDeploymentType().equals(Module.WEBAPP)) {
         runner.create(module, comment, new WebappModuleLayoutTemplate());
         message = new SuccessMessage(getFrontendMessages().getString("message.WEBAPP_MODULE_CREATED"), new Object[]{moduleName, locationAlias});

@@ -36,8 +36,10 @@ public class SelectManifestImpl extends SelectManifest {
 
 		ConsoleConfiguration.setManifest(getContext().getCurrentManifest());
 
-		CommandMessage message = new SuccessMessage(getFrontendMessages().getString("message.MANIFEST_ACTIVATED"));
-    CommandResponse response = new ActionCommandResponse();
-    response.addMessage(message);
+		CommandMessage message =
+        new SuccessMessage(
+            getFrontendMessages().getString("message.MANIFEST_ACTIVATED"), new Object[]{getSelectedManifest().getName()}
+        );
+    getCommandResponse().addMessage(message);
   }
 }

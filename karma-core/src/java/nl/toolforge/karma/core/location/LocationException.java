@@ -109,6 +109,10 @@ public final class LocationException extends Exception {
     return errorCode.getErrorMessage();
   }
 
+  public String getMessage() {
+    return getErrorMessage();
+  }
+
   /**
    * Gets the exceptions' {@link nl.toolforge.karma.core.ErrorCode}.
    */

@@ -248,17 +248,30 @@ public abstract class AbstractManifest implements Manifest {
     return total;
   }
 
+
+  /**
+   *
+   * @param moduleName
+   * @return
+   * @throws ManifestException
+   */
   public final Module getModule(String moduleName) throws ManifestException {
 
-    if (getModulesForManifest().containsKey(moduleName)) {
-      return (Module) getModulesForManifest().get(moduleName);
+    Map allModules = getAllModules();
+    
+    if (allModules.containsKey(moduleName)) {
+      return (Module) allModules.get(moduleName);
     } else {
       throw new ManifestException(ManifestException.MODULE_NOT_FOUND, new Object[]{moduleName});
     }
   }
 
   public final boolean isLocal(Module module) {
-    return new File(new File(LocalEnvironment.getDevelopmentHome(), getName()), module.getName()).exists();
+    try {
+      return new File(getDirectory(), module.getName()).exists();
+    } catch (ManifestException e) {
+      return false;
+    }
   }
 
   public final boolean isLocal() {
@@ -479,7 +492,7 @@ public abstract class AbstractManifest implements Manifest {
     // todo this method is not abstract ! handles CVS only.
 
     AdminHandler handler = new AdminHandler();
-    if (handler.isEqualLocation(module)) {
+    if (!handler.isEqualLocation(module)) {
       try {
         FileUtils.deleteDirectory(module.getBaseDir());
       } catch (IOException e) {

@@ -20,6 +20,7 @@ public final class EappModuleLayoutTemplate implements ModuleLayoutTemplate {
 
   public String[] getFileElements() {
     return new String[] {
+      ".cvsignore",
       Module.MODULE_INFO,
       "META-INF/application.xml"};
   }

@@ -188,13 +188,13 @@ public final class CVSResponseAdapter implements CVSListener {
 
     } else if (message.startsWith("cvs server: Updating")) {
 
-      // TODO Localize message
+      // TODO Could be used to call some sort of heartbeat mechanism.
       //
-      if (response != null) {
-        response.addMessage(new SuccessMessage("Module has been updated."));
-      } else {
-        logger.debug("'SuccessMessage' not routed to CommandResponseHandler : " + event.getMessage());
-      }
+//      if (response != null) {
+//        response.addMessage(new SuccessMessage("Module has been updated."));
+//      } else {
+//        logger.debug("'SuccessMessage' not routed to CommandResponseHandler : " + event.getMessage());
+//      }
     } else if (message.startsWith("cvs server: cannot find module")) {
 
       throw new CVSRuntimeException(CVSException.NO_SUCH_MODULE_IN_REPOSITORY, getArguments("MODULE, REPOSITORY"));
@@ -223,7 +223,18 @@ public final class CVSResponseAdapter implements CVSListener {
     }
 
     if (!"".equals(message)) {
+
+//      if (newLineCounter == 40) {
+//        System.out.println(".");
+//        newLineCounter = 0;
+//      } else {
+//        System.out.print(".");
+//        newLineCounter++;
+//      }
+
       logger.debug("MessageEvent from CVS : " + message);
     }
   }
+
+//  private static int newLineCounter = 0;
 }

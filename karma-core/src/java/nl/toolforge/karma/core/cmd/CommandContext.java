@@ -44,6 +44,7 @@ public final class CommandContext implements ChangeListener {
 
   private Manifest currentManifest;
   private CommandResponseHandler responseHandler;
+  private Map modificationMap = new HashMap();
 
   private static ListenerManager manager;
 
@@ -67,11 +68,14 @@ public final class CommandContext implements ChangeListener {
     }
     responseHandler = handler;
 
+
     // Update the manifest-store.
     //
 
     Module manifestModule = new SourceModule("manifests", LocalEnvironment.getManifestStoreLocation());
     manifestModule.setBaseDir(LocalEnvironment.getManifestStore());
+
+    handler.commandResponseChanged(new CommandResponseEvent(new SuccessMessage("Updating manifests using " + manifestModule.getLocation().toString())));
 
     if (LocalEnvironment.getWorkingContext().exists()) {
 
@@ -102,6 +106,8 @@ public final class CommandContext implements ChangeListener {
     //
     Module locationModule = new SourceModule("locations", LocalEnvironment.getLocationStoreLocation());
     locationModule.setBaseDir(LocalEnvironment.getLocationStore());
+
+    handler.commandResponseChanged(new CommandResponseEvent(new SuccessMessage("Updating locations using " + locationModule.getLocation().toString())));
 
     if (LocalEnvironment.getWorkingContext().exists()) {
 
@@ -142,10 +148,6 @@ public final class CommandContext implements ChangeListener {
     }
   }
 
-//  private static Map modificationMap = new Hashtable();
-
-  private long lastmodified; // For the current manifest
-  private Map modificationMap = new HashMap(); // For all included manifests
 
   private synchronized void setFileModificationTimes() {
 
@@ -189,11 +191,13 @@ public final class CommandContext implements ChangeListener {
 
         File f = new File(LocalEnvironment.getManifestStore(), m.getName() + ".xml");
         if (!f.exists()) {
+          currentManifest = null;
           throw new ManifestException(ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[] {m.getName()});
         }
 
         if (f.lastModified() > lastMod) {
           reload = true;
+          break;
         }
       }
 
@@ -217,12 +221,19 @@ public final class CommandContext implements ChangeListener {
 
       // Catches the ManifestException in case the manifest file has disappeared as well.
       //
-      manager.suspendListener();
+      managed = false;
+      manager.suspendListener(this);
 
       logger.error(new ErrorMessage(m.getErrorCode()).getMessageText());
-      throw new KarmaRuntimeException(m.getErrorCode(), m.getMessageArguments());
 
       // todo in karma-core-1.1 this should be improved. Right now, the probability of this process failing is remote.
+      throw new KarmaRuntimeException(m.getErrorCode(), m.getMessageArguments());
+    } catch (Exception e) {
+
+      managed = false;
+      manager.suspendListener(this);
+
+      logger.error("Error while processing manifests during automatic reload; " + e.getMessage());
     }
   }
 
@@ -250,6 +261,7 @@ public final class CommandContext implements ChangeListener {
     //
     currentManifest = newManifest;
 
+//    setFileModificationTimes();
     register();
   }
 
@@ -257,9 +269,9 @@ public final class CommandContext implements ChangeListener {
 
   private synchronized void register() {
 
-    if (!managed) {
+    setFileModificationTimes();
 
-      setFileModificationTimes();
+    if (!managed) {
 
       manager = ListenerManager.getInstance();
       try {

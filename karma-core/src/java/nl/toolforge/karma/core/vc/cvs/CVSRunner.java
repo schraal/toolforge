@@ -63,7 +63,6 @@ public final class CVSRunner implements Runner {
   }
 
   private CVSResponseAdapter listener = null; // The listener that receives events from this runner.
-//  private CommandResponse commandResponse = null;
 
   private static Log logger = LogFactory.getLog(CVSRunner.class);
 
@@ -253,7 +252,6 @@ public final class CVSRunner implements Runner {
     CheckoutCommand checkoutCommand = new CheckoutCommand();
     checkoutCommand.setModule(module.getName());
 
-//    if (version != null || ((SourceModule) module).hasDevelopmentLine()) {
     if (version != null || ((SourceModule) module).hasPatchLine()) {
       checkoutCommand.setCheckoutByRevision(Utils.createSymbolicName(module, version).getSymbolicName());
       if (version != null) {
@@ -262,7 +260,9 @@ public final class CVSRunner implements Runner {
     } else {
       checkoutCommand.setResetStickyOnes(true);
     }
-    checkoutCommand.setPruneDirectories(true);
+    // NOTE : the following may not be included. My theory is there is a bug in the netbeans api.
+    // todo to be investigated further.
+    //    checkoutCommand.setPruneDirectories(true);
 
     executeOnCVS(checkoutCommand, basePoint, arguments);
   }
@@ -332,7 +332,8 @@ public final class CVSRunner implements Runner {
     add(module, f, d, getBasePoint());
   }
 
-  private synchronized void add(Module module, String[] files, String[] dirs, File basePoint) throws CVSException {
+  // todo should possibly be moved to the interface (check the rest as well).
+  public synchronized void add(Module module, String[] files, String[] dirs, File basePoint) throws CVSException {
 
     files = (files == null ? new String[] {} : files);
     dirs = (dirs == null ? new String[] {} : dirs);

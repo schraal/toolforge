@@ -64,10 +64,7 @@ public class StopWorkCommand extends DefaultCommand {
 
     if (!Module.WORKING.equals(((SourceModule)module).getState())) {
 
-      // todo message to be internationalized.
-      //
-      // todo message handling to karma-cli ???
-      //
+      // todo throw commandexception
       response.addMessage(new SuccessMessage("You are not working on module " + module.getName() + "."));
 
     } else {

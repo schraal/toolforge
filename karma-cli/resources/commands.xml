@@ -11,11 +11,14 @@
     </description>
 
     <options>
+      <option opt="r" longOpt="release-manifest" required="true" description="The manifest name (release manifest)">
+        <arg name="manifest-name"/>
+      </option>
       <option opt="d" longOpt="development-manifest" required="false" description="The manifest name (development manifest)">
         <arg name="manifest-name"/>
       </option>
-      <option opt="r" longOpt="release-manifest" required="true" description="The manifest name (release manifest)">
-        <arg name="manifest-name"/>
+      <option opt="l" longOpt="load-manifest" required="false" description="Load the release manifest.">
+<!--        <arg name="manifest-name"/>-->
       </option>
     </options>
 
@@ -240,13 +243,6 @@
     </options>
 
     <classname>nl.toolforge.karma.cli.cmd.SelectManifestImpl</classname>
-
-    <!--		<dependencies>-->
-    <!--			<dependency type="vc-support" name="cvs"/>-->
-    <!--			<dependency type="vc-support" name="subversion"/>-->
-    <!--			<dependency type="module-support" name="lib"/>-->
-    <!--			<dependency type="module-support" name="source"/>-->
-    <!--		</dependencies>-->
 
     <help/>
 

@@ -12,6 +12,8 @@ import nl.toolforge.karma.core.manifest.ManifestException;
 import java.util.Collection;
 import java.util.Iterator;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Command line interface implementation of the {@link ListManifests} command.
  *

@@ -5,9 +5,14 @@ import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.manifest.util.SourceModuleLayoutTemplate;
 import nl.toolforge.karma.core.test.LocalCVSInitializer;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.core.util.file.MyFileUtils;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * <p>This class tests all stuff in the <code>cvs</code> package. For this to work properly, you should unpack the
@@ -83,6 +88,37 @@ public class TestCVSRunner extends LocalCVSInitializer {
 
     } catch (VersionControlException c) {
       fail(c.getMessage());
+    }
+  }
+
+  public void testCheckoutAndAdd() {
+
+    Runner runner = null;
+    ResponseFaker response = new ResponseFaker();
+    try {
+      runner = getTestRunner();
+    } catch (CVSException e) {
+      fail(e.getMessage());
+    }
+
+    try {
+
+      File tmp = MyFileUtils.createTempDirectory();
+
+      Module module = new SourceModule(DEFAULT_MODULE_1, getTestLocation());
+
+      ((CVSRunner) runner).checkout(module, tmp);
+
+      assertTrue(new File(tmp, module.getName()).exists());
+
+      ((CVSRunner) runner).add(module, new String[]{"blaat-file"}, new String[]{"blaat-dir"}, tmp);
+
+      assertTrue(true);
+
+    } catch (VersionControlException c) {
+      fail(c.getMessage());
+    } catch (IOException e) {
+      fail(e.getMessage());
     }
   }
 

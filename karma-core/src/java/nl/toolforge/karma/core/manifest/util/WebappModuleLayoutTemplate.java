@@ -22,6 +22,7 @@ public final class WebappModuleLayoutTemplate implements ModuleLayoutTemplate {
 
   public String[] getFileElements() {
     return new String[] {
+      ".cvsignore",
       Module.MODULE_INFO,
       "dependencies.xml",
       "WEB-INF/web.xml"};
@@ -30,9 +31,10 @@ public final class WebappModuleLayoutTemplate implements ModuleLayoutTemplate {
   public String[] getDirectoryElements() {
     return new String[] {
       "src/java",                              // Java sources
+      "test/resources",                        // Test meuk
       "resources",
       "web",                                   // Web-resources such as html, images and the like
       "WEB-INF/lib",
-      "WEB-INF/resources"};                          // Runtime libraries
+      "WEB-INF/resources"};                    // Runtime libraries
   }
 }

@@ -75,7 +75,12 @@ public class ListenerManager extends Thread {
     running = run;
   }
 
-  public synchronized void suspendListener() {
+  public synchronized void suspendListener(ChangeListener listener) {
+
+    if (!listeners.contains(listener)) {
+      listeners.remove(listener);
+    }
+
     setRunning(false);
   }
 }

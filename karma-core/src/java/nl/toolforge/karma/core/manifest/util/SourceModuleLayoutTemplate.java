@@ -21,11 +21,19 @@ public final class SourceModuleLayoutTemplate implements ModuleLayoutTemplate {
   // todo constructor met xml file naam waar de layout gevonden kan worden.
 
   public String[] getFileElements() {
-    return new String[] {Module.MODULE_INFO, "dependencies.xml"};
+    return new String[] {
+      ".cvsignore",
+      Module.MODULE_INFO,
+      "dependencies.xml"
+    };
   }
 
   public String[] getDirectoryElements() {
-    return new String[] {"src/java", "resources", "META-INF"};
+    return new String[] {
+      "src/java",
+      "test/resources",
+      "resources",
+      "META-INF"};
   }
 
 }

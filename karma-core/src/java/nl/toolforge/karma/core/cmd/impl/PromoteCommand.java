@@ -6,6 +6,8 @@ import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
+import nl.toolforge.karma.core.cmd.CommandMessage;
+import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
@@ -79,12 +81,15 @@ public class PromoteCommand extends DefaultCommand {
         nextVersion = extractor.getNextVersion(module);
       }
 
+      this.newVersion = nextVersion;
+
+      CommandMessage message = new SuccessMessage(getFrontendMessages().getString("message.PROMOTE_MODULE_STARTED"), new Object[]{moduleName, nextVersion});
+      commandResponse.addMessage(message);
+
       Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getCurrentManifest().getDirectory());
 
       // TODO check whether files exist that have not yet been committed.
       runner.promote(module, comment, nextVersion);
-
-      this.newVersion = nextVersion;
 
     } catch (ManifestException e) {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());

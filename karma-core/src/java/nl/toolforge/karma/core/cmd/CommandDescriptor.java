@@ -20,6 +20,8 @@ public final class CommandDescriptor {
 
   /** Maps to the &lt;command name="update-module"&gt; */
   public static final String UPDATE_MODULE_COMMAND = "update-module";
+  /** Maps to the &lt;command name="select-manifest"&gt; */
+  public static final String SELECT_MANIFEST_COMMAND = "select-manifest";
 
 	private String name = null;
 	private String alias = null;

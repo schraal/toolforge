@@ -127,6 +127,8 @@ public final class ManifestFactory {
     digester.addFactoryCreate("manifest", ManifestCreationFactory.class);
     digester.addSetProperties("manifest");
 
+    digester.addCallMethod("manifest/description", "setDescription", 0);
+
     // All <module>-elements
     //
     digester.addFactoryCreate("*/module", ModuleDescriptorCreationFactory.class);

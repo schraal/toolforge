@@ -197,8 +197,6 @@ public final class LocationLoader {
 
       cvsLocation.setUsername(authDescriptor.getUsername());
 
-      checkLocation(cvsLocation);
-
       return cvsLocation;
 
     } else if (Location.Type.SUBVERSION_REPOSITORY.type.equals(locDescriptor.getType().toUpperCase())) {
@@ -207,6 +205,9 @@ public final class LocationLoader {
     return null;
   }
 
+  /**
+   * @deprecated The checks in this method apply to all CVS connection methods.
+   */
   private void checkLocation(Location location) throws LocationException {
 
     if (location instanceof CVSLocationImpl) {
@@ -223,7 +224,7 @@ public final class LocationLoader {
 
         if (loc.getProtocol().equals(CVSRoot.METHOD_PSERVER)) {
           if ((loc.getUsername() == null) || (!loc.passwordSet())) {
-            String error = "Connection protocol (" + CVSRoot.METHOD_PSERVER + ") requires username and password in repository-authenticators.xml";
+            String error = "Connection protocol (" + CVSRoot.METHOD_PSERVER + ") requires username in repository-authenticators.xml";
             logger.error(error);
             throw new LocationException(LocationException.INVALID_AUTHENTICATOR_CONFIGURATION, new Object[]{loc.getId()});
           }
@@ -231,7 +232,7 @@ public final class LocationLoader {
 
           if (loc.getProtocol().equals(CVSRoot.METHOD_SERVER)) {
             if ((loc.getUsername() == null) || (!loc.passwordSet())) {
-              String error = "Connection protocol (" + CVSRoot.METHOD_SERVER + ") requires username and password in repository-authenticators.xml";
+              String error = "Connection protocol (" + CVSRoot.METHOD_SERVER + ") requires username repository-authenticators.xml";
               logger.error(error);
               throw new LocationException(LocationException.INVALID_AUTHENTICATOR_CONFIGURATION, new Object[]{loc.getId()});
             }

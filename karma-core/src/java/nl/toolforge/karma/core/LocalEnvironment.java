@@ -87,7 +87,7 @@ public final class LocalEnvironment {
 
         String logLevel = null;
         logLevel = (System.getProperty("loglevel") == null ? "DEBUG" : System.getProperty("loglevel")); // Pass 1
-        logLevel = (logLevel.matches("ALL|DEBUG|ERROR|FATAL|INFO|OFF|WARN") ? logLevel : "DEBUG");  // Pass 2
+        logLevel = (logLevel.toUpperCase().matches("ALL|DEBUG|ERROR|FATAL|INFO|OFF|WARN") ? logLevel : "DEBUG");  // Pass 2
 
         root.setLevel(Level.toLevel(logLevel));
 

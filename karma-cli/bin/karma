@@ -47,11 +47,16 @@ fi
 export KARMA_CONFIG_DIR
 mkdir -p $KARMA_CONFIG_DIR
 
+if [ "x$1" = "x" ]; then
+    LOGLEVEL=INFO
+fi
+
+#echo LOGLEVEL = $LOGLEVEL
 
 # Now finally we are able to run karma
 #
 #$JAVACMD -cp $CLASSPATH -Dbootstrap.configuration=$HOME/.karma/karma.properties  -Druntime.mode=COMMAND_LINE nl.toolforge.karma.cli.CLI $@
-$JAVACMD -Dkarma.home=$KARMA_HOME -Dloglevel=DEBUG -cp $CLASSPATH nl.toolforge.karma.cli.CLI $@
+$JAVACMD -Dkarma.home=$KARMA_HOME -Dloglevel=$LOGLEVEL -cp $CLASSPATH nl.toolforge.karma.cli.CLI $@
 
 
 
