@@ -1,29 +1,27 @@
 package nl.toolforge.karma.core.vc.cvs;
 
-import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.Patch;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.vc.ModuleStatus;
-import nl.toolforge.karma.core.vc.RunnerFactory;
-import nl.toolforge.karma.core.vc.DevelopmentLine;
-import nl.toolforge.karma.core.vc.PatchLine;
-import nl.toolforge.karma.core.vc.model.MainLine;
-import org.netbeans.lib.cvsclient.command.log.LogInformation;
-import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
-import org.netbeans.lib.cvsclient.admin.Entry;
-
-import java.util.List;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Collections;
-import java.util.regex.Pattern;
+import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
-import java.io.File;
-import java.io.IOException;
+
+import org.netbeans.lib.cvsclient.admin.Entry;
+import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
+import org.netbeans.lib.cvsclient.command.log.LogInformation;
+
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.Patch;
+import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.vc.DevelopmentLine;
+import nl.toolforge.karma.core.vc.ModuleStatus;
+import nl.toolforge.karma.core.vc.PatchLine;
+import nl.toolforge.karma.core.vc.model.MainLine;
 
 /**
  * @author D.A. Smedes
