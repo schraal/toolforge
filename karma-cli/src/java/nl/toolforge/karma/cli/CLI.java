@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ResourceBundle;
+import java.text.MessageFormat;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -11,7 +13,9 @@ import org.apache.commons.logging.LogFactory;
 import nl.toolforge.karma.cli.cmd.CLICommandResponseHandler;
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.bundle.BundleCache;
 import nl.toolforge.karma.core.cmd.CommandContext;
 import nl.toolforge.karma.core.cmd.CommandFactory;
@@ -56,8 +60,8 @@ public class CLI {
 			if (currentManifest != null) {
 				ConsoleConfiguration.setManifest(currentManifest);
 
-				writer.writeln(FRONTEND_MESSAGES.getString("message.MANIFEST_RESTORED"));
-			}
+				writer.writeln(new MessageFormat(FRONTEND_MESSAGES.getString("message.MANIFEST_RESTORED")).format(new Object[]{currentManifest.getName()}));
+      }
 
 		} catch (KarmaException k) {
 
@@ -66,8 +70,12 @@ public class CLI {
 			logger.error(k.getMessage(), k);
 
 			writer.writeln(FRONTEND_MESSAGES.getString("message.EXIT"));
-			System.exit(1);
-		}
+
+      System.exit(1);
+
+    } catch (LocationException e) {
+      writer.writeln(e.getErrorMessage());
+    }
 
 		try {
 
@@ -125,26 +133,7 @@ public class CLI {
 						writer.writeln(renderedBuffer.toString());
 
 					} else {
-
-//						ctx.execute(line, new CLICommandResponseHandler(writer));
 						ctx.execute(line);
-
-//						if (response == null) {
-//							throw new NullPointerException("Command response has not been generated correctly; should not be null");
-//						}
-//
-//						// For now, just print the response.
-//						//
-//						CommandMessage[] messages = response.getMessages();
-//
-//						if (messages.length > 0) {
-//							// Print the first message for now.
-//							// TODO do something better with the message array
-//							//
-//              for (int i = 0; i < messages.length; i++) {
-//                writer.writeln(messages[i].getMessageText());
-//              }
-//						}
 					}
 				} catch (CommandException e) {
 					writer.writeln(e.getErrorMessage());

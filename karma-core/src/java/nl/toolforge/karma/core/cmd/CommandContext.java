@@ -53,7 +53,7 @@ public final class CommandContext {
    *
    * @param env The users' {@link nl.toolforge.karma.core.LocalEnvironment}.
    */
-  public synchronized void init(LocalEnvironment env, CommandResponseHandler handler) {
+  public synchronized void init(LocalEnvironment env, CommandResponseHandler handler) throws LocationException {
 
     if (!initialized) {
 
@@ -63,21 +63,17 @@ public final class CommandContext {
       this.responseHandler = handler;
       this.env = env;
 
+      // Read in all location data
+      //
+      LocationFactory.getInstance(env).load();
 
+      // Try reloading the last manifest that was used.
+      //
+      ManifestCollector collector = ManifestCollector.getInstance(this.env);
       try {
-        // Read in all location data
-        //
-        LocationFactory.getInstance(env).load();
-
-        // Try reloading the last manifest that was used.
-        //
-        ManifestCollector collector = ManifestCollector.getInstance(this.env);
         currentManifest = collector.loadFromHistory();
-
-      } catch (LocationException e) {
-        throw new KarmaRuntimeException(e.getMessage());
       } catch (ManifestException e) {
-        throw new KarmaRuntimeException(e.getMessage());
+        // Fine, continue.
       }
     }
     initialized = true;

@@ -100,7 +100,10 @@ public class ManifestException extends Exception {
    * @return
    */
   public final String getErrorMessage() {
-    return getErrorCode().getErrorMessage();
+    if (messageArguments != null && messageArguments.length > 0) {
+      errorCode.setMessageArguments(messageArguments);
+    }
+    return errorCode.getErrorMessage();
   }
 
   /**

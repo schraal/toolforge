@@ -14,28 +14,33 @@ public final class LocationException extends Exception {
   private ErrorCode errorCode = null;
   private Object[] messageArguments = null;
 
-  /**
-   * General error.
-   */
-  public static final ErrorCode GENERAL_LOCATION_ERROR = new ErrorCode("LOC-00001");
+  public static final String EXCEPTION_PREFIX = "LOC-";
 
+  /**
+   * When the authentication configuration is invalid.
+   */
+  public static final ErrorCode INVALID_AUTHENTICATOR_CONFIGURATION = new ErrorCode(EXCEPTION_PREFIX + "00001");
+  /**
+   * When the location-type requires authentication configuration to be present.
+   */
+  public static final ErrorCode MISSING_AUTHENTICATOR_CONFIGURATION = new ErrorCode(EXCEPTION_PREFIX + "00002");
   /**
    * Location descriptor does not exist. This happens when a module's 'location'-attribute cannot be found by the
    * <code>LocationFactory</code>, which contains references to all <code>Location</code> objects mapped in
    * <code>locations.xml</code>.
    */
-  public static final ErrorCode LOCATION_NOT_FOUND = new ErrorCode("LOC-00005");
+  public static final ErrorCode LOCATION_NOT_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00005");
   /**
    * No location files were found. A developer should have a directory configured in karma.properties, and location
    * data should be available.
    */
-  public static final ErrorCode NO_LOCATION_DATA_FOUND = new ErrorCode("LOC-00006");
+  public static final ErrorCode NO_LOCATION_DATA_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00006");
   /** The location was configured incorrectly. */
-  public static final ErrorCode LOCATION_CONFIGURATION_ERROR = new ErrorCode("LOC-00007");
+  public static final ErrorCode LOCATION_CONFIGURATION_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00007");
   /** No directory is present where location data can be found. */
-  public static final ErrorCode NO_LOCATION_STORE_DIRECTORY = new ErrorCode("LOC-00008");
+  public static final ErrorCode NO_LOCATION_STORE_DIRECTORY = new ErrorCode(EXCEPTION_PREFIX + "00008");
   /** Missing location property */
-  public static final ErrorCode MISSING_LOCATION_PROPERTY = new ErrorCode("LOC-00010");
+  public static final ErrorCode MISSING_LOCATION_PROPERTY = new ErrorCode(EXCEPTION_PREFIX + "00010");
 
   public LocationException(ErrorCode errorCode) {
     this(errorCode, null);
@@ -63,7 +68,10 @@ public final class LocationException extends Exception {
    * @return
    */
   public final String getErrorMessage() {
-    return getErrorCode().getErrorMessage();
+    if (messageArguments != null && messageArguments.length > 0) {
+      errorCode.setMessageArguments(messageArguments);
+    }
+    return errorCode.getErrorMessage();
   }
 
   /**

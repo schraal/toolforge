@@ -82,6 +82,21 @@ public final class LocationFactory {
 	 */
 	public synchronized void load() throws LocationException {
 
+    /*
+
+    Digester digester = DigesterLoader.parser("location-rules.xml");
+    create Location classes via LocationCreationFactory (to enable flexible typing)
+    put each Location in the location map
+
+    for each 'authenticator-*.xml' do
+      Digester digester = DigesterLoader.parser("authenticator-X.xml");
+      create Authenticator classes
+      search for a Location instance in the location map (search by id).
+        link the Authenticator to the Location instance
+    end do
+
+    */
+
 		if (env == null) {
 			throw new KarmaRuntimeException("Local environment is not initialized. Use 'getInstance(LocalEnvironment)'.");
 		}
@@ -98,57 +113,60 @@ public final class LocationFactory {
 			throw new LocationException(LocationException.NO_LOCATION_DATA_FOUND);
 		}
 
-		try {
-			DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+    try {
+      DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 
-			// Load the first file.
-			//
-			Document locationRoot = builder.parse(new File(base.getPath() + File.separator + files[0]));
+      // Load the first file.
+      //
+      Document locationRoot = builder.parse(new File(base.getPath() + File.separator + files[0]));
 
-			// Load the rest of them
-			//
-			for (int i = 1; i < files.length; i++) {
+      // Load the rest of them
+      //
+      for (int i = 1; i < files.length; i++) {
 
-				Document document = builder.parse(new File(base.getPath() + File.separator + files[i]));
+        Document document = builder.parse(new File(base.getPath() + File.separator + files[i]));
 
-				// Include one in the other
-				//
-				locationRoot = (Document) locationRoot.importNode(document.getDocumentElement(), true);
-			}
+        // Include one in the other
+        //
+        locationRoot = (Document) locationRoot.importNode(document.getDocumentElement(), true);
+      }
 
-			// Repeat this step for authenticator files.
-			//
+      // Repeat this step for authenticator files.
+      //
 
-			files = env.getConfigurationDirectory().list(new AuthenticationFilenameFilter());
+      files = env.getConfigurationDirectory().list(new AuthenticationFilenameFilter());
 
-			Document authenticationRoot = null;
+      Document authenticationRoot = null;
 
-			if (files.length > 0) {
+      if (files.length > 0) {
 
-				// Load the first file. todo Later on, more than one file can be supported.
-				//
-				authenticationRoot = builder.parse(new File(env.getConfigurationDirectory(), files[0]));
+        // Load the first file. todo Later on, more than one file can be supported.
+        //
+        authenticationRoot = builder.parse(new File(env.getConfigurationDirectory(), files[0]));
 
-				// Load the rest of them
-				//
-				for (int i = 1; i < files.length; i++) {
+        // Load the rest of them
+        //
+        for (int i = 1; i < files.length; i++) {
 
-					Document document = builder.parse(new File(base.getPath() + File.separator + files[i]));
+          Document document = builder.parse(new File(base.getPath() + File.separator + files[i]));
 
-					// Include one in the other
-					//
-					authenticationRoot = (Document) authenticationRoot.importNode(document.getDocumentElement(), true);
-				}
-			} else {
-				logger.info("No authentication files found in " + env.getConfigurationDirectory().getPath() + ".");
-			}
+          // Include one in the other
+          //
+          authenticationRoot = (Document) authenticationRoot.importNode(document.getDocumentElement(), true);
+        }
+      } else {
+        logger.info("No authentication files found in " + env.getConfigurationDirectory().getPath() + ".");
+      }
 
-			load(locationRoot, authenticationRoot);
+      load(locationRoot, authenticationRoot);
 
-		} catch (Exception e) {
-      e.printStackTrace();
-			throw new LocationException(e, LocationException.GENERAL_LOCATION_ERROR);
-		}
+    } catch (ParserConfigurationException e) {
+      throw new LocationException(e, LocationException.MISSING_AUTHENTICATOR_CONFIGURATION);
+    } catch (SAXException e) {
+      throw new LocationException(e, LocationException.MISSING_AUTHENTICATOR_CONFIGURATION);
+    } catch (IOException e) {
+      throw new LocationException(e, LocationException.MISSING_AUTHENTICATOR_CONFIGURATION);
+    }
 	}
 
 	/**
@@ -166,11 +184,11 @@ public final class LocationFactory {
       locationRoot = builder.parse(locationStream);
       authenticatorRoot = builder.parse(authenticatorStream);
     } catch (ParserConfigurationException e) {
-      throw new LocationException(LocationException.GENERAL_LOCATION_ERROR);
+      throw new LocationException(LocationException.LOCATION_CONFIGURATION_ERROR);
     } catch (SAXException e) {
-      throw new LocationException(LocationException.GENERAL_LOCATION_ERROR);
+      throw new LocationException(LocationException.LOCATION_CONFIGURATION_ERROR);
     } catch (IOException e) {
-      throw new LocationException(LocationException.GENERAL_LOCATION_ERROR);
+      throw new LocationException(LocationException.LOCATION_CONFIGURATION_ERROR);
     }
 
 		load(locationRoot, authenticatorRoot);
@@ -227,7 +245,7 @@ public final class LocationFactory {
 				//
 				cvsLocation = includeAuthentication(cvsLocation, authenticatorRoot);
 
-				checkLocation(cvsLocation);
+				//checkLocation(cvsLocation);
 
 				locations.put(cvsLocation.getId(), cvsLocation);
 			}
@@ -284,19 +302,15 @@ public final class LocationFactory {
 				if (loc.getUsername() == null) {
           String error = "Connection protocol (" + CVSRoot.METHOD_EXT + ") requires username in repository-authenticators.xml";
           logger.error(error);
-          throw new LocationException(LocationException.LOCATION_CONFIGURATION_ERROR, new Object[]{error});
+          throw new LocationException(LocationException.INVALID_AUTHENTICATOR_CONFIGURATION, new Object[]{loc.getId()});
 				}
-//				if ((loc.getUsername() == null) || (!loc.passwordSet())) {
-//					logger.debug("Connection protocol (" + CVSRoot.METHOD_EXT + ") requires username and password.");
-//					throw new KarmaException(KarmaException.LOCATION_CONFIGURATION_ERROR);
-//				}
 			} else {
 
 				if (loc.getProtocol().equals(CVSRoot.METHOD_PSERVER)) {
 					if ((loc.getUsername() == null) || (!loc.passwordSet())) {
             String error = "Connection protocol (" + CVSRoot.METHOD_PSERVER + ") requires username and password in repository-authenticators.xml";
             logger.error(error);
-            throw new LocationException(LocationException.LOCATION_CONFIGURATION_ERROR, new Object[]{error});
+            throw new LocationException(LocationException.INVALID_AUTHENTICATOR_CONFIGURATION, new Object[]{loc.getId()});
 					}
 				} else {
 
@@ -304,7 +318,7 @@ public final class LocationFactory {
 						if ((loc.getUsername() == null) || (!loc.passwordSet())) {
               String error = "Connection protocol (" + CVSRoot.METHOD_SERVER + ") requires username and password in repository-authenticators.xml";
 							logger.error(error);
-							throw new LocationException(LocationException.LOCATION_CONFIGURATION_ERROR, new Object[]{error});
+							throw new LocationException(LocationException.INVALID_AUTHENTICATOR_CONFIGURATION, new Object[]{loc.getId()});
 						}
 					}
 				}
@@ -327,7 +341,11 @@ public final class LocationFactory {
 	public final Location get(String locationAlias) throws LocationException {
 
 		if (locations.containsKey(locationAlias)) {
-			return (Location) locations.get(locationAlias);
+
+      Location location = (Location) locations.get(locationAlias);
+      checkLocation(location); // checks if authentication data is available if need be.
+
+			return location;
 		}
 		throw new LocationException(LocationException.LOCATION_NOT_FOUND, new Object[]{locationAlias});
 	}
