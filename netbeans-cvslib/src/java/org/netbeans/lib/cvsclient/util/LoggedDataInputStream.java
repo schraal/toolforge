@@ -37,7 +37,7 @@ public class LoggedDataInputStream extends FilterInputStream {
    */
   public String readLine() throws IOException {
 
-    final long MAX_DURATION = 1000;
+    final long MAX_DURATION = 3000;
     long start = System.currentTimeMillis();
 
     int ch;
