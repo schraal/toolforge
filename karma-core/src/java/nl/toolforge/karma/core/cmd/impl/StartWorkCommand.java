@@ -48,7 +48,7 @@ import nl.toolforge.karma.core.vc.VersionControlException;
  */
 public class StartWorkCommand extends DefaultCommand {
 
-  private static Log logger = LogFactory.getLog(AbstractManifest.class);
+  private static Log logger = LogFactory.getLog(StartWorkCommand.class);
 
   protected CommandResponse response = new ActionCommandResponse();
 
