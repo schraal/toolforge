@@ -154,5 +154,20 @@ public final class ErrorCode {
   private Object[] getMessageArguments() {
     return messageArguments;
   }
+
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof ErrorCode)) return false;
+
+    final ErrorCode errorCode1 = (ErrorCode) o;
+
+    if (errorCode != null ? !errorCode.equals(errorCode1.errorCode) : errorCode1.errorCode != null) return false;
+
+    return true;
+  }
+
+  public int hashCode() {
+    return (errorCode != null ? errorCode.hashCode() : 0);
+  }
 }
 
