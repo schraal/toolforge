@@ -38,7 +38,17 @@
     <!-- Remove all jar-files -->
     <delete dir="${module-build-dir}" includes="*.jar"/>
 
-    <jar destfile="${module-package-name}" basedir="${module-build-dir}"/>
+    <echo message="${module-build-dir}, ${module-base-dir}, ${module-includes}"/>
+
+    <copy todir="${module-build-dir}" overwrite="true">
+      <fileset dir="${module-base-dir}" includes="${module-includes}"/>
+    </copy>
+
+    <jar
+      destfile="${module-package-name}"
+      basedir="${module-build-dir}"
+      excludes="${module-excludes}"
+      />
 
   </target>
 
@@ -50,7 +60,37 @@
 
     <delete dir="${module-build-dir}" includes="*.war"/>
 
-    <war destfile="${module-package-name}" basedir="${module-basedir}" webxml="${module-webxml}"/>
+    <war destfile="${module-package-name}" basedir="${module-base-dir}" webxml="${module-webxml}"/>
+
+  </target>
+
+  <!-- *************************************** -->
+  <!-- package-module (pa); resulting in an ear -->
+  <!-- *************************************** -->
+
+  <target name="package-module-as-ear" depends="init-build-dir">
+
+    <delete dir="${module-build-dir}" includes="*.ear;archives.*"/>
+
+    <!-- copy the eapp stuff, while replacing module ids in application.xml -->
+    <copy todir="${module-build-dir}" overwrite="true">
+      <fileset dir="${module-base-dir}" includes="${module-includes}"/>
+      <filterset>
+        <filtersfile file="${module-build-dir}/archives.properties"/>
+      </filterset>
+    </copy>
+
+    <!-- copy the external jars and wars-->
+    <copy todir="${module-build-dir}" flatten="yes">
+      <fileset dir="${module-build-dir}/.." includesfile="${module-build-dir}/archives.includes"/>
+    </copy>
+
+    <ear
+      destfile="${module-package-name}"
+      basedir="${module-build-dir}"
+      appxml="${module-appxml}"
+      excludes="${module-excludes}"
+     />
 
   </target>
 

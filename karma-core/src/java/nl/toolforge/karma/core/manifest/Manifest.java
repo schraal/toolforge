@@ -43,7 +43,7 @@ public interface Manifest {
    *
    * @return
    */
-  public String resolveJarName(Module module) throws ManifestException;
+  public String resolveArchiveName(Module module) throws ManifestException;
 
   /**
    * @see AbstractManifest for the time being

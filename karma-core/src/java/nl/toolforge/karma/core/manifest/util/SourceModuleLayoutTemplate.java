@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core.manifest.util;
 
 import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.manifest.Module;
 
 import java.util.Map;
 import java.util.Hashtable;
@@ -24,11 +25,11 @@ public final class SourceModuleLayoutTemplate implements ModuleLayoutTemplate {
   // todo constructor met xml file naam waar de layout gevonden kan worden.
 
   public String[] getFileElements() {
-    return new String[] {SourceModule.MODULE_INFO, "dependencies.xml"};
+    return new String[] {Module.MODULE_INFO, "dependencies.xml"};
   }
 
   public String[] getDirectoryElements() {
-    return new String[] {"src/java", "resources"};
+    return new String[] {"src/java", "resources", "META-INF"};
   }
 
 }

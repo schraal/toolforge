@@ -7,33 +7,29 @@ import java.util.Map;
 import java.util.Hashtable;
 
 /**
- * <p>Layout for a webapp-module. A web-module has the following directory-structure:
+ * <p>Layout for an eapp-module. A eapp-module has the following directory-structure:
  *
  * <ul>
  * <li/><code>module.info</code>
- * <li/><code>dependencies.xml</code>
- * <li/><code>src/java</code>
  * <li/><code>resources/</code>
- * <li/><code>WEB-INF/web.xml/</code>
+ * <li/><code>META-INF/application.xml/</code>
  * </ul>
  *
  * @author D.A. Smedes
  * @version $Id$
  */
-public final class WebappModuleLayoutTemplate implements ModuleLayoutTemplate {
+public final class EappModuleLayoutTemplate implements ModuleLayoutTemplate {
 
   // todo constructor met xml file naam waar de layout gevonden kan worden.
 
   public String[] getFileElements() {
     return new String[] {
       Module.MODULE_INFO,
-      "dependencies.xml",
-      "WEB-INF/web.xml"};
+      "META-INF/application.xml"};
   }
 
   public String[] getDirectoryElements() {
     return new String[] {
-      "src/java",
       "resources"};
   }
 }

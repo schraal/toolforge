@@ -119,7 +119,7 @@ public final class CVSVersionExtractor implements VersionExtractor {
       Entry moduleInfo = null;
       for (int i = 0; i < entries.length; i++) {
 
-        if (entries[i].getName().equals(SourceModule.MODULE_INFO)) {
+        if (entries[i].getName().equals(Module.MODULE_INFO)) {
           moduleInfo = entries[i];
         }
       }
@@ -159,7 +159,7 @@ public final class CVSVersionExtractor implements VersionExtractor {
       Entry moduleInfo = null;
       for (int i = 0; i < entries.length; i++) {
 
-        if (entries[i].getName().equals(SourceModule.MODULE_INFO)) {
+        if (entries[i].getName().equals(Module.MODULE_INFO)) {
           moduleInfo = entries[i];
         }
       }

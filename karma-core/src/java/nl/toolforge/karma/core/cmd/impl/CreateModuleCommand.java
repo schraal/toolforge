@@ -15,6 +15,7 @@ import nl.toolforge.karma.core.manifest.ModuleDescriptor;
 import nl.toolforge.karma.core.manifest.ModuleFactory;
 import nl.toolforge.karma.core.manifest.util.SourceModuleLayoutTemplate;
 import nl.toolforge.karma.core.manifest.util.WebappModuleLayoutTemplate;
+import nl.toolforge.karma.core.manifest.util.EappModuleLayoutTemplate;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
@@ -64,6 +65,8 @@ public class CreateModuleCommand extends DefaultCommand {
 
       if (moduleName.startsWith(Module.WEBAPP_PREFIX)) {
         runner.create(module, comment, new WebappModuleLayoutTemplate());
+      } else if (moduleName.startsWith(Module.EAPP_PREFIX)) {
+        runner.create(module, comment, new EappModuleLayoutTemplate());
       } else {
         runner.create(module, comment, new SourceModuleLayoutTemplate());
       }

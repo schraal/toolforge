@@ -499,7 +499,7 @@ public final class CVSRunner implements Runner {
     arguments.put("REPOSITORY", module.getLocation().getId());
 
     CheckoutCommand checkoutCommand = new CheckoutCommand();
-    checkoutCommand.setModule(module.getName() + "/" + SourceModule.MODULE_INFO);
+    checkoutCommand.setModule(module.getName() + "/" + Module.MODULE_INFO);
 
     executeOnCVS(checkoutCommand, tmp, arguments);
 
@@ -508,7 +508,7 @@ public final class CVSRunner implements Runner {
     // Determine the location of module.info, relative to where we are.
     //
     // Todo a reference to SourceModule is used here. Verify ...
-    File moduleInfo = new File(new File(tmp, module.getName()), SourceModule.MODULE_INFO);
+    File moduleInfo = new File(new File(tmp, module.getName()), Module.MODULE_INFO);
     logCommand.setFiles(new File[]{moduleInfo});
 
     executeOnCVS(logCommand, new File(tmp, module.getName()));
@@ -538,7 +538,7 @@ public final class CVSRunner implements Runner {
     arguments.put("REPOSITORY", module.getLocation().getId());
 
     CheckoutCommand checkoutCommand = new CheckoutCommand();
-    checkoutCommand.setModule(module.getName() + "/" + SourceModule.MODULE_INFO);
+    checkoutCommand.setModule(module.getName() + "/" + Module.MODULE_INFO);
 
     File tmp = null;
     try {

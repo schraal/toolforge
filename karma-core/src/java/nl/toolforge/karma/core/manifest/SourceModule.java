@@ -26,11 +26,6 @@ import java.util.Set;
  * @see Module
  */
 public class SourceModule extends BaseModule {
-  /**
-   * The name of the mandatory file in a source module. A file with this name is created by Karma or should be created
-   * manually and contain all data (symbolic names) that should be available for existing manifests.
-   */
-  public static final String MODULE_INFO = "module.info";
 
   private State state = null;
   private Version version = null;

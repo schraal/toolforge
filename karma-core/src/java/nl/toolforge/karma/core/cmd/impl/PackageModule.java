@@ -11,10 +11,22 @@ import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.manifest.ModuleDescriptor;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.commons.digester.Digester;
+import org.xml.sax.SAXException;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.FileWriter;
+import java.util.List;
+import java.util.Map;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author D.A. Smedes
@@ -23,7 +35,10 @@ import java.io.File;
 public class PackageModule extends AbstractBuildCommand {
 
   private static final String MODULE_PACKAGE_NAME_PROPERTY = "module-package-name";
+  private static  final String MODULE_APPXML_PROPERTY = "module-appxml";
   private static  final String MODULE_WEBXML_PROPERTY = "module-webxml";
+  private static  final String MODULE_INCLUDES_PROPERTY = "module-includes";
+  private static  final String MODULE_EXCLUDES_PROPERTY = "module-excludes";
 
   private CommandResponse commandResponse = new ActionCommandResponse();
 
@@ -40,17 +55,80 @@ public class PackageModule extends AbstractBuildCommand {
     try {
 
       project.setProperty(MODULE_BUILD_DIR_PROPERTY, getBuildDirectory().getPath());
-      project.setProperty(MODULE_PACKAGE_NAME_PROPERTY, new File(getBuildDirectory(), getCurrentManifest().resolveJarName(getCurrentModule())).getPath());
+      project.setProperty(MODULE_PACKAGE_NAME_PROPERTY, new File(getBuildDirectory(), getCurrentManifest().resolveArchiveName(getCurrentModule())).getPath());
+      project.setProperty(MODULE_BASEDIR_PROPERTY, getCurrentModule().getBaseDir().getPath());
 
       if (getCurrentModule().getName().startsWith(Module.WEBAPP_PREFIX)) {
         // Create a war-file
         //
         project.setProperty(MODULE_WEBXML_PROPERTY, new File(getCurrentModule().getBaseDir(), "WEB-INF/web.xml".replace('/', File.separatorChar)).getPath());
-        project.setProperty(MODULE_BASEDIR_PROPERTY, getCurrentModule().getBaseDir().getPath());
+        project.setProperty(MODULE_EXCLUDES_PROPERTY, "*.war");
         project.executeTarget(BUILD_TARGET_WAR);
+      } else if (getCurrentModule().getName().startsWith(Module.EAPP_PREFIX)) {
+        // Create an ear-file
+        //
+        Digester digester = new Digester();
+        digester.setValidating(false);   //todo: dit moet true worden
+        digester.addObjectCreate("application", "java.util.ArrayList");
+        digester.addObjectCreate("application/module/ejb", "java.lang.StringBuffer");
+        digester.addCallMethod("application/module/ejb", "append", 0);
+        digester.addSetNext("application/module/ejb", "add", "java.lang.StringBuffer");
+        digester.addObjectCreate("application/module/java", "java.lang.StringBuffer");
+        digester.addCallMethod("application/module/java", "append", 0);
+        digester.addSetNext("application/module/java", "add", "java.lang.StringBuffer");
+        digester.addObjectCreate("application/module/web/web-uri", "java.lang.StringBuffer");
+        digester.addCallMethod("application/module/web/web-uri", "append", 0);
+        digester.addSetNext("application/module/web/web-uri", "add", "java.lang.StringBuffer");
+
+        try {
+          List moduleNames = (List) digester.parse(new File(getCurrentModule().getBaseDir(), "META-INF/application.xml"));
+System.out.println(moduleNames);
+
+          Map map = new Hashtable();
+          for (Iterator it = moduleNames.iterator(); it.hasNext(); ) {
+            String moduleName = ((StringBuffer) it.next()).toString();
+
+            Pattern p = Pattern.compile("@("+ModuleDescriptor.NAME_PATTERN_STRING+")@");
+            Matcher m = p.matcher(moduleName);
+
+            if (m.matches()) {
+              moduleName = m.group(1);
+              Module module = getCurrentManifest().getModule(moduleName);
+              map.put(moduleName, getCurrentManifest().resolveArchiveName(module));
+            } else {
+              //todo: throw new Exception();
+            }
+          }
+System.out.println(map);
+          FileWriter write1 = new FileWriter(new File(getBuildDirectory(), "archives.properties"));
+          FileWriter write2 = new FileWriter(new File(getBuildDirectory(), "archives.includes"));
+
+          for (Iterator it = map.keySet().iterator(); it.hasNext(); ) {
+            String key = (String) it.next();
+            String value = (String) map.get(key);
+
+            write1.write(key+"="+value+"\n");
+            write2.write(key+"/"+value+"\n");
+          }
+
+          write1.close();
+          write2.close();
+
+        } catch (IOException e) {
+          e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (SAXException e) {
+          e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        project.setProperty(MODULE_APPXML_PROPERTY, new File(getBuildDirectory(), "META-INF/application.xml".replace('/', File.separatorChar)).getPath());
+        project.setProperty(MODULE_INCLUDES_PROPERTY, "META-INF/**,resources/**");
+        project.setProperty(MODULE_EXCLUDES_PROPERTY, "*.ear,archives.*");
+        project.executeTarget(BUILD_TARGET_EAR);
       } else {
         // Create a jar-file
         //
+        project.setProperty(MODULE_EXCLUDES_PROPERTY, "*.jar");
+        project.setProperty(MODULE_INCLUDES_PROPERTY, "META-INF/**,resources/**");
         project.executeTarget(BUILD_TARGET_JAR);
       }
       CommandMessage message = new SimpleCommandMessage("Module " + getCurrentModule().getName() + " packaged succesfully."); // todo localize message

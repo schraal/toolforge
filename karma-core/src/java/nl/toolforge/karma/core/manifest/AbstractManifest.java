@@ -506,13 +506,20 @@ public abstract class AbstractManifest implements Manifest {
    * @return The artifact-name as determined the way as described above.
    * @throws ManifestException
    */
-  public final String resolveJarName(Module module) throws ManifestException {
+  public final String resolveArchiveName(Module module) throws ManifestException {
 
     String jar = module.getName() + "_";
 
     // todo introduce a method to determine if a module is webapp-module; maybe its own class.
     //
-    String extension = (module.getName().startsWith(Module.WEBAPP_PREFIX) ? ".war" : ".jar");
+    String extension;
+    if (module.getName().startsWith(Module.WEBAPP_PREFIX)) {
+      extension = ".war";
+    } else if (module.getName().startsWith(Module.EAPP_PREFIX)) {
+      extension = ".ear";
+    } else {
+      extension = ".jar";
+    }
 
     try {
       if (((SourceModule) module).getState().equals(Module.WORKING)) {

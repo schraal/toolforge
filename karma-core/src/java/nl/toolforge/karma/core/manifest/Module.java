@@ -40,11 +40,19 @@ public interface Module {
 
   /**
    * <p>Modules containing a web application (resulting in the creation of a web application archive - WAR -, must have
-   * this prefix. Webapp-modules have specific requirements wrt to their internal structure. The 
+   * this prefix. Webapp-modules have specific requirements wrt to their internal structure. The
    *
    * <p>Check the Karma User Manual for background information about this type of module.
    */
   public static final String WEBAPP_PREFIX = "webapp";
+
+  /**
+   * <p>Modules containing an enterprise application (resulting in the creation of a enterprise application archive - EAR -, must have
+   * this prefix. Eapp-modules have specific requirements wrt to their internal structure. The 
+   *
+   * <p>Check the Karma User Manual for background information about this type of module.
+   */
+  public static final String EAPP_PREFIX = "eapp";
 
   /**
    * Modules that should create an <code>EAR</code>-file as a means of distribution, should have a module with
@@ -52,7 +60,13 @@ public interface Module {
    */
   public static final String DEPLOY_CONFIG_PREFIX = "deploy-config";
 
-	/**
+  /**
+   * The name of the mandatory file in a module. A file with this name is created by Karma or should be created
+   * manually and contain all data (symbolic names) that should be available for existing manifests.
+   */
+  public static final String MODULE_INFO = "module.info";
+
+  /**
    * Retrieves a modules' name, the <code>name</code> attribute of the module in the manifest XML file.
    *
    * @return The modules' name.

@@ -55,6 +55,11 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
   protected static final String BUILD_TARGET_WAR = "package-module-as-war";
 
   /**
+   * Mapper to the target in <code>build-module.xml</code> to package a module as an <code>ear</code>-file.
+   */
+  protected static final String BUILD_TARGET_EAR = "package-module-as-ear";
+
+  /**
    * Property describing the full path-name to the modules' <code>src/java</code> directory.
    */
   protected static final String MODULE_SOURCE_DIR_PROPERTY = "module-source-dir";
@@ -73,7 +78,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
   /**
    * The modules' base directory (<code>&lt;development-home&gt/&lt;manifest-name&gt/&lt;module-name&gt;).
    */
-  protected static final String MODULE_BASEDIR_PROPERTY = "module-basedir";
+  protected static final String MODULE_BASEDIR_PROPERTY = "module-base-dir";
 
   private Module module = null;
   private Manifest currentManifest = null;
@@ -187,7 +192,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
         File moduleBuildDir = new File(new File(baseDir, DEFAULT_BUILD_DIR), dep.getModule());
 
         File dependencyJar =
-            new File(moduleBuildDir + File.separator + getCurrentManifest().resolveJarName(getCurrentManifest().getModule(dep.getModule())));
+            new File(moduleBuildDir + File.separator + getCurrentManifest().resolveArchiveName(getCurrentManifest().getModule(dep.getModule())));
 
         if (!dependencyJar.exists()) {
           throw new CommandException(CommandException.DEPENDENCY_DOES_NOT_EXIST, new Object[] {jar, dep.getModule()});
