@@ -1,25 +1,27 @@
 <?xml version="1.0"?>
 
 <project>
+  <pomVersion>3</pomVersion>
+  <name>Karma Launcher Module</name>
+  <groupId>toolforge</groupId>
+  <id>karma-launcher</id>
+  <package>nl.toolforge.karma.launcher</package>
+    <currentVersion>1.6-dev</currentVersion>
 
-	<pomVersion>3</pomVersion>
-	<name>Karma Launcher Module</name>
-        <groupId>toolforge</groupId>
-      	<id>karma-launcher</id>
-	<currentVersion>1.5-dev</currentVersion>
-        <inceptionYear>2002</inceptionYear>
-        <package>nl.toolforge.karma.launcher</package>
-        <siteAddress>ssh.sf.net</siteAddress>
-	<siteDirectory>/home/groups/t/to/toolforge/htdocs/karma-launcher</siteDirectory>
-	<organization>
-		<name>Toolforge</name>
-		<url>http://sourceforge.net/projects/toolforge</url>
-                <logo>http://sourceforge.net/sflogo.php?group_id=98766&amp;type=5</logo>
-	</organization>
+  <inceptionYear>2002</inceptionYear>
+  
+  <organization>
+    <name>Toolforge</name>
+    <url>http://sourceforge.net/projects/toolforge</url>
+    <logo>http://sourceforge.net/sflogo.php?group_id=98766&amp;type=5</logo>
+  </organization>
+
+  <siteAddress>ssh.sf.net</siteAddress>
+  <siteDirectory>/home/groups/t/to/toolforge/htdocs/karma-launcher</siteDirectory>
+
   <build>
     <sourceDirectory>src/java</sourceDirectory>
   </build>
-
 </project>
 
 
