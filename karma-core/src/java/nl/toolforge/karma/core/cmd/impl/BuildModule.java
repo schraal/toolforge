@@ -73,11 +73,6 @@ public class BuildModule extends AbstractBuildCommand {
       //
       Project project = getProjectInstance();
 
-      // <mkdir>
-      //
-      executeMkdir(getCompileDirectory());
-      executeDelete(getBuildDirectory(), "*.jar");
-
       //  <javac>
       //
       Javac javac = new Javac();
@@ -101,6 +96,11 @@ public class BuildModule extends AbstractBuildCommand {
       Path sourcePath = new Path(project);
       sourcePath.setPath(srcBase.getPath());
       javac.setSrcdir(sourcePath);
+
+      // <mkdir>
+      //
+      executeMkdir(getCompileDirectory());
+      executeDelete(getBuildDirectory(), "*.jar");
 
       javac.execute();
 

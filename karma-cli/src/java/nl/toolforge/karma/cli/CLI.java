@@ -168,7 +168,16 @@ public class CLI {
 					ctx.execute(line);
         } catch (CommandException e) {
           writer.writeln("");
-          writer.writeln(e.getErrorMessage());
+          //ugly way to format the messages. There is going to be a more elegant
+          //solution for this.
+          String message;
+          if (e.getMessageArguments() != null && e.getMessageArguments().length != 0) {
+            MessageFormat messageFormat = new MessageFormat(e.getErrorMessage());
+            message = messageFormat.format(e.getMessageArguments());
+          } else {
+            message = e.getErrorMessage();
+          }
+          writer.writeln(message);
           logger.error(e.getMessage(), e);
         }
       }

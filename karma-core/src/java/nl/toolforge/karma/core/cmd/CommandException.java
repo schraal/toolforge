@@ -80,6 +80,13 @@ public class CommandException extends Exception {
   /** The packaging of a module failed. */
   public static final ErrorCode PACKAGE_FAILED = new ErrorCode(EXCEPTION_PREFIX + "00070");
 
+  /** The packaging of a module failed. */
+  public static final ErrorCode PACKAGE_FAILED_NO_APPLICATION_XML = new ErrorCode(EXCEPTION_PREFIX + "00071");
+
+  /** The packaging of a module failed. */
+  public static final ErrorCode PACKAGE_FAILED_INVALID_APPLICATION_XML = new ErrorCode(EXCEPTION_PREFIX + "00072");
+
+
   /**
    * When the manifest is a development manifest and the module is STATIC. Not allowed to start work on this module.
    */
@@ -129,6 +136,7 @@ public class CommandException extends Exception {
   public static final ErrorCode MODULE_VERSION_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00064");
 
   public static final ErrorCode TEST_WARNING = new ErrorCode(EXCEPTION_PREFIX + "00100");
+  public static final ErrorCode BUILD_WARNING = new ErrorCode(EXCEPTION_PREFIX + "00101");
 
   public CommandException(ErrorCode errorCode) {
     this(errorCode, null);

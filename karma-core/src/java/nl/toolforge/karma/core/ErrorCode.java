@@ -117,10 +117,10 @@ public final class ErrorCode {
     try {
       message = bundle.getString("message." + getErrorCodeString());
 
-      if (getMessageArguments().length != 0) {
-        MessageFormat messageFormat = new MessageFormat(message);
-        message = messageFormat.format(getMessageArguments());
-      }
+//      if (getMessageArguments().length != 0) {
+//        MessageFormat messageFormat = new MessageFormat(message);
+//        message = messageFormat.format(getMessageArguments());
+//      }
     } catch (RuntimeException r) {
       logger.error("No message found for errorcode : " + getErrorCodeString());
       message = getErrorCodeString();

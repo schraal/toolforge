@@ -88,6 +88,7 @@ public class PackageModule extends AbstractBuildCommand {
         Command command = null;
         try {
           String commandLineString = "tm -m " + module.getName();
+System.out.println("Going to: "+commandLineString);
           command = CommandFactory.getInstance().getCommand(commandLineString);
           command.setContext(getContext());
           command.registerCommandResponseListener(getResponseListener());
@@ -313,10 +314,9 @@ public class PackageModule extends AbstractBuildCommand {
       try {
         reader.parse(new File(getCurrentModule().getBaseDir(), "META-INF"));
       } catch (IOException e) {
-        e.printStackTrace();
-//          throw new CommandException(CommandException.MISSING_DEPLOYMENT_DESCRIPTOR, new Object[]{reader.});
+        throw new CommandException(CommandException.PACKAGE_FAILED_NO_APPLICATION_XML, new Object[]{module.getName()});
       } catch (SAXException e) {
-        e.printStackTrace();
+        throw new CommandException(CommandException.PACKAGE_FAILED_INVALID_APPLICATION_XML, new Object[]{module.getName()});
       }
 
       Map map = new Hashtable();
@@ -336,8 +336,14 @@ public class PackageModule extends AbstractBuildCommand {
       }
 
       try {
-        FileWriter write1 = new FileWriter(new File(getModuleBuildDirectory(), "archives.properties"));
-        FileWriter write2 = new FileWriter(new File(getModuleBuildDirectory(), "archives.includes"));
+        File moduleBuildDir = getModuleBuildDirectory();
+        moduleBuildDir.mkdirs();
+        File archivesProperties = new File(moduleBuildDir, "archives.properties");
+        File archivesIncludes = new File(moduleBuildDir, "archives.includes");
+        archivesProperties.createNewFile();
+        archivesIncludes.createNewFile();
+        FileWriter write1 = new FileWriter(archivesProperties);
+        FileWriter write2 = new FileWriter(archivesIncludes);
 
         for (Iterator it = map.keySet().iterator(); it.hasNext(); ) {
           String key = (String) it.next();
