@@ -70,6 +70,8 @@ public class ManifestException extends Exception {
    */
   public static final ErrorCode NOT_A_DEVELOPMENT_MANIFEST = new ErrorCode(EXCEPTION_PREFIX + "00017");
 
+  public static final ErrorCode DUPLICATE_MANIFEST_FILE = new ErrorCode(EXCEPTION_PREFIX + "00018");
+
   public ManifestException(ErrorCode errorCode) {
     this(errorCode, null);
   }

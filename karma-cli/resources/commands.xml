@@ -11,7 +11,10 @@
     </description>
 
     <options>
-      <option opt="m" longOpt="manifest" required="false" description="The manifest name (development manifest)">
+      <option opt="d" longOpt="development-manifest" required="false" description="The manifest name (development manifest)">
+        <arg name="manifest-name"/>
+      </option>
+      <option opt="r" longOpt="release-manifest" required="true" description="The manifest name (release manifest)">
         <arg name="manifest-name"/>
       </option>
     </options>

@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.ArrayList;
 
 /**
  * <p>The command context is the class that provides a runtime for commands to run in. The command context maintains
@@ -148,28 +149,19 @@ public final class CommandContext implements ChangeListener {
 
   private synchronized void setFileModificationTimes() {
 
-    // todo verder uitwerken voor included manifests
-    //
+    Manifest manifest = currentManifest;
 
-    File manifestStore = LocalEnvironment.getManifestStore();
-
-
-    // First, the current manifest
-    //
-    try {
-      lastmodified = new File(LocalEnvironment.getManifestStore(), currentManifest.getName() + ".xml").lastModified();
-    } catch (Exception e) {
-      lastmodified = 0L;
-    }
+    Long lastMod = new Long(new File(LocalEnvironment.getManifestStore(), manifest.getName() + ".xml").lastModified());
+    modificationMap.put(manifest, lastMod);
 
     try {
-      Collection includes = currentManifest.getIncludes();
+      Collection includes = manifest.getIncludes();
       for (Iterator i = includes.iterator(); i.hasNext();) {
 
-        Manifest m = (Manifest) i.next();
+        manifest = (Manifest) i.next();
 
-        Long lastMod = new Long(new File(manifestStore, m.getName() + ".xml").lastModified());
-        modificationMap.put(m.getName(), lastMod);
+        lastMod = new Long(new File(LocalEnvironment.getManifestStore(), manifest.getName() + ".xml").lastModified());
+        modificationMap.put(manifest, lastMod);
       }
     } catch (Exception e) {
       modificationMap.clear();
@@ -178,7 +170,7 @@ public final class CommandContext implements ChangeListener {
 
   /**
    * Implementation of the {@link ChangeListener} interface. This method reloads the
-   * current manifest to allow changes to be reflected without having to restart.
+   * current manifest to allow changes to be reflected without having to restart Karma.
    */
   public synchronized void process() {
 
@@ -186,25 +178,16 @@ public final class CommandContext implements ChangeListener {
 
     try {
 
-      File f = new File(LocalEnvironment.getManifestStore(), currentManifest.getName() + ".xml");
+      Collection manifests = new ArrayList();
+      manifests.add(currentManifest);
+      manifests.addAll(currentManifest.getIncludes());
 
-      if (!f.exists()) {
-        throw new ManifestException(ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[] {currentManifest.getName()});
-      }
-
-      if (f.lastModified() > lastmodified) {
-        // Signal for reloading; the root manifest has changed.
-        //
-        reload = true;
-      }
-
-      Collection includes = currentManifest.getIncludes();
-      for (Iterator i = includes.iterator(); i.hasNext();) {
+      for (Iterator i = manifests.iterator(); i.hasNext();) {
 
         Manifest m = (Manifest) i.next();
-        long lastMod = ((Long) modificationMap.get(m.getName())).longValue();
+        long lastMod = ((Long) modificationMap.get(m)).longValue();
 
-        f = new File(LocalEnvironment.getManifestStore(), m.getName() + ".xml");
+        File f = new File(LocalEnvironment.getManifestStore(), m.getName() + ".xml");
         if (!f.exists()) {
           throw new ManifestException(ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[] {m.getName()});
         }

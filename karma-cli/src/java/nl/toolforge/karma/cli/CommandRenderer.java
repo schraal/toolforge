@@ -9,55 +9,71 @@ import java.util.Iterator;
 
 public class CommandRenderer {
 
-	public CommandRenderer() {}
+  public static String commands = null;
 
-	public StringBuffer renderedCommands(Collection commandDescriptors) {
+  private CommandRenderer() {}
 
-		StringBuffer buffer = new StringBuffer();
+  /**
+   * Provides a String view on all commands, nicely rendered.
+   *
+   * @param commandDescriptors A <code>Collection</code> with all command descriptors for the commands applicable to the
+   *   Karma runtime.
+   * @return
+   */
+  public static String renderedCommands(Collection commandDescriptors) {
 
-		for (Iterator i = commandDescriptors.iterator(); i.hasNext();) {
+    if (commands == null) {
 
-      CommandDescriptor descriptor = (CommandDescriptor) i.next();
+      StringBuffer buffer = new StringBuffer();
 
-			Collection optionsCollection = descriptor.getOptions().getOptions();
-			Option[] options = (Option[]) optionsCollection.toArray(new Option[optionsCollection.size()]);
+      for (Iterator i = commandDescriptors.iterator(); i.hasNext();) {
 
-			//
-			// Render all options
-			//
+        CommandDescriptor descriptor = (CommandDescriptor) i.next();
 
-			// Command name + alias
-			//
-			buffer.append("\n");
-			buffer.
-				append(descriptor.getName()).
-				append(" (").append(descriptor.getAlias()).append(")").
-				append("\n");
+        Collection optionsCollection = descriptor.getOptions().getOptions();
+        Option[] options = (Option[]) optionsCollection.toArray(new Option[optionsCollection.size()]);
 
-			for (int j = 0; j < options.length; j++) {
+        //
+        // Render all options
+        //
 
-				Option o = options[j];
+        // Command name + alias
+        //
+        buffer.append("\n");
+        buffer.
+            append(descriptor.getName()).
+            append(" (").append(descriptor.getAlias()).append(")").
+            append("\n");
 
-				int FILL = 30; // as a constant ...
-        String leftPadding = "   ";
+        for (int j = 0; j < options.length; j++) {
 
-				buffer.
-					append(leftPadding).
-					append("-" + o.getOpt()).
-					append(", --" + o.getLongOpt());
+          Option o = options[j];
 
-				String args = "";
-				if (o.hasArg()) {
-					args = " <".concat(o.getArgName()).concat(">");
-				}
+          int FILL = 50; // as a constant ...
+          String leftPadding = "   ";
 
-				buffer.
-					append(args.concat(StringUtils.repeat(" ", 30 - (o.getLongOpt() + args).length()))).
-					append(leftPadding).append(o.getDescription()).
-					append("\n");
-			}
+          buffer.
+              append(leftPadding).
+              append("-" + o.getOpt()).
+              append(", --" + o.getLongOpt());
+
+          String args = "";
+          if (o.hasArg()) {
+            args = " <".concat(o.getArgName()).concat(">");
+          }
+
+          // todo when the commands are described with too much of text, then FILL will run out of count ...
+          //
+          buffer.
+              append(args.concat(StringUtils.repeat(" ", FILL - (o.getLongOpt() + args).length()))).
+              append(leftPadding).append(o.getDescription()).
+              append("\n");
+        }
+      }
+
+      commands = buffer.toString();
     }
 
-		return buffer;
-	}
+    return commands;
+  }
 }

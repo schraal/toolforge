@@ -442,14 +442,6 @@ public final class CVSRunner implements Runner {
   }
 
   public void promote(Module module, String comment, Version version) throws CVSException {
-//    File tmp;
-//    try {
-//      tmp = MyFileUtils.createTempDirectory();
-//    } catch (IOException e) {
-//      throw new KarmaRuntimeException("Panic! Failed to create temporary directory.");
-//    }
-//
-//    checkout(module, tmp);
 
     //Add an event to the module history.
     String author = ((CVSLocationImpl) module.getLocation()).getUsername();
@@ -644,7 +636,7 @@ public final class CVSRunner implements Runner {
       client.executeCommand(command, globalOptions);
 
     } catch (CommandException e) {
-      e.printStackTrace();
+//      e.printStackTrace();
       logger.debug(e);
       // Trick to get a hold of the exception we threw in the CVSResponseAdapter.
       //

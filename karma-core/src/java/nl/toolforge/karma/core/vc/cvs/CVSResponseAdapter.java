@@ -81,9 +81,6 @@ public final class CVSResponseAdapter implements CVSListener {
     int j = 0;
     for (Iterator i = argList.iterator(); i.hasNext();) {
       String value = (String) arguments.get((String) i.next());
-//      if (value != null) {
-//        j += 1;
-//      }
       j = (value == null ? j : (j += 1));
     }
 

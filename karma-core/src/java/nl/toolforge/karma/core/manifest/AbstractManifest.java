@@ -122,7 +122,7 @@ public abstract class AbstractManifest implements Manifest {
     moduleCache.clear();
     modules.clear();
 
-    (duplicates = new ArrayList()).add(this.getName()); // Add the root manifest.
+    (duplicates = new ArrayList()).add(getName()); // Add the root manifest.
 
     ManifestFactory factory = ManifestFactory.getInstance();
     Manifest manifest = factory.parse(getName());

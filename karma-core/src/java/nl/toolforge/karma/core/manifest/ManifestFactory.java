@@ -51,10 +51,17 @@ public final class ManifestFactory {
    */
   public Manifest createManifest(String manifestName) throws ManifestException {
 
+    Digester digester = new Digester();
+
+    // The <manifest>-element, to get to the correct manifest type.
+    //
+    digester.addFactoryCreate("manifest", ManifestCreationFactory.class);
+    digester.addSetProperties("manifest");
+
     Manifest manifest = null;
 
     try {
-      manifest = (Manifest) getDigester().parse(getManifestFileAsStream(manifestName));
+      manifest = (Manifest) digester.parse(getManifestFileAsStream(manifestName));
     } catch (IOException e) {
       if (e instanceof FileNotFoundException) {
         throw new ManifestException(e, ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[]{manifest.getName()});

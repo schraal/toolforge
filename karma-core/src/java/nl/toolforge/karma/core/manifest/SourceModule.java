@@ -4,6 +4,7 @@ import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.vc.PatchLine;
+import nl.toolforge.karma.core.vc.DevelopmentLine;
 import org.apache.commons.digester.Digester;
 import org.xml.sax.SAXException;
 
@@ -53,7 +54,7 @@ public class SourceModule extends BaseModule {
    * @return <code>null</code> if a PatchLine does not exist for this module, otherwise the <code>PatchLine</code>
    *   instance for this module.
    */
-  public final PatchLine getPatchLine() {
+  public final DevelopmentLine getPatchLine() {
     if (patchLine) {
       return new PatchLine(PatchLine.NAME_PREFIX + "_" + getVersionAsString());
     }

@@ -170,11 +170,7 @@ public class CLI {
           if (line.trim().toLowerCase().startsWith("help") || line.trim().startsWith("?")) {
 
             writer.writeln("\n\n" + FRONTEND_MESSAGES.getString("message.VALID_COMMANDS"));
-
-            CommandRenderer renderer = new CommandRenderer();
-            StringBuffer renderedBuffer = renderer.renderedCommands(CommandFactory.getInstance().getCommands());
-
-            writer.writeln(renderedBuffer.toString());
+            writer.writeln(CommandRenderer.renderedCommands(CommandFactory.getInstance().getCommands()));
 
           } else {
             ctx.execute(line);

@@ -20,6 +20,8 @@ import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import org.apache.commons.cli.CommandLine;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.regex.PatternSyntaxException;
 
@@ -31,6 +33,8 @@ import java.util.regex.PatternSyntaxException;
  * @version $Id$
  */
 public class CreateModuleCommand extends DefaultCommand {
+
+  private static Log logger = LogFactory.getLog(CreateModuleCommand.class);
 
   private CommandResponse commandResponse = new ActionCommandResponse();
 
@@ -89,6 +93,7 @@ public class CreateModuleCommand extends DefaultCommand {
       commandResponse.addMessage(new SuccessMessage(message.getMessageText()));
 
     } catch (VersionControlException e) {
+      logger.error(e);
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
       //commandResponse.addMessage(new ErrorMessage(ke));
     }

@@ -1,15 +1,22 @@
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
+import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
-import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.manifest.Manifest;
-import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.ManifestFactory;
+import nl.toolforge.karma.core.manifest.Module;
 
 import java.io.File;
+import java.util.Map;
+import java.util.Iterator;
 
 /**
  * Creates a release manifest, based on the current (development) manifest, by checking all the latest versions
@@ -28,7 +35,9 @@ public class CreateRelease extends DefaultCommand {
 
   public void execute() throws CommandException {
 
-    String manifestName = getCommandLine().getOptionValue("m");
+    String manifestName = getCommandLine().getOptionValue("d");
+
+    Manifest releaseManifest = null;
 
     if (manifestName == null) {
 
@@ -38,46 +47,95 @@ public class CreateRelease extends DefaultCommand {
         throw new CommandException(ManifestException.NO_ACTIVE_MANIFEST);
       }
 
-      Manifest currentManifest = getContext().getCurrentManifest();
+      releaseManifest = getContext().getCurrentManifest();
 
-      if (!currentManifest.getType().equals(Manifest.DEVELOPMENT_MANIFEST)) {
-        throw new CommandException(ManifestException.NOT_A_DEVELOPMENT_MANIFEST, new Object[] {});
+    } else {
+
+      try {
+        releaseManifest = ManifestFactory.getInstance().createManifest(manifestName);
+      } catch (ManifestException e) {
+        throw new CommandException(e.getErrorCode(), e.getMessageArguments());
       }
-
-//      String fileName =
-
-//      File releaseManifestFile = new File(LocalEnvironment.getManifestStore();
-
-
-
-
-
     }
 
+    // The manifest that you want to release has to be a development manifest
+    //
+    if (!releaseManifest.getType().equals(Manifest.DEVELOPMENT_MANIFEST)) {
+      throw new CommandException(ManifestException.NOT_A_DEVELOPMENT_MANIFEST, new Object[] {releaseManifest.getName()});
+    }
 
-//    } catch (ManifestException m) {
-//      throw new CommandException(m.getErrorCode(), m.getMessageArguments());
-//    }
+    String releaseName = getCommandLine().getOptionValue("r");
 
-    // Check if the current manifest is a release manifest
+    // todo are there any rules for file-names (manifest names ...).
     //
 
-    // Collect a structure of all modules with their latest versions (snapshot at this time).
+    File releaseManifestFile = new File(LocalEnvironment.getManifestStore(), releaseName + File.separator + ".xml");
+
+    if (releaseManifestFile.exists()) {
+      throw new CommandException(
+          ManifestException.DUPLICATE_MANIFEST_FILE,
+          new Object[] {LocalEnvironment.getManifestStore().getPath()}
+      );
+    }
+
+    // Ok, ww're ready to go now. Let's collect the latest versions of modules.
     //
 
-    // Create an XML document, representing the released manifest
+    StringBuffer buffer = new StringBuffer();
+    buffer.append("<?xml version=\"1.0\"?\n");
 
-    // The release manifest cannot have the same name as any other manifest in the manifest-store.
-    //
+    buffer.append("<manifest name=\" + releaseName + \">\n");
 
-    // Included manifests :
-    //
-    // - if the included manifest
+    buffer.append("\t<modules>\n");
 
+    Map modules = releaseManifest.getAllModules();
+
+    for (Iterator i = modules.values().iterator(); i.hasNext();) {
+
+      // todo NEED AN ADDITIONAL method in Manifest : getDevelopmentManifests() ...
+
+      Module module = (Module) i.next();
+      buffer.append(getModule(module));
+    }
+
+    buffer.append("\t</modules>\n");
+
+    buffer.append("</manifest>\n");
+
+    // todo The included manifests of type 'development' should be release as well.
   }
 
   public CommandResponse getCommandResponse() {
     return commandResponse;
   }
+
+  private String getModule(Module module) throws CommandException {
+
+    String n;
+    String t;
+    String v;
+    String l;
+
+    n = "\"" + module.getName() + "\"";
+    t = module.getSourceType().getSourceType();
+    l = module.getLocation().getId();
+
+    if (module.hasVersion()) {
+
+      v = module.getVersion().getVersionNumber();
+
+    } else {
+
+      try {
+        v = CVSVersionExtractor.getInstance().getLastVersion(module).getVersionNumber();
+      } catch (VersionControlException e) {
+        throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+      }
+    }
+
+    return "\t\t<module name=" + n + " type=" + t + " version=" + v + "location=" + l + "\n";
+
+  }
+
 
 }

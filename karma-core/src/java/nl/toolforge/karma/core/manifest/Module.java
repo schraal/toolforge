@@ -1,6 +1,9 @@
 package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.vc.PatchLine;
+import nl.toolforge.karma.core.vc.DevelopmentLine;
 
 import java.io.File;
 import java.util.regex.PatternSyntaxException;
@@ -117,6 +120,23 @@ public interface Module {
    */
   public String getStateAsString();
 
+  public DevelopmentLine getPatchLine();
+
+  /**
+   * If a module has a &lt;version&gt;-attribute, this method returns a Version instance representing the version
+   * number of the module.
+   *
+   * @return The version of the module if it has one.
+   */
+  public Version getVersion();
+
+  /**
+   * Check if a module has a &lt;version&gt;-attribute.
+   *
+   * @return <ode>true</code> if the module has a &lt;version&gt;-attribute or <code>false</code> if it hasn't.
+   */
+  public boolean hasVersion();
+
   /**
    * Types a module in the source hierarchy.
    */
@@ -144,8 +164,6 @@ public interface Module {
       }
       return false;
     }
-
-
 
     public String getSourceType() {
       return this.sourceType;
