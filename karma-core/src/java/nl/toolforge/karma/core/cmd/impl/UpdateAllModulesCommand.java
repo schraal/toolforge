@@ -124,5 +124,7 @@ public class UpdateAllModulesCommand extends CompositeCommand {
         runningThreads -= (runningThread ? 0 : 1);
       }
     }
+
+    int a = 0;
   }
 }

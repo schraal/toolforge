@@ -84,12 +84,7 @@ public class ViewManifest extends DefaultCommand {
 
     Collections.sort(sourceModules, new ModuleComparator());
 
-    ParallelRunner runner = null;
-    try {
-      runner = new ParallelRunner(manifest, CVSLogThread.class);
-    } catch (ClassNotFoundException e) {
-      throw new KarmaRuntimeException(e.getMessage());
-    }
+    ParallelRunner runner = new ParallelRunner(manifest, CVSLogThread.class);
     runner.execute();
 
     // todo timing issue ... COULD last forever.

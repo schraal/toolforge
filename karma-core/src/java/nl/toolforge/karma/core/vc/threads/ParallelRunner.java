@@ -53,11 +53,9 @@ public class ParallelRunner {
    * Initializes this <code>ParallelRunner</code> with the correct <code>Manifest</code>.
    *
    * @param manifest The manifest.
-   * @param threadClass A
-   *
-   * @throws ClassNotFoundException When runnerThread cannot be instantiated
+   * @param threadClass 
    */
-  public ParallelRunner(Manifest manifest, Class threadClass) throws ClassNotFoundException {
+  public ParallelRunner(Manifest manifest, Class threadClass) {
     this.manifest = manifest;
     this.impl = threadClass;
   }

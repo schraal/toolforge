@@ -35,6 +35,7 @@ import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.Utils;
+import nl.toolforge.karma.core.vc.cvs.CVSRunner;
 
 import java.util.regex.PatternSyntaxException;
 
@@ -140,7 +141,7 @@ public class UpdateModuleCommand extends DefaultCommand {
 
       } else {
 
-        Runner runner = RunnerFactory.getRunner(module.getLocation());
+        CVSRunner runner = (CVSRunner) RunnerFactory.getRunner(module.getLocation());
         runner.setCommandResponse(response);
 
         if (!Utils.existsInRepository(module)) {
@@ -148,13 +149,16 @@ public class UpdateModuleCommand extends DefaultCommand {
         }
 
         //todo check whether the requested version does exist for the module.
-        //(issue#1017785)
 
         runner.checkout(module, version);
 
-        // todo message to be internationalized.
-        //
         CommandMessage message = null;
+        if (runner.getUpdateParser().getNewFiles().size() > 0) {
+          message = new SuccessMessage("WARNING : Module " + moduleName + " has new files locally.");
+          response.addMessage(message);
+        }
+
+        // todo message to be internationalized.
         if (version == null) {
           // No state change.
           //
