@@ -3,6 +3,7 @@ package nl.toolforge.karma.core.cmd;
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.LocationFactory;
 import nl.toolforge.karma.core.manifest.Manifest;
@@ -43,7 +44,7 @@ public final class CommandContext {
    * @param env The users' {@link nl.toolforge.karma.core.LocalEnvironment}.
    */
   public synchronized void init(LocalEnvironment env, CommandResponseHandler handler)
-      throws KarmaException, LocationException {
+      throws KarmaException, ManifestException, LocationException {
 
     if (handler == null) {
       throw new IllegalArgumentException("CommandResponseHandler may not be null, you lazy bitch.");
@@ -67,6 +68,7 @@ public final class CommandContext {
         logger.warn(e.getErrorMessage());
         // Nothing serious ...
         //
+        handler.commandResponseChanged(new CommandResponseEvent(new ErrorMessage(KarmaException.MANIFEST_STORE_UPDATE_FAILED)));
       }
     } else {
       throw new KarmaRuntimeException("Pietje puk exception");
@@ -86,6 +88,8 @@ public final class CommandContext {
         logger.warn(e.getErrorMessage());
         // Nothing serious ...
         //
+
+        handler.commandResponseChanged(new CommandResponseEvent(new ErrorMessage(KarmaException.MANIFEST_STORE_UPDATE_FAILED)));
       }
     } else {
       throw new KarmaRuntimeException("Pietje puk exception");
@@ -98,11 +102,7 @@ public final class CommandContext {
     // Try reloading the last manifest that was used.
     //
     ManifestCollector collector = ManifestCollector.getInstance(this.env);
-    try {
-      currentManifest = collector.loadFromHistory();
-    } catch (ManifestException e) {
-      // Fine, continue.
-    }
+    currentManifest = collector.loadFromHistory();
   }
 
   /**

@@ -4,6 +4,24 @@
 
 <commands>
 
+    <command name="package" alias="pa">
+
+    <description lang="en">
+			Something.
+    </description>
+
+    <options>
+      <option opt="m" longOpt="module" required="true" description="The module name">
+        <arg name="module-name"/>
+      </option>
+    </options>
+
+    <classname>nl.toolforge.karma.core.cmd.impl.PackageModule</classname>
+
+    <help/>
+
+  </command>
+
   <command name="start-work" alias="sw">
 
     <description lang="en">

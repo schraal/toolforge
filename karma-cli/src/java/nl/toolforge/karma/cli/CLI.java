@@ -9,6 +9,7 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandFactory;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.manifest.ManifestException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,6 +58,9 @@ public class CLI {
       } catch (LocationException e) {
         writer.writeln(e.getErrorMessage());
         logger.warn(e.getMessage(), e);
+      } catch (ManifestException e) {
+        writer.writeln(e.getErrorMessage());
+        logger.warn(e.getMessage(), e);
       }
 
       Manifest currentManifest = ctx.getCurrentManifest();
@@ -73,9 +77,7 @@ public class CLI {
       logger.error(k.getMessage(), k);
 
       writer.writeln(FRONTEND_MESSAGES.getString("message.EXIT"));
-
       System.exit(1);
-
     }
 
     try {

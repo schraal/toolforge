@@ -54,6 +54,12 @@ public class BuildModule extends DefaultCommand {
 
   public void execute() throws CommandException {
 
+    // todo move to aspect; this type of checking can be done by one aspect.
+    //
+    if (!getContext().isManifestLoaded()) {
+      throw new CommandException(ManifestException.NO_ACTIVE_MANIFEST);
+    }
+
     String moduleName = getCommandLine().getOptionValue("m");
 
     Module module = null;
@@ -70,33 +76,9 @@ public class BuildModule extends DefaultCommand {
 
     CommandMessage message = null;
 
-    DefaultLogger logger = new DefaultLogger();
-    // todo hmm, this mechanism doesn't integrate with the commandresponse mechanism
-    //
-    logger.setErrorPrintStream(System.out);
+    BuildUtil util = new BuildUtil(currentManifest);
 
-    // Configure underlying ant to run a command.
-    //
-    Project project = new Project();
-    project.addBuildListener(logger);
-    project.init();
-
-    // Read in the build.xml file
-    //
-    ProjectHelper helper = new ProjectHelperImpl();
-    File tmp = null;
-    try {
-      tmp = getBuildFile("build-module.xml");
-      helper.parse(project, tmp);
-    } catch (IOException e) {
-      throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {moduleName});
-    } finally {
-      try {
-        FileUtils.deleteDirectory(tmp.getParentFile());
-      } catch (IOException e) {
-        throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {moduleName});
-      }
-    }
+    Project project = util.getAntProject(module);
 
     try {
       // Define the location where java source files are store for a module (the default location in the context of
@@ -112,10 +94,6 @@ public class BuildModule extends DefaultCommand {
       // Define the location compiled classes and jar-files will be stored --> the build-directory.
       //
       File buildDir = new File(new File(getContext().getCurrentManifest().getDirectory(), "build"), moduleName);
-
-      // Instantiate a BuildUtil class to have access to helper methods for the build process.
-      //
-      BuildUtil util = new BuildUtil(currentManifest);
 
       // Configure the Ant project
       //
@@ -149,17 +127,5 @@ public class BuildModule extends DefaultCommand {
 
   public CommandResponse getCommandResponse() {
     return this.commandResponse;
-  }
-
-  private File getBuildFile(String buildFile) throws IOException {
-
-    File tmp = null;
-
-    tmp = MyFileUtils.createTempDirectory();
-
-    // Return a temp reference to the file
-    //
-    return new File(tmp, buildFile);
-
   }
 }

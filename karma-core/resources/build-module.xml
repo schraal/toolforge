@@ -25,4 +25,10 @@
 
   </target>
 
+  <target name="war">
+
+    <war destfile="${war-destination-file}"/> 
+
+  </target>
+
 </project>

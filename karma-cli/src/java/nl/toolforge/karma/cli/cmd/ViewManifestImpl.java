@@ -40,7 +40,7 @@ public class ViewManifestImpl extends ViewManifest {
 
     String h1 = "MODULE-NAME";
     String h2 = "VERSION";
-    String h3 = "DEVELOPMENT-LINE"; // Branch
+    String h3 = "PATCHLINE";
     String h4 = "STATE";
     String h5 = "LOCATION";
 

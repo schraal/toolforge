@@ -40,7 +40,15 @@ public class KarmaException extends Exception {
    * No development home directory could be referenced to. This is panic, because without it, nothing will work.
    */
   public static final ErrorCode DEVELOPMENT_HOME_NOT_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00012");
-  
+  /**
+   * When updating the manifest store failed.
+   */
+  public static final ErrorCode MANIFEST_STORE_UPDATE_FAILED = new ErrorCode(EXCEPTION_PREFIX + "00013");;
+  /**
+   * When updating the location store failed.
+   */
+  public static final ErrorCode LOCATION_STORE_UPDATE_FAILED = new ErrorCode(EXCEPTION_PREFIX + "00014");;
+
   /**
    * The build of a module failed.
    */

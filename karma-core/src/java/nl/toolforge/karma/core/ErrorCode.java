@@ -75,11 +75,13 @@ public final class ErrorCode {
 
     ResourceBundle bundle = null;
 
+    String message = "";
+
     try {
       bundle = ResourceBundle.getBundle("error-messages", locale);
     } catch (MissingResourceException m) {
       logger.info("No resource bundle available for locale " + locale);
-      return getErrorCodeString();
+      message = getErrorCodeString();
     }
 
     if (bundle == null) {
@@ -93,19 +95,26 @@ public final class ErrorCode {
     }
 
     try {
-      String message = bundle.getString("message." + getErrorCodeString());
+      message = bundle.getString("message." + getErrorCodeString());
 
       if (getMessageArguments().length != 0) {
         MessageFormat messageFormat = new MessageFormat(message);
-        return messageFormat.format(getMessageArguments());
-      } else {
-        return message;
+        message = messageFormat.format(getMessageArguments());
       }
+//      else {
+//        return message;
+//      }
 
     } catch (RuntimeException r) {
       logger.error("No message found for errorcode : " + getErrorCodeString());
-      return getErrorCodeString();
+      message = getErrorCodeString();
     }
+
+    if (message.startsWith(getErrorCodeString())) {
+      return message;
+    }
+
+    return getErrorCodeString() + " : " + message;
   }
 
   /**

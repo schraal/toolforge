@@ -4,9 +4,7 @@
   <component name="NewModuleRootManager">
     <output url="file://$MODULE_DIR$/build" />
     <output-test url="file://$MODULE_DIR$/build" />
-    <content url="file://$MODULE_DIR$/../apache-ant-1.6.1/src/main">
-      <sourceFolder url="file://$MODULE_DIR$/../apache-ant-1.6.1/src/main" isTestSource="false" />
-    </content>
+    <content url="file://$MODULE_DIR$/../apache-ant-1.6.1/src/main" />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/karma-cli/src/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/karma-core/src/java" isTestSource="false" />
@@ -189,15 +187,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../.maven/repository/netbeans/jars/cvslib-3.6.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="jar://$MODULE_DIR$/../../.maven/repository/ant/jars/ant-launcher-1.6.1.jar!/" />
         </CLASSES>
         <JAVADOC />
@@ -235,6 +224,15 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../.maven/repository/ant/jars/ant-1.6.1.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../.maven/repository/netbeans/jars/cvslib-3.6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
