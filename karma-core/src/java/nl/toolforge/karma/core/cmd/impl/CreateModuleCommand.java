@@ -32,7 +32,7 @@ public class CreateModuleCommand extends DefaultCommand {
 	/**
 	 * Physical creation of a module in a version control system.
 	 */
-	public void execute(CommandResponseHandler handler) throws KarmaException {
+	public void execute() throws KarmaException {
 
 		CommandLine commandLine = getCommandLine();
 

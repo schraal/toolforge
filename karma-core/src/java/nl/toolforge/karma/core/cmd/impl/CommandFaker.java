@@ -19,7 +19,7 @@ public final class CommandFaker extends DefaultCommand {
 		throw new RuntimeException("Implementation " + CommandFaker.class.getName() + " is fake ...");
 	}
 
-	public void execute(CommandResponseHandler handler) throws KarmaException {
+	public void execute() throws KarmaException {
 		throw new RuntimeException("Implementation " + CommandFaker.class.getName() + " is fake ...");
 	}
 }

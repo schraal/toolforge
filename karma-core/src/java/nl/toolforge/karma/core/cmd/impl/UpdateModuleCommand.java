@@ -45,7 +45,7 @@ public class UpdateModuleCommand extends DefaultCommand {
    * the module is already present, otherwise a checkout will be performed. The checkout directory for the module
    * is relative to the root directory of the <code>active</code> manifest.
    */
-  public void execute(CommandResponseHandler handler) {
+  public void execute() {
     try {
       // A manifest must be present for this command
       //

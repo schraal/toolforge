@@ -26,7 +26,7 @@ public class SelectManifest extends DefaultCommand {
 	/**
 	 * Activates a manifest.
 	 *	 */
-	public void execute(CommandResponseHandler handler) {
+	public void execute() {
 
 		// Select a manifest and store it in the command context
 		//

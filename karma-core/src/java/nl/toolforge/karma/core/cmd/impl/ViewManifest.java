@@ -33,7 +33,7 @@ public class ViewManifest extends DefaultCommand {
 		renderedList = new ArrayList();
 	}
 
-	public void execute(CommandResponseHandler handler) {
+	public void execute() {
     try {
       if (!getContext().isManifestLoaded()) {
         throw new ManifestException(ManifestException.NO_MANIFEST_SELECTED);

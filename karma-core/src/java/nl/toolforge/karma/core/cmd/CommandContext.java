@@ -61,10 +61,14 @@ public final class CommandContext {
 	 * @param env The users' {@link nl.toolforge.karma.core.LocalEnvironment}.
 	 * @throws KarmaException
 	 */
-	public synchronized void init(LocalEnvironment env) throws KarmaException {
+	public synchronized void init(LocalEnvironment env, CommandResponseHandler handler) throws KarmaException {
 
 		if (!initialized) {
 
+      if (handler == null) {
+        throw new IllegalArgumentException("CommandResponseHandler may not be null, you lazy bitch.");
+      }
+      this.responseHandler = handler;
 			this.env = env;
 
 			// Read in all location data
@@ -123,7 +127,7 @@ public final class CommandContext {
 		}
 
     Command command = CommandFactory.getInstance().getCommand(commandLine);
-		execute(command, responseHandler);
+		execute(command);
 	}
 
 	/**
@@ -132,7 +136,7 @@ public final class CommandContext {
 	 * @param command The command to execute.
 	 * @throws KarmaException See {@link #execute(java.lang.String, CommandResponseHandler)}.
 	 */
-	public void execute(Command command, CommandResponseHandler responseHandler) throws KarmaException {
+	public void execute(Command command) throws KarmaException {
 
 		if (!isInitialized()) {
 			throw new KarmaException(KarmaException.COMMAND_CONTEXT_NOT_INITIALIZED);
@@ -144,11 +148,11 @@ public final class CommandContext {
 		// Store a reference to this context in the command
 		//
 		command.setContext(this);
-
+    command.registerCommandResponseHandler(this.responseHandler);
     // Register the response handler with this context, so commands have a reference to it.
     //
-    setResponseHandler(responseHandler);
-		command.execute(responseHandler);
+		command.execute();
+    command.deregisterCommandResponseHandler();
 	}
 
 	/**
@@ -252,7 +256,5 @@ public final class CommandContext {
 		return new File(getLocalEnvironment().getDevelopmentHome(), getCurrent().getName());
 	}
 
-  private void setResponseHandler(CommandResponseHandler responseHandler) {
-    this.responseHandler = responseHandler;
-  }
+
 }

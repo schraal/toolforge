@@ -25,7 +25,7 @@ public class BuildModule extends DefaultCommand {
     super(descriptor);
   }
 
-  public void execute(CommandResponseHandler handler) {
+  public void execute() {
     try {
       String moduleName = getCommandLine().getOptionValue("m");
 

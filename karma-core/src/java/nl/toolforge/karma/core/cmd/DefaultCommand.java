@@ -98,6 +98,14 @@ public abstract class DefaultCommand implements Command {
 		return commandLine;
 	}
 
+  public final void registerCommandResponseHandler(CommandResponseHandler responseHandler) {
+    getCommandResponse().setCommandResponseListener(responseHandler);
+  }
+
+  public final void deregisterCommandResponseHandler() {
+    getCommandResponse().removeCommandReponseListener();
+  }
+
 //  public final Options getOptions() {
 //    return descriptor.getOptions();
 //  }
@@ -137,11 +145,12 @@ public abstract class DefaultCommand implements Command {
 
 
 	/**
-	 * See {@link #execute}. Implementations must implement this method to get something out of the command.
+	 * See {@link Command#execute}. Implementations must implement this method to get something out of the command.
 	 *
 	 * @throws KarmaException
 	 */
-	public abstract void execute(CommandResponseHandler handler) throws KarmaException;
+	public abstract void execute() throws KarmaException;
+
 
 	/**
 	 * Helper method to get a resource bundle for frontend messages for commands.

@@ -33,11 +33,11 @@ public class SelectManifestImpl extends SelectManifest {
    * Execute the command in the CLI. When the execution was succesfull, a message is shown on the console.
    *
    */
-  public void execute(CommandResponseHandler handler) {
+  public void execute() {
 
     // Use stuff that's being done in the superclass.
     //
-    super.execute(handler); // Ignore the response from the superclass
+    super.execute(); // Ignore the response from the superclass
 
 		ConsoleConfiguration.setManifest(getContext().getCurrent());
 

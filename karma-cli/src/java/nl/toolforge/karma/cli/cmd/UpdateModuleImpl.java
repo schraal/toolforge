@@ -20,8 +20,8 @@ public class UpdateModuleImpl extends UpdateModuleCommand {
     super(descriptor);
   }
 
-  public void execute(CommandResponseHandler handler) {
-    super.execute(handler);
+  public void execute() {
+    super.execute();
   }
 
 }

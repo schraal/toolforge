@@ -34,7 +34,7 @@ public class UpdateAllModulesCommand extends DefaultCommand {
 	 * is relative to the root directory of the <code>active</code> manifest.
 	 *
 	 */
-	public void execute(CommandResponseHandler handler) {
+	public void execute() {
     try {
       // A manifest must be present for this command
       //

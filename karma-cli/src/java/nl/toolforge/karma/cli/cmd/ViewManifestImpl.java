@@ -26,9 +26,9 @@ public class ViewManifestImpl extends ViewManifest {
 	/**
 	 * Shows the contents using simple rendering.
 	 */
-	public void execute(CommandResponseHandler handler) {
+	public void execute() {
 
-		super.execute(handler); // Ignore the response from the superclass
+		super.execute(); // Ignore the response from the superclass
 
 		List renderedData = getData();
 

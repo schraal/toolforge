@@ -143,6 +143,7 @@ public final class LocationFactory {
 			load(locationRoot, authenticationRoot);
 
 		} catch (Exception e) {
+      e.printStackTrace();
 			throw new LocationException(LocationException.GENERAL_LOCATION_ERROR, e);
 		}
 	}

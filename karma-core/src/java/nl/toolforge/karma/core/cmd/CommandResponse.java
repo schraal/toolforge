@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,8 +20,8 @@ import java.util.Set;
  */
 public abstract class CommandResponse {
 
+  private CommandResponseListener listener = null;
 	private List commandMessages = null;
-
 	private Set statusUpdates = null;
 
 	// Contains the exception that was thrown during execution of the command
@@ -69,6 +70,7 @@ public abstract class CommandResponse {
    */
 	public void addMessage(CommandMessage message) {
     commandMessages.add(message);
+    listener.commandHeartBeat();
   }
 
 
@@ -121,4 +123,22 @@ public abstract class CommandResponse {
 			this.addMessage(messages[i]);
 		}
 	}
+
+  /**
+   * Set the CommandResponseListener. This listener is going to give the user feedback
+   * about the changes in the command response.
+   *
+   * @param responseListener
+   */
+  public final void setCommandResponseListener(CommandResponseListener responseListener) {
+    this.listener = responseListener;
+  }
+
+  /**
+   * Remove the CommandResponseListener.
+   */
+  public final void removeCommandReponseListener() {
+    this.listener = null;
+  }
+
 }

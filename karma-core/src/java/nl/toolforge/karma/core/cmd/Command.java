@@ -88,10 +88,9 @@ public interface Command {
 	/**
 	 * Executes the command and captures its results in a <code>CommandResponse</code> object for further reference.
 	 *
-   * @param handler  Handles the command's response.
 	 * @throws KarmaException To be documented.
 	 */
-	public void execute(CommandResponseHandler handler) throws KarmaException;
+	public void execute() throws KarmaException;
 
 	/**
 	 * Stores a reference to a <code>CommandContext</code>.
@@ -109,4 +108,24 @@ public interface Command {
 	 * @return A command line instance.
 	 */
 	public CommandLine getCommandLine();
+
+  /**
+   * Register the given CommandResponseHandler as the handler for the command responses.
+   *
+   * @param responseHandler
+   */
+  public void registerCommandResponseHandler(CommandResponseHandler responseHandler);
+
+  /**
+   * Deregister the CommandResponseHandler.
+   */
+  public void deregisterCommandResponseHandler();
+
+  /**
+   * Return the specific CommandResponse object that this command uses.
+   *
+   * @return CommandResponse
+   */
+  public CommandResponse getCommandResponse();
+  
 }

@@ -30,7 +30,7 @@ public class PromoteCommand extends DefaultCommand {
 	/**
 	 * Promotes a module to the next version number in the branch it is active in within the active manifest.
 	 */
-	public void execute(CommandResponseHandler handler) {
+	public void execute() {
     try {
 
       String moduleName = getCommandLine().getOptionValue("m");

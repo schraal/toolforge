@@ -13,8 +13,8 @@ import nl.toolforge.karma.core.cmd.impl.UpdateAllModulesCommand;
 /**
  * Implementation for the <code>UpdateModuleCommand</code> for the command-line interface application.
  *
- * @author D.A. Smedes 
- * 
+ * @author D.A. Smedes
+ *
  * @version $Id:
  */
 public class UpdateAllModulesImpl extends UpdateAllModulesCommand {
@@ -23,9 +23,9 @@ public class UpdateAllModulesImpl extends UpdateAllModulesCommand {
     super(descriptor);
   }
 
-  public void execute(CommandResponseHandler handler) {
+  public void execute() {
 
-    super.execute(handler);
+    super.execute();
 
 		CommandResponse response = new ActionCommandResponse();
 		response.addMessage(new SimpleCommandMessage(getFrontendMessages().getString("message.MODULES_UPDATED")));

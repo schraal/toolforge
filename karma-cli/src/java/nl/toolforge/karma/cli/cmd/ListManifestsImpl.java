@@ -24,7 +24,7 @@ public class ListManifestsImpl extends ListManifests {
 		super(descriptor);
 	}
 
-	public void execute(CommandResponseHandler handler) {
+	public void execute() {
     try {
       CommandResponse response = new QueryCommandResponse();
 

@@ -16,9 +16,9 @@ public class PromoteModuleImpl extends PromoteCommand {
 		super(descriptor);
 	}
 
-	public void execute(CommandResponseHandler handler) {
+	public void execute() {
 
-		super.execute(handler);
+		super.execute();
 
 		CommandMessage message =
 			new SimpleCommandMessage(
