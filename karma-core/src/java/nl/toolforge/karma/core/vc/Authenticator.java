@@ -2,6 +2,7 @@ package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.location.PasswordScrambler;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import org.apache.commons.digester.Digester;
 import org.xml.sax.SAXException;
 
@@ -9,11 +10,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>When a {@link nl.toolforge.karma.core.location.Location} - more specifically, {@link VersionControlSystem} -
@@ -83,7 +80,7 @@ public final class Authenticator {
     try {
       flush(authenticators);
     } catch (IOException e) {
-      throw new AuthenticationException(AuthenticationException.AUTHENTICATOR_WRITE_ERROR);
+      throw new AuthenticationException(e, AuthenticationException.AUTHENTICATOR_WRITE_ERROR);
     }
   }
 
@@ -115,8 +112,8 @@ public final class Authenticator {
 
     File authenticatorsFile = new File(WorkingContext.getConfigurationBaseDir(), "authenticators.xml");
 
-    if (authenticatorsFile == null) {
-      throw new AuthenticationException(AuthenticationException.MISSING_AUTHENTICATOR_CONFIGURATION);
+    if (!authenticatorsFile.exists()) {
+      createNew();
     }
 
     // Create a list of authenticators, anything you can find.
@@ -152,7 +149,7 @@ public final class Authenticator {
    *
    * @return <code>true</code> if <code>authenticator</code> was added, <code>false</code> otherwise.
    */
-  public synchronized boolean addAuthenticator(Authenticator authenticator) {
+  public synchronized void addAuthenticator(Authenticator authenticator) {
 
     Map authenticators = null;
     try {
@@ -162,7 +159,7 @@ public final class Authenticator {
       authenticators = getAuthenticators();
 
     } catch (AuthenticationException e) {
-      return false;
+      throw new KarmaRuntimeException(e);
     }
 
 //    if (authenticators.containsKey(authenticator.getId())) {
@@ -176,9 +173,16 @@ public final class Authenticator {
     try {
       flush(authenticators);
     } catch (IOException e) {
-      return false;
+      throw new KarmaRuntimeException(e);
     }
-    return true;
+  }
+
+  private void createNew() throws AuthenticationException {
+    try {
+      flush(new HashMap());
+    } catch (IOException e) {
+      throw new AuthenticationException(e, AuthenticationException.MISSING_AUTHENTICATOR_CONFIGURATION);
+    }
   }
 
   private synchronized void flush(Map authenticators) throws IOException {
@@ -204,10 +208,10 @@ public final class Authenticator {
     buffer.append("</authenticators>\n");
 
     FileWriter writer = null;
+    // Write the manifest to the manifest store.
+    //
+    writer = new FileWriter(new File(WorkingContext.getConfigurationBaseDir(), "authenticators.xml"));
     try {
-      // Write the manifest to the manifest store.
-      //
-      writer = new FileWriter(new File(WorkingContext.getConfigurationBaseDir(), "authenticators.xml"));
 
       writer.write(buffer.toString());
       writer.flush();

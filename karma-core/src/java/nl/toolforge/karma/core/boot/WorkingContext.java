@@ -4,7 +4,6 @@ import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.LocationLoader;
-import nl.toolforge.karma.core.location.PasswordScrambler;
 import nl.toolforge.karma.core.manifest.ManifestCollector;
 import nl.toolforge.karma.core.manifest.ManifestLoader;
 import nl.toolforge.karma.core.vc.Authenticator;
@@ -13,19 +12,12 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.apache.log4j.Appender;
-import org.apache.log4j.Category;
-import org.apache.log4j.spi.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * A <code>WorkingContext</code> is used by Karma to determine the environment in which the user wants to use Karma. A
@@ -444,28 +436,28 @@ public final class WorkingContext {
     try {
       location.setProtocol(configuration.getProperty(MANIFEST_STORE_PROTOCOL));
     } catch (Exception e) {
-      throw new LocationException(LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_PROTOCOL+"'"});
+      throw new LocationException(e, LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_PROTOCOL+"'"});
     }
     if (!location.getProtocol().equals(CVSRepository.LOCAL)) {
       try {
         location.setHost(configuration.getProperty(MANIFEST_STORE_HOST));
       } catch (Exception e) {
-        throw new LocationException(LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_HOST+"'"});
+        throw new LocationException(e, LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_HOST+"'"});
       }
       try {
         location.setPort(new Integer(configuration.getProperty(MANIFEST_STORE_PORT)).intValue());
       } catch (Exception e) {
-        throw new LocationException(LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_PORT+"'"});
+        throw new LocationException(e, LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_PORT+"'"});
       }
       try {
         location.setUsername(configuration.getProperty(MANIFEST_STORE_USERNAME));
       } catch (Exception e) {
-        throw new LocationException(LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_USERNAME+"'"});
+        throw new LocationException(e, LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_USERNAME+"'"});
       }
       try {
         location.setPassword(configuration.getProperty(MANIFEST_STORE_PASSWORD));
       } catch (Exception e) {
-        throw new LocationException(LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_PASSWORD+"'"});
+        throw new LocationException(e, LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_PASSWORD+"'"});
       }
     }
 

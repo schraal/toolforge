@@ -1,6 +1,5 @@
 package nl.toolforge.karma.core.cmd;
 
-import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.bundle.BundleCache;
 import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
@@ -173,9 +172,9 @@ public final class KarmaInitializationCommand implements Command {
         // Too bad ...
       }
     } catch (ManifestException e) {
-      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+      throw new CommandException(e, e.getErrorCode(), e.getMessageArguments());
     } catch (LocationException e) {
-      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+      throw new CommandException(e, e.getErrorCode(), e.getMessageArguments());
     }
   }
 
