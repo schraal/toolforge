@@ -2,12 +2,12 @@ package nl.toolforge.karma.core.vc;
 
 /**
  * A development line is a separate line of development for a module, generally implemented by a version control
- * system through branch.
+ * system through a branch.
  *
  * @author D.A. Smedes
  * @version $Id:
  */
-public final class DevelopmentLine {
+public class DevelopmentLine {
 
 	private String lineName = null;
 
