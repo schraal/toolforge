@@ -18,11 +18,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.test;
 
-import nl.toolforge.karma.core.cmd.CommandMessage;
+import nl.toolforge.karma.core.cmd.event.Message;
 import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.Command;
+import nl.toolforge.karma.core.cmd.event.Message;
 
 /**
- * Pretty empty implementation for a CommandResponse. Usefull for unit tests.
+ * Pretty empty implementation for a <code>CommandResponse</code>. Usefull for unit tests.
  *
  * @author D.A. Smedes
  * @version $Id:
@@ -30,10 +32,17 @@ import nl.toolforge.karma.core.cmd.CommandResponse;
 public class CommandResponseFaker extends CommandResponse {
 
   /**
-   * Overrides {@link CommandResponse#addMessage(CommandMessage)}, and does nothing.
+   * Faker constructor.
+   * @param command
+   */
+  public CommandResponseFaker(Command command) { }
+
+  /**
+   * Overrides {@link CommandResponse#addEvent(nl.toolforge.karma.core.cmd.event.CommandResponseEvent)} ... by doing
+   * nothing.
    *
    * @param message
    */
-  public void addMessage(CommandMessage message) {}
+  public void addEvent(Message message) {}
   
 }

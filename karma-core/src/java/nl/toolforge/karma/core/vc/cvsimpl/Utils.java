@@ -33,6 +33,7 @@ import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.model.MainLine;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.netbeans.lib.cvsclient.commandLine.command.status;
 
 public final class Utils {
 
@@ -113,9 +114,11 @@ public final class Utils {
 
     logger.debug("Getting local version for module : " + module.getName());
 
-    Runner runner = RunnerFactory.getRunner(module.getLocation());
+//    CVSModuleStatus.getLocalVersion(module);
 
-    ModuleStatus status = new CVSModuleStatus(module, ((CVSRunner) runner).log(module));
+//    Runner runner = RunnerFactory.getRunner(module.getLocation());
+//
+    ModuleStatus status = new CVSModuleStatus(module);
     return status.getLocalVersion();
   }
 

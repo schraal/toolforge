@@ -23,6 +23,7 @@ import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
+import nl.toolforge.karma.core.cmd.util.AntLogger;
 import nl.toolforge.karma.core.cmd.util.BuildEnvironment;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
@@ -31,7 +32,6 @@ import nl.toolforge.karma.core.manifest.ModuleTypeException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.helper.ProjectHelperImpl;
@@ -87,11 +87,11 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
       module = getCurrentManifest().getModule(moduleName);
 
       if (module == null) {
-        throw new CommandException(ManifestException.MODULE_NOT_FOUND, new Object[]{module.getName()});
+        throw new CommandException(ManifestException.MODULE_NOT_FOUND, new Object[]{module});
       }
 
       if (!getCurrentManifest().isLocal(module)) {
-        throw new CommandException(ManifestException.MODULE_NOT_LOCAL, new Object[]{module.getName()});
+        throw new CommandException(ManifestException.MODULE_NOT_LOCAL, new Object[]{module});
       }
 
       // Initialize the current build environment.
@@ -184,7 +184,9 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
     if (project == null) {
 
-      DefaultLogger logger = new DefaultLogger();
+//      DefaultLogger logger = new DefaultLogger();
+      AntLogger logger = new AntLogger(this);
+
       // todo hmm, this mechanism doesn't integrate with the commandresponse mechanism
       //
       logger.setOutputPrintStream(System.out);

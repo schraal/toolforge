@@ -20,7 +20,6 @@ package nl.toolforge.karma.cli.cmd;
 
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.impl.UpdateModuleCommand;
 
 /**
@@ -37,10 +36,6 @@ public class UpdateModuleImpl extends UpdateModuleCommand {
   }
 
   public void execute() throws CommandException {
-
-    SuccessMessage message = new SuccessMessage(getFrontendMessages().getString("message.UPDATE_MODULE_STARTED"), new Object[]{getCommandLine().getOptionValue("m")});
-    response.addMessage(message);
-
     super.execute();
   }
 

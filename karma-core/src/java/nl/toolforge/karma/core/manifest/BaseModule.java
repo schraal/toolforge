@@ -362,6 +362,11 @@ public abstract class BaseModule implements Module {
     return dependencies;
   }
 
+  /**
+   * Returns the module name.
+   *
+   * @return
+   */
   public String toString() {
     return getName();
   }

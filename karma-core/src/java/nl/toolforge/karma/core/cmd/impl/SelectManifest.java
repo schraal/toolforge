@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
@@ -45,7 +44,7 @@ public class SelectManifest extends DefaultCommand {
 
   private static Log logger = LogFactory.getLog(SelectManifest.class);
 
-  private CommandResponse commandResponse = new ActionCommandResponse();
+  private CommandResponse commandResponse = new CommandResponse();
   private Manifest selectedManifest = null;
 
   public SelectManifest(CommandDescriptor descriptor) {
@@ -80,6 +79,11 @@ public class SelectManifest extends DefaultCommand {
     }
   }
 
+  /**
+   * Gets the commands' response object.
+   *
+   * @return The commands' response object.
+   */
   public CommandResponse getCommandResponse() {
     return this.commandResponse;
   }

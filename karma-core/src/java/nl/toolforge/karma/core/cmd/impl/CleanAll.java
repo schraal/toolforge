@@ -18,47 +18,48 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
+import nl.toolforge.karma.core.cmd.event.MessageEvent;
+import nl.toolforge.karma.core.cmd.event.SimpleMessage;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
- * Remove all built stuff.
+ * Removes the build directory to create a totally clean environment.
  *
  * @author W.H. Schraal
- * @author D.A. Schraal
+ * @author D.A. Smedes
  * @version $Id$
  */
 public class CleanAll extends AbstractBuildCommand {
 
-  private CommandResponse commandResponse = new ActionCommandResponse();
+  private CommandResponse commandResponse = new CommandResponse();
 
   public CleanAll(CommandDescriptor descriptor) {
     super(descriptor);
   }
 
+  /**
+   * Removes the <code>build</code> directory.
+   *
+   * @throws CommandException
+   */
   public void execute() throws CommandException {
 
     try {
 
-      Project project = getAntProject("clean-all.xml");
-      project.setProperty("manifest-build-dir", new File(getCurrentManifest().getBaseDirectory(), "build").getPath());
-      project.executeTarget("run");
+      FileUtils.deleteDirectory(new File(getCurrentManifest().getBaseDirectory(), "build"));
 
-      // todo: localize message
-      CommandMessage message = new SuccessMessage("All modules cleaned succesfully.");
-      commandResponse.addMessage(message);
+      // todo internationalization
+      //
+      commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Manifest has been cleaned.")));
 
-    } catch (BuildException e) {
-      e.printStackTrace();
-      throw new CommandException(CommandException.CLEAN_ALL_FAILED);
+    } catch (IOException e) {
+      throw new CommandException(CommandException.CLEAN_ALL_FAILED, new Object[]{e.getLocalizedMessage()});
     }
   }
 

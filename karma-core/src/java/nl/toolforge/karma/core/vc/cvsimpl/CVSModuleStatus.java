@@ -143,11 +143,11 @@ public class CVSModuleStatus implements ModuleStatus {
         }
       }
       try {
-        if (moduleDescriptor == null) {
-          throw new OutOfTheBlueException("`module-descriptor.xml` does not exist !!!! MAJOR module inconsistency.");
-        }
+//        if (moduleDescriptor == null) {
+//          throw new OutOfTheBlueException("`module-descriptor.xml` does not exist !!!! MAJOR module inconsistency.");
+//        }
 
-        if (moduleDescriptor.getTag() == null || moduleDescriptor.getTag().matches(DevelopmentLine.DEVELOPMENT_LINE_PATTERN_STRING)) {
+        if (moduleDescriptor == null || moduleDescriptor.getTag() == null || moduleDescriptor.getTag().matches(DevelopmentLine.DEVELOPMENT_LINE_PATTERN_STRING)) {
           // We have the HEAD of a DevelopmentLine.
           //
           return null;

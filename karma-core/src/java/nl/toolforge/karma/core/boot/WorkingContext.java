@@ -12,6 +12,9 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.apache.log4j.Appender;
+import org.apache.log4j.Category;
+import org.apache.log4j.spi.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -78,6 +81,12 @@ public final class WorkingContext {
         logLevel = (logLevel.toUpperCase().matches("ALL|DEBUG|ERROR|FATAL|INFO|OFF|WARN") ? logLevel : "DEBUG");  // Pass 2
 
         root.setLevel(Level.toLevel(logLevel));
+
+        // By default, disable commons.digester messages.
+        //
+        Logger dig = Logger.getLogger("org.apache.commons.digester");
+        dig.isAttached(fileAppender);
+        dig.setLevel(Level.OFF);
 
         Logger.getLogger(WorkingContext.class).info(
             "Default logging configuration enabled; override by placing 'log4j.xml' and 'log4j.dtd' on your classpath.");

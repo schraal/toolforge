@@ -39,27 +39,22 @@ public abstract class CompositeCommand extends DefaultCommand implements Command
     super(commandDescriptor);
   }
 
-  public CommandResponse getCommandResponse() {
-    return null;
-  }
+  /**
+   * Implemenattion of {@link CommandResponseListener#commandStarted}. Made <code>final</code> because in Karma R1.0
+   * we don't use this feature that much for <code>CompositeCommand</code>s.
+   */
+  public final void commandStarted(CommandResponseEvent event) { }
 
   /**
-   *
+   * Implemenattion of {@link CommandResponseListener#commandFinished}. Made <code>final</code> because in Karma R1.0
+   * we don't use this feature that much for <code>CompositeCommand</code>s.
    */
-  public abstract void commandHeartBeat();
+  public final void commandFinished(CommandResponseEvent event) { }
 
   /**
-   * Called when the CompositeCommand ...
-   *
-   * @param event
+   * Implemenattion of {@link CommandResponseListener#messageLogged}. Made <code>final</code> because in Karma R1.0
+   * we don't use this feature that much for <code>CompositeCommand</code>s.
    */
-  public abstract void commandResponseChanged(CommandResponseEvent event);
+  public final void messageLogged(CommandResponseEvent event) { }
 
-  /**
-   *
-   * @param event
-   */
-  public abstract void commandResponseFinished(CommandResponseEvent event);
-
-  public abstract void manifestChanged(Manifest manifest);
 }

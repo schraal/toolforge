@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
@@ -31,7 +30,7 @@ import nl.toolforge.karma.core.manifest.ManifestException;
  */
 public class CreateDistribution extends DefaultCommand {
 
-  private CommandResponse commandResponse = new ActionCommandResponse();
+  private CommandResponse commandResponse = new CommandResponse();
 
   public CreateDistribution(CommandDescriptor descriptor) {
     super(descriptor);

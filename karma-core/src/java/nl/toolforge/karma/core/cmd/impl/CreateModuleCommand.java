@@ -18,26 +18,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.event.MessageEvent;
+import nl.toolforge.karma.core.cmd.event.SimpleMessage;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ModuleDigester;
 import nl.toolforge.karma.core.manifest.ModuleFactory;
-import nl.toolforge.karma.core.manifest.util.EappModuleLayoutTemplate;
-import nl.toolforge.karma.core.manifest.util.LibModuleLayoutTemplate;
-import nl.toolforge.karma.core.manifest.util.SourceModuleLayoutTemplate;
-import nl.toolforge.karma.core.manifest.util.WebappModuleLayoutTemplate;
-import nl.toolforge.karma.core.vc.Runner;
-import nl.toolforge.karma.core.vc.RunnerFactory;
-import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.AuthenticationException;
+import nl.toolforge.karma.core.vc.VersionControlException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,7 +47,7 @@ public class CreateModuleCommand extends DefaultCommand {
 
   private static Log logger = LogFactory.getLog(CreateModuleCommand.class);
 
-  private CommandResponse commandResponse = new ActionCommandResponse();
+  private CommandResponse commandResponse = new CommandResponse();
 
   public CreateModuleCommand(CommandDescriptor descriptor) {
     super(descriptor);
@@ -98,8 +90,8 @@ public class CreateModuleCommand extends DefaultCommand {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
 
-    CommandMessage message = new SuccessMessage(getFrontendMessages().getString("message.CREATE_MODULE_STARTED"), new Object[]{moduleName, locationAlias});
-    commandResponse.addMessage(message);
+    SimpleMessage message = new SimpleMessage(getFrontendMessages().getString("message.CREATE_MODULE_STARTED"), new Object[]{moduleName, locationAlias});
+    commandResponse.addEvent(new MessageEvent(this, message));
 
     try {
 
@@ -107,8 +99,8 @@ public class CreateModuleCommand extends DefaultCommand {
 
       // Ensure that only this message is passed back to the client
       //
-      message = new SuccessMessage(getFrontendMessages().getString("message.CREATE_MODULE_SUCCESSFULL"), new Object[]{moduleName, locationAlias});
-      commandResponse.addMessage(new SuccessMessage(message.getMessageText()));
+      message = new SimpleMessage(getFrontendMessages().getString("message.CREATE_MODULE_SUCCESSFULL"), new Object[]{moduleName, locationAlias});
+      commandResponse.addEvent(new MessageEvent(this, message));
 
     } catch (VersionControlException e) {
       logger.error(e);

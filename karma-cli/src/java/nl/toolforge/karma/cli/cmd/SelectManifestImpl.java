@@ -20,9 +20,8 @@ package nl.toolforge.karma.cli.cmd;
 
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.CommandMessage;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
-import nl.toolforge.karma.core.cmd.event.ManifestChangedEvent;
+import nl.toolforge.karma.core.cmd.event.MessageEvent;
+import nl.toolforge.karma.core.cmd.event.SimpleMessage;
 import nl.toolforge.karma.core.cmd.impl.SelectManifest;
 
 /**
@@ -46,12 +45,10 @@ public class SelectManifestImpl extends SelectManifest {
     //
     super.execute(); // Ignore the response from the superclass
 
-    getCommandResponse().addMessage(new ManifestChangedEvent(getSelectedManifest()));
-
-		CommandMessage message =
-        new SuccessMessage(
+		SimpleMessage message =
+        new SimpleMessage(
             getFrontendMessages().getString("message.MANIFEST_ACTIVATED"), new Object[]{getSelectedManifest().getName()}
         );
-    getCommandResponse().addMessage(message);
+    getCommandResponse().addEvent(new MessageEvent(this, message));
   }
 }

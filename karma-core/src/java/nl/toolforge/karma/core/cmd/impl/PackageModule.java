@@ -19,15 +19,24 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.cmd.impl;
 
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import nl.toolforge.karma.core.cmd.Command;
+import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.cmd.CommandFactory;
+import nl.toolforge.karma.core.cmd.CommandLoadException;
+import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.event.ErrorEvent;
+import nl.toolforge.karma.core.cmd.event.ExceptionEvent;
+import nl.toolforge.karma.core.cmd.event.MessageEvent;
+import nl.toolforge.karma.core.cmd.event.SimpleMessage;
+import nl.toolforge.karma.core.cmd.util.DependencyException;
+import nl.toolforge.karma.core.cmd.util.DependencyHelper;
+import nl.toolforge.karma.core.cmd.util.DependencyPath;
+import nl.toolforge.karma.core.cmd.util.DescriptorReader;
+import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.ModuleDigester;
+import nl.toolforge.karma.core.manifest.ModuleTypeException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tools.ant.BuildException;
@@ -41,26 +50,15 @@ import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.FilterSet;
 import org.xml.sax.SAXException;
 
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
-import nl.toolforge.karma.core.cmd.AntErrorMessage;
-import nl.toolforge.karma.core.cmd.Command;
-import nl.toolforge.karma.core.cmd.CommandDescriptor;
-import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.CommandFactory;
-import nl.toolforge.karma.core.cmd.CommandLoadException;
-import nl.toolforge.karma.core.cmd.CommandMessage;
-import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.ErrorMessage;
-import nl.toolforge.karma.core.cmd.StatusMessage;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
-import nl.toolforge.karma.core.cmd.util.DependencyException;
-import nl.toolforge.karma.core.cmd.util.DependencyHelper;
-import nl.toolforge.karma.core.cmd.util.DependencyPath;
-import nl.toolforge.karma.core.cmd.util.DescriptorReader;
-import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.ModuleDigester;
-import nl.toolforge.karma.core.manifest.ModuleTypeException;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author D.A. Smedes
@@ -74,12 +72,10 @@ public class PackageModule extends AbstractBuildCommand {
 
   private static final Log logger = LogFactory.getLog(PackageModule.class);
 
-  private CommandResponse commandResponse = new ActionCommandResponse();
-
+  private CommandResponse commandResponse = new CommandResponse();
 
   public PackageModule(CommandDescriptor descriptor) {
     super(descriptor);
-
   }
   
   public void execute() throws CommandException {
@@ -104,7 +100,10 @@ public class PackageModule extends AbstractBuildCommand {
               Module module = getCurrentManifest().getModule(dep);
               Command command = null;
               try {
-                getCommandResponse().addMessage(new StatusMessage("Module `{0}` is needed, but is not packaged yet. Doing that now.", new Object[]{module.getName()}));
+                // todo message implies an error, should be errorcode
+                getCommandResponse().addEvent(
+                    new MessageEvent(this, new SimpleMessage("Module `{0}` is needed, but is not packaged yet. Doing that now.", new Object[]{module.getName()})));
+//                getCommandResponse().addMessage(new StatusMessage("Packaging module `{0}` ...", new Object[]{module.getName()}));
 
                 String commandLineString;
                 if (!getCommandLine().hasOption("n")) {
@@ -162,13 +161,11 @@ public class PackageModule extends AbstractBuildCommand {
 
         } catch (CommandException ce) {
           if (ce.getErrorCode().equals(CommandException.TEST_FAILED)) {
-            commandResponse.addMessage(new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments()));
+            commandResponse.addEvent(new ErrorEvent(ce.getErrorCode(), ce.getMessageArguments()));
             throw new CommandException(ce, CommandException.PACKAGE_FAILED, new Object[]{module.getName()});
           } else {
-            CommandMessage message = new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments());
-            commandResponse.addMessage(message);
-            message = new ErrorMessage(CommandException.TEST_WARNING);
-            commandResponse.addMessage(message);
+            commandResponse.addEvent(new ErrorEvent(ce.getErrorCode(), ce.getMessageArguments()));
+            commandResponse.addEvent(new ErrorEvent(CommandException.TEST_WARNING));
           }
         } catch (CommandLoadException e) {
           throw new CommandException(e.getErrorCode(), e.getMessageArguments());
@@ -193,13 +190,11 @@ public class PackageModule extends AbstractBuildCommand {
           if (    ce.getErrorCode().equals(CommandException.DEPENDENCY_DOES_NOT_EXIST) ||
               ce.getErrorCode().equals(CommandException.BUILD_FAILED) ||
               ce.getErrorCode().equals(DependencyException.DEPENDENCY_NOT_FOUND) ) {
-            commandResponse.addMessage(new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments()));
+            commandResponse.addEvent(new ErrorEvent(this, ce.getErrorCode(), ce.getMessageArguments()));
             throw new CommandException(ce, CommandException.PACKAGE_FAILED, new Object[]{module.getName()});
           } else {
-            CommandMessage message = new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments());
-            commandResponse.addMessage(message);
-            message = new ErrorMessage(CommandException.BUILD_WARNING);
-            commandResponse.addMessage(message);
+            commandResponse.addEvent(new ErrorEvent(this, ce.getErrorCode(), ce.getMessageArguments()));
+            commandResponse.addEvent(new ErrorEvent(this, CommandException.BUILD_WARNING));
           }
         } catch (CommandLoadException e) {
           throw new CommandException(e.getErrorCode(), e.getMessageArguments());
@@ -221,11 +216,11 @@ public class PackageModule extends AbstractBuildCommand {
         packageJar(packageName);
       }
 
-      CommandMessage message =
-          new SuccessMessage(
+      SimpleMessage message =
+          new SimpleMessage(
               getFrontendMessages().getString("message.MODULE_PACKAGED"),
               new Object[] {getCurrentModule().getName(), packageName});
-      commandResponse.addMessage(message);
+      commandResponse.addEvent(new MessageEvent(this, message));
 
     } catch (DependencyException d) {
       throw new CommandException(d.getErrorCode(), d.getMessageArguments());
@@ -253,7 +248,7 @@ public class PackageModule extends AbstractBuildCommand {
       FileSet fileSet = null;
 
       //copy resources
-      commandResponse.addMessage(new StatusMessage("Copying the resources..."));
+      commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Copying the resources...")));
       if (new File(getCurrentModule().getBaseDir(), "src/resources").exists()) {
         copy = (Copy) project.createTask("copy");
         copy.setProject(getProjectInstance());
@@ -268,11 +263,11 @@ public class PackageModule extends AbstractBuildCommand {
         copy.addFileset(fileSet);
         target.addTask(copy);
       } else {
-        commandResponse.addMessage(new StatusMessage("No resources available."));
+        commandResponse.addEvent(new MessageEvent(new SimpleMessage("No resources available.")));
       }
 
       //copy META-INF
-      commandResponse.addMessage(new StatusMessage("Copying the META-INF..."));
+      commandResponse.addEvent(new MessageEvent(new SimpleMessage("Copying the META-INF...")));
       copy = (Copy) project.createTask("copy");
       copy.setProject(getProjectInstance());
       copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
@@ -315,7 +310,7 @@ public class PackageModule extends AbstractBuildCommand {
     } catch (BuildException e) {
       e.printStackTrace();
       if (logger.isDebugEnabled()) {
-        commandResponse.addMessage(new AntErrorMessage(e));
+        commandResponse.addEvent(new ExceptionEvent(this, e));
       }
       throw new CommandException(e, CommandException.PACKAGE_FAILED, new Object[] {getCurrentModule().getName()});
     } catch (ModuleTypeException e) {
@@ -401,7 +396,7 @@ public class PackageModule extends AbstractBuildCommand {
 
     } catch (BuildException e) {
       if (logger.isDebugEnabled()) {
-        commandResponse.addMessage(new AntErrorMessage(e));
+        commandResponse.addEvent(new ExceptionEvent(this, e));
       }
       throw new CommandException(e, CommandException.PACKAGE_FAILED, new Object[] {getCurrentModule().getName()});
     } catch (DependencyException d) {
@@ -466,10 +461,10 @@ public class PackageModule extends AbstractBuildCommand {
         }
       }
 
-      commandResponse.addMessage(new StatusMessage("Deleting previous ear file."));
+      commandResponse.addEvent(new MessageEvent(new SimpleMessage("Deleting previous ear file.")));
       executeDelete(getBuildEnvironment().getModuleBuildDirectory(), "*.ear");
 
-      commandResponse.addMessage(new StatusMessage("Copying META-INF dir."));
+      commandResponse.addEvent(new MessageEvent(new SimpleMessage("Copying META-INF dir.")));
       Copy copyMetaInf = (Copy) project.createTask("copy");
       copyMetaInf.setProject(getProjectInstance());
       copyMetaInf.setTodir(getBuildEnvironment().getModulePackageDirectory());
@@ -490,7 +485,7 @@ public class PackageModule extends AbstractBuildCommand {
       target.addTask(copyMetaInf);
 
       //copy the module dependencies from the application.xml
-      commandResponse.addMessage(new StatusMessage("Copying module dependencies"));
+      commandResponse.addEvent(new MessageEvent(new SimpleMessage("Copying module dependencies")));
       Set moduleDeps = helper.getModuleDependencies(getCurrentModule(), true);
       if (!moduleDeps.isEmpty()) {
         Copy copy = (Copy) project.createTask("copy");
@@ -512,7 +507,7 @@ public class PackageModule extends AbstractBuildCommand {
       }
 
       //copy the non-module dependencies to /lib
-      commandResponse.addMessage(new StatusMessage("Copying jar dependencies"));
+      commandResponse.addEvent(new MessageEvent(new SimpleMessage("Copying jar dependencies")));
       Set jarDeps = helper.getJarDependencies(getCurrentModule(), true);
       if (!jarDeps.isEmpty()) {
         Copy copy = (Copy) project.createTask("copy");
@@ -534,7 +529,7 @@ public class PackageModule extends AbstractBuildCommand {
       }
       project.executeTarget("run");
 
-      commandResponse.addMessage(new StatusMessage("Creating ear"));
+      commandResponse.addEvent(new MessageEvent(new SimpleMessage("Creating ear")));
       Target target2 = new Target();
       target2.setName("ear");
       target2.setProject(project);
@@ -553,7 +548,7 @@ public class PackageModule extends AbstractBuildCommand {
     } catch (BuildException e) {
       e.printStackTrace();
       if (logger.isDebugEnabled()) {
-        commandResponse.addMessage(new AntErrorMessage(e));
+        commandResponse.addEvent(new ExceptionEvent(this, e));
       }
       throw new CommandException(e, CommandException.PACKAGE_FAILED, new Object[] {getCurrentModule().getName()});
     } catch (DependencyException d) {
@@ -564,6 +559,11 @@ public class PackageModule extends AbstractBuildCommand {
 
   }
 
+  /**
+   * Gets the commands' response object.
+   *
+   * @return The commands' response object.
+   */
   public CommandResponse getCommandResponse() {
     return commandResponse;
   }

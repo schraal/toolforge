@@ -20,13 +20,12 @@ package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.Patch;
 import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.event.MessageEvent;
+import nl.toolforge.karma.core.cmd.event.SimpleMessage;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
@@ -55,7 +54,7 @@ import java.util.regex.PatternSyntaxException;
  */
 public class UpdateModuleCommand extends DefaultCommand {
 
-  protected CommandResponse response = null;
+  protected CommandResponse response = new CommandResponse();
 
   /**
    * Creates a <code>UpdateModuleCommand</code> for module <code>module</code> that should be updated. This module
@@ -64,10 +63,7 @@ public class UpdateModuleCommand extends DefaultCommand {
    * @param descriptor The command descriptor for this command.
    */
   public UpdateModuleCommand(CommandDescriptor descriptor) {
-
     super(descriptor);
-
-    response = new ActionCommandResponse();
   }
 
   /**
@@ -133,8 +129,8 @@ public class UpdateModuleCommand extends DefaultCommand {
 
         // No need to update.
         //
-        response.addMessage(
-            new SuccessMessage("Module " + module.getName() + " is already up-to-date with version " + version.toString()));
+        response.addEvent(
+            new MessageEvent(this, new SimpleMessage("Module " + module.getName() + " is already up-to-date with version " + version.toString())));
 
       } else {
 
@@ -149,28 +145,28 @@ public class UpdateModuleCommand extends DefaultCommand {
 
         runner.checkout(module, version);
 
-        CommandMessage message = null;
+        SimpleMessage message = null;
         // todo message to be internationalized.
         if (version == null) {
           // No state change.
           //
-          message = new SuccessMessage("Module " + module.getName() + " updated.");
+          message = new SimpleMessage("Module " + module.getName() + " updated.");
         } else {
           if (manifest instanceof ReleaseManifest) {
             manifest.setState(module, Module.STATIC);
-            message = new SuccessMessage("Module " + module.getName() + " updated with version " + version.toString() + "; state set to STATIC.");
+            message = new SimpleMessage("Module " + module.getName() + " updated with version " + version.toString() + "; state set to STATIC.");
           } else {
             if (manifest.getState(module).equals(Module.STATIC)) {
               // The module was static.
               //
-              message = new SuccessMessage("Module " + module.getName() + " updated.");
+              message = new SimpleMessage("Module " + module.getName() + " updated.");
             } else {
               manifest.setState(module, Module.DYNAMIC);
-              message = new SuccessMessage("Module " + module.getName() + " updated with version " + version.toString() + "; state set to DYNAMIC.");
+              message = new SimpleMessage("Module " + module.getName() + " updated with version " + version.toString() + "; state set to DYNAMIC.");
             }
           }
         }
-        response.addMessage(message);
+        response.addEvent(new MessageEvent(this, message));
       }
     } catch (VersionControlException e) {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());

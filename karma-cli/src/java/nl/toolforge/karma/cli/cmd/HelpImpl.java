@@ -23,34 +23,40 @@ import nl.toolforge.karma.core.bundle.BundleCache;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandFactory;
-import nl.toolforge.karma.core.cmd.CommandMessage;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.CommandLoadException;
-import nl.toolforge.karma.core.cmd.impl.HelpCommand;
+import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.DefaultCommand;
+import nl.toolforge.karma.core.cmd.event.MessageEvent;
+import nl.toolforge.karma.core.cmd.event.SimpleMessage;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ResourceBundle;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  * @author W.G.Helmantel
  * @version $Id$
  */
-public class HelpImpl extends HelpCommand {
+public class HelpImpl extends DefaultCommand {
 
   private static final ResourceBundle FRONTEND_MESSAGES = BundleCache.getInstance().getBundle(BundleCache.FRONTEND_MESSAGES_KEY);
+
+  private CommandResponse response = new CommandResponse();
 
   public HelpImpl(CommandDescriptor descriptor) {
     super(descriptor);
   }
 
+  /**
+   *
+   * @throws CommandException Occurs when a command load error occurred.
+   */
   public void execute() throws CommandException {
 
     String commandName = getCommandLine().getOptionValue("c");
 
     try {
       String renderedStuff = null;
-      CommandMessage message = null;
+      SimpleMessage message = null;
 
       if (commandName != null) {
         renderedStuff = CommandRenderer.renderCommand(commandName);
@@ -58,7 +64,7 @@ public class HelpImpl extends HelpCommand {
         int usage = FRONTEND_MESSAGES.getString("message.COMMAND_HELP").length() + commandName.length();
 
         message =
-            new SuccessMessage(
+            new SimpleMessage(
                 "\n" + FRONTEND_MESSAGES.getString("message.COMMAND_HELP") + "\n" + StringUtils.repeat("-", usage) + "\n" + renderedStuff,
                 new Object[]{commandName}
                 );
@@ -66,16 +72,23 @@ public class HelpImpl extends HelpCommand {
         renderedStuff = CommandRenderer.renderedCommands(CommandFactory.getInstance().getCommands());
         renderedStuff += "\n" + FRONTEND_MESSAGES.getString("message.HELP_DETAILS") + "\n";
         renderedStuff += CommandRenderer.renderCommand("help");
-        message = new SuccessMessage("\n" + FRONTEND_MESSAGES.getString("message.VALID_COMMANDS") + "\n" + renderedStuff);
+        message = new SimpleMessage("\n" + FRONTEND_MESSAGES.getString("message.VALID_COMMANDS") + "\n" + renderedStuff);
       }
 
-      response.addMessage(message);
+      response.addEvent(new MessageEvent(message));
 
     } catch (CommandLoadException e) {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
+  }
 
-//		super.execute();
+  /**
+   * Returns the response object for this command.
+   *
+   * @return The response object for this command.
+   */
+  public CommandResponse getCommandResponse() {
+    return response;
   }
 
 }

@@ -18,7 +18,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.vc.cvsimpl;
 
-import nl.toolforge.karma.core.cmd.AbstractCommandMessage;
+import nl.toolforge.karma.core.cmd.event.AbstractMessage;
+import nl.toolforge.karma.core.cmd.event.AbstractMessage;
 
 /**
  * Message implementation for CVS messages.
@@ -29,7 +30,7 @@ import nl.toolforge.karma.core.cmd.AbstractCommandMessage;
  *
  * @deprecated Use direct subclasses of <code>AbstractCommandMessage</code> instead.
  */
-public final class CVSCommandMessage extends AbstractCommandMessage {
+public final class CVSCommandMessage extends AbstractMessage {
 
 	public CVSCommandMessage(String message) {
 		super(message);

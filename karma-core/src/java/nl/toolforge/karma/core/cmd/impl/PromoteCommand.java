@@ -20,13 +20,13 @@ package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.Patch;
 import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.ErrorMessage;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.event.ErrorEvent;
+import nl.toolforge.karma.core.cmd.event.MessageEvent;
+import nl.toolforge.karma.core.cmd.event.SimpleMessage;
 import nl.toolforge.karma.core.manifest.DevelopmentManifest;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
@@ -51,7 +51,7 @@ import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
 public class PromoteCommand extends DefaultCommand {
 
   private Version newVersion = null;
-  protected CommandResponse commandResponse = new ActionCommandResponse();
+  protected CommandResponse commandResponse = new CommandResponse();
 
   public PromoteCommand(CommandDescriptor descriptor) {
     super(descriptor);
@@ -90,25 +90,25 @@ public class PromoteCommand extends DefaultCommand {
 
       if (handler.hasNewStuff()) {
         if (force) {
-          commandResponse.addMessage(new ErrorMessage("WARNING : Module " + moduleName + " has new, but uncommitted files."));
+          commandResponse.addEvent(new MessageEvent(new SimpleMessage("WARNING : Module " + moduleName + " has new, but uncommitted files.")));
         } else {
-          commandResponse.addMessage(new ErrorMessage(CommandException.UNCOMMITTED_NEW_FILES, new Object[]{moduleName}));
+          commandResponse.addEvent(new ErrorEvent(this, CommandException.UNCOMMITTED_NEW_FILES, new Object[]{moduleName}));
           proceed = false;
         }
       }
       if (handler.hasChangedStuff()) {
         if (force) {
-          commandResponse.addMessage(new ErrorMessage("WARNING : Module " + moduleName + " has changed, but uncommitted files."));
+          commandResponse.addEvent(new MessageEvent(new SimpleMessage("WARNING : Module " + moduleName + " has changed, but uncommitted files.")));
         } else {
-          commandResponse.addMessage(new ErrorMessage(CommandException.UNCOMMITTED_CHANGED_FILES, new Object[]{moduleName}));
+          commandResponse.addEvent(new ErrorEvent(CommandException.UNCOMMITTED_CHANGED_FILES, new Object[]{moduleName}));
           proceed = false;
         }
       }
       if (handler.hasRemovedStuff()) {
         if (force) {
-          commandResponse.addMessage(new ErrorMessage("WARNING : Module " + moduleName + " has removed, but uncommitted files."));
+          commandResponse.addEvent(new MessageEvent(new SimpleMessage("WARNING : Module " + moduleName + " has removed, but uncommitted files.")));
         } else {
-          commandResponse.addMessage(new ErrorMessage(CommandException.UNCOMMITTED_REMOVED_FILES, new Object[]{moduleName}));
+          commandResponse.addEvent(new ErrorEvent(CommandException.UNCOMMITTED_REMOVED_FILES, new Object[]{moduleName}));
           proceed = false;
         }
       }
@@ -143,18 +143,20 @@ public class PromoteCommand extends DefaultCommand {
 
         runner.promote(module, comment, newVersion);
 
-        commandResponse.addMessage(
-            new SuccessMessage(
-                getFrontendMessages().getString("message.MODULE_PROMOTED"),
-                new Object[]{getCommandLine().getOptionValue("m"), getNewVersion()}
-            ));
+        commandResponse.addEvent(
+            new MessageEvent(this,
+                new SimpleMessage(
+                    getFrontendMessages().getString("message.MODULE_PROMOTED"),
+                    new Object[]{getCommandLine().getOptionValue("m"), getNewVersion()}
+                )));
 
       } else {
-        commandResponse.addMessage(
-            new SuccessMessage(
-                getFrontendMessages().getString("message.PROMOTE_MODULE_FAILED"),
-                new Object[]{module.getName(), moduleName}
-            ));
+        commandResponse.addEvent(
+            new MessageEvent(this,
+                new SimpleMessage(
+                    getFrontendMessages().getString("message.PROMOTE_MODULE_FAILED"),
+                    new Object[]{module.getName(), moduleName}
+                )));
       }
 
     } catch (ManifestException e) {
@@ -164,6 +166,11 @@ public class PromoteCommand extends DefaultCommand {
     }
   }
 
+  /**
+   * Gets the commands' response object.
+   *
+   * @return The commands' response object.
+   */
   public CommandResponse getCommandResponse() {
     return commandResponse;
   }

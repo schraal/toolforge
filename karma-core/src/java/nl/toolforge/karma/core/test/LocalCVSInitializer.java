@@ -194,14 +194,13 @@ public class LocalCVSInitializer extends BaseTest {
   }
 
   /**
-   * Initializes a Runner for test purposes. This implementation will add an
-   * {@link nl.toolforge.karma.core.cmd.ActionCommandResponse} to the Runner.
+   * Initializes a Runner for test purposes. 
    *
    * @return A Runner instance.
    * @throws CVSException When initializing the runner failed.
    */
   protected final Runner getTestRunner() throws CVSException {
-    return getTestRunner(new CommandResponseFaker());
+    return getTestRunner(new CommandResponseFaker(null));
   }
 
   /**

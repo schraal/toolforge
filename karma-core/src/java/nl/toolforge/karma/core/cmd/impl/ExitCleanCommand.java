@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
@@ -37,7 +36,7 @@ public class ExitCleanCommand extends DefaultCommand {
 
   private static Log logger = LogFactory.getLog(ExitCleanCommand.class);
 
-  protected CommandResponse response = new ActionCommandResponse();
+  protected CommandResponse response = new CommandResponse();
 
   /**
    *

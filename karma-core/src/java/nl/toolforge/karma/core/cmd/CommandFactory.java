@@ -94,6 +94,8 @@ public final class CommandFactory {
 
   /**
    * Gets the singleton <code>CommandFactory</code>.
+   *
+   * @return The singleton <code>CommandFactory</code> instance.
    */
   public static CommandFactory getInstance() throws CommandLoadException {
     if (factory == null) {

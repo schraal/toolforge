@@ -27,7 +27,8 @@
 
 
   <command name="start-work" alias="start">
-    <description lang="en"></description>
+
+    <description lang="en">Changes a modules' state to WORKING.</description>
 
     <options>
       <option opt="m" longOpt="module" hasArgs="true" required="true" description="The module name">
@@ -36,13 +37,18 @@
     </options>
 
     <classname>nl.toolforge.karma.cli.cmd.StartWorkImpl</classname>
-    <help lang="en"/>
+
+    <help lang="en">
+      Changes a modules' state to WORKING. When the manifest is a release manifest, a patchline is created
+      for the current module version.
+    </help>
+
   </command>
 
 
 
   <command name="stop-work" alias="stop">
-    <description lang="en">todo Something.</description>
+    <description lang="en">Changes a modules' state to DYNAMIC or STATIC</description>
 
     <options>
       <option opt="m" longOpt="module" hasArgs="true" required="true" description="The module name">
@@ -51,7 +57,11 @@
     </options>
 
     <classname>nl.toolforge.karma.cli.cmd.StopWorkImpl</classname>
-    <help lang="en"/>
+
+    <help lang="en">
+      Changes a modules' state. When the manifest is a development manifest, the state is changed to
+      DYNAMIC. If the manifest is a release manifest, the state is changed to STATIC.
+    </help>
   </command>
 
 
@@ -186,7 +196,7 @@
 
 
   <command name="help" alias="?">
-    <description lang="en">Karma Guru</description>
+    <description lang="en">Tells you about all commands.</description>
     <options>
       <option opt="c" longOpt="command-name" hasArgs="true" required="false" description="The command name">
         <arg>command-name</arg>

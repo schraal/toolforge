@@ -18,28 +18,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
+import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.event.ExceptionEvent;
+import nl.toolforge.karma.core.cmd.event.MessageEvent;
+import nl.toolforge.karma.core.cmd.event.SimpleMessage;
+import nl.toolforge.karma.core.cmd.util.BuildEnvironment;
+import nl.toolforge.karma.core.cmd.util.DependencyException;
+import nl.toolforge.karma.core.cmd.util.DependencyHelper;
+import nl.toolforge.karma.core.manifest.ModuleTypeException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
-import nl.toolforge.karma.core.cmd.AntErrorMessage;
-import nl.toolforge.karma.core.cmd.Command;
-import nl.toolforge.karma.core.cmd.CommandDescriptor;
-import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.CommandFactory;
-import nl.toolforge.karma.core.cmd.CommandLoadException;
-import nl.toolforge.karma.core.cmd.CommandMessage;
-import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
-import nl.toolforge.karma.core.cmd.StatusMessage;
-import nl.toolforge.karma.core.cmd.util.BuildEnvironment;
-import nl.toolforge.karma.core.cmd.util.DependencyException;
-import nl.toolforge.karma.core.cmd.util.DependencyHelper;
-import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.ModuleTypeException;
 
 /**
  * Builds a module in a manifest. Building a module means that all java sources will be compiled into the
@@ -54,7 +46,7 @@ public class BuildModule extends AbstractBuildCommand {
 
   private static final String DEFAULT_SRC_PATH = "src/java";
 
-  private CommandResponse commandResponse = new ActionCommandResponse();
+  private CommandResponse commandResponse = new CommandResponse();
 
   public BuildModule(CommandDescriptor descriptor) {
     super(descriptor);
@@ -135,15 +127,15 @@ public class BuildModule extends AbstractBuildCommand {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     } catch (BuildException e) {
       logger.error(e);
-      commandResponse.addMessage(new AntErrorMessage(e));
+      commandResponse.addEvent(new ExceptionEvent(this, e));
       throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
     } catch (ModuleTypeException e) {
       logger.error(e);
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
 
-    CommandMessage message = new SuccessMessage(getFrontendMessages().getString("message.MODULE_BUILT"), new Object[] {getCurrentModule().getName()});
-    commandResponse.addMessage(message);
+    SimpleMessage message = new SimpleMessage(getFrontendMessages().getString("message.MODULE_BUILT"), new Object[] {getCurrentModule().getName()});
+    commandResponse.addEvent(new MessageEvent(this, message));
   }
 
   public CommandResponse getCommandResponse() {

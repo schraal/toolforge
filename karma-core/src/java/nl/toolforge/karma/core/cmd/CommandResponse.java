@@ -20,7 +20,7 @@ package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
-import nl.toolforge.karma.core.cmd.event.ManifestChangedEvent;
+import nl.toolforge.karma.core.cmd.event.Message;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -29,60 +29,37 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * A CommandResponse object is used to report messages from 
+ * A <code>CommandResponse</code> object is used to dispatch {@link CommandResponseEvent} events to listeners that are
+ * interested in those events. These objects can be fed with <code>n</code> {@link CommandResponseListener}s.
  *
  * @author W.M. Oosterom
  * @author D.A. Smedes
  * @author W.H. Schraal
  * @version $Id$
  */
-public abstract class CommandResponse {
+public class CommandResponse {
 
   private static Log logger = LogFactory.getLog(CommandResponse.class);
 
-  //todo this has to become a list of listeners.
   private List listeners = new ArrayList();
 
-
-  public CommandResponse() {
-  }
-
   /**
-   * Add a message to the command response. When a {@link CommandResponseListener} has been registered with this
-   * response, {@link CommandResponseListener#commandResponseChanged(CommandResponseEvent)} will be called. If no
-   * listener has been registered, a warning will be written to the log system.
-   *
-   * @param message The message to add to the response.
+   * Constructs a command response object.
    */
-  public synchronized void addMessage(CommandMessage message) {
+  public CommandResponse() {}
+
+  /**
+   * Dispatches the event to all {@link CommandResponseListener}s. If no listener has been registered, a warning will
+   * be written to the log system.
+   *
+   * @param event The event that should be dispatched.
+   */
+  public synchronized void addEvent(CommandResponseEvent event) {
     if (listeners.size() > 0) {
       for (Iterator it = listeners.iterator(); it.hasNext(); ) {
         CommandResponseListener listener = (CommandResponseListener) it.next();
 
-        listener.commandResponseChanged(new CommandResponseEvent(message));
-      }
-    } else {
-      logger.warn("No listener registered for command response (messages sent to /dev/null ...)");
-    }
-  }
-
-  public synchronized void addMessage(ManifestChangedEvent message) {
-    if (listeners.size() > 0) {
-      for (Iterator it = listeners.iterator(); it.hasNext(); ) {
-        CommandResponseListener listener = (CommandResponseListener) it.next();
-
-        listener.manifestChanged(message.getManifest());
-      }
-    } else {
-      logger.warn("No listener registered for command response (messages sent to /dev/null ...)");
-    }
-  }
-
-  public synchronized void addFinishMessage(CommandMessage message) {
-    if (listeners.size() > 0) {
-      for (Iterator it = listeners.iterator(); it.hasNext(); ) {
-        CommandResponseListener listener = (CommandResponseListener) it.next();
-        listener.commandResponseFinished(new CommandResponseEvent(message));
+        listener.messageLogged(event);
       }
     } else {
       logger.warn("No listener registered for command response (messages sent to /dev/null ...)");
@@ -90,8 +67,7 @@ public abstract class CommandResponse {
   }
 
   /**
-   * Set the CommandResponseListener. This listener is going to give the user feedback
-   * about the changes in the command response.
+   * Adds a {@link CommandResponseListener} that is interested in events added to this <code>CommandResponse</code>.
    *
    * @param responseListener
    */
@@ -100,7 +76,7 @@ public abstract class CommandResponse {
   }
 
   /**
-   * Remove the CommandResponseListener.
+   * Removes <code>responseListener</code> from this <code>CommandResponse</code>.
    */
   public final synchronized void removeCommandReponseListener(CommandResponseListener responseListener) {
     listeners.remove(responseListener);

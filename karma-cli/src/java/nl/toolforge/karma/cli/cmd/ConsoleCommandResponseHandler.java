@@ -22,6 +22,8 @@ import nl.toolforge.karma.console.KarmaConsole;
 import nl.toolforge.karma.core.cmd.CommandResponseHandler;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.location.LocationException;
 
 /**
  * This class is responsible for handling CommandResponses in an interactive way.
@@ -33,26 +35,41 @@ public class ConsoleCommandResponseHandler implements CommandResponseHandler {
 
   private KarmaConsole karmaConsole = null;
 
+  /**
+   * Creates a handler. This one takes the KarmaConsole as an argument, to which is can write (event-) messages.
+   *
+   * @param karmaConsole A <code>KarmaConsole</code> instance.
+   */
   public ConsoleCommandResponseHandler(KarmaConsole karmaConsole) {
     this.karmaConsole = karmaConsole;
   }
 
-  public void commandHeartBeat() {}
-
-  public void commandResponseChanged(CommandResponseEvent event) {
-    karmaConsole.writeln(event.getEventMessage().getMessageText());
-  }
-
-  public void commandResponseFinished(CommandResponseEvent event) {
-    karmaConsole.writeln("");
+  /**
+   * Calls {@link #messageLogged}.
+   *
+   * @param event An event.
+   */
+  public void commandStarted(CommandResponseEvent event) {
+    this.messageLogged(event);
   }
 
   /**
-   * Sets another manifest to be the current manifest on the console.
+   * Calls {@link #messageLogged}.
    *
-   * @param manifest The new (current) manifest for the console.
+   * @param event An event.
    */
-  public void manifestChanged(Manifest manifest) {
-    karmaConsole.setManifest(manifest);
+  public void commandFinished(CommandResponseEvent event) {
+    this.messageLogged(event);
   }
+
+  /**
+   * Writes the events' message text to the KarmaConsole.
+   *
+   * @param event An event.
+   */
+  public void messageLogged(CommandResponseEvent event) {
+    karmaConsole.writeln(event.getEventMessage().getMessageText());
+  }
+
+
 }

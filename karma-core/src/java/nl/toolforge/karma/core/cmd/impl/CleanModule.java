@@ -18,24 +18,26 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
+import nl.toolforge.karma.core.cmd.event.MessageEvent;
+import nl.toolforge.karma.core.cmd.event.SimpleMessage;
+import org.apache.commons.io.FileUtils;
+
+import java.io.IOException;
 
 /**
- * Remove all built stuff of the given module.
+ * Removes the modules' build directory.
  *
  * @author W.H. Schraal
+ * @author D.A. Smedes
+ *
  * @version $Id$
  */
 public class CleanModule extends AbstractBuildCommand {
 
-  private CommandResponse commandResponse = new ActionCommandResponse();
+  private CommandResponse commandResponse = new CommandResponse();
 
   public CleanModule(CommandDescriptor descriptor) {
     super(descriptor);
@@ -43,20 +45,17 @@ public class CleanModule extends AbstractBuildCommand {
 
   public void execute() throws CommandException {
 
-    super.execute();
+    super.execute(); // To initialize the BuildEnvironment
 
     try {
-      Project project = getAntProject("clean-module.xml");
-      project.setProperty("module-build-dir", getBuildEnvironment().getModuleBuildRootDirectory().getPath());
-      project.executeTarget("run");
 
-      // todo: localize message
-      CommandMessage message = new SuccessMessage("Module " + getCurrentModule().getName() + " cleaned succesfully.");
-      commandResponse.addMessage(message);
+      FileUtils.deleteDirectory(getBuildEnvironment().getModuleBuildRootDirectory());
 
-    } catch (BuildException e) {
-      e.printStackTrace();
-      throw new CommandException(CommandException.CLEAN_MODULE_FAILED, new Object[] {getBuildEnvironment().getModuleBuildDirectory().getPath()});
+      SimpleMessage message = new SimpleMessage(getFrontendMessages().getString("message.CLEAN_MODULE_SUCCESSFULL"), new Object[]{getCurrentModule()});
+      commandResponse.addEvent(new MessageEvent(this, message));
+
+    } catch (IOException e) {
+      throw new CommandException(CommandException.CLEAN_MODULE_FAILED, new Object[]{e.getLocalizedMessage()});
     }
   }
 

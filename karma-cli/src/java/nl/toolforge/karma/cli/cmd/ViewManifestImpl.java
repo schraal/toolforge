@@ -18,11 +18,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.cli.cmd;
 
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.event.MessageEvent;
+import nl.toolforge.karma.core.cmd.event.SimpleMessage;
 import nl.toolforge.karma.core.cmd.impl.ViewManifest;
 import nl.toolforge.karma.core.manifest.ReleaseManifest;
 import org.apache.commons.lang.StringUtils;
@@ -37,7 +37,7 @@ import java.util.List;
  */
 public class ViewManifestImpl extends ViewManifest {
 
-  private CommandResponse commandResponse = new ActionCommandResponse();
+  private CommandResponse commandResponse = new CommandResponse();
 
   public ViewManifestImpl(CommandDescriptor descriptor) {
     super(descriptor);
@@ -48,8 +48,8 @@ public class ViewManifestImpl extends ViewManifest {
    */
   public void execute() throws CommandException {
 
-    SuccessMessage message = new SuccessMessage("Checking manifest status, please wait ...");
-    commandResponse.addMessage(message);
+    SimpleMessage message = new SimpleMessage("Checking manifest status, please wait ...");
+    commandResponse.addEvent(new MessageEvent(this, message));
 
     super.execute(); // Ignore the response from the superclass
 
@@ -140,8 +140,8 @@ public class ViewManifestImpl extends ViewManifest {
 
     // -- end of formatting
 
-    message = new SuccessMessage(buffer.toString());
-    commandResponse.addMessage(message);
+    message = new SimpleMessage(buffer.toString());
+    commandResponse.addEvent(new MessageEvent(message));
   }
 
   public CommandResponse getCommandResponse() {

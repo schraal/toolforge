@@ -18,21 +18,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.cli.cmd;
 
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.CommandContext;
-import nl.toolforge.karma.core.cmd.impl.ViewManifest;
-import nl.toolforge.karma.core.manifest.ReleaseManifest;
+import nl.toolforge.karma.core.cmd.event.MessageEvent;
+import nl.toolforge.karma.core.cmd.event.SimpleMessage;
+import nl.toolforge.karma.core.history.ModuleHistory;
+import nl.toolforge.karma.core.history.ModuleHistoryEvent;
+import nl.toolforge.karma.core.history.ModuleHistoryException;
+import nl.toolforge.karma.core.history.ModuleHistoryFactory;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.history.ModuleHistoryFactory;
-import nl.toolforge.karma.core.history.ModuleHistory;
-import nl.toolforge.karma.core.history.ModuleHistoryException;
-import nl.toolforge.karma.core.history.ModuleHistoryEvent;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,7 +48,7 @@ public class ViewModuleHistory extends DefaultCommand {
 
   private static final Log logger = LogFactory.getLog(ViewModuleHistory.class);
 
-  private CommandResponse commandResponse = new ActionCommandResponse();
+  private CommandResponse commandResponse = new CommandResponse();
 
   public ViewModuleHistory(CommandDescriptor descriptor) {
     super(descriptor);
@@ -132,7 +129,7 @@ public class ViewModuleHistory extends DefaultCommand {
       buffer.append(comment + StringUtils.repeat(" ",  MAX_COMMENT - comment.length()) + "|\n");
     }
 
-    commandResponse.addMessage(new SuccessMessage(buffer.toString()));
+    commandResponse.addEvent(new MessageEvent(new SimpleMessage(buffer.toString())));
   }
 
   public CommandResponse getCommandResponse() {

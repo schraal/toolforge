@@ -19,8 +19,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.vc.cvsimpl;
 
 import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.cmd.CommandMessage;
+import nl.toolforge.karma.core.cmd.event.Message;
 import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.Command;
+import nl.toolforge.karma.core.cmd.event.Message;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.test.LocalCVSInitializer;
 import nl.toolforge.karma.core.vc.Runner;
@@ -207,12 +209,16 @@ public class TestCVSRunner extends LocalCVSInitializer {
 
     private boolean ok = true;
 
+    public ResponseFaker() {
+      super();
+    }
+
     /**
      * Success is reported back to this method, otherwise an exception would have been thrown.
      *
      * @param message Some message sent by CVS.
      */
-    public void addMessage(CommandMessage message) {
+    public void addEvent(Message message) {
       ok = true;
     }
 

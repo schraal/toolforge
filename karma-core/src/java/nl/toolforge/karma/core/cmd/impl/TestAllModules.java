@@ -21,6 +21,11 @@ public class TestAllModules extends DefaultCommand {
     //To change body of implemented methods use File | Settings | File Templates.
   }
 
+  /**
+   * Gets the commands' response object.
+   *
+   * @return The commands' response object.
+   */
   public CommandResponse getCommandResponse() {
     return null;  //To change body of implemented methods use File | Settings | File Templates.
   }

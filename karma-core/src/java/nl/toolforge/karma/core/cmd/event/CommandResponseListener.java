@@ -18,15 +18,40 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.event;
 
-import nl.toolforge.karma.core.manifest.Manifest;
+import java.util.EventListener;
 
 /**
- * When CommandResponses change, classes that implement this interface (and register themselves)
- * recieve a CommandResponseEvent.
+ * Instances of this class that implement this interface can register to be notified when
+ * things happen during the execution of a <code>Command</code>.
+ *
+ * @author W.H. Schraal
+ * @author D.A. Smedes
  */
-public interface CommandResponseListener {
+public interface CommandResponseListener extends EventListener {
 
-  public void commandHeartBeat();
+  /**
+   * Signals that a command has started.
+   *
+   * @param event
+   */
+  public void commandStarted(CommandResponseEvent event);
+
+  /**
+   * Signals that a command has ended.
+   *
+   * @param event
+   */
+  public void commandFinished(CommandResponseEvent event);
+
+  /**
+   * Signals that an event has happened during the execution of the command.
+   *
+   * @param event
+   */
+  public void messageLogged(CommandResponseEvent event);
+
+
+//  public void commandHeartBeat();
 
   /**
    * Called when a CommandResponse has changed, for example when a new CommandMessage has been added.
@@ -34,7 +59,7 @@ public interface CommandResponseListener {
    * @param event  The event that described what has changed in the CommandResponse, so that the Listener
    *               can react adequately.
    */
-  public void commandResponseChanged(CommandResponseEvent event);
+//  public void commandResponseChanged(CommandResponseEvent event);
 
   /**
    * Called when a command is finished. Especially usefull when an interactive system is generating a lot of response
@@ -42,7 +67,7 @@ public interface CommandResponseListener {
    *
    * @param event An event; can be <code>null</code>.
    */
-  public void commandResponseFinished(CommandResponseEvent event);
+//  public void commandResponseFinished(CommandResponseEvent event);
 
-  public void manifestChanged(Manifest manifest);
+//  public void manifestChanged(Manifest manifest);
 }

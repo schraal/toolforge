@@ -31,20 +31,16 @@ import nl.toolforge.karma.core.manifest.Manifest;
  */
 public class CLICommandResponseHandler implements CommandResponseHandler {
 
-  public void commandHeartBeat() {}
-
-  public void commandResponseChanged(CommandResponseEvent event) {
-    System.out.println(event.getEventMessage().getMessageText());
+  public void commandStarted(CommandResponseEvent event) {
+    // Iets met System.out
   }
 
-  public void commandResponseFinished(CommandResponseEvent event) {
-    System.out.println("");
+  public void commandFinished(CommandResponseEvent event) {
+    // Iets met System.out
   }
 
-  /**
-   * Unused.
-   */
-  public void manifestChanged(Manifest manifest) {
-    //
+  public void messageLogged(CommandResponseEvent event) {
+    // Iets met System.out
   }
+
 }

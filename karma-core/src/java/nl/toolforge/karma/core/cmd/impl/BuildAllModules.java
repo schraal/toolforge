@@ -18,16 +18,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandFactory;
 import nl.toolforge.karma.core.cmd.CommandLoadException;
-import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.ErrorMessage;
+import nl.toolforge.karma.core.cmd.event.CommandFailedEvent;
+import nl.toolforge.karma.core.cmd.event.ErrorEvent;
 import nl.toolforge.karma.core.cmd.util.KarmaBuildException;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
@@ -49,7 +48,7 @@ import java.util.Set;
  */
 public class BuildAllModules extends DefaultCommand {
 
-  private CommandResponse commandResponse = new ActionCommandResponse();
+  private CommandResponse commandResponse = new CommandResponse();
   private List orderedCollection = null;
   private Manifest currentManifest = null;
 
@@ -88,13 +87,15 @@ public class BuildAllModules extends DefaultCommand {
       } catch (CommandException ce) {
         if (ce.getErrorCode().equals(CommandException.DEPENDENCY_DOES_NOT_EXIST) ||
             ce.getErrorCode().equals(CommandException.BUILD_FAILED) ) {
-          commandResponse.addMessage(new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments()));
+
+          commandResponse.addEvent(new CommandFailedEvent(this, ce));
+//          commandResponse.addEvent(new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments()));
           throw new CommandException(ce, CommandException.TEST_FAILED, new Object[]{module.getName()});
         } else {
-          CommandMessage message = new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments());
-          commandResponse.addMessage(message);
-          message = new ErrorMessage(CommandException.BUILD_WARNING);
-          commandResponse.addMessage(message);
+//          Message message = new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments());
+          commandResponse.addEvent(new CommandFailedEvent(this, ce));
+
+          commandResponse.addEvent(new ErrorEvent(CommandException.BUILD_WARNING));
         }
       } catch (CommandLoadException e) {
         throw new CommandException(e.getErrorCode(), e.getMessageArguments());

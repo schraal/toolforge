@@ -16,32 +16,34 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-package nl.toolforge.karma.core.cmd;
+package nl.toolforge.karma.core.cmd.event;
+
+import nl.toolforge.karma.core.cmd.event.Message;
 
 import java.text.MessageFormat;
 
 /**
- * Base implementation of a command message. Provides standard implementations for methods handling messages.
+ * Base implementation of a {@link Message}. Provides standard implementations for methods handling messages.
  *
  * @author D.A. Smedes
  * @version $Id$
  */
-public class AbstractCommandMessage implements CommandMessage {
+public class AbstractMessage implements Message {
 
 	private String message = null;
 
-	public AbstractCommandMessage(String message) {
+	public AbstractMessage(String message) {
 		this.message = message;
 	}
 
 	/**
-	 * Constructs a <code>SimpleCommandMessage</code>. {@link java.text.MessageFormat} is used to convert parameters in
-	 * <code>message</code>.
+	 * Constructs a message. {@link java.text.MessageFormat} is used to convert parameters in the <code>message</code>
+   * text.
 	 *
 	 * @param message           The message string (with optional parameters).
 	 * @param messageParameters An object array with parameter values.
 	 */
-	public AbstractCommandMessage(String message, Object[] messageParameters) {
+	public AbstractMessage(String message, Object[] messageParameters) {
 
 		if (messageParameters != null && messageParameters.length != 0) {
 			MessageFormat messageFormat = new MessageFormat(message);

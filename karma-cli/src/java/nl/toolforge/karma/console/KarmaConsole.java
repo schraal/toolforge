@@ -64,8 +64,8 @@ public final class KarmaConsole {
 
   private String lastLine = "";
   private boolean immediate = true;
-  private Manifest manifest = null;
-  private WorkingContext workingContext = null;
+//  private Manifest manifest = null;
+  private CommandContext commandContext = null;
 
   public KarmaConsole() {}
 
@@ -109,21 +109,21 @@ public final class KarmaConsole {
 
     // If the '-w <working-context> option is used, use it.
     //
-    workingContext =
+    WorkingContext workingContext =
         (args.length == 0 ?
         new WorkingContext(Preferences.userRoot().get(WorkingContext.WORKING_CONTEXT_PREFERENCE, WorkingContext.DEFAULT)) :
         new WorkingContext(args[0]));
 
-    try {
-      Preferences.userRoot().put(WorkingContext.WORKING_CONTEXT_PREFERENCE, workingContext.getName());
-      Preferences.userRoot().flush();
-    } catch (BackingStoreException e) {
-      // Too bad ...
-    }
+//    try {
+//      Preferences.userRoot().put(WorkingContext.WORKING_CONTEXT_PREFERENCE, workingContext.getName());
+//      Preferences.userRoot().flush();
+//    } catch (BackingStoreException e) {
+//      // Too bad ...
+//    }
 
     // Initialize the command workingContext
     //
-    CommandContext commandContext = null;
+//    CommandContext commandContext = null;
 
     writeln(
         "********************\n" +
@@ -133,11 +133,11 @@ public final class KarmaConsole {
     writeln("Loading working context `" + workingContext.getName() + "` ...");
 
     writeln("Checking manifest store configuration ...");
-    checkConfiguration("MANIFEST-STORE");
+    checkConfiguration(workingContext, "MANIFEST-STORE");
     writeln("Complete ...");
 
     writeln("Checking location store configuration ...");
-    checkConfiguration("LOCATION-STORE");
+    checkConfiguration(workingContext, "LOCATION-STORE");
     writeln("Complete ...");
 
     writeln("Configuration can be updated in `" + workingContext.getWorkingContextConfigDir() + "`");
@@ -146,7 +146,6 @@ public final class KarmaConsole {
 
     //
     //
-
     commandContext = new CommandContext(workingContext);
     try {
       commandContext.init(new ConsoleCommandResponseHandler(this), true);
@@ -158,13 +157,7 @@ public final class KarmaConsole {
       logger.warn(e.getMessage(), e);
     }
 
-
     Manifest currentManifest = commandContext.getCurrentManifest();
-    if (currentManifest != null) {
-      manifest = currentManifest;
-
-      writeln(new MessageFormat(FRONTEND_MESSAGES.getString("message.MANIFEST_RESTORED")).format(new Object[]{currentManifest.getName()}));
-    }
 
     String karmaHome = System.getProperty("karma.home");
     if (karmaHome == null) {
@@ -181,7 +174,7 @@ public final class KarmaConsole {
 
       while (true) {
 
-        prompt();
+        prompt(commandContext);
 
         String line = null;
         if (reader != null || reader.readLine() != null) {
@@ -202,8 +195,8 @@ public final class KarmaConsole {
         try {
           commandContext.execute(line);
         } catch (CommandException e) {
-          writeln("");
-          writeln(e.getMessage());
+//          writeln("");
+//          writeln(e.getMessage());
           logger.error(e.getMessage(), e);
         }
       }
@@ -212,7 +205,6 @@ public final class KarmaConsole {
       if (logger.isDebugEnabled()) {
         r.printStackTrace();
       }
-      writeln("Karma exited unexpectedly : " + r.getMessage());
       System.exit(1);
     }
     catch (Exception e) {
@@ -221,40 +213,50 @@ public final class KarmaConsole {
     }
   }
 
-  private void checkConfiguration(String configKey) {
+  private void checkConfiguration(WorkingContext workingContext, String configKey) {
 
-    Collection config = (List) workingContext.getInvalidConfiguration().get(configKey);
+    try {
 
-    while (config.size() > 0) {
+      Collection config = (List) workingContext.getInvalidConfiguration().get(configKey);
 
-// Warning, modifies the configuration ...
-//
-      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-      Iterator i = config.iterator();
+      while (config.size() > 0) {
 
-      while (i.hasNext()) {
+        // Warning, modifies the configuration ...
+        //
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        Iterator i = config.iterator();
 
-        WorkingContext.ConfigurationItem key = (WorkingContext.ConfigurationItem) i.next();
+        while (i.hasNext()) {
 
-        if (key.getDefaultValue() == null) {
-          System.out.print(key.getLabel() + " : ");
-        } else {
-          System.out.print(key.getLabel() + " [" + key.getDefaultValue() + "] : ");
+          WorkingContext.ConfigurationItem key = (WorkingContext.ConfigurationItem) i.next();
+
+          if (key.getDefaultValue() == null) {
+            System.out.print(key.getLabel() + " : ");
+          } else {
+            System.out.print(key.getLabel() + " [" + key.getDefaultValue() + "] : ");
+          }
+
+          String value = null;
+          try {
+            value = reader.readLine().trim();
+          } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+          }
+
+          if (value == null || "".equals(value)) {
+            value = (key.getDefaultValue() == null ? "" : key.getDefaultValue());
+          }
+          workingContext.getConfiguration().setProperty(key.getProperty(), value);
         }
-
-        String value = null;
-        try {
-          value = reader.readLine().trim();
-        } catch (IOException e) {
-          logger.error(e.getMessage(), e);
-        }
-
-        if (value == null || "".equals(value)) {
-          value = (key.getDefaultValue() == null ? "" : key.getDefaultValue());
-        }
-        workingContext.getConfiguration().setProperty(key.getProperty(), value);
+        config = (List) workingContext.getInvalidConfiguration().get(configKey);
       }
-      config = (List) workingContext.getInvalidConfiguration().get(configKey);
+    } catch (RuntimeException r) {
+      // This check is required for Windows users.
+      //
+      if (logger.isDebugEnabled()) {
+        r.printStackTrace();
+      }
+      System.exit(1);
     }
 
     try {
@@ -263,18 +265,17 @@ public final class KarmaConsole {
       logger.error(e.getMessage(), e);
       throw new KarmaRuntimeException(e.getMessage());
     }
-
   }
 
   /**
    * Gets the default prompt, constructed as follows : <code>HH:MM:SS [ Karma ]</code>
    */
-  public String getPrompt() {
+  public String getPrompt(CommandContext context) {
 
     Calendar now = Calendar.getInstance();
 
-    String end = (manifest == null ? "Karma" : manifest.getName());
-    end = workingContext.getName() + "::" + end;
+    String end = (context.getCurrentManifest() == null ? "Karma" : context.getCurrentManifest().getName());
+    end = context.getWorkingContext().getName() + "::" + end;
     return
         StringUtils.leftPad("" + now.get(Calendar.HOUR_OF_DAY) , 2, "0") + ":" +
         StringUtils.leftPad("" + now.get(Calendar.MINUTE) , 2, "0") + ":" +
@@ -285,12 +286,7 @@ public final class KarmaConsole {
     System.out.println(text);
   }
 
-  public void prompt() {
-    System.out.print(getPrompt());
+  public void prompt(CommandContext context) {
+    System.out.print(getPrompt(context));
   }
-
-  public void setManifest(Manifest manifest) {
-    this.manifest = manifest;
-  }
-
 }

@@ -19,18 +19,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.ErrorMessage;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.event.MessageEvent;
+import nl.toolforge.karma.core.cmd.event.SimpleMessage;
+import nl.toolforge.karma.core.manifest.BaseModule;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ReleaseManifest;
-import nl.toolforge.karma.core.manifest.BaseModule;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
@@ -44,16 +43,13 @@ import nl.toolforge.karma.core.vc.cvsimpl.Utils;
  */
 public class StopWorkCommand extends DefaultCommand {
 
-  protected CommandResponse response = null;
+  protected CommandResponse response = response = new CommandResponse();
   /**
    *
    * @param descriptor The command descriptor for this command.
    */
   public StopWorkCommand(CommandDescriptor descriptor) {
-
     super(descriptor);
-
-    response = new ActionCommandResponse();
   }
 
   public void execute() throws CommandException {
@@ -87,15 +83,18 @@ public class StopWorkCommand extends DefaultCommand {
 
     boolean proceed = true;
     if (handler.hasNewStuff()) {
-      response.addMessage(new ErrorMessage("ERROR : Module " + moduleName + " has new, but uncommitted files."));
+      // todo implies an error, should be errorcode
+      response.addEvent(new MessageEvent(this, new SimpleMessage("ERROR : Module " + moduleName + " has new, but uncommitted files.")));
       proceed = false;
     }
     if (handler.hasChangedStuff()) {
-      response.addMessage(new ErrorMessage("ERROR : Module " + moduleName + " has changed, but uncommitted files."));
+      // todo implies an error, should be errorcode
+      response.addEvent(new MessageEvent(this, new SimpleMessage("ERROR : Module " + moduleName + " has changed, but uncommitted files.")));
       proceed = false;
     }
     if (handler.hasRemovedStuff()) {
-      response.addMessage(new ErrorMessage("ERROR : Module " + moduleName + " has removed, but uncommitted files."));
+      // todo implies an error, should be errorcode
+      response.addEvent(new MessageEvent(this, new SimpleMessage("ERROR : Module " + moduleName + " has removed, but uncommitted files.")));
       proceed = false;
     }
 
@@ -121,15 +120,21 @@ public class StopWorkCommand extends DefaultCommand {
       } catch (VersionControlException e) {
         throw new CommandException(e.getErrorCode(), e.getMessageArguments());
       }
-      response.addMessage(
-          new SuccessMessage(
+      response.addEvent(
+          new MessageEvent(this,
+          new SimpleMessage(
               getFrontendMessages().getString("message.STOP_WORK_SUCCESSFULL"),
-              new Object[]{module.getName(), m.getState(module).toString()}));
+              new Object[]{module.getName(), m.getState(module).toString()})));
     } else {
-      response.addMessage(new SuccessMessage("Module " + moduleName + " still WORKING."));
+      response.addEvent(new MessageEvent(this, new SimpleMessage("Module " + moduleName + " still WORKING.")));
     }
   }
 
+  /**
+   * Gets the commands' response object.
+   *
+   * @return The commands' response object.
+   */
   public CommandResponse getCommandResponse() {
     return response;
   }

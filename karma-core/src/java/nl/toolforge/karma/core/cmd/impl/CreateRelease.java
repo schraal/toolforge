@@ -18,18 +18,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandFactory;
 import nl.toolforge.karma.core.cmd.CommandLoadException;
-import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.CompositeCommand;
-import nl.toolforge.karma.core.cmd.ErrorMessage;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
-import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
+import nl.toolforge.karma.core.cmd.event.ErrorEvent;
+import nl.toolforge.karma.core.cmd.event.MessageEvent;
+import nl.toolforge.karma.core.cmd.event.SimpleMessage;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
@@ -61,7 +59,7 @@ public class CreateRelease extends CompositeCommand {
 
   private static final Log logger = LogFactory.getLog(CreateRelease.class);
 
-  private CommandResponse commandResponse = new ActionCommandResponse();
+  private CommandResponse commandResponse = new CommandResponse();
 
   public CreateRelease(CommandDescriptor descriptor) {
     super(descriptor);
@@ -112,8 +110,8 @@ public class CreateRelease extends CompositeCommand {
     // todo are there any rules for file-names (manifest names ...).
     //
 
-    CommandMessage message = new SuccessMessage(getFrontendMessages().getString("message.CREATE_RELEASE_STARTED"), new Object[]{releaseName});
-    commandResponse.addMessage(message);
+    SimpleMessage message = new SimpleMessage(getFrontendMessages().getString("message.CREATE_RELEASE_STARTED"), new Object[]{releaseName});
+    commandResponse.addEvent(new MessageEvent(this, message));
 
     // Checking manifest
     //
@@ -132,20 +130,20 @@ public class CreateRelease extends CompositeCommand {
 
       if (moduleStatus.connectionFailure()) {
         
-        message = new ErrorMessage(LocationException.CONNECTION_EXCEPTION);
-        getCommandResponse().addMessage(message);
-        message = new SuccessMessage(getFrontendMessages().getString("message.CREATE_RELEASE_FAILED"));
-        getCommandResponse().addMessage(message);
+//        message = new ErrorMessage(LocationException.CONNECTION_EXCEPTION);
+        getCommandResponse().addEvent(new ErrorEvent(this, LocationException.CONNECTION_EXCEPTION));
+        message = new SimpleMessage(getFrontendMessages().getString("message.CREATE_RELEASE_FAILED"));
+        getCommandResponse().addEvent(new MessageEvent(this, message));
 
         return;
       }
       if (!moduleStatus.existsInRepository()) {
 
-        message = new ErrorMessage(VersionControlException.MODULE_NOT_IN_REPOSITORY, new Object[]{module.getName()});
-        getCommandResponse().addMessage(message);
-        message = new SuccessMessage(getFrontendMessages().getString("message.CREATE_RELEASE_FAILED"));
-        getCommandResponse().addMessage(message);
+        getCommandResponse().addEvent(new ErrorEvent(this, VersionControlException.MODULE_NOT_IN_REPOSITORY, new Object[]{module.getName()}));
 
+        // todo message implies an error, should be an error code.
+        message = new SimpleMessage(getFrontendMessages().getString("message.CREATE_RELEASE_FAILED"));
+        getCommandResponse().addEvent(new MessageEvent(this, message));
         return;
       }
     }
@@ -191,8 +189,8 @@ public class CreateRelease extends CompositeCommand {
       }
     }
 
-    message = new SuccessMessage(getFrontendMessages().getString("message.CREATE_RELEASE_FINISHED"), new Object[]{releaseName});
-    commandResponse.addMessage(message);
+    message = new SimpleMessage(getFrontendMessages().getString("message.CREATE_RELEASE_FINISHED"), new Object[]{releaseName});
+    commandResponse.addEvent(new MessageEvent(this, message));
 
     boolean loadManifest = getCommandLine().hasOption("l");
 
@@ -246,19 +244,4 @@ public class CreateRelease extends CompositeCommand {
 
   }
 
-  public void commandResponseFinished(CommandResponseEvent event) {
-    // Finished. Nothing to do.
-  }
-
-  public void commandHeartBeat() {
-    // todo implementation required
-  }
-
-  public void commandResponseChanged(CommandResponseEvent event) {
-    //
-  }
-
-  public void manifestChanged(Manifest manifest) {
-
-  }
 }

@@ -18,21 +18,66 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.event;
 
-import nl.toolforge.karma.core.cmd.CommandMessage;
+import nl.toolforge.karma.core.cmd.Command;
 
 /**
- * Event thrown when a CommandResponse changes. Classes interested in this event implement
- * the {@link CommandResponseListener} interface.
+ * Event thrown when a {@link nl.toolforge.karma.core.cmd.CommandResponse} changes. Classes interested in this event
+ * implement the {@link CommandResponseListener} interface.
+ *
+ * @author W.H.Schraal
+ * @author D.A. Smedes
  */
-public class CommandResponseEvent {
+public abstract class CommandResponseEvent implements Event {
 
-  CommandMessage eventMessage = null;
+  private Command command = null;
 
-  public CommandResponseEvent(CommandMessage eventMessage) {
-    this.eventMessage = eventMessage;
+  private int priority = LEVEL_INFO;
+
+  /**
+   * Constructs a <code>CommandResponseEvent</code> and assumes the default priority to be {@link #LEVEL_INFO}.
+   *
+   * @param command The <code>Command</code> that generated
+   */
+  public CommandResponseEvent(Command command) {
+    this(command, Event.LEVEL_INFO);
   }
 
-  public CommandMessage getEventMessage() {
-    return eventMessage;
+  /**
+   * Constructs a <code>CommandResponseEvent</code>.
+   *
+   * @param command  The <code>Command</code> that generated
+   * @param priority The priority of the event.
+   */
+  public CommandResponseEvent(Command command, int priority) {
+    this.command = command;
+    this.priority = priority;
+  }
+
+  /**
+   * Gets the priority level for the event.
+   *
+   * @return The priority level for the event.
+   *
+   * @see    {@link #LEVEL_VERBOSE}
+   * @see    {@link #LEVEL_INFO}
+   * @see    {@link #LEVEL_DEBUG}
+   */
+  public final int getPriority() {
+    return priority;
+  }
+
+  /**
+   * Implementations should return a specific {@link Message} instance.
+   * @return
+   */
+  public abstract Message getEventMessage();
+
+  /**
+   * Returns the command that generated this event.
+   *
+   * @return The {@link Command} command that generated this event.
+   */
+  public Command getCommand() {
+    return command;
   }
 }

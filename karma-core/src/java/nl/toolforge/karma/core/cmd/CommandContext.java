@@ -24,8 +24,15 @@ import nl.toolforge.core.util.listener.ListenerManagerException;
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.boot.WorkingContext;
+import nl.toolforge.karma.core.bundle.BundleCache;
+import nl.toolforge.karma.core.cmd.event.CommandFailedEvent;
+import nl.toolforge.karma.core.cmd.event.CommandFinishedEvent;
+import nl.toolforge.karma.core.cmd.event.CommandStartedEvent;
+import nl.toolforge.karma.core.cmd.event.MessageEvent;
+import nl.toolforge.karma.core.cmd.event.SimpleMessage;
+import nl.toolforge.karma.core.cmd.event.ErrorEvent;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
-import nl.toolforge.karma.core.cmd.event.ManifestChangedEvent;
+import nl.toolforge.karma.core.cmd.event.ExceptionEvent;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.manifest.Manifest;
@@ -34,8 +41,8 @@ import nl.toolforge.karma.core.manifest.ManifestFactory;
 import nl.toolforge.karma.core.manifest.ManifestLoader;
 import nl.toolforge.karma.core.manifest.ManifestStructure;
 import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.module.ManifestModule;
 import nl.toolforge.karma.core.module.LocationModule;
+import nl.toolforge.karma.core.module.ManifestModule;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
@@ -49,6 +56,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 /**
  * <p>The command context is the class that provides a runtime for commands to run in. The command context maintains
@@ -100,7 +110,7 @@ public final class CommandContext implements ChangeListener {
 
     // todo dit response mechanisme moet wel op de kop in R2.0
     //
-    commandResponse = new ActionCommandResponse();
+    commandResponse = new CommandResponse();
     commandResponse.addCommandResponseListener(handler);
 
     this.handler = handler;
@@ -119,7 +129,7 @@ public final class CommandContext implements ChangeListener {
 
       if (location.isAvailable()) {
 
-        commandResponse.addMessage(new SuccessMessage("Updating manifests ..."));
+        commandResponse.addEvent(new MessageEvent(new SimpleMessage(("Updating manifests ..."))));
 
         // Check if the locally existing manifest module has the same location (cvsroot e.g.) as the
         // requested update.
@@ -138,11 +148,10 @@ public final class CommandContext implements ChangeListener {
           logger.warn(e.getMessage());
           // Nothing serious ...
           //
-          commandResponse.addMessage(new ErrorMessage(KarmaException.MANIFEST_STORE_UPDATE_FAILED));
-          commandResponse.addMessage(new ErrorMessage(e.getErrorCode()));
+          commandResponse.addEvent(new ErrorEvent(KarmaException.MANIFEST_STORE_UPDATE_FAILED));
         }
       } else {
-        handler.commandResponseChanged(new CommandResponseEvent(new ErrorMessage("Manifest store location unreachable!")));
+        handler.commandFinished(new MessageEvent(new SimpleMessage("Manifest store location unreachable!")));
       }
 
       // The location is read from property files.
@@ -157,7 +166,7 @@ public final class CommandContext implements ChangeListener {
 
       if (location.isAvailable()) {
 
-        commandResponse.addMessage(new SuccessMessage("Updating locations ..."));
+        commandResponse.addEvent(new MessageEvent(new SimpleMessage("Updating locations ...")));
 
         // Check if the locally existing manifest module has the same location (cvsroot e.g.) as the
         // requested update.
@@ -176,25 +185,40 @@ public final class CommandContext implements ChangeListener {
           logger.warn(e.getMessage());
           // Nothing serious ...
           //
-          commandResponse.addMessage(new ErrorMessage(KarmaException.LOCATION_STORE_UPDATE_FAILED));
-          commandResponse.addMessage(new ErrorMessage(e.getErrorCode()));
+          commandResponse.addEvent(new ErrorEvent(KarmaException.LOCATION_STORE_UPDATE_FAILED));
         }
       } else {
-        handler.commandResponseChanged(new CommandResponseEvent(new ErrorMessage("Location store location unreachable!")));
+        handler.commandFinished(new MessageEvent(new SimpleMessage("Location store location unreachable!")));
       }
     }
 
-    commandResponse.addMessage(new SuccessMessage("Loading manifest from history ..."));
+    commandResponse.addEvent(new MessageEvent(new SimpleMessage(getFrontendMessages().getString("message.LOADING_MANIFEST_FROM_HISTORY"))));
 
     // Try reloading the last manifest that was used.
     //
     currentManifest = workingContext.getManifestCollector().loadFromHistory();
+
+		SimpleMessage message =
+        new SimpleMessage(getFrontendMessages().getString("message.MANIFEST_ACTIVATED"), new Object[]{currentManifest});
+    commandResponse.addEvent(new MessageEvent(message));
 
     // Register the command context with the listener to allow automaic updates of the manifest.
     //
     if (currentManifest != null) {
       register();
     }
+
+    try {
+      Preferences.userRoot().put(WorkingContext.WORKING_CONTEXT_PREFERENCE, workingContext.getName());
+      Preferences.userRoot().flush();
+    } catch (BackingStoreException e) {
+      // Too bad ...
+    }
+
+  }
+
+  private ResourceBundle getFrontendMessages() {
+    return BundleCache.getInstance().getBundle(BundleCache.FRONTEND_MESSAGES_KEY);
   }
 
 
@@ -263,7 +287,7 @@ public final class CommandContext implements ChangeListener {
         String message = "\nManifest " + getCurrentManifest().getName() + " has changed on disk. Reloaded automatically.\n";
         logger.info(message);
 
-        commandResponse.addMessage(new SuccessMessage(message));
+        commandResponse.addEvent(new MessageEvent(new SimpleMessage(message)));
 
         return;
       }
@@ -275,11 +299,12 @@ public final class CommandContext implements ChangeListener {
       managed = false;
       manager.suspendListener(this);
 
-      commandResponse.addMessage(new ManifestChangedEvent(null));
+//      commandResponse.addMessage(new ManifestChangedEvent(null));
 
-      logger.error(new ErrorMessage(m.getErrorCode()).getMessageText());
+      logger.error(new ErrorEvent(m.getErrorCode()));
 
       // todo in karma-core-1.1 this should be improved. Right now, the probability of this process failing is remote.
+      //
       throw new KarmaRuntimeException(m.getErrorCode(), m.getMessageArguments());
     } catch (Exception e) {
 
@@ -300,7 +325,8 @@ public final class CommandContext implements ChangeListener {
   }
 
   /**
-   * Changes the current manifest for this context.
+   * Changes the current manifest for this context. This method loads the manifest with the <code>manifestName</code>
+   * name.
    *
    * @param manifestName
    * @throws ManifestException When the manifest could not be changed. See {@link ManifestException#MANIFEST_LOAD_ERROR}.
@@ -316,6 +342,19 @@ public final class CommandContext implements ChangeListener {
     currentManifest = newManifest;
 
     register();
+  }
+
+  /**
+   * Changes the current manifest for this context. This method assumes a loaded manifest.
+   *
+   * @param newManifest
+   */
+  public void changeCurrentManifest(Manifest newManifest) {
+    currentManifest = newManifest;
+
+    if (currentManifest != null) {
+      register();
+    }
   }
 
   private boolean managed = false;
@@ -362,6 +401,9 @@ public final class CommandContext implements ChangeListener {
     Command command = null;
     try {
       command = CommandFactory.getInstance().getCommand(commandLine);
+    } catch (CommandException c) {
+      handler.messageLogged(new ErrorEvent(c.getErrorCode(), c.getMessageArguments()));
+      throw c;
     } catch (CommandLoadException e) {
       throw new CommandException(e.getErrorCode(),  e.getMessageArguments());
     }
@@ -387,7 +429,19 @@ public final class CommandContext implements ChangeListener {
     // Register the response handler with this context, so commands have a reference to it.
     //
     //todo what happens when an exception occurs in the execute wrt deregister?
-    command.execute();
+
+    CommandStartedEvent startEvent = new CommandStartedEvent(command);
+    handler.commandStarted(startEvent);
+
+    try {
+      command.execute();
+    } catch (CommandException c) {
+      handler.messageLogged(new ErrorEvent(command, c.getErrorCode(), c.getMessageArguments()));
+      handler.commandFinished(new CommandFailedEvent(command, c));
+      throw c;
+    }
+    handler.commandFinished(new CommandFinishedEvent(command, startEvent.getTime()));
+
     command.deregisterCommandResponseListener(handler);
     command.cleanUp();
   }
@@ -427,4 +481,12 @@ public final class CommandContext implements ChangeListener {
     return new File(workingContext.getDevelopmentHome(), getCurrentManifest().getName());
   }
 
+  /**
+   * Sets the workingContext for this command context.
+   *
+   * @param workingContext
+   */
+  public void setWorkingContext(WorkingContext workingContext) {
+    this.workingContext = workingContext;
+  }
 }

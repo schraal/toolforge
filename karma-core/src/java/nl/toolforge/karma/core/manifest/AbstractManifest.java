@@ -560,4 +560,8 @@ public abstract class AbstractManifest implements Manifest {
       }
     }
   }
+
+  public final String toString() {
+    return getName();
+  }
 }

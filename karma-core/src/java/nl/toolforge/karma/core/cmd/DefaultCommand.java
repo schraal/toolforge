@@ -47,7 +47,7 @@ public abstract class DefaultCommand implements Command {
 	 * @param descriptor The command descriptor instance containing the basic information for this command
 	 */
 	public DefaultCommand(CommandDescriptor descriptor) {
-//    this.descriptor = descriptor;
+
 		if (descriptor == null) {
 			throw new IllegalArgumentException("Command descriptor cannot be null.");
 		}
@@ -80,7 +80,8 @@ public abstract class DefaultCommand implements Command {
 	}
 
 	/**
-	 * Gets a command's alias; the shortcut name for the command.
+	 * Gets a command's alias; the shortcut name for the command. This alias could be a comma-separated String of
+   * aliasses, all of which are valid aliasses.
 	 *
 	 * @return A command's alias as a <code>String</code>.
 	 */
@@ -89,9 +90,9 @@ public abstract class DefaultCommand implements Command {
 	}
 
   /**
-   * Helper.
+   * Helper to get the current <code>WorkingContext</code>.
    *
-   * @return
+   * @return The current <code>WorkingContext</code>.
    */
   public final WorkingContext getWorkingContext() {
     return getContext().getWorkingContext();
@@ -131,6 +132,11 @@ public abstract class DefaultCommand implements Command {
     getCommandResponse().removeCommandReponseListener(responseListener);
   }
 
+  /**
+   * Gets the response listener object for this command.
+   *
+   * @return The response listener object for this command.
+   */
   public final CommandResponseListener getResponseListener() {
     return responseListener;
   }
@@ -169,8 +175,4 @@ public abstract class DefaultCommand implements Command {
   public void cleanUp() {
     // Nothing
   }
-
-//  public CommandDescriptor getDescriptor() {
-//    return descriptor;
-//  }
 }

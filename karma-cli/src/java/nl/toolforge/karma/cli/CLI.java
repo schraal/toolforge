@@ -41,22 +41,10 @@ public final class CLI {
         cli.runCommand(args);
       } catch (CommandException e) {
 
-        // todo the dame ugly way ...
-        //
-        String message;
-        if (e.getMessageArguments() != null && e.getMessageArguments().length != 0) {
-          MessageFormat messageFormat = new MessageFormat(e.getMessage());
-          message = messageFormat.format(e.getMessageArguments());
-        } else {
-          message = e.getMessage();
-        }
-        System.out.println("\n" + message);
-
-        System.out.println("\n");
+        System.out.println("\n" + "[ karma ] " + e.getMessage());
 
         System.exit(1);
       }
-
       System.exit(0);
     } catch (Exception e) {
       System.out.println("-- catch all ---\n");
@@ -85,7 +73,7 @@ public final class CLI {
     WorkingContext workingContext =
         new WorkingContext(Preferences.userRoot().get(WorkingContext.WORKING_CONTEXT_PREFERENCE, WorkingContext.DEFAULT));
 
-    System.out.println("Checking command ...");
+    System.out.println("[ karma ] Checking command ...");
 
     Command command = null;
     try {
@@ -94,16 +82,16 @@ public final class CLI {
       throw new CommandException(e.getErrorCode(),  e.getMessageArguments());
     }
 
-    System.out.println("Command `" + command.getName() + "` ok !");
-    System.out.println("Working context : " + workingContext.getName());
+    System.out.println("[ karma ] Command `" + command.getName() + "` ok !");
+    System.out.println("[ karma ] Working context : " + workingContext.getName());
 
     CommandContext commandContext = new CommandContext(workingContext);
     try {
       commandContext.init(new CLICommandResponseHandler(), updateStores);
     } catch (LocationException e) {
-      System.out.println("\n" + e.getMessage());
+      System.out.println("\n" + "[ karma ] " + e.getMessage());
     } catch (ManifestException e) {
-      System.out.println("\n" + e.getMessage());
+      System.out.println("\n" + "[ karma ] " + e.getMessage());
     }
 
     commandContext.execute(commandLine);

@@ -52,12 +52,19 @@ public class ListManifests extends DefaultCommand {
     super(descriptor);
   }
 
+  /**
+   * Gets the commands' response object.
+   *
+   * @return The commands' response object.
+   */
   public CommandResponse getCommandResponse() {
     return null;
   }
 
   /**
    * Scans the manifest store and parses all manifest files.
+   *
+   * @throws CommandException 
    */
   public void execute() throws CommandException {
 

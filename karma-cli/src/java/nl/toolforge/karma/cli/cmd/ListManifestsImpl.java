@@ -21,21 +21,19 @@ package nl.toolforge.karma.cli.cmd;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.QueryCommandResponse;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.event.MessageEvent;
+import nl.toolforge.karma.core.cmd.event.SimpleMessage;
 import nl.toolforge.karma.core.cmd.impl.ListManifests;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.ManifestHeader;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Command line interface implementation of the {@link ListManifests} command.
@@ -46,7 +44,8 @@ import org.apache.commons.lang.StringUtils;
  */
 public class ListManifestsImpl extends ListManifests {
 
-  CommandResponse commandResponse = new QueryCommandResponse();
+//  CommandResponse commandResponse = new QueryCommandResponse();
+  private CommandResponse commandResponse = new CommandResponse();
 
   public ListManifestsImpl(CommandDescriptor descriptor) throws ManifestException {
     super(descriptor);
@@ -61,7 +60,7 @@ public class ListManifestsImpl extends ListManifests {
     Set headers = getHeaders();
 
     if (headers.size() == 0) {
-      response.addMessage(new SuccessMessage("No manifests found."));
+      response.addEvent(new MessageEvent(this, new SimpleMessage("No manifests found.")));
     } else {
 
       Iterator manifestsIterator = headers.iterator();
@@ -109,7 +108,7 @@ public class ListManifestsImpl extends ListManifests {
 
 //        response.addMessage(new SuccessMessage((String) manifestsIterator.next()));
       }
-      response.addMessage(new SuccessMessage(buffer.toString()));
+      response.addEvent(new MessageEvent(this, new SimpleMessage(buffer.toString())));
     }
 
   }

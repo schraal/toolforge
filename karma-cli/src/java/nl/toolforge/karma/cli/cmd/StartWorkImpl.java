@@ -20,8 +20,8 @@ package nl.toolforge.karma.cli.cmd;
 
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.CommandMessage;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.event.MessageEvent;
+import nl.toolforge.karma.core.cmd.event.SimpleMessage;
 import nl.toolforge.karma.core.cmd.impl.StartWorkCommand;
 
 /**
@@ -35,8 +35,8 @@ public class StartWorkImpl extends StartWorkCommand {
 
   public void execute() throws CommandException {
 
-    CommandMessage message = new SuccessMessage(getFrontendMessages().getString("message.START_WORK_STARTED"), new Object[]{getCommandLine().getOptionValue("m")});
-    response.addMessage(message);
+    SimpleMessage message = new SimpleMessage(getFrontendMessages().getString("message.START_WORK_STARTED"), new Object[]{getCommandLine().getOptionValue("m")});
+    response.addEvent(new MessageEvent(message));
 
     super.execute();
   }

@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
@@ -52,7 +51,7 @@ public class ViewManifest extends DefaultCommand {
   Log logger = LogFactory.getLog(ViewManifest.class);
 
   private List renderedList = null;
-  private CommandResponse commandResponse = new ActionCommandResponse();
+  private CommandResponse commandResponse = new CommandResponse();
 
   public ViewManifest(CommandDescriptor descriptor) {
     super(descriptor);
@@ -157,6 +156,11 @@ public class ViewManifest extends DefaultCommand {
     }
   }
 
+  /**
+   * Gets the commands' response object.
+   *
+   * @return The commands' response object.
+   */
   public CommandResponse getCommandResponse() {
     return this.commandResponse;
   }

@@ -18,18 +18,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.event.MessageEvent;
+import nl.toolforge.karma.core.cmd.event.SimpleMessage;
 import nl.toolforge.karma.core.cmd.util.BuildUtil;
+import nl.toolforge.karma.core.manifest.BaseModule;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.SourceModule;
-import nl.toolforge.karma.core.manifest.BaseModule;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
@@ -49,7 +48,7 @@ public class StartWorkCommand extends DefaultCommand {
 
   private static Log logger = LogFactory.getLog(StartWorkCommand.class);
 
-  protected CommandResponse response = new ActionCommandResponse();
+  protected CommandResponse response = new CommandResponse();
 
   /**
    *
@@ -101,7 +100,7 @@ public class StartWorkCommand extends DefaultCommand {
       //
       // todo message handling to karma-cli ???
       //
-      response.addMessage(new SuccessMessage("Module " + module.getName() + " is already WORKING."));
+      response.addEvent(new MessageEvent(this, new SimpleMessage("Module " + module.getName() + " is already WORKING.")));
 
     } else {
 
@@ -148,8 +147,8 @@ public class StartWorkCommand extends DefaultCommand {
         } catch (IOException e) {
           // todo check this ! these sort of warning's should be handled differently.
           //
-          response.addMessage(
-              new SuccessMessage("WARNING : Build directory could not be deleted. Possible synchronization error."));
+          response.addEvent(
+              new MessageEvent(this, new SimpleMessage("WARNING : Build directory could not be deleted. Possible synchronization error.")));
         }
 
         // Step 3 : determine which modules depend on the module which has just changed state. Based
@@ -170,8 +169,8 @@ public class StartWorkCommand extends DefaultCommand {
         //
         // todo message handling to karma-cli ???
         //
-        response.addMessage(
-            new SuccessMessage("You can start working on module " + module.getName() + "; state changed to WORKING."));
+        response.addEvent(
+            new MessageEvent(this, new SimpleMessage("You can start working on module " + module.getName() + "; state changed to WORKING.")));
 
       } catch (VersionControlException e) {
         throw new CommandException(e.getErrorCode(), e.getMessageArguments());
@@ -179,6 +178,11 @@ public class StartWorkCommand extends DefaultCommand {
     }
   }
 
+  /**
+   * Gets the commands' response object.
+   *
+   * @return The commands' response object.
+   */
   public CommandResponse getCommandResponse() {
     return response;
   }

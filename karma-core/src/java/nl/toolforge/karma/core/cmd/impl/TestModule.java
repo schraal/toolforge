@@ -18,23 +18,22 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandFactory;
 import nl.toolforge.karma.core.cmd.CommandLoadException;
-import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.ErrorMessage;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.event.ErrorEvent;
+import nl.toolforge.karma.core.cmd.event.MessageEvent;
+import nl.toolforge.karma.core.cmd.event.SimpleMessage;
 import nl.toolforge.karma.core.cmd.util.DependencyException;
 import nl.toolforge.karma.core.cmd.util.DependencyHelper;
 import nl.toolforge.karma.core.manifest.ModuleTypeException;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 
 import java.io.File;
 
@@ -51,7 +50,7 @@ public class TestModule extends AbstractBuildCommand {
 
   private static final Log logger = LogFactory.getLog(TestModule.class);
 
-  private CommandResponse commandResponse = new ActionCommandResponse();
+  private CommandResponse commandResponse = new CommandResponse();
 
   public TestModule(CommandDescriptor descriptor) {
     super(descriptor);
@@ -60,8 +59,6 @@ public class TestModule extends AbstractBuildCommand {
   public void execute() throws CommandException {
 
     super.execute();
-
-    CommandMessage message = null;
 
     Command command = null;
     try {
@@ -80,13 +77,11 @@ public class TestModule extends AbstractBuildCommand {
       if (    ce.getErrorCode().equals(CommandException.DEPENDENCY_DOES_NOT_EXIST) ||
           ce.getErrorCode().equals(CommandException.BUILD_FAILED) ||
           ce.getErrorCode().equals(DependencyException.DEPENDENCY_NOT_FOUND) ) {
-        commandResponse.addMessage(new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments()));
+        commandResponse.addEvent(new ErrorEvent(ce.getErrorCode(), ce.getMessageArguments()));
         throw new CommandException(ce, CommandException.TEST_FAILED, new Object[]{module.getName()});
       } else {
-        message = new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments());
-        commandResponse.addMessage(message);
-        message = new ErrorMessage(CommandException.BUILD_WARNING);
-        commandResponse.addMessage(message);
+        commandResponse.addEvent(new ErrorEvent(ce.getErrorCode(), ce.getMessageArguments()));
+        commandResponse.addEvent(new ErrorEvent(CommandException.BUILD_WARNING));
       }
     } catch (CommandLoadException e) {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
@@ -149,10 +144,14 @@ e.printStackTrace();
     }
 
     // todo: localize message
-    message = new SuccessMessage("Module " + getCurrentModule().getName() + " tested succesfully.");
-    commandResponse.addMessage(message);
+    commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Module " + getCurrentModule().getName() + " tested succesfully.")));
   }
 
+  /**
+   * Gets the commands' response object.
+   *
+   * @return The commands' response object.
+   */
   public CommandResponse getCommandResponse() {
     return this.commandResponse;
   }
