@@ -5,9 +5,9 @@
   <target name="run">
 
     <!-- debug -->
-    <echo level="info" message="module-source-dir: ${module-source-dir}"/>
-    <echo level="info" message="module-classpath: ${module-classpath}"/>
-    <echo level="info" message="module-build-dir: ${module-test-dir}"/>
+    <echo level="debug" message="module-source-dir: ${module-source-dir}"/>
+    <echo level="debug" message="module-classpath: ${module-classpath}"/>
+    <echo level="debug" message="module-build-dir: ${module-test-dir}"/>
 
     <mkdir dir="${module-test-dir}/xml"/>
 
