@@ -24,8 +24,6 @@ import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.event.ManifestChangedEvent;
 import nl.toolforge.karma.core.cmd.impl.SelectManifest;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * @author W.H. Schraal
@@ -33,8 +31,6 @@ import org.apache.commons.logging.LogFactory;
  * @version $Id$
  */
 public class SelectManifestImpl extends SelectManifest {
-
-	private static Log logger = LogFactory.getLog(SelectManifestImpl.class);
 
   public SelectManifestImpl(CommandDescriptor descriptor) {
     super(descriptor);
