@@ -1,10 +1,13 @@
 package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.regex.PatternSyntaxException;
+import java.util.Set;
+import java.io.File;
 
 /**
  * The name says it all. This class is the base (template) for a module.
@@ -16,7 +19,6 @@ public abstract class BaseModule implements Module {
 
   protected static Log logger = LogFactory.getLog(BaseModule.class);
 
-  private State state = null;
   private Location location = null;
   private String name = null;
 
@@ -52,34 +54,6 @@ public abstract class BaseModule implements Module {
     return location;
   }
 
-  /**
-   * A <code>SourceModule</code> can be in the three different states as defined in {@link nl.toolforge.karma.core.Module}.
-   *
-   * @param state The (new) state of the module.
-   */
-  public final void setState(State state) {
-
-    // TODO : this one should probably update the file on disk
-    //
-    this.state = state;
-  }
-
-  /**
-   * Gets the modules' current state.
-   *
-   * @return The current state of the module.
-   */
-  public final State getState() {
-    return state;
-  }
-
-  public final String getStateAsString() {
-    return (state == null ? "N/A" : state.toString());
-  }
-
-  // todo getDependencies should throw some exception.
-
-  public abstract String getDependencies();
 
   public abstract String getDependencyName();
 

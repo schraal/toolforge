@@ -95,7 +95,8 @@ public final class CVSRunner implements Runner {
 
     // The default ...
     //
-    this.listener = new BasicListener();
+//    this.listener = new BasicListener();
+    this.listener = new CVSResponseAdapter();
 
     logger.debug("CVSRunner using CVSROOT : " + cvsLocation.toString());
     globalOptions.setCVSRoot(cvsLocation.getCVSRootAsString());
@@ -388,11 +389,11 @@ public final class CVSRunner implements Runner {
    */
   public LogInformation log(Module module) throws CVSException {
 
-    if (!(this.listener instanceof CVSResponseAdapter)) {
-      // todo this stuff sucks, but is a good reminder.
-      throw new KarmaRuntimeException(
-          "Due to the way the Netbeans API works, the CVSRunner must be initialized with a 'CommandResponse' object.");
-    }
+//    if (!(this.listener instanceof CVSResponseAdapter)) {
+//      // todo this stuff sucks, but is a good reminder.
+//      throw new KarmaRuntimeException(
+//          "Due to the way the Netbeans API works, the CVSRunner must be initialized with a 'CommandResponse' object.");
+//    }
 
     if (!(module instanceof SourceModule)) {
       throw new KarmaRuntimeException("Only instances of type SourceModule can use this method.");

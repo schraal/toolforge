@@ -26,16 +26,16 @@ public final class ManifestDependencyBuilder implements DependencyBuilder {
    *
    * @return A ':' separated string with all dependencies for this manifest.
    */
-  public String getDependencies() {
-
-    StringBuffer buf = new StringBuffer();
-
-    Map modules = manifest.getAllModules();
-
-    for (Iterator i = modules.values().iterator(); i.hasNext();) {
-      Module module = (Module) i.next();
-      buf.append(((SourceModule) module).getDependencies());
-    }
-    return buf.toString();
-  }
+//  public String getDependencies() {
+//
+//    StringBuffer buf = new StringBuffer();
+//
+//    Map modules = manifest.getAllModules();
+//
+//    for (Iterator i = modules.values().iterator(); i.hasNext();) {
+//      Module module = (Module) i.next();
+//      buf.append(((SourceModule) module).getDependencies());
+//    }
+//    return buf.toString();
+//  }
 }

@@ -13,7 +13,7 @@ public abstract class VersionControlException extends Exception {
   private ErrorCode errorCode = null;
   private Object[] messageArguments = null;
 
-  public static final String EXCEPTION_PREFIX = "VER-";
+  public static String EXCEPTION_PREFIX = "VER-";
 
   /**
    * A runner instance cannot be created to execute commands on a repository.

@@ -2,6 +2,7 @@ package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.xmlrules.DigesterLoader;
 import org.apache.commons.logging.Log;
@@ -13,6 +14,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.FileInputStream;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,12 +36,13 @@ import java.util.Map;
  */
 public final class Manifest {
 
+  public static final String HISTORY_KEY = "manifest.history.last";
+
   private static Log logger = LogFactory.getLog(Manifest.class);
   private ModuleFactory moduleFactory = ModuleFactory.getInstance();
 
   private static ClassLoader loader = null; // Should be static, to support manifest includes
-
-  private LocalEnvironment env = null; // The current active environment for the user.
+  private static LocalEnvironment env = null; // The current active environment for the user.
 
   private Collection childManifests = new ArrayList();
 
@@ -116,7 +120,7 @@ public final class Manifest {
   }
 
   private void setClassLoader(ClassLoader loader) {
-    this.loader = loader;
+    Manifest.loader = loader;
   }
 
   public ClassLoader getClassLoader() {
@@ -128,7 +132,7 @@ public final class Manifest {
   }
 
   public void setLocalEnvironment(LocalEnvironment env) {
-    this.env = env;
+    Manifest.env = env;
   }
 
   /**
@@ -146,10 +150,8 @@ public final class Manifest {
     }
     setLocalEnvironment(env);
 
-    Digester digester = new Digester();
-
     URL rules = this.getClass().getClassLoader().getResource("manifest-rules.xml");
-    digester = DigesterLoader.createDigester(rules);
+    Digester digester = DigesterLoader.createDigester(rules);
 
     Manifest manifest = null;
     try {
@@ -204,10 +206,8 @@ public final class Manifest {
    */
   public void includeManifest(Manifest child) throws ManifestException {
 
-    Digester digester = new Digester();
-
     URL rules = this.getClass().getClassLoader().getResource("manifest-rules.xml");
-    digester = DigesterLoader.createDigester(rules);
+    Digester digester = DigesterLoader.createDigester(rules);
 
     Manifest manifest = null;
     try {
@@ -250,6 +250,19 @@ public final class Manifest {
   public void addModule(ModuleDescriptor descriptor) throws LocationException, ManifestException {
 
     Module module = moduleFactory.create(descriptor);
+
+    try {
+      if (getLocalEnvironment() != null) {
+        if (module instanceof SourceModule) {
+          File manifestDirectory = new File(getLocalEnvironment().getDevelopmentHome(), getName());
+          ((SourceModule) module).setBaseDir(new File(manifestDirectory, module.getName()));
+        }
+      }
+    } catch(Exception e) {
+      // Basically, if we can't do this, we have nothing ... really a RuntimeException
+      //
+      throw new KarmaRuntimeException("Could not set base directory for module " + module.getName());
+    }
 
     if (getModulesForManifest().containsKey(module.getName())) {
       throw new ManifestException(ManifestException.DUPLICATE_MODULE);
@@ -340,13 +353,13 @@ public final class Manifest {
     return true;
   }
 
-  public File getDirectory() {
+  public  File getDirectory() throws ManifestException {
 
     File file = null;
     try {
-//      file = new File(env.getDevelopmentHome(), getName());
+      file = new File(env.getDevelopmentHome(), getName());
     } catch (Exception e) {
-//      throw new ManifestException(ManifestException.INVALID_LOCAL_PATH, new Object[]{getName()});
+      throw new ManifestException(ManifestException.INVALID_LOCAL_PATH, new Object[]{getName()});
     }
 
     return file;
@@ -396,6 +409,107 @@ public final class Manifest {
     return childManifests;
   }
 
+
+  /**
+   * A <code>Module</code> can be in different states as defined in {@link Module}. This methods sets
+   * the state of the module in its current context of the manifest.
+   *
+   * @param module
+   * @param state The (new) state of the module.
+   */
+  public final synchronized void setState(Module module, Module.State state) throws ManifestException {
+
+    if (module == null || state == null) {
+      throw new IllegalArgumentException("Parameters module and or state cannot be null.");
+    }
+
+    if (!getAllModules().keySet().contains(module.getName())) {
+      throw new ManifestException(ManifestException.MODULE_NOT_FOUND, new Object[] { module.getName() });
+    }
+
+    // The following blocks form a 'transaction'.
+    //
+    try {
+
+      // Remove old state files ...
+      //
+
+      FilenameFilter filter = new FilenameFilter() {
+        public boolean accept(File dir, String name) {
+          if ((name != null) && ((".WORKING".equals(name)) || (".STATIC".equals(name)) || (".DYNAMIC".equals(name)))) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      };
+
+      String[] stateFiles = new File(getDirectory(), module.getName()).list(filter);
+
+      for (int i = 0; i < stateFiles.length; i++) {
+        new File(new File(getDirectory(), module.getName()), stateFiles[i]).delete();
+      }
+
+      File stateFile = new File(new File(getDirectory(), module.getName()), state.getHiddenFileName());
+      stateFile.createNewFile();
+
+    } catch (Exception e) {
+      throw new ManifestException(ManifestException.STATE_UPDATE_FAILURE, new Object[] { module.getName(), state.toString()});
+    }
+
+    // If we were able to create that hidden file, the we'll update the modules' state.
+    //
+    module.setState(state);
+  }
+
+  /**
+   * Checks a modules' state on disk within the context of a manifest.
+   *
+   * @param module
+   * @return
+   * @throws ManifestException
+   */
+  public final Module.State getState(Module module) throws ManifestException {
+
+    FilenameFilter filter = new FilenameFilter() {
+      public boolean accept(File dir, String name) {
+        if ((name != null) && ((".WORKING".equals(name)) || (".STATIC".equals(name)) || (".DYNAMIC".equals(name)))) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    };
+
+    String[] stateFiles = new File(getDirectory(), module.getName()).list(filter);
+
+    if (stateFiles.length > 1) {
+      throw new ManifestException(ManifestException.TOO_MANY_STATE_FILES, new Object[] {module.getName()});
+    }
+
+    if (stateFiles.length == 0) {
+      // Must be DYNAMIC or STATIC, which is true if module instanceof SourceModule (or one of
+      // its descendants) and module.hasVersion() is true.
+      if (module instanceof SourceModule) {
+        if (((SourceModule) module).hasVersion()) {
+          return Module.STATIC;
+        } else {
+          return Module.DYNAMIC;
+        }
+      }
+    } else {
+      // there is exactly one state-file.
+      //
+      if (".WORKING".equals(stateFiles[0])) {
+        return Module.WORKING;
+      }
+    }
+    // todo is this the correct logic ???
+    //
+    throw new ManifestException(ManifestException.INVALID_STATE, new Object[] {module.getName()});
+  }
+
+
   /**
    * Saves the manifest to disk, including all its included manifests.
    */
@@ -437,7 +551,8 @@ public final class Manifest {
       fileName = fileName.substring(fileName.lastIndexOf(File.separator) + 1);
 
       if (getClassLoader() == null) {
-        logger.debug("Loading manifest " + fileName + " from file-system ...");
+        logger.debug(
+            "Loading manifest " + fileName + " from " + getLocalEnvironment().getManifestStore().getPath() + File.separator + fileName);
         FileInputStream fis = null;
         return new FileInputStream(getLocalEnvironment().getManifestStore().getPath() + File.separator + fileName);
       } else {

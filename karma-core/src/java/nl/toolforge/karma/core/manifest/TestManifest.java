@@ -31,7 +31,7 @@ public class TestManifest extends BaseTest {
       assertEquals(5, m.size());
 
     } catch (Exception e) {
-      e.printStackTrace();
+//      e.printStackTrace();
       fail(e.getMessage());
     }
   }

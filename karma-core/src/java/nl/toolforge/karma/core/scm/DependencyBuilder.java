@@ -17,6 +17,6 @@ public interface DependencyBuilder {
    * @return
    * @throws KarmaException When the dependencies could not be determined.
    */
-  public String getDependencies() throws KarmaException;
+//  public String getDependencies() throws KarmaException;
 
 }

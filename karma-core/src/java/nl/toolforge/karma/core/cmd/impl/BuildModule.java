@@ -4,6 +4,7 @@ import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
@@ -15,16 +16,27 @@ import nl.toolforge.karma.core.cmd.ErrorMessage;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
+import org.apache.tools.ant.ProjectHelper;
+import org.apache.tools.ant.BuildListener;
+import org.apache.tools.ant.BuildLogger;
+import org.apache.tools.ant.DefaultLogger;
+import org.apache.tools.ant.helper.ProjectHelperImpl;
 import org.apache.tools.ant.taskdefs.Javac;
 import org.apache.tools.ant.types.FileList;
 import org.apache.tools.ant.types.Path;
 
 import java.io.File;
+import java.util.Set;
+import java.util.Collections;
+import java.util.Arrays;
 
 /**
  * Builds a module in a manifest.
  */
 public class BuildModule extends DefaultCommand {
+
+  private static final String DEFAULT_SRC_PATH = "src/java";
+
   private CommandResponse commandResponse = new ActionCommandResponse();
 
   public BuildModule(CommandDescriptor descriptor) {
@@ -49,66 +61,26 @@ public class BuildModule extends DefaultCommand {
     CommandMessage message = null;
     try {
 
+
+      DefaultLogger logger = new DefaultLogger();
+      logger.setErrorPrintStream(System.out);
+
       // Configure underlying ant to run a command.
       //
       Project project = new Project();
-      project.setName("karma"); // Required
-      project.setDefault("compile"); // Required
+      project.addBuildListener(logger);
+
+//      project.setUserProperty("srcdir", DEFAULT_SRC_PATH);
 
       project.init();
 
-      // A java compile task
-      //
-      Javac task = (Javac) project.createTask("javac");
+      ProjectHelper helper = new ProjectHelperImpl();
+      helper.parse(project, new File(getContext().getLocalPath(module), "build.xml"));
 
-      // Determine the correct classpath and apply it to the Javac task
-      //
-
-      // Here's some logic that should be implemented :
-
-      // If dependency points to a module in the manifest, include 'getContext().getBuildTarget() + <jar-name>' in the
-      // classpath. We assume that if the jar is available, it is up-to-date.
-      //
-      // todo consider this : if the module is in working mode, recompile it ...
-      //
-      // If dependency is a jar dependency, locate the dependency and add the dependencey to the compile classpath.
-      //
-
-      // The structure we want is something like :
-      //
-      // <classpath>
-      //   <path location="${dependent-module-location}/build/AAA_2-0.jar"
-      //   <path location="/home/asmedes/.maven/repository/junit/jars/junit-3.8.1.jar">
-      // </classpath>
-
-      Path classPath = new Path(project);
-
-      FileList deps = new FileList();
-      deps.setFiles(module.getDependencies());
-      classPath.addFilelist(deps);
-
-
-      //
-      //
-
-      // A path should be made for the module at hand
-      //
-
-      Path path = new Path(project);
-      path.setPath(getContext().getLocalPath(module).getPath() + File.separator + "src" + File.separator + "java"); // Path settings determined by CommandContext
-
-      task.setSrcdir(path);
-      task.setDestdir(getContext().getBuildTarget(module)); // Path settings determined by CommandContext
-      task.setClasspath(classPath);
-
-      Target target = new Target();
-      target.setName("compile");
-      target.addTask(task);
-
-      project.addTarget(target);
+      project.setProperty("srcdir", DEFAULT_SRC_PATH);
 
       try {
-        target.execute();
+        project.executeTarget("compile");
       } catch (BuildException e) {
         e.printStackTrace();
       }

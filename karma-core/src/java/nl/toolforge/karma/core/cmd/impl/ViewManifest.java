@@ -1,14 +1,13 @@
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.Manifest;
-import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.QueryCommandResponse;
-import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
 import org.apache.commons.logging.Log;
@@ -28,7 +27,7 @@ public class ViewManifest extends DefaultCommand {
   Log logger = LogFactory.getLog(ViewManifest.class);
 
   private List renderedList = null;
-  private CommandResponse commandResponse = new QueryCommandResponse();
+  private CommandResponse commandResponse = new ActionCommandResponse();
 
   public ViewManifest(CommandDescriptor descriptor) {
     super(descriptor);
@@ -61,14 +60,12 @@ public class ViewManifest extends DefaultCommand {
         if (module.hasVersion()) {
           moduleData[1] = module.getVersionAsString();
           moduleData[2] = "(" + (CVSVersionExtractor.getInstance().getLastVersion(module)).getVersionNumber() + ")";
-        } else {
-          moduleData[1] = "";
-          moduleData[2] = "";
         }
 
       } catch (VersionControlException v) {
-        // todo should I throw this as a CommandException ??
-        logger.error("Version " + module.getVersionAsString() + " is non-existing in repository.");
+        // Version for the module is non-existing in the repository.
+        //
+        throw new CommandException(v.getErrorCode(), v.getMessageArguments());
       }
       moduleData[3] = (module.getDevelopmentLine() == null ? "N/A" : module.getDevelopmentLine().getName());
       moduleData[4] = module.getStateAsString();

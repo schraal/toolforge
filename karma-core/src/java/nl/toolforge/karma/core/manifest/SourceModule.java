@@ -5,6 +5,18 @@ import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
 
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.io.File;
+import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.net.URL;
+
+import org.apache.commons.digester.Digester;
+import org.apache.commons.digester.xmlrules.DigesterLoader;
+import org.apache.maven.project.Dependency;
+import org.xml.sax.SAXException;
 
 /**
  * <p>A <code>SourceModule</code> represents a module for which the developer wants to have the sources available to
@@ -24,8 +36,10 @@ public class SourceModule extends BaseModule {
    */
   public static final String MODULE_INFO = "module.info";
 
+  private State state = null;
   private Version version = null;
   private DevelopmentLine developmentLine = null;
+  private File baseDir = null;
   protected static List dependencies = null; // Lazy loading, the first time it is initialized and cached.
 
   /**
@@ -51,7 +65,7 @@ public class SourceModule extends BaseModule {
   }
 
   public SourceModule(String name, Location location, Version version, DevelopmentLine line) {
-    
+
     this(name, location);
 
     this.version = version;
@@ -109,7 +123,108 @@ public class SourceModule extends BaseModule {
       return getName() + "_" + WORKING;
   }
 
-  public String getDependencies() {
-    throw new RuntimeException("Not implemented yet.");
+  /**
+   * When initialized by <code>Manifest</code>, a module is assigned its base directory, relative to the manifest. The
+   * base directory is used internally for base-directory-aware methods.
+   *
+   * @param baseDir
+   */
+  public final void setBaseDir(File baseDir) {
+
+    if (baseDir == null) {
+      throw new IllegalArgumentException("If you use it, initialize it with a valid 'File' instance ...");
+    }
+    this.baseDir = baseDir;
+  }
+
+  private File getBaseDir() {
+    return baseDir;
+  }
+
+  public String getDependencies() throws ManifestException {
+
+    // For now, we assume each module has a project.xml, modelled as per the Maven definition.
+    //
+    Set deps = new HashSet();
+
+//    URL rules = this.getClass().getClassLoader().getResource("maven-project-rules.xml");
+//    Digester digester = DigesterLoader.createDigester(rules);
+
+    // Read in the base dependency structure of a Maven project.xml file
+    //
+    Digester digester = new Digester();
+
+    digester.addObjectCreate("*/dependencies", "java.util.HashSet");
+
+//    Dependency d = null;
+//    d.set
+
+    digester.addObjectCreate("*/dependency", "org.apache.maven.project.Dependency");
+
+    digester.addCallMethod("*/dependency/groupId", "setGroupId", 1);
+    digester.addCallParam("*/dependency/groupId", 0);
+
+    digester.addCallMethod("*/dependency/id", "setId", 1);
+    digester.addCallParam("*/dependency/id", 0);
+
+    digester.addCallMethod("*/dependency/version", "setVersion", 1);
+    digester.addCallParam("*/dependency/version", 0);
+
+    digester.addCallMethod("*/dependency/artifactId", "setArtifactId", 1);
+    digester.addCallParam("*/dependency/artifactId", 0);
+
+    digester.addSetNext("*/dependency", "add", "org.apache.maven.project.Dependency");
+
+    try {
+      // Load 'project.xml'
+      //
+      deps = (Set) digester.parse(new File(getBaseDir(), "project.xml"));
+    } catch (IOException e) {
+      if (e instanceof FileNotFoundException) {
+        throw new ManifestException(e, ManifestException.DEPENDENCY_FILE_NOT_FOUND);
+      }
+      throw new ManifestException(e, ManifestException.DEPENDENCY_FILE_NOT_FOUND);
+    } catch (SAXException e) {
+      if (e.getException() instanceof ManifestException) {
+        // It was already a ManifestException
+        //
+        throw new ManifestException(((ManifestException) e.getException()).getErrorCode());
+      }
+      throw new ManifestException(e, ManifestException.DEPENDENCY_FILE_NOT_FOUND);
+    }
+
+    StringBuffer buffer = new StringBuffer();
+    String userHome = System.getProperty("user.home");
+
+    for (Iterator iterator = deps.iterator(); iterator.hasNext();) {
+      Dependency dep = (Dependency) iterator.next();
+
+      String jar = userHome + File.separator + ".maven" + File.separator + "repository" + File.separator;
+
+      jar += dep.getArtifactId() + "-" + dep.getVersion() + ".jar";
+
+      buffer.append(jar);
+      if (iterator.hasNext()) {
+        buffer.append(";");
+      }
+    }
+
+    return buffer.toString();
+  }
+
+  public void setState(State state) {
+
+    if (state == null) {
+      throw new IllegalArgumentException("Parameter state cannot be null.");
+    }
+    this.state = state;
+  }
+
+  public final State getState() {
+    return state;
+  }
+
+  public final String getStateAsString() {
+    return (state == null ? "N/A" : state.toString());
   }
 }

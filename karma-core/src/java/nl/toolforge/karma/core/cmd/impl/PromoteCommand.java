@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
@@ -10,7 +11,9 @@ import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionExtractor;
+import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
+import nl.toolforge.karma.core.vc.cvs.CVSException;
 
 /**
  * Implementation of the 'codeline freeze' concept. Karma increases a modules' version (using whichever pattern is
@@ -32,7 +35,8 @@ public class PromoteCommand extends DefaultCommand {
 	/**
 	 * Promotes a module to the next version number in the branch it is active in within the active manifest.
 	 */
-	public void execute() {
+	public void execute() throws CommandException {
+
     try {
 
       String moduleName = getCommandLine().getOptionValue("m");
@@ -58,11 +62,13 @@ public class PromoteCommand extends DefaultCommand {
       runner.tag(module, nextVersion);
 
       this.newVersion = nextVersion;
-    } catch (Exception e) {
-      //todo proper exception handling
-      e.printStackTrace();
+
+    } catch (ManifestException e) {
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+    } catch (VersionControlException e) {
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
-	}
+  }
 
   public CommandResponse getCommandResponse() {
     return this.commandResponse;

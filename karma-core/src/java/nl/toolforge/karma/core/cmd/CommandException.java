@@ -25,14 +25,14 @@ public class CommandException extends Exception {
 	public static final ErrorCode MODULE_NOT_IN_MANIFEST = new ErrorCode(EXCEPTION_PREFIX + "00010");
 
   /** The module has no version attribute. */
-  public static final ErrorCode MODULE_WITHOUT_VERSION = new ErrorCode("CMD-00011");
+  public static final ErrorCode MODULE_WITHOUT_VERSION = new ErrorCode(EXCEPTION_PREFIX + "00011");
 
 	/**
 	 * Used when a duplicate status update is added to a command response.
 	 *
 	 * @see CommandResponse#addStatusUpdate
 	 */
-	public static final ErrorCode DUPLICATE_COMMAND_STATUS = new ErrorCode("CMD-00020");
+	public static final ErrorCode DUPLICATE_COMMAND_STATUS = new ErrorCode(EXCEPTION_PREFIX + "00020");
 
 	/**
 	 * The command that is requested by <code>CommandFactory</code> is invalid. The command could
@@ -40,23 +40,30 @@ public class CommandException extends Exception {
 	 *
 	 * @see CommandFactory#getCommand
 	 */
-	public static final ErrorCode INVALID_COMMAND = new ErrorCode("CMD-00030");
+	public static final ErrorCode INVALID_COMMAND = new ErrorCode(EXCEPTION_PREFIX + "00030");
 
 	/**
 	 * A required option (see &lt;required&gt;-attributes for options in <code>commands.xml</code>.
 	 */
-	public static ErrorCode MISSING_OPTION = new ErrorCode("CMD-00031");
+	public static ErrorCode MISSING_OPTION = new ErrorCode(EXCEPTION_PREFIX + "00031");
 
 	/**
 	 * Argument for a command option is missing.
 	 */
-	public static ErrorCode MISSING_ARGUMENT = new ErrorCode("CMD-00032");
+	public static ErrorCode MISSING_ARGUMENT = new ErrorCode(EXCEPTION_PREFIX + "00032");
 
   /** The build of a module failed. */
-	public static final ErrorCode BUILD_FAILED = new ErrorCode("CMD-00040");
+	public static final ErrorCode BUILD_FAILED = new ErrorCode(EXCEPTION_PREFIX + "00040");
 
-//  public static ErrorCode
+  /**
+   * When the module has a version-attribute and is therefor STATIC. Not allowed to start work on this module.
+   */
+	public static final ErrorCode START_WORK_NOT_ALLOWED_ON_STATIC_MODULE = new ErrorCode(EXCEPTION_PREFIX + "00041");
 
+  /**
+   * When the module is not (a descendant of) <code>SourceModule</code>. Not allowed to start work on this module.
+   */
+  public static final ErrorCode MODULE_TYPE_MUST_BE_SOURCEMODULE = new ErrorCode(EXCEPTION_PREFIX + "00042");
 
   public CommandException(ErrorCode errorCode) {
     this(errorCode, null);

@@ -91,6 +91,8 @@ public class UpdateModuleCommand extends DefaultCommand {
     } catch (VersionControlException e) {
 //        response.addMessage(new ErrorMessage(e, new Object[]{moduleName, module.getLocation().getId()}));
       throw new CommandException(e.getErrorCode());
+    } catch (ManifestException e) {
+     throw new CommandException(e.getErrorCode());
     }
 
     // todo message to be internationalized.

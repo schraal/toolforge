@@ -13,7 +13,14 @@ import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.ModuleDescriptor;
+import nl.toolforge.karma.core.manifest.ModuleFactory;
+import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.KarmaException;
 import org.apache.commons.cli.CommandLine;
+
+import java.io.File;
 
 /**
  * Creates a module in a repository. The command provides the option to create the module in the current manifest as
@@ -24,6 +31,7 @@ import org.apache.commons.cli.CommandLine;
  * @since 2.0
  */
 public class CreateModuleCommand extends DefaultCommand {
+  
   private CommandResponse commandResponse = new ActionCommandResponse();
 
   public CreateModuleCommand(CommandDescriptor descriptor) {
@@ -43,38 +51,18 @@ public class CreateModuleCommand extends DefaultCommand {
 
     // Part 1 of the transaction is the creation of a Module instance.
     //
-
-    // The manifest itself is responsible for creating new modules.
-    //
-//		Module module = null;
-//		if (include) {
-//			// Include the module in the manifest
-//			//
-//			if (!getContext().isManifestLoaded()) {
-//				throw new CommandException(CommandException.NO_MANIFEST_SELECTED);
-//			}
-//
-//			module = getContext().getCurrent().createModule(moduleName, locationAlias, true);
-//
-//		} else {
-//			// Just create the module
-//			//
-//			module = ModuleFactory.getInstance().createModule(Module.SOURCE_MODULE, moduleName, locationAlias);
-//		}
-
+    ModuleDescriptor descriptor = new ModuleDescriptor(moduleName, "src", locationAlias);
     Module module = null;
-//    try {
-//      module = ModuleFactory.getInstance().createModule(moduleName, locationAlias);
-//    } catch (LocationException l) {
-//      throw new CommandException(l.getErrorCode(), l.getMessageArguments());
-//    } catch (ManifestException l) {
-//      throw new CommandException(l.getErrorCode(), l.getMessageArguments());
-//    }
+    try {
+      module = ModuleFactory.getInstance().create(descriptor);
+    } catch (LocationException e) {
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+    }
 
     try {
       // Part 2 of the transaction is the creation in a version control system.
       //
-      Runner runner = RunnerFactory.getRunner(module, getContext().getCurrent().getDirectory());
+      Runner runner = RunnerFactory.getRunner(module, getContext().getLocalEnvironment().getDevelopmentHome());
       runner.setCommandResponse(getCommandResponse());
       runner.create(module);
 
@@ -87,10 +75,12 @@ public class CreateModuleCommand extends DefaultCommand {
       // Ensure that only this message is passed back to the client
       //
       commandResponse.addMessage(new SuccessMessage(message.getMessageText()));
-    } catch (VersionControlException ke) {
-      throw new CommandException(ke.getErrorCode(), ke.getMessageArguments());
+    } catch (VersionControlException e) {
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
       //commandResponse.addMessage(new ErrorMessage(ke));
-    } 
+    } catch (KarmaException e) {
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+    }
   }
 
   public CommandResponse getCommandResponse() {
