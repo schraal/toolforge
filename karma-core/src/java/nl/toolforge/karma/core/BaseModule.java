@@ -10,7 +10,7 @@ import java.io.File;
  * The name says it all. This class is the base (template) for a module.
  *
  * @author D.A. Smedes
- * @version $Id:
+ * @version $Id$
  */
 public abstract class BaseModule implements Module {
 

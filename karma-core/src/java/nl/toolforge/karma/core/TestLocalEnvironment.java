@@ -7,6 +7,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * @version $Id$
+ */
 public final class TestLocalEnvironment extends TestCase {
 	private static File f1;
 	private static File f2;

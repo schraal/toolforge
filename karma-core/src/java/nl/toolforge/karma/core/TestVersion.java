@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * @version $Id$
+ */
 public class TestVersion extends TestCase {
 
 	public void testConstuctor1() {

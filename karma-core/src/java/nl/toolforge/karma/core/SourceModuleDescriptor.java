@@ -7,7 +7,7 @@ import nl.toolforge.karma.core.vc.DevelopmentLine;
  * Object representation of a <code>&lt;sourcemodule&gt;</code>-element in a manifest file.
  *
  * @author D.A. Smedes
- * @version $Id:
+ * @version $Id$
  */
 public class SourceModuleDescriptor extends ModuleDescriptor {
 

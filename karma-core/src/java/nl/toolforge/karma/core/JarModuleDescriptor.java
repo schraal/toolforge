@@ -6,7 +6,7 @@ import nl.toolforge.karma.core.location.Location;
  * Object representation of a <code>&lt;jarmodule&gt;</code>-element in a manifest file.
  *
  * @author D.A. Smedes
- * @version $Id:
+ * @version $Id$
  */
 public class JarModuleDescriptor extends ModuleDescriptor {
 

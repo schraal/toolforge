@@ -7,7 +7,7 @@ import nl.toolforge.karma.core.location.Location;
  * specific information.
  *
  * @author D.A. Smedes
- * @version $Id:
+ * @version $Id$
  */
 public abstract class ModuleDescriptor {
 

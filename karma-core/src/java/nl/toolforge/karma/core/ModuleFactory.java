@@ -9,7 +9,6 @@ import nl.toolforge.karma.core.location.LocationFactory;
  *
  * @author D.A. Smedes
  * @version $Id$
- * @since 2.0
  */
 public class ModuleFactory {
 

@@ -10,6 +10,7 @@ import java.io.File;
  * <code>&lt;mavenmodule&gt;</code>s are used. This class is called
  *
  * @author D.A. Smedes
+ * @version $Id$
  */
 public final class MavenEnvironment {
 

@@ -7,6 +7,14 @@ import org.apache.maven.project.Dependency;
 import java.io.File;
 import java.util.Iterator;
 
+/**
+ * <p>This type of module represents a module from a Maven project.
+ *
+ * <p>Maven versions supported: <code>maven-1.0-rc2</code>.
+ *
+ * @author D.A. Smedes
+ * @version $Id$
+ */
 public class MavenModule extends SourceModule {
 
   public MavenModule(MavenModuleDescriptor descriptor, File manifestDirectory) throws ManifestException {
