@@ -4,11 +4,15 @@
 
   <postGoal name="jar:install">
 
+    <delete>
+      <fileset dir="./lib" includes="karma-cli-*.jar"/>
+    </delete>
+
     <ant:copy
       file="${maven.build.dir}/${maven.final.name}.jar"
       todir="./lib/"
       overwrite="true"
-    />
+      />
   </postGoal>
 
 </project>
