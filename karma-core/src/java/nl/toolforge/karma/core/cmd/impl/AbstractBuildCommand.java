@@ -189,8 +189,12 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
       // todo move this bit to aspect-code.
       //
       Manifest currentManifest = getContext().getCurrentManifest();
-
       module = currentManifest.getModule(moduleName);
+
+      if (module == null) {
+        throw new CommandException(ManifestException.MODULE_NOT_FOUND, new Object[]{module.getName()});
+      }
+
       if (!currentManifest.isLocal(module)) {
         throw new CommandException(ManifestException.MODULE_NOT_LOCAL, new Object[]{module.getName()});
       }
@@ -463,20 +467,6 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
       project.init();
 
     }
-
-//    // Read in the build.xml file
-//    //
-//    ProjectHelper helper = new ProjectHelperImpl();
-//    File tmp = null;
-//    try {
-//      tmp = getBuildFile("build-module.xml");
-//      helper.parse(project, tmp);
-//    } catch (IOException e) {
-//      throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {module.getName()});
-//    }
-//
-//    setBuildFileLocation(tmp);
-
 
     return project;
   }

@@ -38,7 +38,7 @@ public class Patch extends Version {
    *
    * @see Version.INITIAL_VERSION
    */
-  public static Version INITIAL_VERSION = new Patch("0-0-0");
+  public static Version INITIAL_VERSION = new Patch("0-0-1");
 
   /**
    * Patches have the following format : <code>0-0-x</code>, where x is the actual patch number within the

@@ -29,6 +29,9 @@ import nl.toolforge.karma.core.manifest.ManifestException;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -57,6 +60,8 @@ public class ListManifestsImpl extends ListManifests {
       response.addMessage(new SuccessMessage("No manifests found."));
     } else {
 
+      List manifestList = new ArrayList();
+
       Iterator manifestsIterator = manifests.iterator();
       String manifest;
       int index;
@@ -66,12 +71,20 @@ public class ListManifestsImpl extends ListManifests {
         index = manifest.indexOf(".xml");
         String manifestName = manifest.substring(0, index);
         if ((currentManifest != null) && manifestName.equals(currentManifest.getName())) {
-          response.addMessage(new SuccessMessage(" -> "+manifestName+" (selected)"));
+          manifestList.add(" -> " + manifestName + " ** current manifest **");
         } else {
-          response.addMessage(new SuccessMessage(" -  "+manifestName));
+          manifestList.add(" -  " + manifestName + " ");
         }
       }
+
+      Collections.sort(manifestList);
+
+      manifestsIterator = manifestList.iterator();
+      while (manifestsIterator.hasNext()) {
+        response.addMessage(new SuccessMessage((String) manifestsIterator.next()));
+      }
     }
+
   }
 
   public CommandResponse getCommandResponse() {

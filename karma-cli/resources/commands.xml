@@ -14,8 +14,8 @@
       <option opt="d" longOpt="development-manifest" required="false" description="The manifest name (development manifest)">
         <arg name="manifest-name"/>
       </option>
-      <option opt="l" longOpt="load-manifest" required="false" description="Load the release manifest.">
-      </option>
+      <option opt="l" longOpt="load-manifest" required="false" description="Load the release manifest."/>
+      <option opt="o" longOpt="overwrite" required="false" description="Force overwrite of the manifest file."/>
     </options>
 
     <classname>nl.toolforge.karma.core.cmd.impl.CreateRelease</classname>
@@ -305,22 +305,6 @@
 			are downloaded from the manifest repository and put on the local file system. The list-manifests command
 			lists these local manifests. Only these manifests are available for the Karma runtime.
     </help>
-  </command>
-
-  <command name="quit" alias="q exit bye later">
-    <description>Exit the almighty Karma platform</description>
-    <options/>
-    <classname>nl.toolforge.karma.cli.cmd.ExitCleanImpl</classname>
-    <dependencies/>
-    <help/>
-  </command>
-
-  <command name="help" alias="?">
-    <description>Karma Guru</description>
-    <options/>
-    <classname>nl.toolforge.karma.cli.cmd.HelpImpl</classname>
-    <dependencies/>
-    <help/>
   </command>
 
 </commands>

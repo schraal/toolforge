@@ -9,6 +9,7 @@ import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.types.Path;
 import org.apache.tools.ant.taskdefs.Javadoc;
 import org.apache.tools.ant.taskdefs.Echo;
 
@@ -34,24 +35,30 @@ public class DocModule extends AbstractBuildCommand {
     try {
       Project project = getProjectInstance();
 
-      Echo blaat = new Echo();
-      blaat.setProject(project);
-      blaat.addText("blaat");
-      blaat.execute();
+//      Echo blaat = new Echo();
+//      blaat.setProject(project);
+//      blaat.addText("blaat");
+//      blaat.execute();
 
-//      Javadoc javadoc = new Javadoc();
-//      javadoc.setProject(project);
-//      javadoc.setAuthor(true);
-//      javadoc.setDestdir(getModuleBuildDirectory());
+      Javadoc javadoc = new Javadoc();
+      javadoc.setProject(project);
+      javadoc.setAuthor(true);
+      javadoc.setDestdir(getModuleBuildDirectory());
+
+      Path path = new Path(project);
+      path.setPath(getSourceDirectory().getPath());
+
+      javadoc.setSourcepath(path);
+      javadoc.setSourcefiles("*.java");
 //      javadoc.setSource(getSourceDirectory().getPath());
-//      javadoc.setPackagenames("nl.*");
-//
-//      javadoc.execute();
+      javadoc.setPackagenames("nl/*");
+
+      javadoc.execute();
 
     } catch (BuildException e) {
       e.printStackTrace();
-//    } catch (ManifestException e) {
-//      e.printStackTrace();
+    } catch (ManifestException e) {
+      e.printStackTrace();
     }
 
     //To change body of implemented methods use File | Settings | File Templates.

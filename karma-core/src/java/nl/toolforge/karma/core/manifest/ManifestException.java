@@ -86,7 +86,7 @@ public class ManifestException extends Exception {
   /**
    * The manifest should be a development manifest.
    */
-  public static final ErrorCode NOT_A_DEVELOPMENT_MANIFEST = new ErrorCode(EXCEPTION_PREFIX + "00017");
+//  public static final ErrorCode NOT_USED = new ErrorCode(EXCEPTION_PREFIX + "00017");
 
   public static final ErrorCode DUPLICATE_MANIFEST_FILE = new ErrorCode(EXCEPTION_PREFIX + "00018");
 

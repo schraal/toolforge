@@ -18,21 +18,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest;
 
-import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.threads.ParallelRunner;
 import nl.toolforge.karma.core.vc.cvs.AdminHandler;
 import nl.toolforge.karma.core.vc.cvs.Utils;
-import nl.toolforge.karma.core.vc.cvs.threads.CVSLogThread;
 import nl.toolforge.karma.core.vc.cvs.threads.PatchLineThread;
+import nl.toolforge.karma.core.vc.threads.ParallelRunner;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

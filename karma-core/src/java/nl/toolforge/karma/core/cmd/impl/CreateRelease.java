@@ -82,25 +82,21 @@ public class CreateRelease extends CompositeCommand {
       }
     }
 
-    // The manifest that you want to release has to be a development manifest
-    //
-    if (!releaseManifest.getType().equals(Manifest.DEVELOPMENT_MANIFEST)) {
-      throw new CommandException(ManifestException.NOT_A_DEVELOPMENT_MANIFEST, new Object[] {releaseManifest.getName()});
-    }
-
     String releaseName = getCommandLine().getOptionValue("r");
-
-    // todo are there any rules for file-names (manifest names ...).
-    //
 
     File releaseManifestFile = new File(LocalEnvironment.getManifestStore(), releaseName + ".xml");
 
     if (releaseManifestFile.exists()) {
-      throw new CommandException(
-          ManifestException.DUPLICATE_MANIFEST_FILE,
-          new Object[] {releaseName, LocalEnvironment.getManifestStore().getPath()}
-      );
+      if (!getCommandLine().hasOption("o")) {
+        throw new CommandException(
+            ManifestException.DUPLICATE_MANIFEST_FILE,
+            new Object[] {releaseName, LocalEnvironment.getManifestStore().getPath()}
+        );
+      }
     }
+
+    // todo are there any rules for file-names (manifest names ...).
+    //
 
     CommandMessage message = new SuccessMessage(getFrontendMessages().getString("message.CREATE_RELEASE_STARTED"), new Object[]{releaseName});
     commandResponse.addMessage(message);
