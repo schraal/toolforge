@@ -1,6 +1,6 @@
 package nl.toolforge.karma.cli;
 
-import nl.toolforge.karma.core.Manifest;
+import nl.toolforge.karma.core.manifest.Manifest;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Calendar;

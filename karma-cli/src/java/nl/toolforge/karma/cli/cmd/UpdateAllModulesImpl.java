@@ -23,10 +23,8 @@ public class UpdateAllModulesImpl extends UpdateAllModulesCommand {
     super(descriptor);
   }
 
-  public void execute() {
-
+  public void execute() throws CommandException {
     super.execute();
-
   }
 
 }

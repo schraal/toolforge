@@ -20,7 +20,7 @@ public class UpdateModuleImpl extends UpdateModuleCommand {
     super(descriptor);
   }
 
-  public void execute() {
+  public void execute() throws CommandException {
     super.execute();
   }
 

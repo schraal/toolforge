@@ -11,7 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import nl.toolforge.karma.cli.cmd.CLICommandResponseHandler;
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.LocalEnvironment;
-import nl.toolforge.karma.core.Manifest;
+import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.bundle.BundleCache;
 import nl.toolforge.karma.core.cmd.CommandContext;
 import nl.toolforge.karma.core.cmd.CommandFactory;

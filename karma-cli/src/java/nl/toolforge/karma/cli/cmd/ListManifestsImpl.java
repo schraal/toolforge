@@ -1,15 +1,16 @@
 package nl.toolforge.karma.cli.cmd;
 
-import java.util.Iterator;
-import java.util.Set;
-
-import nl.toolforge.karma.core.ManifestException;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
 import nl.toolforge.karma.core.cmd.QueryCommandResponse;
-import nl.toolforge.karma.core.cmd.CommandResponseHandler;
+import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
+import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.impl.ListManifests;
+import nl.toolforge.karma.core.manifest.ManifestException;
+
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Collection;
 
 /**
  * Command line interface implementation of the {@link ListManifests} command.
@@ -26,11 +27,11 @@ public class ListManifestsImpl extends ListManifests {
 		super(descriptor);
 	}
 
-	public void execute() {
+	public void execute() throws CommandException {
     try {
       CommandResponse response = getCommandResponse();
 
-      Set manifests = getContext().getAllManifests();
+      Collection manifests = getContext().getAllManifests();
 
       Iterator manifestsIterator = manifests.iterator();
       while (manifestsIterator.hasNext()) {

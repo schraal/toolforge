@@ -1,17 +1,16 @@
 package nl.toolforge.karma.cli.cmd;
 
-import java.util.Iterator;
-import java.util.List;
-import org.apache.commons.lang.StringUtils;
-
-import nl.toolforge.karma.core.ManifestException;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.CommandResponseHandler;
 import nl.toolforge.karma.core.cmd.QueryCommandResponse;
 import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
-import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.impl.ViewManifest;
+import nl.toolforge.karma.core.manifest.ManifestException;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author D.A. Smedes
