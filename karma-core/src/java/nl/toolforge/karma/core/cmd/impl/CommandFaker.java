@@ -1,9 +1,9 @@
 package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.CommandDescriptor;
 
 /**
  * <p>Bogus implementation of {@link nl.toolforge.karma.core.cmd.DefaultCommand}. Used in testcases.

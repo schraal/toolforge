@@ -2,8 +2,8 @@ package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.ManifestException;
-import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import nl.toolforge.karma.core.cmd.DefaultCommand;
 
 import java.util.Set;
 

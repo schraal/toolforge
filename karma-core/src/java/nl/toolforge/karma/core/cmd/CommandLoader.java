@@ -141,7 +141,11 @@ public final class CommandLoader {
           String explanation = commandElement.getElementsByTagName("description").item(0).getFirstChild().getNodeValue();
 
           CommandDescriptor descriptor = new CommandDescriptor(commandName, alias, clazzName);
-          if (options != null) { descriptor.setOptions(options); }
+          if (options != null) {
+						descriptor.setOptions(options);
+					} else {
+						descriptor.setOptions(new Options());
+					}
           descriptor.setDescription(explanation);
 
           // TODO : dependencies should be added. Might not be required for version 2.0 (CVS support only)

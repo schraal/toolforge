@@ -85,4 +85,8 @@ public abstract class BaseModule implements Module {
 	public final State getState() {
 		return state;
 	}
+
+	public final String getStateAsString() {
+		return (state == null ? "N/A" : state.toString());
+	}
 }

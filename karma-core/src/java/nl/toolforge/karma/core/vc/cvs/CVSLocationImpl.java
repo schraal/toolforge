@@ -2,13 +2,10 @@ package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.location.BaseLocation;
 import nl.toolforge.karma.core.location.Location;
-
-import java.io.File;
-import java.util.Locale;
-
-import org.netbeans.lib.cvsclient.CVSRoot;
 import org.netbeans.lib.cvsclient.connection.Connection;
 import org.netbeans.lib.cvsclient.connection.ConnectionFactory;
+
+import java.util.Locale;
 
 /**
  * <p>Class representing a location to a CVS repository. This class is not the 'real' connection, as that is handled

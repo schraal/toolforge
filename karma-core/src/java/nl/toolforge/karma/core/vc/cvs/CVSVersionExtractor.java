@@ -1,13 +1,11 @@
 package nl.toolforge.karma.core.vc.cvs;
 
-import nl.toolforge.karma.core.vc.VersionExtractor;
-import nl.toolforge.karma.core.vc.Runner;
-import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.SourceModule;
 import nl.toolforge.karma.core.cmd.CommandContext;
 import nl.toolforge.karma.core.cmd.CommandException;
-import org.netbeans.lib.cvsclient.command.log.LogCommand;
+import nl.toolforge.karma.core.vc.VersionExtractor;
 import org.netbeans.lib.cvsclient.command.log.LogInformation;
 
 /**

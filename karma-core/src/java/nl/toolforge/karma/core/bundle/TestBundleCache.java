@@ -1,12 +1,10 @@
 package nl.toolforge.karma.core.bundle;
 
 import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.prefs.Preferences;
 import nl.toolforge.karma.core.test.BaseTest;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.MissingResourceException;
 
 /**
  * Test class for {@link BundleCache}.

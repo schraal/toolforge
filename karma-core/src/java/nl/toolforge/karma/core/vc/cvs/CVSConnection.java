@@ -2,8 +2,6 @@ package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.location.Location;
-import org.netbeans.lib.cvsclient.connection.PServerConnection;
-import org.netbeans.lib.cvsclient.connection.StandardScrambler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

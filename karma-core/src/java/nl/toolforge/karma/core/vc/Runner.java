@@ -1,11 +1,7 @@
 package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.Module;
-import nl.toolforge.karma.core.vc.cvs.CVSException;
-import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-
-import java.io.File;
 
 /**
  * This interface defines methods for runner classes that perform actions on a physical version control system.

@@ -2,8 +2,6 @@ package nl.toolforge.karma.core;
 
 import nl.toolforge.karma.core.location.Location;
 
-import java.io.File;
-
 
 /**
  * <p>A module is an important concept for the Karma tool. It represents a main building block of an application system.

@@ -3,8 +3,8 @@ package nl.toolforge.karma.core.cmd.impl;
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.ModuleFactory;
-import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.cmd.*;
+import nl.toolforge.karma.core.vc.Runner;
 import org.apache.commons.cli.CommandLine;
 
 /**

@@ -2,8 +2,6 @@ package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
 
-import java.util.Collection;
-
 /**
  * Message implementation for CVS messages.
  *

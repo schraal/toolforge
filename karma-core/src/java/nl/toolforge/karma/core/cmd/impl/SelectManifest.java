@@ -1,7 +1,10 @@
 package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.ManifestException;
-import nl.toolforge.karma.core.cmd.*;
+import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.DefaultCommand;
+import nl.toolforge.karma.core.cmd.SimpleCommandResponse;
 
 /**
  * This command activates a manifest, which is a general requirement for most other commands. The newly activated

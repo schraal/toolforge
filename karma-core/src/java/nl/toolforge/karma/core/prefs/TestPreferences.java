@@ -1,7 +1,7 @@
 package nl.toolforge.karma.core.prefs;
 
-import nl.toolforge.karma.core.test.BaseTest;
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.test.BaseTest;
 
 import java.io.File;
 

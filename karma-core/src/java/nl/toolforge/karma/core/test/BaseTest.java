@@ -1,10 +1,10 @@
 package nl.toolforge.karma.core.test;
 
 import junit.framework.TestCase;
-import nl.toolforge.karma.core.prefs.Preferences;
-import nl.toolforge.karma.core.location.LocationFactory;
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.location.LocationFactory;
+import nl.toolforge.karma.core.prefs.Preferences;
 
 /**
  * This testclass is highly recommended when writing JUnit testclasses for Karma. It initializes some basic stuff

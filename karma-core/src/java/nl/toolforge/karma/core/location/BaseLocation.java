@@ -1,6 +1,5 @@
 package nl.toolforge.karma.core.location;
 
-import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 
 /**

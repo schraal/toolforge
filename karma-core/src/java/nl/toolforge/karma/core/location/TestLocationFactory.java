@@ -1,8 +1,7 @@
 package nl.toolforge.karma.core.location;
 
-import nl.toolforge.karma.core.test.BaseTest;
-import nl.toolforge.karma.core.KarmaException;
 import junit.framework.TestCase;
+import nl.toolforge.karma.core.KarmaException;
 
 /**
  *

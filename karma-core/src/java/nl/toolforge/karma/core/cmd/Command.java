@@ -1,10 +1,7 @@
 package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
-import org.apache.commons.cli.Options;
 import org.apache.commons.cli.CommandLine;
-
-import java.util.Map;
 
 /**
  * <p>A <code>Command</code> is an executable operation in Karma. Commands perform actions as per user requests.

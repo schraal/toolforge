@@ -1,6 +1,6 @@
 package nl.toolforge.karma.core.location;
 
-import java.io.*;
+import java.io.File;
 import java.io.FilenameFilter;
 
 /**

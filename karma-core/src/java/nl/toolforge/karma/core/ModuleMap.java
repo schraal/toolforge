@@ -34,13 +34,6 @@ public final class ModuleMap extends HashMap
 		super.put(module.getName(), module);
 	}
 
-//	/**
-//	 * Retrieves an iterator over
-//	 */
-//	public final Iterator iterator() {
-//		return super.valuesiterator();
-//	}
-
 	/**
 	 * Javadoc inherited.
 	 */

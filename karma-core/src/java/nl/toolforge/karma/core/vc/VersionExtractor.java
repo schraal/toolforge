@@ -1,8 +1,7 @@
 package nl.toolforge.karma.core.vc;
 
-import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.Module;
 
 /**
  * <p>Modules in a version control system are manageable through their symbolic names (or tags). The tag describes the

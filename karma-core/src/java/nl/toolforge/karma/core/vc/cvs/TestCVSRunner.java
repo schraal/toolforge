@@ -1,13 +1,10 @@
 package nl.toolforge.karma.core.vc.cvs;
 
-import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.vc.Runner;
-import nl.toolforge.karma.core.test.LocalCVSInitializer;
-import nl.toolforge.karma.core.test.FakeModule;
 import nl.toolforge.karma.core.KarmaException;
-
-import java.io.File;
-import java.io.IOException;
+import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.test.FakeModule;
+import nl.toolforge.karma.core.test.LocalCVSInitializer;
+import nl.toolforge.karma.core.vc.Runner;
 
 /**
  * <p>This class tests all stuff in the <code>cvs</code> package. For this to work properly, you should unpack the

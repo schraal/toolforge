@@ -101,15 +101,37 @@ public class SourceModule extends BaseModule {
 	}
 
 	/**
+	 * Returns the branch name as a string. The phrase "development line" is used throughout ui implementations."
+	 *
+	 * @return The branch name as a string.
+	 */
+	public final String getBranchAsString() {
+		 return (branch == null ? "N/A" : branch);
+	}
+
+	/**
 	 * If the module element in the manifest contains a <code>version</code> attribute, this method will return the
 	 * value of that attribute.
 	 *
-	 * @return The module version, if that exists.
+	 * @return The module version, or N/A, when no version number exists.
 	 *
 	 * @throws KarmaException When a <code>version</code> attribute is not available for the module.
 	 */
 	public final String getVersion() throws KarmaException {
+
+		// TODO Version should be made into a class, and the toString() method should replace getVersionAsString()
+
 		return version;
+	}
+
+	/**
+	 * If the module element in the manifest contains a <code>version</code> attribute, this method will return the
+	 * value of that attribute.
+	 *
+	 * @return The module version, or N/A, when no version number exists.
+	 */
+	public final String getVersionAsString() {
+		return (version == null ? "N/A" : version);
 	}
 
 	/**

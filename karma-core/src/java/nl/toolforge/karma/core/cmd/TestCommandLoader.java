@@ -2,10 +2,9 @@ package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.test.BaseTest;
+import org.apache.commons.cli.*;
 
 import java.util.Set;
-
-import org.apache.commons.cli.*;
 
 /**
  *
@@ -50,10 +49,6 @@ public class TestCommandLoader extends BaseTest {
     } catch (ParseException e) {
       fail(e.getMessage());
     }
-
-    HelpFormatter formatter = new HelpFormatter();
-    formatter.printHelp("bla", options);
-
   }
 
   /**

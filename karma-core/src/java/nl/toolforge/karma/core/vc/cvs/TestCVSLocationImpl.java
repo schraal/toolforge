@@ -2,9 +2,6 @@ package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.test.BaseTest;
 
-import java.util.Properties;
-import java.io.IOException;
-
 /**
  * Test <code>CVSLocationImpl</code> instances.
  *
@@ -23,8 +20,8 @@ public class TestCVSLocationImpl extends BaseTest {
 //			c.getCVSRootAs();
 //			fail("Bad CVSROOT.");
 //
-//		} catch (CVSException e) {
-//			assertTrue("Expecting CVSException", true);
+//		} catch (SVNException e) {
+//			assertTrue("Expecting SVNException", true);
 //		}
 //	}
 
