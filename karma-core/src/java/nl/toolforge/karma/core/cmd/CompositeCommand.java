@@ -1,7 +1,7 @@
 package nl.toolforge.karma.core.cmd;
 
-import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
+import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
 
 /**
  * <p>A <code>CompositeCommand</code> is suited for executing multiple commands and at the same time, act as a

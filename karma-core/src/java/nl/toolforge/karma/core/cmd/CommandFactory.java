@@ -1,6 +1,5 @@
 package nl.toolforge.karma.core.cmd;
 
-import nl.toolforge.karma.core.KarmaException;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.MissingArgumentException;
 import org.apache.commons.cli.MissingOptionException;
@@ -17,6 +16,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This factory is the single resource of Command objects. <code>KarmaRuntimeException</code>s are thrown when
@@ -92,25 +93,83 @@ public final class CommandFactory {
    */
   public Command getCommand(String commandLineString) throws CommandException {
 
-    StringTokenizer tokenizer = new StringTokenizer(commandLineString);
+
+//    StringTokenizer tokenizer = new StringTokenizer(commandLineString);
 
     // Extract the command name from the command line string
     //
-    String commandName = null;
-    if (tokenizer.hasMoreTokens()) {
-      commandName = tokenizer.nextToken();
+    String commandName = commandLineString.substring(0, commandLineString.indexOf(' '));
+//    if (tokenizer.hasMoreTokens()) {
+//      commandName = tokenizer.nextToken();
+//    }
+
+    // todo wordt dit niet gesupport door commons-cli ?
+    //
+
+    char[] chars = commandLineString.substring(commandName.length()).toCharArray();
+
+    List commandOptionsList = new ArrayList();
+
+    int j = 0;
+    String part = null;
+
+    while (j < chars.length) {
+
+      // Go to the next part while we are a 'space' (chr(32))
+      //
+      while (chars[j] == ' ') {
+        j++;
+      }
+
+      part = "";
+      if (chars[j] != '"') {
+        // Start of options or 'normal' arguments.
+        //
+        part += chars[j];
+        j++;
+
+        while ((j < chars.length) && (chars[j] != ' ')) {
+          // doorlopen totdat een spatie is bereikt
+          part += chars[j];
+          j++;
+        }
+
+      } else if (chars[j] == '"') {
+        // Begin van een argument dat bestaat uit een block data, gedemarkeerd door dubbele quotes, escaped dubbel
+        // quote wordt eruit gevist.
+        //
+        part += chars[j];
+        j++;
+
+        while (j < chars.length) {
+
+          if (chars[j] == '"') {
+            if (chars[j-1] != '\\') {
+              // End of demarkated piece of text.
+              //
+              j++;
+              break;
+            }
+          }
+
+          // doorlopen totdat een '"' is bereikt, behalve \" (escaped).
+          part += chars[j];
+          j++;
+        }
+        // We have reached a '"', which must be added.
+        //
+        part += '"';
+        j++;
+      }
+
+      if (part.startsWith("\"") && part.endsWith("\"")) {
+        part = part.substring(1, part.length() - 1).trim();
+      }
+
+      commandOptionsList.add(part);
     }
 
-    // Extract the command line options and arguments from the command line string
-    //                                              ring
-    String[] commandOptions = new String[tokenizer.countTokens()];
-    if (tokenizer.hasMoreTokens()) {
-      int i = 0;
-      while (tokenizer.hasMoreTokens()) {
-        commandOptions[i] = tokenizer.nextToken();
-        i++;
-      }
-    }
+    String[] commandOptions = (String[]) commandOptionsList.toArray(new String[commandOptionsList.size()]);
 
     Command cmd = null;
 

@@ -2,9 +2,7 @@ package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.manifest.SourceModule;
-import nl.toolforge.karma.core.manifest.ModuleDescriptor;
 import nl.toolforge.karma.core.test.LocalCVSInitializer;
-import nl.toolforge.karma.core.vc.DevelopmentLine;
 import nl.toolforge.karma.core.vc.model.MainLine;
 
 public class TestUtils extends LocalCVSInitializer {

@@ -1,5 +1,6 @@
 package nl.toolforge.karma.core.cmd.impl;
 
+import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
@@ -7,28 +8,22 @@ import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ModuleComparator;
-import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.PatchLine;
-import nl.toolforge.karma.core.vc.RunnerFactory;
+import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.vc.Runner;
-import nl.toolforge.karma.core.vc.model.MainLine;
+import nl.toolforge.karma.core.vc.RunnerFactory;
+import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
-import nl.toolforge.karma.core.vc.cvs.Utils;
-import nl.toolforge.karma.core.Version;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.tools.ant.util.StringUtils;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Collection;
 import java.util.Collections;
-import java.io.File;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This command gets the active manifest and presents it in the UI. UI implementations are responsible for the rendering

@@ -1,11 +1,11 @@
 package nl.toolforge.karma.core.manifest.digester;
 
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.manifest.DevelopmentManifest;
+import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.manifest.ReleaseManifest;
 import org.apache.commons.digester.AbstractObjectCreationFactory;
 import org.xml.sax.Attributes;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.manifest.Manifest;
-import nl.toolforge.karma.core.manifest.DevelopmentManifest;
-import nl.toolforge.karma.core.manifest.ReleaseManifest;
 
 /**
  * Creation factory to be able to create {@link nl.toolforge.karma.core.manifest.Manifest} instances. The reason to have this class

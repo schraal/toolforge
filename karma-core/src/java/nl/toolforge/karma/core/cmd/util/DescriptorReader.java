@@ -1,16 +1,15 @@
 package nl.toolforge.karma.core.cmd.util;
 
-import org.xml.sax.SAXException;
+import nl.toolforge.karma.core.manifest.AbstractManifest;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.xml.sax.SAXException;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.io.IOException;
 import java.io.File;
-
-import nl.toolforge.karma.core.manifest.AbstractManifest;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Convenience class capable of reading the most common deployment descriptor XML files as per their standards.

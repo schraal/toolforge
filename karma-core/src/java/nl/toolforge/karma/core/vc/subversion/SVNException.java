@@ -1,7 +1,7 @@
 package nl.toolforge.karma.core.vc.subversion;
 
-import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.ErrorCode;
+import nl.toolforge.karma.core.vc.VersionControlException;
 
 /**
  * Exceptions related to CVS stuff.

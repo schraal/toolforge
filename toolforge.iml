@@ -54,15 +54,6 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="file://$MODULE_DIR$/karma-cli/resources" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
           <root url="file://$MODULE_DIR$/karma-core/resources" />
         </CLASSES>
         <JAVADOC />
@@ -235,6 +226,15 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../.maven/repository/netbeans/jars/cvslib-3.6.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/karma-cli/resources" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

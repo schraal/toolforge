@@ -1,15 +1,13 @@
 package nl.toolforge.karma.core.manifest;
 
-import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.scm.ModuleDependency;
+import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.vc.PatchLine;
 import org.apache.commons.digester.Digester;
 import org.xml.sax.SAXException;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;

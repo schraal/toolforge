@@ -1,11 +1,11 @@
 package nl.toolforge.karma.core.vc.subversion;
 
 import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
 import nl.toolforge.karma.core.vc.ManagedFile;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.SymbolicName;

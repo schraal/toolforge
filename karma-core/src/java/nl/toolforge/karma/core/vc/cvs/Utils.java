@@ -4,11 +4,7 @@ import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.vc.SymbolicName;
-import nl.toolforge.karma.core.vc.Runner;
-import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.model.MainLine;
-
-import java.io.File;
 
 public final class Utils {
 

@@ -1,10 +1,10 @@
 package nl.toolforge.karma.core.manifest;
 
-import java.util.Map;
-import java.util.Collection;
-import java.io.File;
-
 import nl.toolforge.karma.core.LocalEnvironment;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * @author D.A. Smedes

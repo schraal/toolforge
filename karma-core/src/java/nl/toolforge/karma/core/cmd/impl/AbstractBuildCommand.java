@@ -1,33 +1,29 @@
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.cmd.DefaultCommand;
+import nl.toolforge.core.util.file.MyFileUtils;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.scm.ModuleDependency;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.vc.cvs.Utils;
-import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.core.util.file.MyFileUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.util.Set;
-import java.util.Iterator;
-import java.util.Collection;
-
 import org.apache.commons.io.FileUtils;
-import org.apache.tools.ant.Project;
 import org.apache.tools.ant.DefaultLogger;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.helper.ProjectHelperImpl;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Superclass for all commands dealing with building modules. This class provides all basic property mappers and methods

@@ -2,8 +2,8 @@ package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.location.Location;
 
-import java.util.regex.PatternSyntaxException;
 import java.io.File;
+import java.util.regex.PatternSyntaxException;
 
 
 /**

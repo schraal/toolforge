@@ -5,6 +5,10 @@ import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,6 +19,16 @@ import java.util.Properties;
 /**
  * <p>This class maintains a users' local environment. The local environment is required to properly run Karma tools. It
  * contains references to directories, which are necessary to bootstrap Karma.
+ *
+ * <p>Bootstrapping Karma also means that the log-system (Log4j, obviously) is initialized. This class initializes a
+ * default logging system, which can be overridden by placing a <code>log4j.xml</code> and <code>log4j.dtd</code> on
+ * your runtime classpath when running a Karma client application. The default logging configuration can be tweaked a
+ * little by providing a <code>loglevel</code>
+ *
+ * <p>When <code>LocalEnvironment</code> is instantiated two environment properties are , specify <code>karma.home</code> as en environment property to your JVM. If it doesn't exist,
+ * Karma will resolve the default <code>user.home</code> property. To override the default log-level
+ * (<code>DEBUG</code>) for the logging system, set <code>loglevel</code> environment property (this only works for the
+ * default logging system; if you supply log4j configuration files, this setting will be ignored).
  *
  * <p><code>LocalEnvironment</code> can be instanciated in two ways:
  *
@@ -33,6 +47,55 @@ import java.util.Properties;
  * @version $Id$
  */
 public final class LocalEnvironment {
+
+  private  static final String DEFAULT_CONVERSION_PATTERN = "%d{HH:mm:ss} [%5p] - %m%n";
+
+  static {
+
+    // Configure the logging system.
+    //
+    try {
+
+      if (LocalEnvironment.class.getClassLoader().getResource("log4j.xml") != null) {
+
+        Logger.getLogger(LocalEnvironment.class).info("'Log4j.xml' used to for logging configuration.");
+
+      } else {
+
+        // Initialize default logging.
+
+        Logger root = Logger.getRootLogger();
+
+        String karmaHome = System.getProperty("karma.home");
+        karmaHome = (karmaHome == null ? System.getProperty("user.home") : karmaHome);
+
+        File defaultLogFile = new File(karmaHome, "logs/karma-default.log");
+
+        PatternLayout patternLayout = new PatternLayout(DEFAULT_CONVERSION_PATTERN);
+        FileAppender fileAppender = new FileAppender(patternLayout, defaultLogFile.getPath());
+        fileAppender.setName("Default Karma logging appender.");
+
+        // The default Appender for a Logger. We don't want it.
+        //
+        root.removeAppender(root.getAppender("console"));
+
+        root.addAppender(fileAppender);
+
+        String logLevel = null;
+        logLevel = (System.getProperty("loglevel") == null ? "DEBUG" : System.getProperty("loglevel")); // Pass 1
+        logLevel = (logLevel.matches("ALL|DEBUG|ERROR|FATAL|INFO|OFF|WARN") ? logLevel : "DEBUG");  // Pass 2
+
+        root.setLevel(Level.toLevel(logLevel));
+
+        Logger.getLogger(LocalEnvironment.class).info(
+            "Default logging configuration enabled; override by placing 'log4j.xml' and 'log4j.dtd' on your classpath.");
+      }
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new KarmaRuntimeException("*** PANIC *** Log4j system could not be initialized.");
+    }
+  }
 
   private static final Log logger = LogFactory.getLog(LocalEnvironment.class);
 
@@ -77,6 +140,7 @@ public final class LocalEnvironment {
    * when it does not yet exist.
    */
   public static LocalEnvironment getInstance() throws KarmaException {
+    LogFactory factory = LogFactory.getFactory();
     return getInstance(null);
   }
 
@@ -89,6 +153,8 @@ public final class LocalEnvironment {
    *   startup failure.
    */
   public static LocalEnvironment getInstance(Properties properties) throws KarmaException {
+    LogFactory factory = LogFactory.getFactory();
+
     if (localEnvironment == null) {
       localEnvironment = new LocalEnvironment(properties);
     } else {
@@ -245,6 +311,27 @@ public final class LocalEnvironment {
     } catch (IOException e) {
       throw new KarmaRuntimeException("The bootstrap configuration file could not be loaded.", e);
     }
+
+    logConfiguration();
+  }
+
+  private void logConfiguration() {
+
+    logger.info("Development home directory : " + (String) configuration.get(DEVELOPMENT_STORE_DIRECTORY));
+    logger.info("Manifest store directory : " + (String) configuration.get(MANIFEST_STORE_DIRECTORY));
+    logger.info("Location store directory : " + (String) configuration.get(LOCATION_STORE_DIRECTORY));
+
+    logger.debug("Manifest store host : " + (String) configuration.get(MANIFEST_STORE_HOST));
+    logger.debug("Manifest store port : " + (String) configuration.get(MANIFEST_STORE_PORT));
+    logger.debug("Manifest store repository : " + (String) configuration.get(MANIFEST_STORE_REPOSITORY));
+    logger.debug("Manifest store protocol : " + (String) configuration.get(MANIFEST_STORE_PROTOCOL));
+    logger.debug("Manifest store username : " + (String) configuration.get(MANIFEST_STORE_USERNAME));
+
+    logger.debug("Location store host : " + (String) configuration.get(LOCATION_STORE_HOST));
+    logger.debug("Location store port : " + (String) configuration.get(LOCATION_STORE_PORT));
+    logger.debug("Location store repository : " + (String) configuration.get(LOCATION_STORE_REPOSITORY));
+    logger.debug("Location store protocol : " + (String) configuration.get(LOCATION_STORE_PROTOCOL));
+    logger.debug("Location store username : " + (String) configuration.get(LOCATION_STORE_USERNAME));
   }
 
   /**
@@ -313,7 +400,6 @@ public final class LocalEnvironment {
       File home = null;
 
       String manifestStore = (String) configuration.get(MANIFEST_STORE_DIRECTORY);
-      logger.debug("Manifest store directory: " + manifestStore);
 
       home = new File(manifestStore);
       if (!home.exists()) {
@@ -421,8 +507,6 @@ public final class LocalEnvironment {
       File home = null;
 
       String locationStore = (String) configuration.get(LOCATION_STORE_DIRECTORY);
-      logger.debug("Location store directory: " + locationStore);
-
       home = new File(locationStore);
       if (!home.exists()) {
         throw new KarmaException(KarmaException.LOCATION_STORE_NOT_FOUND);
@@ -447,7 +531,6 @@ public final class LocalEnvironment {
       File home = null;
 
       String developmentHome = (String) configuration.get(DEVELOPMENT_STORE_DIRECTORY);
-      logger.debug("development home directory: " + developmentHome);
       home = new File(developmentHome);
       if (!home.exists()) {
         throw new KarmaException(KarmaException.DEVELOPMENT_HOME_NOT_FOUND);

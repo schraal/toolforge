@@ -4,17 +4,14 @@ import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.w3c.dom.DOMException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.FactoryConfigurationError;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,6 +28,8 @@ import java.util.Set;
  * @version $Id$
  */
 public final class CommandLoader {
+
+  private static Log logger = LogFactory.getLog(CommandLoader.class);
 
 	private CommandLoader() {
 	}
@@ -204,6 +203,7 @@ public final class CommandLoader {
 		} catch (Exception e) {
       // If something goes wrong here, throw a runtime; this is too serious to ignore.
       //
+      logger.error(e.getMessage(), e);
 			throw new KarmaRuntimeException(e.getMessage());
 		}
 

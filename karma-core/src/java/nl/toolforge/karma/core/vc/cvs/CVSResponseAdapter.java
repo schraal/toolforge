@@ -2,7 +2,6 @@ package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
-import nl.toolforge.karma.core.manifest.Module;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.command.FileInfoContainer;
@@ -16,11 +15,11 @@ import org.netbeans.lib.cvsclient.event.MessageEvent;
 import org.netbeans.lib.cvsclient.event.ModuleExpansionEvent;
 import org.netbeans.lib.cvsclient.event.TerminationEvent;
 
-import java.util.List;
-import java.util.StringTokenizer;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * Adapts a response from CVS to Karma specific messages. This class listens to CVS responses as per the Netbeans API.

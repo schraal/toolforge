@@ -4,7 +4,6 @@ import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.LocationFactory;
-import nl.toolforge.karma.core.vc.DevelopmentLine;
 
 /**
  * <p>Factory class to create modules based on a {@link ModuleDescriptor}.</p>

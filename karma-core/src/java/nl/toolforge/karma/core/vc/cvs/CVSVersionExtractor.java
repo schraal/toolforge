@@ -1,18 +1,18 @@
 package nl.toolforge.karma.core.vc.cvs;
 
-import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.vc.DevelopmentLine;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.VersionExtractor;
-import nl.toolforge.karma.core.vc.DevelopmentLine;
 import nl.toolforge.karma.core.vc.model.MainLine;
-import org.netbeans.lib.cvsclient.command.log.LogInformation;
-import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
 import org.netbeans.lib.cvsclient.admin.Entry;
+import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
+import org.netbeans.lib.cvsclient.command.log.LogInformation;
 
 import java.io.File;
 import java.io.IOException;

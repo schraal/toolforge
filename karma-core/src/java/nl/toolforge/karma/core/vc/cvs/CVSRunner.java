@@ -1,15 +1,22 @@
 package nl.toolforge.karma.core.vc.cvs;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
+import nl.toolforge.core.util.file.MyFileUtils;
+import nl.toolforge.karma.core.ErrorCode;
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.cmd.Command;
+import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.history.ModuleHistory;
+import nl.toolforge.karma.core.history.ModuleHistoryEvent;
+import nl.toolforge.karma.core.history.ModuleHistoryFactory;
+import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
+import nl.toolforge.karma.core.vc.ManagedFile;
+import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.vc.SymbolicName;
+import nl.toolforge.karma.core.vc.VersionControlException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,23 +35,15 @@ import org.netbeans.lib.cvsclient.command.update.UpdateCommand;
 import org.netbeans.lib.cvsclient.connection.AuthenticationException;
 import org.netbeans.lib.cvsclient.connection.Connection;
 
-import nl.toolforge.core.util.file.MyFileUtils;
-import nl.toolforge.karma.core.ErrorCode;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.cmd.Command;
-import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.history.ModuleHistory;
-import nl.toolforge.karma.core.history.ModuleHistoryEvent;
-import nl.toolforge.karma.core.history.ModuleHistoryFactory;
-import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.SourceModule;
-import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
-import nl.toolforge.karma.core.vc.ManagedFile;
-import nl.toolforge.karma.core.vc.Runner;
-import nl.toolforge.karma.core.vc.SymbolicName;
-import nl.toolforge.karma.core.vc.VersionControlException;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * <p>Runner class for CVS. Executes stuff on a CVS repository.

@@ -1,9 +1,9 @@
 package nl.toolforge.karma.core.manifest;
 
-import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
+import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
 
 import java.io.File;
 import java.io.FilenameFilter;

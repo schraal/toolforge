@@ -1,12 +1,10 @@
 package nl.toolforge.karma.core.manifest;
 
+import nl.toolforge.karma.core.Version;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.regex.PatternSyntaxException;
-
-import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.vc.DevelopmentLine;
 
 /**
  * Class modelling a <code>&lt;module&gt;</code>-element in a manifest file.

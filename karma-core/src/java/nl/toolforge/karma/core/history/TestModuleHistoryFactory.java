@@ -1,7 +1,7 @@
 package nl.toolforge.karma.core.history;
 
-import nl.toolforge.karma.core.test.LocalCVSInitializer;
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.test.LocalCVSInitializer;
 
 import java.io.File;
 import java.util.Date;

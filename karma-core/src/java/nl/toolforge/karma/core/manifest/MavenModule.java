@@ -2,7 +2,6 @@ package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.vc.DevelopmentLine;
 
 /**
  * <p>This type of module represents a module from a Maven project.

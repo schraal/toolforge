@@ -1,8 +1,6 @@
 package nl.toolforge.karma.core.cmd;
 
-import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.ErrorCode;
-import nl.toolforge.karma.core.vc.VersionControlException;
 
 /**
  * Exceptions thrown during the execution of a command.

@@ -24,16 +24,21 @@ import java.util.ResourceBundle;
  * <p>The <code>CLI</code> is the command-line interface for Karma. The class presents a simple-to-use command-line
  * terminal, where developers can type in their commands and if you're lucky, stuff works.
  *
+ * <p>See {@link nl.toolforge.karma.core.LocalEnvironment} for a description of how to configure the logging
+ * environment for your <strong>Karma</strong> runtime environment.
+ *
  * @author D.A. Smedes
  *
  * @version $Id$
  */
 public class CLI {
 
+  // Logging system should be initialized by now ...
+  //
+  private static Log logger = LogFactory.getLog(CLI.class);
+
   private static final ResourceBundle FRONTEND_MESSAGES =
       BundleCache.getInstance().getBundle(BundleCache.FRONTEND_MESSAGES_KEY);
-
-  private static Log logger = LogFactory.getLog(CLI.class);
 
   private static String lastLine = "";
 

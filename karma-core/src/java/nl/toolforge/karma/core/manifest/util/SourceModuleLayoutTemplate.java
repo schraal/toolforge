@@ -1,10 +1,6 @@
 package nl.toolforge.karma.core.manifest.util;
 
-import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.manifest.Module;
-
-import java.util.Map;
-import java.util.Hashtable;
 
 /**
  * <p>Layout for a source-module. A source-module (implemented by the <code>SourceModule</code> class) has the following

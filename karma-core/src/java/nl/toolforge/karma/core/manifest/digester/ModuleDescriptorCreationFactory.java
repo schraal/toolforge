@@ -1,8 +1,8 @@
 package nl.toolforge.karma.core.manifest.digester;
 
+import nl.toolforge.karma.core.manifest.ModuleDescriptor;
 import org.apache.commons.digester.AbstractObjectCreationFactory;
 import org.xml.sax.Attributes;
-import nl.toolforge.karma.core.manifest.ModuleDescriptor;
 
 /**
  * Creation factory to be able to create {@link nl.toolforge.karma.core.manifest.ModuleDescriptor} instances. The reason to have this class

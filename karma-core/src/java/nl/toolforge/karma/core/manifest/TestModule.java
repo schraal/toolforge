@@ -1,14 +1,12 @@
 package nl.toolforge.karma.core.manifest;
 
-import nl.toolforge.karma.core.test.BaseTest;
-import nl.toolforge.karma.core.location.LocationFactory;
+import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.vc.DevelopmentLine;
-import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.location.LocationFactory;
+import nl.toolforge.karma.core.test.BaseTest;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 

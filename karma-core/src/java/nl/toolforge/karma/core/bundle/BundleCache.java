@@ -32,7 +32,6 @@ public class BundleCache {
 	 */
 	private static final ResourceBundle ERROR_MESSAGES =
 		ResourceBundle.getBundle("error-messages", Locale.ENGLISH);
-//  ResourceBundle.getBundle("error-messages", LocalEnvironment.getLocale());
 	//todo read from system
 
 	public static final String ERROR_MESSAGES_KEY = "ERROR_MESSAGES";
@@ -47,7 +46,6 @@ public class BundleCache {
 	 */
 	private static final ResourceBundle FRONTEND_MESSAGES =
 		ResourceBundle.getBundle("frontend-messages", Locale.ENGLISH);
-//			ResourceBundle.getBundle("frontend-messages", LocalEnvironment.getLocale());
 	//todo read from system
 
 	public static final String FRONTEND_MESSAGES_KEY = "FRONTEND_MESSAGES";
@@ -103,9 +101,6 @@ public class BundleCache {
 	 * @return The resource bundle as identified by <code>bundleKey</code> in the cache.
 	 */
 	public final ResourceBundle getBundle(String bundleKey) {
-
-//		System.out.println("Locale : " + Preferences.getInstance().getLocale());
-//		System.out.println("Default locale : " + Locale.getDefault());
 
 		if (bundles.keySet().contains(bundleKey)) {
 			return (ResourceBundle) bundles.get(bundleKey);

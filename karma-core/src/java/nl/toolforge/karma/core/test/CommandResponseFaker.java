@@ -1,7 +1,7 @@
 package nl.toolforge.karma.core.test;
 
-import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.CommandMessage;
+import nl.toolforge.karma.core.cmd.CommandResponse;
 
 /**
  * Pretty empty implementation for a CommandResponse. Usefull for unit tests.

@@ -1,7 +1,5 @@
 package nl.toolforge.karma.core.vc;
 
-import nl.toolforge.karma.core.Version;
-
 import java.util.regex.PatternSyntaxException;
 
 /**

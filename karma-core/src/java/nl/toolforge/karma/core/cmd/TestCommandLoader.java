@@ -1,6 +1,5 @@
 package nl.toolforge.karma.core.cmd;
 
-import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.test.BaseTest;
 import org.apache.commons.cli.CommandLine;

@@ -2,18 +2,18 @@ package nl.toolforge.karma.core.test;
 
 import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
-import nl.toolforge.karma.core.manifest.SourceModule;
-import nl.toolforge.karma.core.manifest.Module;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Copy;
 import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.Project;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,11 +1,8 @@
 package nl.toolforge.karma.core;
 
 
-import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.location.LocationException;
-
-import java.text.MessageFormat;
-import java.util.Locale;
+import nl.toolforge.karma.core.manifest.ManifestException;
 
 /**
  *

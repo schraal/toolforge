@@ -1,12 +1,8 @@
 package nl.toolforge.karma.core.manifest;
 
-import nl.toolforge.karma.core.test.BaseTest;
-import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.location.LocationFactory;
 import nl.toolforge.karma.core.location.Location;
-
-import java.io.File;
-import java.util.Date;
+import nl.toolforge.karma.core.location.LocationFactory;
+import nl.toolforge.karma.core.test.BaseTest;
 
 /**
  * @author D.A. Smedes

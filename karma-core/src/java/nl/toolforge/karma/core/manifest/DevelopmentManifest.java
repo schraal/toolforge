@@ -1,11 +1,10 @@
 package nl.toolforge.karma.core.manifest;
 
-import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.location.LocationException;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 
 /**
  * @author D.A. Smedes

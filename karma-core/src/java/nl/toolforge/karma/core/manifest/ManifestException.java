@@ -2,8 +2,6 @@ package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.ErrorCode;
 
-import java.util.Locale;
-
 
 /**
  * Exception thrown by the AbstractManifest Domain.
