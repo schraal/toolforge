@@ -43,14 +43,20 @@ public final class ManifestException extends KarmaException {
 
   public ManifestException() {}
 
-    //TODO: add name/id of manifest that generates the exception
-  public ManifestException(ErrorCode errorCode) {
-    super(errorCode);
-  }
+    public ManifestException(ErrorCode errorCode) {
+      super(errorCode);
+    }
 
-    //TODO: add name/id of manifest that generates the exception
-  public ManifestException(ErrorCode errorCode, Throwable t) {
-    super(errorCode, t);
+    public ManifestException(ErrorCode errorCode, Throwable t) {
+      super(errorCode, t);
+    }
+
+    public ManifestException(ErrorCode errorCode, Object[] messageArguments) {
+      super(errorCode, messageArguments);
+    }
+
+  public ManifestException(ErrorCode errorCode, Object[] messageArguments, Throwable t) {
+    super(errorCode, messageArguments, t);
   }
 
 }

@@ -153,11 +153,11 @@ public final class ManifestLoader {
 			getInstance().add(duplicates, manifest, manifestName);
 
 		} catch (ParserConfigurationException p) {
-			throw new ManifestException(ManifestException.MANIFEST_LOAD_ERROR, p);
+			throw new ManifestException(ManifestException.MANIFEST_LOAD_ERROR, new Object[]{id}, p);
 		} catch (SAXException s) {
-			throw new ManifestException(ManifestException.MANIFEST_LOAD_ERROR, s);
+			throw new ManifestException(ManifestException.MANIFEST_LOAD_ERROR, new Object[]{id}, s);
 		} catch (IOException i) {
-			throw new ManifestException(ManifestException.MANIFEST_LOAD_ERROR, i);
+			throw new ManifestException(ManifestException.MANIFEST_LOAD_ERROR, new Object[]{id}, i);
 		}
 
 		return manifest;
@@ -256,13 +256,13 @@ public final class ManifestLoader {
             throw me;
         } catch (KarmaException ke) {
             ke.printStackTrace();
-            throw new ManifestException(ManifestException.MANIFEST_LOAD_ERROR, ke);
+            throw new ManifestException(ManifestException.MANIFEST_LOAD_ERROR, new Object[]{id}, ke);
 		} catch (ParserConfigurationException p) {
-			throw new ManifestException(ManifestException.MANIFEST_LOAD_ERROR, p);
+			throw new ManifestException(ManifestException.MANIFEST_LOAD_ERROR, new Object[]{id}, p);
 		} catch (SAXException s) {
-			throw new ManifestException(ManifestException.MANIFEST_LOAD_ERROR, s);
+			throw new ManifestException(ManifestException.MANIFEST_LOAD_ERROR, new Object[]{id}, s);
 		} catch (IOException i) {
-			throw new ManifestException(ManifestException.MANIFEST_LOAD_ERROR, i);
+			throw new ManifestException(ManifestException.MANIFEST_LOAD_ERROR, new Object[]{id}, i);
 		}
 	}
 
@@ -283,15 +283,15 @@ public final class ManifestLoader {
 				InputStream inputStream = classLoader.getResourceAsStream(fileName);
 
 				if (inputStream == null) {
-					throw new ManifestException(ManifestException.MANIFEST_FILE_NOT_FOUND);
+					throw new ManifestException(ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[]{id});
 				}
 
 				return inputStream;
 			}
 		} catch (FileNotFoundException f) {
-			throw new ManifestException(ManifestException.MANIFEST_FILE_NOT_FOUND, f);
+			throw new ManifestException(ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[]{id}, f);
 		} catch (NullPointerException n) {
-			throw new ManifestException(ManifestException.MANIFEST_FILE_NOT_FOUND, n);
+			throw new ManifestException(ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[]{id}, n);
 		}
 	}
 

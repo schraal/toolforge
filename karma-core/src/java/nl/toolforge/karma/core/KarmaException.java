@@ -1,5 +1,7 @@
 package nl.toolforge.karma.core;
 
+import java.text.MessageFormat;
+
 import nl.toolforge.karma.core.exception.ErrorCode;
 import nl.toolforge.karma.core.prefs.Preferences;
 
@@ -101,16 +103,54 @@ public class KarmaException extends Exception {
 
 	protected ErrorCode errorCode = null;
 
+    protected Object[] messageArguments = new Object[]{};
+
+    //TODO: uitfaseren?
 	public KarmaException() {}
 
-	public KarmaException(ErrorCode errorCode) {
-		this.errorCode = errorCode;
-	}
+    /**
+     * Create a new KarmaException, with the specific errorCode.
+     *
+     * @param errorCode  The errorCode that identifies the specific error that has occurred.
+     */
+    public KarmaException(ErrorCode errorCode) {
+        this.errorCode = errorCode;
+    }
 
-	public KarmaException(ErrorCode errorCode, Throwable t) {
-		super(t);
-		this.errorCode = errorCode;
-	}
+    /**
+     * Create a new KarmaException, with the specific errorCode and messageArguments.
+     *
+     * @param errorCode         The errorCode that identifies the specific error that has occurred.
+     * @param messageArguments  These arguments are filled in into the error codes' message.
+     */
+    public KarmaException(ErrorCode errorCode, Object[] messageArguments) {
+        this.errorCode = errorCode;
+        this.messageArguments = messageArguments;
+    }
+
+    /**
+     * Create a new KarmaException, with the specific errorCode and Throwable that caused the exception.
+     *
+     * @param errorCode  The errorCode that identifies the specific error that has occurred.
+     * @param t          The Throwable that caused this specific exception.
+     */
+    public KarmaException(ErrorCode errorCode, Throwable t) {
+        super(t);
+        this.errorCode = errorCode;
+    }
+
+    /**
+     * Create a new KarmaException, with the specific errorCode and Throwable that caused the exception.
+     *
+     * @param errorCode         The errorCode that identifies the specific error that has occurred.
+     * @param messageArguments  These arguments are filled in into the error codes' message.
+     * @param t                 The Throwable that caused this specific exception.
+     */
+    public KarmaException(ErrorCode errorCode, Object[] messageArguments, Throwable t) {
+        super(t);
+        this.errorCode = errorCode;
+        this.messageArguments = messageArguments;
+    }
 
 	/**
 	 * Gets this instance' {@link nl.toolforge.karma.core.exception.ErrorCode}.
@@ -134,13 +174,28 @@ public class KarmaException extends Exception {
 	public String getErrorMessage() {
 
 		if (errorCode == null) {
+            //TODO: deze call zorgt IMHO een eindeloze loop.
 			return getMessage();
 		} else {
-			return errorCode.getErrorMessage(prefs.getLocale());
+			String errorMessage = errorCode.getErrorMessage(prefs.getLocale());
+            if (getMessageArguments().length != 0) {
+                MessageFormat messageFormat = new MessageFormat(errorMessage);
+                return messageFormat.format(getMessageArguments());
+            } else {
+                return errorMessage;
+            }
 		}
 	}
 
-	public String getMessage() {
+    /**
+     *
+     * @return  The arguments that are to be filled in into the error codes' message.
+     */
+    private Object[] getMessageArguments() {
+        return messageArguments;
+    }
+
+    public String getMessage() {
 		return getErrorMessage();
 	}
 

@@ -53,8 +53,8 @@ public class ManifestImpl implements Manifest {
     if (modules.containsKey(moduleName)) {
       return (Module) modules.get(moduleName);
     } else {
-      throw new ManifestException(ManifestException.NO_SUCH_MODULE);
-        }
+      throw new ManifestException(ManifestException.NO_SUCH_MODULE, new Object[]{moduleName});
+    }
   }
 
   public final Module createModule(int typeIdentifier, String name, String locationAlias) throws KarmaException {
