@@ -37,8 +37,8 @@ import java.util.Set;
 public abstract class AbstractBuildCommand extends DefaultCommand {
 
   private static final Log logger = LogFactory.getLog(AbstractBuildCommand.class);
-  private static final String DEPENDENCY_SEPARATOR_CHAR = ",";
 
+  private static final String DEPENDENCY_SEPARATOR_CHAR = ",";
 
   private static final String DEFAULT_BUILD_DIR = "build";
 

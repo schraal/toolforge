@@ -9,8 +9,7 @@
   </target>
 
   <target name="init-build-dir">
-
-    <!-- '${module-build-dir}' maps to ${development.home}/<manifest-name>/build/<module-name>-->
+    
     <mkdir dir="${module-build-dir}"/>
 
   </target>
@@ -20,10 +19,6 @@
   <!-- ************************ -->
 
   <target name="build-module" depends="init-build-dir">
-
-    <!-- '${module-build-dir}' maps to ${development.home}/<manifest-name>/build/<module-name>-->
-    <!-- '${module-source-dir}' maps to ${development.home}/<manifest-name>/<module-name>/src/java-->
-    <!-- '${compile-classpath}' is determined by Module.getDependencies -->
 
     <mkdir dir="${module-build-dir}/${module-compile-dir}"/>
 
@@ -47,10 +42,6 @@
   <!-- ************************ -->
 
   <target name="test-module" depends="init-build-dir">
-
-    <!-- '${module-build-dir}' maps to ${development.home}/<manifest-name>/build/<module-name>-->
-    <!-- '${module-source-dir}' maps to ${development.home}/<manifest-name>/<module-name>/src/java-->
-    <!-- '${compile-classpath}' is determined by Module.getDependencies -->
 
     <mkdir dir="${module-build-dir}/${module-compile-dir}/xml"/>
 
@@ -113,13 +104,9 @@
       <fileset dir="${module-build-dir}" includes="*.war"/>
     </delete>
 
-    <echo message="1"/>
-
     <copy todir="${module-build-dir}" overwrite="true">
       <fileset dir="${module-base-dir}" includes="${module-includes}"/>
     </copy>
-
-    <echo message="2"/>
 
     <!-- For standalone wars, all deps are copied to WEB-INF/lib and packaged as such.-->
 
@@ -127,16 +114,12 @@
       <fileset dir="${module-build-dir}/WEB-INF/lib" includes="**"/>
     </delete>
 
-    <echo message="3"/>
-
     <copy todir="${module-build-dir}/WEB-INF/lib" flatten="yes" >
       <!-- Module dependencies, appear as <dependency module=""/> -->
       <fileset dir="${manifest-build-dir}" includes="${module-module-dependencies}"/>
       <!-- Jar dependencies, from the jar-repository -->
       <fileset dir="${karma-jar-repository}" includes="${module-jar-dependencies}"/>
     </copy>
-
-    <echo message="4"/>
 
     <!-- Package the module -->
 
@@ -150,7 +133,9 @@
 
   <target name="package-module-as-ear" depends="init-build-dir">
 
-    <delete dir="${module-build-dir}" includes="*.ear;archives.*"/>
+    <delete>
+      <fileset dir="${module-build-dir}" includes="*.ear;archives.*"/>
+    </delete>
 
     <!-- copy the eapp stuff, while replacing module ids in application.xml -->
     <copy todir="${module-build-dir}" overwrite="true">
