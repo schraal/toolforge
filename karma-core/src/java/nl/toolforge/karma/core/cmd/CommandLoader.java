@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -173,7 +174,13 @@ public final class CommandLoader {
 						throw new KarmaRuntimeException("Duplicate command alias.");
 					}
 
-					String clazzName = commandElement.getElementsByTagName("classname").item(0).getFirstChild().getNodeValue();
+          Node child = commandElement.getElementsByTagName("classname").item(0).getFirstChild();
+          String clazzName;
+          if (child != null) {
+  					clazzName = child.getNodeValue();
+          } else {
+            throw new KarmaRuntimeException("No classname defined for command '"+commandName+"' in the commands.xml.");
+          }
 					String explanation = commandElement.getElementsByTagName("description").item(0).getFirstChild().getNodeValue();
 
           CommandDescriptor descriptor = null;
