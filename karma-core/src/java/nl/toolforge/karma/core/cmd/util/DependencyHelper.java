@@ -1,6 +1,11 @@
 package nl.toolforge.karma.core.cmd.util;
 
-import nl.toolforge.core.util.collection.CollectionUtil;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
@@ -10,12 +15,6 @@ import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.Utils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 /**
  * Dependency management is heavily used by Karma. This helper class provides methods to resolve dependencies, check
@@ -45,20 +44,20 @@ public final class DependencyHelper {
    */
   public String getClassPath(Module module) throws ModuleTypeException, DependencyException {
 
-    Set moduleDeps = getModuleDependencies(module);
-    Set jarDeps = getJarDependencies(module);
+    Set moduleDeps = getModuleDependencies(module, false);
+    Set jarDeps = getJarDependencies(module, false);
 
-    if (jarDeps.size() == 0) {
-      if (moduleDeps.size() == 0) {
+    if (jarDeps.isEmpty()) {
+      if (moduleDeps.isEmpty()) {
         return "";
       } else {
-        return CollectionUtil.concat(moduleDeps, ';');
+        return DependencyPath.concat(moduleDeps, false, ';');
       }
     } else {
-      if (moduleDeps.size() == 0) {
-        return CollectionUtil.concat(jarDeps, ';');
+      if (moduleDeps.isEmpty()) {
+        return DependencyPath.concat(jarDeps, false, ';');
       } else {
-        return CollectionUtil.concat(jarDeps, ';') + ";" + CollectionUtil.concat(moduleDeps, ';');
+        return DependencyPath.concat(jarDeps, false, ';') + ";" + DependencyPath.concat(moduleDeps, false, ';');
       }
     }
   }
@@ -73,33 +72,24 @@ public final class DependencyHelper {
     return null;
   }
 
-  /**
-   * Gets a <code>Set</code> of <code>String</code>s, each one identifying the absolute path to a module dependency.
-   * All defined module dependencies are returned.
-   * See {@link DependencyHelper#getModuleDependencies(Module, boolean, boolean)}
-   *
-   * @param module The module for which a dependency-path should be determined.
-   * @return See method description.
-   * @throws DependencyException When a dependency for a module is not available.
-   */
-  public Set getModuleDependencies(Module module) throws ModuleTypeException, DependencyException {
-    return getModuleDependencies(module, false, false);
+  public Set getAllDependencies(Module module, boolean doPackage) throws ModuleTypeException, DependencyException {
+    HashSet all = new HashSet();
+    all.addAll(getModuleDependencies(module, doPackage));
+    all.addAll(getJarDependencies(module, doPackage));
+    return all;
   }
 
   /**
-   * Gets a <code>Set</code> of <code>String</code>s, each one identifying the path to a module dependency (a
-   * dependency of <code>module</code> to another <code>Module</code>. The paths returned as <code>String</code>s in
-   * the set returned are relative to {@link BuildEnvironment#getBuildRootDirectory()} or are absolute paths,
-   * depending on the <code>relative</code> parameter.
+   * Gets a <code>Set</code> of {@link DependencyPath}s, each one identifying the path to a module dependency (a
+   * dependency of <code>module</code> to another <code>Module</code>).
    *
-   * @param module The module for which a dependency-path should be determined.
-   * @param relative  Whether or not the paths are relative
+   * @param module     The module for which a dependency-path should be determined.
    * @param doPackage  Whether to include only the deps that are to be packaged or all deps.
    *
    * @return See method description.
-   * @throws DependencyException When a dependency for a module is not available.
+   * @throws DependencyException  When a dependency for a module is not available.
    */
-  public Set getModuleDependencies(Module module, boolean relative, boolean doPackage) throws ModuleTypeException, DependencyException {
+  public Set getModuleDependencies(Module module, boolean doPackage) throws ModuleTypeException, DependencyException {
 
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
@@ -114,37 +104,30 @@ public final class DependencyHelper {
 
       if (dep.isModuleDependency()) {
 
-        File dependencyJar = null;
         try {
-          dependencyJar = new File(dep.getModule(), resolveArchiveName(manifest.getModule(dep.getModule())));
+          File dependencyJar = new File(dep.getModule(), resolveArchiveName(manifest.getModule(dep.getModule())));
+          DependencyPath path = new DependencyPath(env.getBuildRootDirectory(), dependencyJar);
+          if (!path.exists()) {
+            throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getModule()});
+          }
+          if (!doPackage || dep.doPackage()) {
+            s.add(path);
+          }
         } catch (ManifestException e) {
           throw new DependencyException(e.getErrorCode(), e.getMessageArguments());
         }
-
-        File dependencyJarLocation = new File(env.getBuildRootDirectory(), dependencyJar.getPath());
-        if (!dependencyJarLocation.exists()) {
-          throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getModule()});
-        }
-        if (!doPackage || dep.doPackage()) {
-          if (relative) {
-            s.add(dependencyJar.getPath());
-          } else {
-            s.add(dependencyJarLocation.getPath());
-          }
-        }
-
       }
     }
     return s;
   }
 
-
   /**
+   * Check whether a certain module has an other module as a dependency.
    *
    * @param module      The module for which is checked whether it has <code>dependency</code> as a dependency.
    * @param dependency  The module for which to check whether it is a dependency of the current module.
    * @param doPackage   Whether to include only the deps that are to be packaged or all deps.
-   * @return
+   * @return Whether the given module had the other given module as a dependency.
    */
   public boolean hasModuleDependency(Module module, Module dependency, boolean doPackage) {
     Iterator it = module.getDependencies().iterator();
@@ -165,33 +148,19 @@ public final class DependencyHelper {
 
 
   /**
-   * See {@link #getJarDependencies(Module, boolean, boolean)}. This method returns a set with the absolute pathnames.
-   * All defined jar dependencies are returned.
-   */
-  public Set getJarDependencies(Module module) throws DependencyException {
-    return getJarDependencies(module, false, false);
-  }
-
-
-  /**
-   * <p>Gets a <code>Set</code> of <code>String</code>s, each one identifying a <code>jar</code>-file. Jar files are looked
-   * up Maven-style (see {@link ModuleDependency}. The result set contains strings like ;
-   * <code>&lt;groupId&gt;/jars/&lt;artifactId&gt;-&lt;version&gt;.jar</code>.
-   *
-   * <p>The <code>relative</code> parameters
+   * <p>Gets a <code>Set</code> of {@link DependencyPath}s, each one identifying a <code>jar</code>-file. Jar files are looked
+   * up Maven-style (see {@link ModuleDependency}.
    *
    * @param module The module for which jar dependencies should be determined.
-   * @param relative  Whether or not the path of the jars is relative or absolute.
    * @param doPackage  Whether to include only the deps that are to be packaged or all deps.
    *
-   * @return A <code>Set</code> containing <code>String</code>s, each one representing the relative path (Maven-style)
-   *   to the jar dependency.
+   * @return A <code>Set</code> containing {@link DependencyPath}s
    *
    * @throws DependencyException When a jar dependency is not phsyically available on disk. A check is performed on the
    *   existence of the jar file in either the local jar repository ({@link WorkingContext#getLocalRepository()}) or in
    *   the lib module that is specified as being part of the manifest.
    */
-  public Set getJarDependencies(Module module, boolean relative, boolean doPackage) throws DependencyException {
+  public Set getJarDependencies(Module module, boolean doPackage) throws DependencyException {
 
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
@@ -202,28 +171,27 @@ public final class DependencyHelper {
     for (Iterator iterator = module.getDependencies().iterator(); iterator.hasNext();) {
 
       ModuleDependency dep = (ModuleDependency) iterator.next();
-      if (!dep.isModuleDependency()) {
-        try {
-          if (!new File(WorkingContext.getLocalRepository(), dep.getJarDependency()).exists()) {
-            // todo has to be localized.
-            //
+      try {
+        if (dep.isLibModuleDependency() || !dep.isModuleDependency()) {
+          DependencyPath path;
+          if (dep.isLibModuleDependency()) {
+            //dep on jar in lib module. This one is relative to the base dir of the manifest.
+            path = new DependencyPath(manifest.getBaseDirectory(), new File(dep.getJarDependency()));
+          } else {
+            //dep on jar in Maven-style repo.
+            path = new DependencyPath(WorkingContext.getLocalRepository(), new File(dep.getJarDependency()));
+          }
+          if (!path.exists()) {
             // todo this bit could have to download the dependency, like maven does.
             throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getJarDependency()});
           }
 
           if (!doPackage || dep.doPackage()) {
-            if (relative) {
-              s.add(dep.getJarDependency());
-            } else {
-              s.add(WorkingContext.getLocalRepository().getPath() + File.separator +dep.getJarDependency());
-            }
+              s.add(path);
           }
-        } catch (IOException e) {
-          throw new DependencyException(e, DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getJarDependency()});
         }
-
-      } else {
-        // todo Implement stuff for lib modules ...
+      } catch (IOException e) {
+        throw new DependencyException(e, DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getJarDependency()});
       }
     }
     return s;
@@ -307,7 +275,7 @@ public final class DependencyHelper {
       ModuleDependency dep = (ModuleDependency) i.next();
 
       if (!currentSet.add(dep)) {
-//        ???????????????????????????????????????????????
+//        todo ???????????????????????????????????????????????
 //        throw new DependencyException(DependencyException.DUPLICATE_ARTIFACT_VERSION);
       } else {
         if (dep.isModuleDependency()) {

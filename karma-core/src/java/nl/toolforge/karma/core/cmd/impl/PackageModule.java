@@ -19,8 +19,29 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.cmd.impl;
 
 
-import nl.toolforge.core.util.collection.CollectionUtil;
-import nl.toolforge.karma.core.boot.WorkingContext;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Target;
+import org.apache.tools.ant.taskdefs.Copy;
+import org.apache.tools.ant.taskdefs.Ear;
+import org.apache.tools.ant.taskdefs.Jar;
+import org.apache.tools.ant.taskdefs.War;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.FilterSet;
+import org.xml.sax.SAXException;
+
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.AntErrorMessage;
 import nl.toolforge.karma.core.cmd.Command;
@@ -35,33 +56,12 @@ import nl.toolforge.karma.core.cmd.StatusMessage;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.util.DependencyException;
 import nl.toolforge.karma.core.cmd.util.DependencyHelper;
+import nl.toolforge.karma.core.cmd.util.DependencyPath;
 import nl.toolforge.karma.core.cmd.util.DescriptorReader;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ModuleDigester;
 import nl.toolforge.karma.core.manifest.ModuleTypeException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Target;
-import org.apache.tools.ant.taskdefs.Copy;
-import org.apache.tools.ant.taskdefs.Ear;
-import org.apache.tools.ant.taskdefs.Jar;
-import org.apache.tools.ant.taskdefs.War;
-import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.FilterSet;
-import org.xml.sax.SAXException;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author D.A. Smedes
@@ -172,6 +172,7 @@ public class PackageModule extends AbstractBuildCommand {
         copy.setProject(getProjectInstance());
         copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
         copy.setOverwrite(true);
+        copy.setIncludeEmptyDirs(false);
 
         fileSet = new FileSet();
         fileSet.setDir(new File(getCurrentModule().getBaseDir(), "resources"));
@@ -189,6 +190,7 @@ public class PackageModule extends AbstractBuildCommand {
       copy.setProject(getProjectInstance());
       copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
       copy.setOverwrite(true);
+      copy.setIncludeEmptyDirs(false);
 
       fileSet = new FileSet();
       fileSet.setDir(getCurrentModule().getBaseDir());
@@ -205,6 +207,7 @@ public class PackageModule extends AbstractBuildCommand {
         copy.setProject(getProjectInstance());
         copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
         copy.setOverwrite(true);
+        copy.setIncludeEmptyDirs(false);
 
         fileSet = new FileSet();
         fileSet.setDir(getCompileDirectory());
@@ -246,6 +249,7 @@ e.printStackTrace();
       copy.setProject(getProjectInstance());
       copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
       copy.setOverwrite(true);
+      copy.setIncludeEmptyDirs(false);
 
       FileSet fileSet = new FileSet();
       fileSet.setDir(getCurrentModule().getBaseDir());
@@ -259,6 +263,12 @@ e.printStackTrace();
       //
       File webdir = new File(getCurrentModule().getBaseDir(), "web");
       if (webdir.exists()) {
+        copy = new Copy();
+        copy.setProject(getProjectInstance());
+        copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
+        copy.setOverwrite(true);
+        copy.setIncludeEmptyDirs(false);
+
         fileSet = new FileSet();
         fileSet.setDir(webdir);
         fileSet.setIncludes("**");
@@ -270,38 +280,23 @@ e.printStackTrace();
       // Copy dependencies, but only those that need to be packaged
       //
 
-      Set moduleDeps = helper.getModuleDependencies(getCurrentModule(), true, true);
-      Set jarDeps = helper.getJarDependencies(getCurrentModule(), true, true);
-
-      if (moduleDeps.size() > 0 || jarDeps.size() > 0) {
+      Set deps = helper.getAllDependencies(getCurrentModule(), true);
+      if (!deps.isEmpty()) {
 
         copy = new Copy();
         copy.setProject(getProjectInstance());
         copy.setTodir(new File(getBuildEnvironment().getModulePackageDirectory(), "WEB-INF/lib"));
         copy.setFlatten(true);
+        copy.setIncludeEmptyDirs(false);
 
-        // Module dependencies
+        // dependencies
         //
-        if (!moduleDeps.isEmpty()) {
+        Iterator it = deps.iterator();
+        while (it.hasNext()) {
+          DependencyPath path = (DependencyPath) it.next();
           fileSet = new FileSet();
-          fileSet.setDir(getBuildEnvironment().getBuildRootDirectory());
-//System.out.println(CollectionUtil.concat(moduleDeps, ','));
-          fileSet.setIncludes(CollectionUtil.concat(moduleDeps, ','));
+          fileSet.setFile(path.getFullPath());
           copy.addFileset(fileSet);
-        }
-
-        // Jar dependencies
-        //
-        try {
-          if (!jarDeps.isEmpty()) {
-            fileSet = new FileSet();
-            fileSet.setDir(WorkingContext.getLocalRepository());
-//System.out.println(CollectionUtil.concat(jarDeps, ','));
-            fileSet.setIncludes(CollectionUtil.concat(jarDeps, ','));
-            copy.addFileset(fileSet);
-          }
-        } catch (IOException e) {
-          throw new CommandException(e, CommandException.PACKAGE_FAILED);
         }
 
         copy.execute();
@@ -367,7 +362,7 @@ e.printStackTrace();
           Module module = getCurrentManifest().getModule(moduleName);
 
           map.put(moduleName, helper.resolveArchiveName(module));
-          //todo: check whether the module is in the dependencies
+          //check whether the module is in the dependencies
           if (!helper.hasModuleDependency(getCurrentModule(), module, true)) {
             throw new DependencyException(DependencyException.EAR_DEPENDENCY_NOT_DEFINED, new Object[]{moduleName});
           }
@@ -411,6 +406,7 @@ e.printStackTrace();
       copy.setProject(getProjectInstance());
       copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
       copy.setOverwrite(true);
+      copy.setIncludeEmptyDirs(false);
 
       FileSet fileSet = new FileSet();
       fileSet.setDir(getCurrentModule().getBaseDir());
@@ -426,17 +422,21 @@ e.printStackTrace();
 
       //copy the module dependencies from the application.xml
       commandResponse.addMessage(new StatusMessage("Copying module dependencies"));
-      Set moduleDeps = helper.getModuleDependencies(getCurrentModule(), true, true);
+      Set moduleDeps = helper.getModuleDependencies(getCurrentModule(), true);
       if (!moduleDeps.isEmpty()) {
         copy = new Copy();
         copy.setProject(getProjectInstance());
         copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
         copy.setFlatten(true);
+        copy.setIncludeEmptyDirs(false);
 
-        fileSet = new FileSet();
-        fileSet.setDir(getBuildEnvironment().getBuildRootDirectory());
-        fileSet.setIncludes(CollectionUtil.concat(moduleDeps, ','));
-        copy.addFileset(fileSet);
+        Iterator it = moduleDeps.iterator();
+        while (it.hasNext()) {
+          DependencyPath path = (DependencyPath) it.next();
+          fileSet = new FileSet();
+          fileSet.setFile(path.getFullPath());
+          copy.addFileset(fileSet);
+        }
         copy.execute();
       } else {
         logger.info("No module dependencies to package.");
@@ -444,17 +444,21 @@ e.printStackTrace();
 
       //copy the non-module dependencies to /lib
       commandResponse.addMessage(new StatusMessage("Copying jar dependencies"));
-      Set jarDeps = helper.getJarDependencies(getCurrentModule(), true, true);
+      Set jarDeps = helper.getJarDependencies(getCurrentModule(), true);
       if (!jarDeps.isEmpty()) {
         copy = new Copy();
         copy.setProject(getProjectInstance());
         copy.setTodir(new File(getBuildEnvironment().getModulePackageDirectory(), "lib"));
         copy.setFlatten(true);
+        copy.setIncludeEmptyDirs(false);
 
-        fileSet = new FileSet();
-        fileSet.setDir(WorkingContext.getLocalRepository());
-        fileSet.setIncludes(CollectionUtil.concat(jarDeps, ','));
-        copy.addFileset(fileSet);
+        Iterator it = jarDeps.iterator();
+        while (it.hasNext()) {
+          DependencyPath path = (DependencyPath) it.next();
+          fileSet = new FileSet();
+          fileSet.setDir(path.getFullPath());
+          copy.addFileset(fileSet);
+        }
         copy.execute();
       } else {
         logger.info("No jar dependencies to package.");
@@ -482,8 +486,6 @@ e.printStackTrace();
       throw new CommandException(e, CommandException.PACKAGE_FAILED, new Object[] {getCurrentModule().getName()});
     } catch (DependencyException d) {
       throw new CommandException(d.getErrorCode(), d.getMessageArguments());
-    } catch (IOException e) {
-      throw new CommandException(e, CommandException.PACKAGE_FAILED);
     } catch (ModuleTypeException d) {
       throw new CommandException(d.getErrorCode(), d.getMessageArguments());
     }
