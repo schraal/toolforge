@@ -21,8 +21,11 @@ package nl.toolforge.karma.core.manifest;
 import com.mockobjects.dynamic.Mock;
 import junit.framework.TestCase;
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.module.SourceModule;
+import nl.toolforge.karma.core.module.Module;
+import nl.toolforge.karma.core.module.ModuleComparator;
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.manifest.util.SourceModuleLayoutTemplate;
+import nl.toolforge.karma.core.module.template.SourceModuleLayoutTemplate;
 
 import java.util.ArrayList;
 import java.util.Collections;

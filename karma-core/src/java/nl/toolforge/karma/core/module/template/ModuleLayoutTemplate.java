@@ -16,36 +16,31 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-package nl.toolforge.karma.core.manifest.util;
+package nl.toolforge.karma.core.module.template;
 
 import java.io.File;
+import java.io.IOException;
+
 
 /**
- * <p>Layout for a lib-module. A lib-module (implemented by the
- * {@link nl.toolforge.karma.core.manifest.LibModule} class) has the following
- * directory-structure:
+ * <p>Layout for a module. A new module can be initialized with new files and directories. Implementations of this
+ * class define those files and directories.
  *
- * <ul>
- *   <li><code>lib</code>
- * </ul>
- *
- * @author W.H. Schraal
+ * @author D.A. Smedes
  * @version $Id$
  */
-public final class LibModuleLayoutTemplate extends BaseModuleLayoutTemplate {
+public interface ModuleLayoutTemplate {
 
-  // todo constructor met xml file naam waar de layout gevonden kan worden.
+  public FileTemplate[] getFileElements();
 
-  public FileTemplate[] getFileElements() {
-    return new FileTemplate[] {
-      new FileTemplate(new File("/templates/cvsignore.template"), new File(".cvsignore")),
-    };
-  }
+  public String[] getDirectoryElements();
 
-  public String[] getDirectoryElements() {
-    return new String[] {
-      "lib"
-    };
-  }
+  /**
+   * Creates a templates' files and directories.
+   * 
+   * @param baseDir
+   * @throws IOException
+   */
+  public void createLayout(File baseDir) throws IOException;
 
 }

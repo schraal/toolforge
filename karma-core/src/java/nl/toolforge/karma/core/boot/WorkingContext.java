@@ -385,7 +385,7 @@ public final class WorkingContext {
 
   /**
    * <p>Determines the last used manifest for this working context. This fact is maintained in the <code>.java</code> file
-   * on a users' harddisk, as per the specification for <code>java.util.prefs</code>, included in the JDK since
+   * on a users' harddisk, as per the specification for <code>java.template.prefs</code>, included in the JDK since
    * <code>1.4</code>.
    *
    * <p>A <code>String</code> made up of the working context name and <code>karma.manifest.last</code>.

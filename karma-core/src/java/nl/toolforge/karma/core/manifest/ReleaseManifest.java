@@ -22,6 +22,7 @@ import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.vc.cvsimpl.threads.PatchLineThread;
 import nl.toolforge.karma.core.vc.threads.ParallelRunner;
+import nl.toolforge.karma.core.module.Module;
 
 /**
  * A <code>ReleaseManifest</code> is created when the Release Manager collects all stable versions of modules.

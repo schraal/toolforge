@@ -22,6 +22,8 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Map;
 
+import nl.toolforge.karma.core.module.Module;
+
 /**
  * @author D.A. Smedes
  * @version $Id$

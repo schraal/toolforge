@@ -50,7 +50,7 @@ public class MavenDependencyReader {
 
     Digester digester = new Digester();
 
-    digester.addObjectCreate("project", "java.util.ArrayList");
+    digester.addObjectCreate("project", "java.template.ArrayList");
     digester.addObjectCreate("project/dependencies/dependency", "org.apache.maven.project.Dependency");
 
     digester.addCallMethod("project/dependencies/dependency/Id", "setId", 1);

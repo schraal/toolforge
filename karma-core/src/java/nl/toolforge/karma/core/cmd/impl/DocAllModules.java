@@ -29,7 +29,7 @@ import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.event.ErrorEvent;
 import nl.toolforge.karma.core.cmd.threads.ParallelCommandWrapper;
 import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.module.Module;
 
 import java.util.Collection;
 import java.util.Iterator;

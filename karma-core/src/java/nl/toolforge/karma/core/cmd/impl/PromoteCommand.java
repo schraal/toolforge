@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
@@ -29,7 +30,7 @@ import nl.toolforge.karma.core.cmd.event.SimpleMessage;
 import nl.toolforge.karma.core.manifest.DevelopmentManifest;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.Runner;

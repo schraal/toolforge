@@ -18,10 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.module;
 
-import nl.toolforge.karma.core.manifest.LibModule;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.OtherModule;
-import nl.toolforge.karma.core.manifest.SourceModule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

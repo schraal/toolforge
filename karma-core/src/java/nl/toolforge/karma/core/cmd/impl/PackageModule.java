@@ -58,9 +58,11 @@ import nl.toolforge.karma.core.cmd.util.DependencyHelper;
 import nl.toolforge.karma.core.cmd.util.DependencyPath;
 import nl.toolforge.karma.core.cmd.util.DescriptorReader;
 import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.ModuleDigester;
-import nl.toolforge.karma.core.manifest.ModuleTypeException;
+import nl.toolforge.karma.core.module.Module;
+import nl.toolforge.karma.core.module.ModuleDigester;
+import nl.toolforge.karma.core.module.ModuleDigester;
+import nl.toolforge.karma.core.module.ModuleTypeException;
+import nl.toolforge.karma.core.module.ModuleTypeException;
 
 /**
  * @author D.A. Smedes

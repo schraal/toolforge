@@ -20,6 +20,7 @@ package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.Patch;
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
@@ -28,7 +29,7 @@ import nl.toolforge.karma.core.cmd.event.MessageEvent;
 import nl.toolforge.karma.core.cmd.event.SimpleMessage;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.manifest.ReleaseManifest;
 import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.RunnerFactory;

@@ -41,7 +41,7 @@ public final class RunnerFactory {
   /**
    * A <code>Runner</code> might be required for a command to execute something on a version control system. A module
    * can determine which implementation of a runner it requires through the
-   * {@link nl.toolforge.karma.core.manifest.Module#getLocation} method.
+   * {@link nl.toolforge.karma.core.module.Module#getLocation} method.
    *
    * @param location The location for which a runner is required.
    * @return A version control system specific <code>Runner</code>.

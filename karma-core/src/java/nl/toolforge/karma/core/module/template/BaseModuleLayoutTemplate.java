@@ -16,10 +16,10 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-package nl.toolforge.karma.core.manifest.util;
+package nl.toolforge.karma.core.module.template;
 
 import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.module.SourceModule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

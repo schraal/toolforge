@@ -29,11 +29,13 @@ import java.util.Set;
 import net.sf.sillyexceptions.OutOfTheBlueException;
 
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.ModuleTypeException;
+import nl.toolforge.karma.core.module.Module;
+import nl.toolforge.karma.core.module.ModuleTypeException;
+import nl.toolforge.karma.core.module.ModuleTypeException;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvsimpl.Utils;

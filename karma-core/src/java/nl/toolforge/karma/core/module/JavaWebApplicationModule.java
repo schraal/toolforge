@@ -20,9 +20,8 @@ package nl.toolforge.karma.core.module;
 
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.manifest.BaseModule;
-import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
-import nl.toolforge.karma.core.manifest.util.WebappModuleLayoutTemplate;
+import nl.toolforge.karma.core.module.template.ModuleLayoutTemplate;
+import nl.toolforge.karma.core.module.template.WebappModuleLayoutTemplate;
 
 /**
  * Module type containing libraries. This release only supports the Karma Java Edition, which means that the libs

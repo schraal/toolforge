@@ -20,7 +20,7 @@ package nl.toolforge.karma.core.vc.threads;
 
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.manifest.Manifest;
-import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.module.Module;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
@@ -147,7 +147,7 @@ public class ParallelRunner {
 
   /**
    * Returns a map of {@link nl.toolforge.karma.core.vc.ModuleStatus} objects, each accessible by the the corresponding
-   * {@link nl.toolforge.karma.core.manifest.Module} instance.
+   * {@link nl.toolforge.karma.core.module.Module} instance.
    *
    * @return A map, containing {@link nl.toolforge.karma.core.vc.ModuleStatus} objects.
    */

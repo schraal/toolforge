@@ -21,7 +21,8 @@ package nl.toolforge.karma.core.cmd.util;
 import java.io.File;
 
 import nl.toolforge.karma.core.manifest.Manifest;
-import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.module.Module;
+import nl.toolforge.karma.core.module.Module;
 
 /**
  * The BuildEnvironment

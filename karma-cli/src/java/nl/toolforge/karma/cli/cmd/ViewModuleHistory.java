@@ -29,7 +29,9 @@ import nl.toolforge.karma.core.history.ModuleHistoryEvent;
 import nl.toolforge.karma.core.history.ModuleHistoryException;
 import nl.toolforge.karma.core.history.ModuleHistoryFactory;
 import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.module.Module;
+import nl.toolforge.karma.core.module.Module;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

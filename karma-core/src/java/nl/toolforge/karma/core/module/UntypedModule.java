@@ -21,8 +21,7 @@ package nl.toolforge.karma.core.module;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.manifest.BaseModule;
-import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
+import nl.toolforge.karma.core.module.template.ModuleLayoutTemplate;
 
 import java.io.IOException;
 
@@ -40,7 +39,7 @@ public final class UntypedModule extends BaseModule {
   }
 
   /**
-   * Creates a <code>JavaEnterpriseApplicationModule</code> using a {@link nl.toolforge.karma.core.manifest.util.EappModuleLayoutTemplate} as the layout
+   * Creates a <code>JavaEnterpriseApplicationModule</code> using a {@link nl.toolforge.karma.core.module.template.EappModuleLayoutTemplate} as the layout
    * template.
    *
    * @throws java.io.IOException When the module (layout) could not be created.

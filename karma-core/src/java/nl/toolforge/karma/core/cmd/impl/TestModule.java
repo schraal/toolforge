@@ -37,7 +37,7 @@ import nl.toolforge.karma.core.cmd.event.MessageEvent;
 import nl.toolforge.karma.core.cmd.event.SimpleMessage;
 import nl.toolforge.karma.core.cmd.util.DependencyException;
 import nl.toolforge.karma.core.cmd.util.DependencyHelper;
-import nl.toolforge.karma.core.manifest.ModuleTypeException;
+import nl.toolforge.karma.core.module.ModuleTypeException;
 
 /**
  * Run the unit tests of a given module.

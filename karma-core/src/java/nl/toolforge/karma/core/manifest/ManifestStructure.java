@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.PatternSyntaxException;
 
+import nl.toolforge.karma.core.module.ModuleDigester;
+
 /**
  * Mapping of a manifest file and its included manifest files (any level deep possible). Note that the structure that
  * is build is merely the template for the real <code>Manifest</code>.

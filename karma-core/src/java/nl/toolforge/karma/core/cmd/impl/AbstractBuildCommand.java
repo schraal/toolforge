@@ -45,8 +45,9 @@ import nl.toolforge.karma.core.cmd.util.AntLogger;
 import nl.toolforge.karma.core.cmd.util.BuildEnvironment;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.ModuleTypeException;
+import nl.toolforge.karma.core.module.Module;
+import nl.toolforge.karma.core.module.ModuleTypeException;
+import nl.toolforge.karma.core.module.ModuleTypeException;
 
 /**
  * Superclass for all commands dealing with building modules. This class provides all basic property mappers and methods

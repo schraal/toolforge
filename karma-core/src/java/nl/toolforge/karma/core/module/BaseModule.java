@@ -16,9 +16,22 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-package nl.toolforge.karma.core.manifest;
+package nl.toolforge.karma.core.module;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.PatternSyntaxException;
 
 import net.sf.sillyexceptions.OutOfTheBlueException;
+import org.apache.commons.digester.Digester;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.xml.sax.SAXException;
+
 import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.Version;
@@ -27,8 +40,8 @@ import nl.toolforge.karma.core.history.ModuleHistoryEvent;
 import nl.toolforge.karma.core.history.ModuleHistoryException;
 import nl.toolforge.karma.core.history.ModuleHistoryFactory;
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
-import nl.toolforge.karma.core.module.ModuleDescriptor;
+import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.module.template.ModuleLayoutTemplate;
 import nl.toolforge.karma.core.scm.digester.ModuleDependencyCreationFactory;
 import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.Authenticator;
@@ -38,18 +51,6 @@ import nl.toolforge.karma.core.vc.PatchLine;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
-import org.apache.commons.digester.Digester;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.xml.sax.SAXException;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.PatternSyntaxException;
 
 /**
  * The name says it all. This class is the base (template) for a module.
@@ -65,7 +66,6 @@ public abstract class BaseModule implements Module {
   private String name = null;
 
   private File baseDir = null;
-  private File checkoutDir = null;
 
   private Version version = null;
   private boolean patchLine = false;
@@ -283,7 +283,7 @@ public abstract class BaseModule implements Module {
    * <code>Module.UNKNOWN</code> is returned.
    *
    * @return The module type.
-   * @throws ModuleTypeException When <code>module-descriptor</code> is non-existing. This is possible when the
+   * @throws nl.toolforge.karma.core.module.ModuleTypeException When <code>module-descriptor</code> is non-existing. This is possible when the
    *   module is not locally available.
    */
   public final Type getType() throws ModuleTypeException {

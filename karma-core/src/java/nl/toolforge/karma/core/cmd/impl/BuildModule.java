@@ -36,8 +36,8 @@ import nl.toolforge.karma.core.cmd.event.SimpleMessage;
 import nl.toolforge.karma.core.cmd.util.DependencyException;
 import nl.toolforge.karma.core.cmd.util.DependencyHelper;
 import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.ModuleTypeException;
+import nl.toolforge.karma.core.module.Module;
+import nl.toolforge.karma.core.module.ModuleTypeException;
 
 /**
  * Builds a module in a manifest. Building a module means that all java sources will be compiled into the

@@ -16,12 +16,12 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-package nl.toolforge.karma.core.manifest;
+package nl.toolforge.karma.core.module;
 
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
-import nl.toolforge.karma.core.manifest.util.OtherModuleLayoutTemplate;
+import nl.toolforge.karma.core.module.template.ModuleLayoutTemplate;
+import nl.toolforge.karma.core.module.template.OtherModuleLayoutTemplate;
 
 /**
  * <p>A <code>SourceModule</code> represents a module for which the developer wants to have the sources available to
@@ -29,7 +29,7 @@ import nl.toolforge.karma.core.manifest.util.OtherModuleLayoutTemplate;
  *
  * @author W.H. Schraal
  * @version $Id$
- * @see Module
+ * @see nl.toolforge.karma.core.module.Module
  */
 public class OtherModule extends BaseModule {
 

@@ -20,6 +20,7 @@ package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.karma.core.module.Module;
 
 /**
  * @author D.A. Smedes

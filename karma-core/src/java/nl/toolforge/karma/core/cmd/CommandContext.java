@@ -22,6 +22,7 @@ import nl.toolforge.core.util.listener.ChangeListener;
 import nl.toolforge.core.util.listener.ListenerManager;
 import nl.toolforge.core.util.listener.ListenerManagerException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.boot.WorkingContextConfiguration;
 import nl.toolforge.karma.core.cmd.event.CommandFailedEvent;
@@ -37,7 +38,7 @@ import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.ManifestFactory;
 import nl.toolforge.karma.core.manifest.ManifestLoader;
 import nl.toolforge.karma.core.manifest.ManifestStructure;
-import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.module.Module;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

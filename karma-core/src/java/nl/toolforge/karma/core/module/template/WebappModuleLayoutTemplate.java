@@ -16,34 +16,44 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-package nl.toolforge.karma.core.manifest.util;
+package nl.toolforge.karma.core.module.template;
 
 import java.io.File;
 
 /**
- * <p>Layout for an other-module. An other-module (implemented by the
- * {@link nl.toolforge.karma.core.manifest.OtherModule} class) has no fixed
- * directory-structure. You are free to choose the structure of your likings.
- * </p>
- * <p>
- * However, Karma will not do anything with the file in these directories. When
- * packaging, Karma will copy all files as is into an archive.
+ * <p>Layout for a webapp-module. A web-module has the following directory-structure:
  *
- * @author W.H. Schraal
+ * <ul>
+ * <li/><code>src/java</code>
+ * <li/><code>src/resources</code>
+ * <li/><code>test/java</code>
+ * <li/><code>test/resources</code>
+ * <li/><code>src/web</code>
+ * <li/><code>src/web/WEB-INF</code>
+ * </ul>
+ *
+ * @author D.A. Smedes
  * @version $Id$
  */
-public final class OtherModuleLayoutTemplate extends BaseModuleLayoutTemplate {
+public final class WebappModuleLayoutTemplate extends BaseModuleLayoutTemplate {
 
   // todo constructor met xml file naam waar de layout gevonden kan worden.
 
   public FileTemplate[] getFileElements() {
     return new FileTemplate[] {
       new FileTemplate(new File("/templates/cvsignore.template"), new File(".cvsignore")),
+      new FileTemplate(new File("/templates/dependencies.xml_template"), new File("dependencies.xml")),
+      new FileTemplate(new File("/templates/web.xml_template"), new File("src/web/WEB-INF","web.xml"))
     };
   }
 
   public String[] getDirectoryElements() {
-    return new String[] { };
+    return new String[] {
+      "src/java",                              // Java sources
+      "test/java",                             // Java JUnit tests
+      "src/resources",
+      "test/resources",                        // Test meuk
+      "src/web",                               // Web-resources such as html, images and the like
+      "src/web/WEB-INF"};                      // Runtime libraries
   }
-
 }

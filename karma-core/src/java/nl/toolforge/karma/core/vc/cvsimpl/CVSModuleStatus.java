@@ -21,7 +21,7 @@ package nl.toolforge.karma.core.vc.cvsimpl;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.Patch;
 import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
 import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.PatchLine;

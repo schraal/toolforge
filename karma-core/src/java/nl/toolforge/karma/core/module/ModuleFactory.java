@@ -16,7 +16,7 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-package nl.toolforge.karma.core.manifest;
+package nl.toolforge.karma.core.module;
 
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.Version;
@@ -26,9 +26,14 @@ import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.module.JavaEnterpriseApplicationModule;
 import nl.toolforge.karma.core.module.JavaWebApplicationModule;
 import nl.toolforge.karma.core.module.UntypedModule;
+import nl.toolforge.karma.core.module.SourceModule;
+import nl.toolforge.karma.core.module.OtherModule;
+import nl.toolforge.karma.core.module.LibModule;
+import nl.toolforge.karma.core.module.Module;
+import nl.toolforge.karma.core.module.ModuleDigester;
 
 /**
- * <p>Factory class to create modules based on a {@link ModuleDigester}.</p>
+ * <p>Factory class to create modules based on a {@link nl.toolforge.karma.core.module.ModuleDigester}.</p>
  *
  * @author D.A. Smedes
  * @version $Id$

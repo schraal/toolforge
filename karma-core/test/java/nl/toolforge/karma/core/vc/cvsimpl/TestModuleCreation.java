@@ -18,12 +18,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.vc.cvsimpl;
 
-import nl.toolforge.karma.core.manifest.LibModule;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.ModuleTypeException;
-import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.module.LibModule;
+import nl.toolforge.karma.core.module.Module;
+import nl.toolforge.karma.core.module.ModuleTypeException;
+import nl.toolforge.karma.core.module.SourceModule;
 import nl.toolforge.karma.core.module.JavaEnterpriseApplicationModule;
 import nl.toolforge.karma.core.module.JavaWebApplicationModule;
+import nl.toolforge.karma.core.module.SourceModule;
+import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.test.LocalCVSInitializer;
 import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.AuthenticatorKey;

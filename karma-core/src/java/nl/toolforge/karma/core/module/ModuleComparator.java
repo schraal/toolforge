@@ -16,31 +16,28 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-package nl.toolforge.karma.core.manifest.util;
+package nl.toolforge.karma.core.module;
 
-import java.io.File;
-import java.io.IOException;
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.module.Module;
 
+import java.util.Comparator;
 
 /**
- * <p>Layout for a module. A new module can be initialized with new files and directories. Implementations of this
- * class define those files and directories.
- *
  * @author D.A. Smedes
  * @version $Id$
  */
-public interface ModuleLayoutTemplate {
+public class ModuleComparator implements Comparator {
 
-  public FileTemplate[] getFileElements();
+  public int compare(Object o1, Object o2) {
 
-  public String[] getDirectoryElements();
+    if ((!(o1 instanceof Module)) || (!(o1 instanceof Module))) {
+      throw new KarmaRuntimeException("Don't compare apples with pears; they are not the same ... (use Module instances).");
+    }
 
-  /**
-   * Creates a templates' files and directories.
-   * 
-   * @param baseDir
-   * @throws IOException
-   */
-  public void createLayout(File baseDir) throws IOException;
+    String n1 = ((Module) o1).getName();
+    String n2 = ((Module) o2).getName();
 
+    return n1.compareTo(n2);
+  }
 }

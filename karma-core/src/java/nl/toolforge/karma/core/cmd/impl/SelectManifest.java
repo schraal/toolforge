@@ -75,7 +75,7 @@ public class SelectManifest extends DefaultCommand {
     try {
       Preferences.userRoot().flush();
     } catch (BackingStoreException e) {
-      logger.warn("Could not write user preferences due to java.util.prefs.BackingStoreException.");
+      logger.warn("Could not write user preferences due to java.template.prefs.BackingStoreException.");
     }
   }
 

@@ -24,8 +24,9 @@ import org.apache.commons.logging.LogFactory;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.Patch;
 import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.module.Module;
+import nl.toolforge.karma.core.module.SourceModule;
+import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
 import nl.toolforge.karma.core.vc.ModuleStatus;
@@ -53,7 +54,7 @@ public final class Utils {
    *   which case it is ignored when creating a <code>SymbolicName</code>.
    *
    * @return A symbolic name (tag) as they are used in a CVS repository. An empty CVSTag is returned when another
-   *  instance than a {@link SourceModule} is passed as the <code>module</code> parameter.
+   *  instance than a {@link nl.toolforge.karma.core.module.SourceModule} is passed as the <code>module</code> parameter.
    */
   public static SymbolicName createSymbolicName(Module module, DevelopmentLine developmentLine, Version version) {
 

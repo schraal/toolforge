@@ -25,10 +25,10 @@ import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.event.ErrorEvent;
 import nl.toolforge.karma.core.cmd.event.MessageEvent;
 import nl.toolforge.karma.core.cmd.event.SimpleMessage;
-import nl.toolforge.karma.core.manifest.BaseModule;
+import nl.toolforge.karma.core.module.BaseModule;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.manifest.ReleaseManifest;
 import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.ModuleStatus;
@@ -38,6 +38,9 @@ import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvsimpl.AdminHandler;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSModuleStatus;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
+import nl.toolforge.karma.core.module.BaseModule;
+import nl.toolforge.karma.core.module.Module;
+
 import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;

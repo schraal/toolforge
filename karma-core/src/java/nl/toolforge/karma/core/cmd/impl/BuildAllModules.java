@@ -30,8 +30,9 @@ import nl.toolforge.karma.core.cmd.event.ErrorEvent;
 import nl.toolforge.karma.core.cmd.util.KarmaBuildException;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.scm.ModuleDependency;
+import nl.toolforge.karma.core.module.Module;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -1,8 +1,9 @@
 package nl.toolforge.karma.core.boot;
 
 import nl.toolforge.karma.core.ErrorCode;
+import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.VersionControlException;
 

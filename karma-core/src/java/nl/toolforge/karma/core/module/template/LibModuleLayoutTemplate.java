@@ -16,27 +16,36 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-package nl.toolforge.karma.core.manifest;
+package nl.toolforge.karma.core.module.template;
 
-import nl.toolforge.karma.core.KarmaRuntimeException;
-
-import java.util.Comparator;
+import java.io.File;
 
 /**
- * @author D.A. Smedes
+ * <p>Layout for a lib-module. A lib-module (implemented by the
+ * {@link nl.toolforge.karma.core.module.LibModule} class) has the following
+ * directory-structure:
+ *
+ * <ul>
+ *   <li><code>lib</code>
+ * </ul>
+ *
+ * @author W.H. Schraal
  * @version $Id$
  */
-public class ModuleComparator implements Comparator {
+public final class LibModuleLayoutTemplate extends BaseModuleLayoutTemplate {
 
-  public int compare(Object o1, Object o2) {
+  // todo constructor met xml file naam waar de layout gevonden kan worden.
 
-    if ((!(o1 instanceof Module)) || (!(o1 instanceof Module))) {
-      throw new KarmaRuntimeException("Don't compare apples with pears; they are not the same ... (use Module instances).");
-    }
-
-    String n1 = ((Module) o1).getName();
-    String n2 = ((Module) o2).getName();
-
-    return n1.compareTo(n2);
+  public FileTemplate[] getFileElements() {
+    return new FileTemplate[] {
+      new FileTemplate(new File("/templates/cvsignore.template"), new File(".cvsignore")),
+    };
   }
+
+  public String[] getDirectoryElements() {
+    return new String[] {
+      "lib"
+    };
+  }
+
 }

@@ -16,34 +16,28 @@ You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-package nl.toolforge.karma.core.manifest.util;
+package nl.toolforge.karma.core.module;
 
-import java.io.File;
+import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.module.SourceModule;
+import nl.toolforge.karma.core.location.Location;
 
 /**
- * <p>Layout for an eapp-module. A eapp-module has the following directory-structure:
+ * <p>This type of module represents a module from a Maven project.
  *
- * <ul>
- * <li/><code>src/META-INF</code>
- * </ul>
+ * <p>Maven versions supported: <code>maven-1.0-rc2</code>.
  *
  * @author D.A. Smedes
  * @version $Id$
  */
-public final class EappModuleLayoutTemplate extends BaseModuleLayoutTemplate {
+public class MavenModule extends SourceModule {
 
-  // todo constructor met xml file naam waar de layout gevonden kan worden.
-
-  public FileTemplate[] getFileElements() {
-    return new FileTemplate[] {
-      new FileTemplate(new File("/templates/cvsignore.template"), new File(".cvsignore")),
-      new FileTemplate(new File("/templates/dependencies.xml_template"), new File("dependencies.xml")),
-      new FileTemplate(new File("/templates/application.xml_template"), new File("src/META-INF", "application.xml"))
-    };
+  public MavenModule(String name, Location location) {
+    super(name, location);
   }
 
-  public String[] getDirectoryElements() {
-    return new String[] {
-      "src/META-INF"};
+  public MavenModule(String name, Location location, Version version) {
+    super(name, location, version);
   }
+
 }
