@@ -256,7 +256,6 @@ public final class CVSRunner implements Runner {
     update(module, null);
   }
 
-//  private void update(Module module, Version version, File basePoint) throws CVSException {
   /**
    * For a module, the <code>cvs -q update -Pd -r &lt;symbolic-name&gt;</code> command is executed.
    *
