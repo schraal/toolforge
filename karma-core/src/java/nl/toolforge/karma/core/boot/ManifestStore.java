@@ -45,7 +45,17 @@ public final class ManifestStore extends AdminStore {
       throw new KarmaRuntimeException("Module name for manifest store has not been set (correctly).");
     }
 
-    module = new ManifestModule(getModuleName(), getLocation());
+    // Names for stores can contain an offset.
+    //
+    String name = getModuleName();
+    while (name.endsWith(File.separator)) {
+      name.substring(0, name.length());
+    }
+    if (name.lastIndexOf(File.separator) > 0) {
+      name = name.substring(name.lastIndexOf(File.separator) + 1);
+    }
+    
+    module = new ManifestModule(name, getLocation());
     module.setBaseDir(new File(getWorkingContext().getManifestStoreBasedir(), getModuleName()));
 //    module.setCheckoutDir(getWorkingContext().getManifestStoreBasedir());
 
