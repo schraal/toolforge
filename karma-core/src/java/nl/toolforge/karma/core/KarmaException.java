@@ -40,6 +40,10 @@ public class KarmaException extends Exception {
    */
   public static final ErrorCode NOT_IMPLEMENTED = new ErrorCode(EXCEPTION_PREFIX + "00000");
   /**
+   * Default configuration has been created.
+   */
+  public static final ErrorCode DEFAULT_CONFIGURATION_CREATED = new ErrorCode(EXCEPTION_PREFIX + "00002");
+  /**
    * Vital configuration is missing
    */
   public static final ErrorCode MISSING_CONFIGURATION = new ErrorCode(EXCEPTION_PREFIX + "00001");

@@ -345,7 +345,7 @@ public final class LocalEnvironment {
    * @param configFile The config file to write the default properties to.
    * @throws IOException When the config file could not be created.
    */
-  private void createDefaultProperties(File configFile) throws IOException {
+  private void createDefaultProperties(File configFile) throws KarmaException, IOException {
 
     String karmaBase = System.getProperty("user.home") + File.separator + "karma" + File.separator;
 
@@ -367,11 +367,12 @@ public final class LocalEnvironment {
     configuration.put(LOCATION_STORE_PROTOCOL, PLACEHOLDER);
     configuration.put(LOCATION_STORE_USERNAME, PLACEHOLDER);
 
-    logger.info("Karma configuration created in " + configFile.getPath());
-
     String header = "Automatically generated Karma configuration properties";
 
     configuration.store(new FileOutputStream(configFile), header);
+
+    logger.info("Karma configuration created in " + configFile.getPath());
+    throw new KarmaException(KarmaException.DEFAULT_CONFIGURATION_CREATED, new Object[]{configFile});
   }
 
   public static File getWorkingContext() {
