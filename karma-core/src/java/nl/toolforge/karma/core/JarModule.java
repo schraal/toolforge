@@ -68,6 +68,12 @@ public class JarModule extends BaseModule {
 		return version;
 	}
 
+  /**
+   * Overrides {@link BaseModule#setState}, because this implementation has no notion of state.
+   * @param state Ignored.
+   */
+  public void setState(State state) {}
+
 	/**
 	 * Not implemented for this type of module (<b>yet</b>).
 	 *

@@ -3,7 +3,7 @@ package nl.toolforge.karma.core.expr;
 /**
  * <p>Expression class for a module name. Defines to which pattern a module name conforms.
  *
- * <p>The following pattern applies to a module name : <code>[^_\\s\\d\\-]+</code>
+ * <p>Refer to {@link #getPatternString} to chechk the pattern for a module name.
  *
  * @author D.A. Smedes
  *

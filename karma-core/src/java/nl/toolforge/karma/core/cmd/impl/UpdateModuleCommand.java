@@ -3,10 +3,7 @@ package nl.toolforge.karma.core.cmd.impl;
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.Manifest;
-import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import nl.toolforge.karma.core.cmd.*;
 import nl.toolforge.karma.core.vc.Runner;
 
 /**
@@ -49,18 +46,22 @@ public class UpdateModuleCommand extends DefaultCommand {
 
     String moduleName = getCommandLine().getOptionValue("m");
 
-//    try {
     this.module = getContext().getCurrent().getModule(moduleName);
-//    } catch (KarmaException e) {
-//      throw (CommandException) e;
-//    }
 
     Runner runner = getContext().getRunner(module);
 
+    CommandResponse response = new SimpleCommandResponse();
     if (getContext().getCurrent().isLocal(module)) {
-      return runner.update(module);
+      response = runner.update(module);
     } else {
-      return runner.checkout(module);
+      response = runner.checkout(module);
     }
+
+    // Apparently, no exceptions where thrown, so we can continue
+    //
+
+    // ...
+
+    return response;
   }
 }

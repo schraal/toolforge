@@ -32,6 +32,12 @@ public class SourceModule extends BaseModule {
 	/** The <code>branch</code>-attribute for a module. */
 	public static final String BRANCH_ATTRIBUTE = "branch";
 
+  /**
+   * The name of the mandatory file in a source module. A file with this name is created by Karma or should be created
+   * manually and contain all data (symbolic names) that should be available for existing manifests.
+   */
+  public static final String MODULE_INFO = "module.info";
+
 	private String version = null; // TODO replace by a Version object ?
 	private String branch = null; // TODO replace by a Branch object ?
 
@@ -108,8 +114,6 @@ public class SourceModule extends BaseModule {
 
 	/**
 	 * Returns the full path, based on {@link Preferences#getDevelopmentHome} and the modules' name {@link #getName}.
-	 *
-	 * @return
 	 */
 	public File getLocalPath() {
 
@@ -124,5 +128,31 @@ public class SourceModule extends BaseModule {
 		return new File(localPath);
 	}
 
+  /**
+   * Checks if this module has a <code>module.info</code> file (to be more exact, a file by the name identified by
+   * {@link #MODULE_INFO}.
+   *
+   * @return <code>true</code> if that file is present, false if it isn't.
+   */
+  public boolean hasModuleInfo() {
+
+    try {
+        new File(getLocalPath(), MODULE_INFO);
+        return true;
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  /**
+   * Gets a file reference to the <code>module.info</code> file for this module.
+   */
+  public File getModuleInfo() throws KarmaException {
+
+    if (hasModuleInfo()) {
+      return new File(getLocalPath(), MODULE_INFO);
+    }
+    throw new KarmaException(KarmaException.NO_MODULE_INFO);
+  }
 
 }

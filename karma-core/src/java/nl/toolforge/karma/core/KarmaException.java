@@ -101,6 +101,9 @@ public class KarmaException extends Exception {
 	 */
 	public static final ErrorCode LOCATION_NOT_FOUND = new ErrorCode("CORE-00060");
 
+  /** No <code>module.info</code> file exists for the module. This file is mandatory for <code>SourceModule</code>s. */
+  public static final ErrorCode NO_MODULE_INFO = new ErrorCode("CORE-00065");
+
 	protected ErrorCode errorCode = null;
 
     protected Object[] messageArguments = new Object[]{};

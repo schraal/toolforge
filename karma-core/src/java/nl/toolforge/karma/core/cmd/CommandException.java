@@ -43,6 +43,8 @@ public class CommandException extends KarmaException {
    */
   public static ErrorCode MISSING_ARGUMENT = new ErrorCode("CMD-00032");
 
+//  public static ErrorCode
+
   public CommandException(ErrorCode errorCode) {
     super(errorCode);
   }

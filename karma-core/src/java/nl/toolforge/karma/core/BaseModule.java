@@ -70,7 +70,7 @@ public abstract class BaseModule implements Module {
 	 *
 	 * @param state The (new) state of the module.
 	 */
-	public final void setState(State state) {
+	public void setState(State state) {
 
 		// TODO : this one should probably update the file on disk
 		//

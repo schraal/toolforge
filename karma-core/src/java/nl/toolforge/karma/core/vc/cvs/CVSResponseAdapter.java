@@ -6,6 +6,8 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.event.*;
+import org.netbeans.lib.cvsclient.command.log.LogInformation;
+import org.netbeans.lib.cvsclient.command.FileInfoContainer;
 
 /**
  * Adapts a response from CVS to Karma specific messages. This class listens to CVS responses as per the Netbeans API.
@@ -19,6 +21,8 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
   public static final Integer FILE_ADDED_OK = new Integer(0);
   public static final Integer FILE_REMOVED_OK = new Integer(1);
   public static final Integer MODULE_UPDATED_OK = new Integer(2);
+
+  private FileInfoContainer logInformation = null;
 
   private static Log logger = LogFactory.getLog(CVSResponseAdapter.class);
 
@@ -73,12 +77,23 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
   /**
    * <p>Copied from the Netbeans API documentation : Called when file information has been received.
    *
+   * <p>This method constructs the <code>LogInformation</code> object that contains the log for a specific file as
+   * a result of the <code>cvs log</code> command.
+   *
    * @param event The event from CVS.
    */
   public void fileInfoGenerated(FileInfoEvent event) {
-    //logger.debug("FileInfoEvent from CVS");
+    this.logInformation = event.getInfoContainer();
   }
 
+  /**
+   * Gets the log that is the result of the <code>cvs log</code> command.
+   *
+   * @return A <code>LogInformation</code> that can be queried by classes for all information on a (set of) file(s).
+   */
+  public LogInformation getLogInformation() {
+    return (LogInformation) this.logInformation;
+  }
 
   /**
    * <p>Copied from the Netbeans API documentation : Called when server responses with "ok" or "error", (when the command finishes)

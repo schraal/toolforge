@@ -2,6 +2,8 @@ package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.SourceModule;
+import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.location.Location;
@@ -14,6 +16,8 @@ import org.netbeans.lib.cvsclient.Client;
 import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
 import org.netbeans.lib.cvsclient.command.CommandException;
 import org.netbeans.lib.cvsclient.command.GlobalOptions;
+import org.netbeans.lib.cvsclient.command.log.LogInformation;
+import org.netbeans.lib.cvsclient.command.log.LogCommand;
 import org.netbeans.lib.cvsclient.command.update.UpdateCommand;
 import org.netbeans.lib.cvsclient.command.commit.CommitCommand;
 import org.netbeans.lib.cvsclient.command.add.AddCommand;
@@ -86,8 +90,8 @@ public final class CVSRunner implements Runner {
    * in the default checkout directory.
    *
    * @param module The module.
-//   * @param checkoutDirectory The absolute directory where the module should be checked out. Overwrites the setting
-//   *   done when instantiating this runner (see {@link #CVSRunner}.
+   //   * @param checkoutDirectory The absolute directory where the module should be checked out. Overwrites the setting
+   //   *   done when instantiating this runner (see {@link #CVSRunner}.
    *
    * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
    */
@@ -221,6 +225,21 @@ public final class CVSRunner implements Runner {
   public CommandResponse tag(Module module, SymbolicName tag) {
     return null;
   }
+
+  /**
+   *
+   */
+  public LogInformation log(Module module) throws KarmaException {
+
+    if (module instanceof SourceModule) {
+      LogCommand logCommand = new LogCommand();
+      logCommand.setFiles(new File[] {((SourceModule) module).getModuleInfo()});
+
+      executeOnCVS(logCommand, null);
+    }
+    throw new KarmaRuntimeException("Only instance of type SourceModule can use this method.");
+  }
+
 
   /**
    *

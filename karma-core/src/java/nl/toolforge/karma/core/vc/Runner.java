@@ -14,6 +14,8 @@ import java.io.File;
  */
 public interface Runner {
 
+  // TODO runner.log should be defined in this interface. Right now, only impl. is in CVSRUnner.
+
 	/**
 	 * Adds a file to the version control system. If the file does not exists, the file will be created.
 	 *
