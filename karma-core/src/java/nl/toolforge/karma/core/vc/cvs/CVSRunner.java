@@ -644,6 +644,8 @@ public final class CVSRunner implements Runner {
       client.executeCommand(command, globalOptions);
 
     } catch (CommandException e) {
+      e.printStackTrace();
+      logger.debug(e);
       // Trick to get a hold of the exception we threw in the CVSResponseAdapter.
       //
       if (e.getUnderlyingException() instanceof CVSRuntimeException) {
