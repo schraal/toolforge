@@ -35,16 +35,26 @@
   </p>
 
   <p>
-    The tool (and more than that, its methodology) supports software
+    The tool (and more than that, the methodology) supports software
     developers and release managers in their quest to manage software systems,
     components and modules. A true enabler of a smooth software logistics
     process (yep ...).
   </p>
 
   <p>
+    When we develop software, we generally preach reusability,
+    componentization and the like for the purpose of reducing software
+    development in the future. The idea is to compose software systems of
+    existing software modules and components. Mosts methodologies available in
+    the market think of modules and components as binary bundles of compiled
+    code, ready to use.
+  </p>
+
+  <p>
     Component based development requires more than a version control system to
-    manage source code and build tools to build that source code. It requires
-    that software components can be easily managed, exchanged, reused.
+    manage source code and build tools to build that source code, integrating
+    third party libraries on the fly. It requires that software components can
+    be easily managed, exchanged, reused.
   </p>
 
   <p>
