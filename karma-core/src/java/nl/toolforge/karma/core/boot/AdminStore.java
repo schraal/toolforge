@@ -2,7 +2,6 @@ package nl.toolforge.karma.core.boot;
 
 import nl.toolforge.karma.core.ErrorCode;
 import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.module.Module;
@@ -68,7 +67,14 @@ public abstract class AdminStore implements Store {
     }
 
     Runner runner = RunnerFactory.getRunner(location);
-    runner.checkout(getModule());
+
+    // todo this is a good place to check if the existing directory is from the same cvs location.
+    //
+    if (module.getBaseDir().exists()) {
+      runner.update(getModule());
+    } else {
+      runner.checkout(getModule());
+    }
   }
 
   public final void setModuleName(String moduleName) {

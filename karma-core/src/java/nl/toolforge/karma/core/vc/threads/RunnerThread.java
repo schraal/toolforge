@@ -20,7 +20,6 @@ package nl.toolforge.karma.core.vc.threads;
 
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.module.Module;
-import nl.toolforge.karma.core.module.Module;
 
 /**
  * @author D.A. Smedes

@@ -23,7 +23,6 @@ import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.module.SourceModule;
-import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSException;
@@ -198,7 +197,7 @@ public class LocalCVSInitializer extends BaseTest {
   }
 
   /**
-   * Initializes a Runner for test purposes. 
+   * Initializes a Runner for test purposes.
    *
    * @return A Runner instance.
    * @throws CVSException When initializing the runner failed.

@@ -18,14 +18,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.vc.cvsimpl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.Patch;
 import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.module.Module;
-import nl.toolforge.karma.core.module.SourceModule;
 import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
@@ -36,6 +31,8 @@ import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.SymbolicName;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.model.MainLine;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public final class Utils {
 

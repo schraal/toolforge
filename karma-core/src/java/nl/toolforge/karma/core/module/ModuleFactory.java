@@ -23,14 +23,6 @@ import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.module.JavaEnterpriseApplicationModule;
-import nl.toolforge.karma.core.module.JavaWebApplicationModule;
-import nl.toolforge.karma.core.module.UntypedModule;
-import nl.toolforge.karma.core.module.SourceModule;
-import nl.toolforge.karma.core.module.OtherModule;
-import nl.toolforge.karma.core.module.LibModule;
-import nl.toolforge.karma.core.module.Module;
-import nl.toolforge.karma.core.module.ModuleDigester;
 
 /**
  * <p>Factory class to create modules based on a {@link nl.toolforge.karma.core.module.ModuleDigester}.</p>

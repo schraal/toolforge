@@ -3,19 +3,19 @@
  */
 package nl.toolforge.karma.core.boot;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.module.template.ModuleLayoutTemplate;
 import nl.toolforge.karma.core.module.BaseModule;
 import nl.toolforge.karma.core.module.Module;
+import nl.toolforge.karma.core.module.template.ModuleLayoutTemplate;
 import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class representing the manifest store for a working context. A manifest store contains module(s) which - in turn -

@@ -21,6 +21,10 @@ public class CommandDescriptorMap {
     // Empty
   }
 
+  /**
+   *
+   * @param newDescriptor
+   */
   public void add(CommandDescriptor newDescriptor) {
 
     if (newDescriptor == null) {

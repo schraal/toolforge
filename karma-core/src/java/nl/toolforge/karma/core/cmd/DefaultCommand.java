@@ -18,15 +18,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd;
 
-import java.util.ResourceBundle;
-
+import nl.toolforge.karma.core.boot.WorkingContext;
+import nl.toolforge.karma.core.bundle.BundleCache;
+import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import nl.toolforge.karma.core.boot.WorkingContext;
-import nl.toolforge.karma.core.bundle.BundleCache;
-import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
+import java.util.ResourceBundle;
 
 /**
  * Default stuff for a command. Provides the datastructure and some helper methods to implementing commands.

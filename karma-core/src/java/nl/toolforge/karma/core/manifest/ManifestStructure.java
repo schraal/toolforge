@@ -18,13 +18,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest;
 
+import nl.toolforge.karma.core.module.ModuleDigester;
+
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.PatternSyntaxException;
-
-import nl.toolforge.karma.core.module.ModuleDigester;
 
 /**
  * Mapping of a manifest file and its included manifest files (any level deep possible). Note that the structure that

@@ -18,18 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.console;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Calendar;
-import java.util.ResourceBundle;
-import java.util.prefs.Preferences;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import nl.toolforge.karma.cli.cmd.ConsoleCommandResponseHandler;
 import nl.toolforge.karma.core.ErrorCode;
 import nl.toolforge.karma.core.boot.WorkingContext;
@@ -38,6 +26,17 @@ import nl.toolforge.karma.core.boot.WorkingContextException;
 import nl.toolforge.karma.core.bundle.BundleCache;
 import nl.toolforge.karma.core.cmd.CommandContext;
 import nl.toolforge.karma.core.cmd.CommandException;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Calendar;
+import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 /**
  * <p>The <code>KarmaConsole</code> is the command-line interface for Karma. The class presents a simple-to-use command-line
@@ -259,7 +258,9 @@ public final class KarmaConsole {
         try {
           commandContext.execute(line);
         } catch (CommandException e) {
-          logger.error(e.getMessage(), e);
+          writeln(e.getMessage());
+          logger.fatal(e.getMessage(), e);
+          System.exit(1);
         }
       }
     } catch (RuntimeException r) {
@@ -273,74 +274,6 @@ public final class KarmaConsole {
     }
   }
 
-
-
-
-
-
-
-//  private void checkConfiguration(WorkingContext workingContext, String configKey) {
-//
-//    try {
-//
-//      Collection config = (List) workingContext.getInvalidConfiguration().get(configKey);
-//
-//      while (config.size() > 0) {
-//
-//        // Warning, modifies the configuration ...
-//        //
-//        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-//        Iterator i = config.iterator();
-//
-//        while (i.hasNext()) {
-//
-//          WorkingContext.ConfigurationItem key = (WorkingContext.ConfigurationItem) i.next();
-//
-//          String value = null;
-//          try {
-//
-//            if (key.isScrambled()) {
-//              value = PasswordField.promptPassword("Enter password.");
-//            } else {
-//
-//              if (key.getDefaultValue() == null) {
-//                System.out.print(key.getLabel() + " : ");
-//              } else {
-//                System.out.print(key.getLabel() + " [" + key.getDefaultValue() + "] : ");
-//              }
-//              value = reader.readLine().trim();
-//            }
-//          } catch (IOException e) {
-//            logger.error(e.getMessage(), e);
-//          }
-//
-//          if (value == null || "".equals(value)) {
-//            value = (key.getDefaultValue() == null ? "" : key.getDefaultValue());
-//          }
-//          if (key.isScrambled()) {
-//            value = PasswordScrambler.scramble(value);
-//          }
-//
-//          workingContext.getConfiguration().setProperty(key.getProperty(), value);
-//        }
-//        config = (List) workingContext.getInvalidConfiguration().get(configKey);
-//      }
-//    } catch (RuntimeException r) {
-//      // This check is required for Windows users.
-//      //
-//      if (logger.isDebugEnabled()) {
-//        r.printStackTrace();
-//      }
-//      System.exit(1);
-//    }
-//
-//    try {
-//      workingContext.storeConfiguration();
-//    } catch (IOException e) {
-//      logger.error(e.getMessage(), e);
-//      throw new KarmaRuntimeException(e.getMessage());
-//    }
-//  }
 
   /**
    * Gets the default prompt, constructed as follows : <code>HH:MM:SS [ Karma ]</code>

@@ -32,7 +32,6 @@ import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.scm.ModuleDependency;
-import nl.toolforge.karma.core.module.Module;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -86,7 +85,7 @@ public class BuildAllModules extends DefaultCommand {
         command.setContext(getContext());
         command.registerCommandResponseListener(getResponseListener());
         command.execute();
-        
+
       } catch (CommandException ce) {
         if (ce.getErrorCode().equals(CommandException.DEPENDENCY_DOES_NOT_EXIST) ||
             ce.getErrorCode().equals(CommandException.BUILD_FAILED) ) {

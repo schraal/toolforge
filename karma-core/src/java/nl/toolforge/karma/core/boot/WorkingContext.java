@@ -18,12 +18,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.boot;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Properties;
-
+import nl.toolforge.karma.core.ErrorCode;
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.karma.core.location.LocationLoader;
+import nl.toolforge.karma.core.manifest.ManifestCollector;
+import nl.toolforge.karma.core.manifest.ManifestLoader;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,12 +32,11 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
-import nl.toolforge.karma.core.ErrorCode;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.location.LocationLoader;
-import nl.toolforge.karma.core.manifest.ManifestCollector;
-import nl.toolforge.karma.core.manifest.ManifestLoader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * <p>A <code>WorkingContext</code> is used by Karma to determine the environment in which the user wants to use Karma. A

@@ -18,11 +18,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd;
 
+import nl.toolforge.karma.core.cmd.event.CommandFinishedEvent;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
 import nl.toolforge.karma.core.cmd.event.CommandStartedEvent;
-import nl.toolforge.karma.core.cmd.event.CommandFinishedEvent;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -68,7 +67,7 @@ public class CommandResponse {
         } else {
           listener.messageLogged(event);
         }
-        
+
       }
     } else {
       logger.warn("No listener registered for command response (messages sent to /dev/null ...)");

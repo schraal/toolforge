@@ -19,8 +19,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.manifest.digester;
 
 import nl.toolforge.karma.core.module.ModuleDigester;
-import nl.toolforge.karma.core.module.ModuleDigester;
-
 import org.apache.commons.digester.AbstractObjectCreationFactory;
 import org.xml.sax.Attributes;
 

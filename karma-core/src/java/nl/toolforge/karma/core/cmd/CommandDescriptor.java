@@ -62,6 +62,11 @@ public final class CommandDescriptor {
     return this.name;
   }
 
+  /**
+   * The aliasses of a command are all Strings by which the command can be referenced (including its name).
+   * 
+   * @return
+   */
   public Set getAliasList() {
     return aliasList;
   }
@@ -152,7 +157,7 @@ public final class CommandDescriptor {
       return false;
     }
   }
-  
+
 //
 //  public int hashCode() {
 //    return (aliasList == null ? 0 : aliasList.hashCode());

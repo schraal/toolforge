@@ -4,7 +4,6 @@ import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.module.BaseModule;
 import nl.toolforge.karma.core.module.Module;
-import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.module.template.ModuleLayoutTemplate;
 
 import java.io.File;

@@ -31,12 +31,23 @@ public class TestCommandDescriptorMap extends TestCase {
 
     CommandDescriptor d1 = new CommandDescriptor("1", "b bb bbb");
     CommandDescriptor d2 = new CommandDescriptor("1", "b bb bbb");
+    CommandDescriptor d3 = new CommandDescriptor("2", "b bb bbb");
+    CommandDescriptor d4 = new CommandDescriptor("2", "c bb bbb");
+    CommandDescriptor d5 = new CommandDescriptor("2", "c cb bbb");
+
+    CommandDescriptor d6 = new CommandDescriptor("2", "a b c");
+    CommandDescriptor d7 = new CommandDescriptor("3", "d e f");
 
     CommandDescriptorMap map = new CommandDescriptorMap();
     map.add(d1);
     map.add(d2);
 
     assertEquals(4, map.size());
+    assertTrue(d1.equals(d2));
+    assertTrue(d2.equals(d3));
+    assertTrue(d3.equals(d4));
+    assertTrue(d4.equals(d5));
+    assertTrue(!d6.equals(d7));
   }
 
   public void testGet() {

@@ -23,7 +23,6 @@ import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.ErrorCode;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.history.ModuleHistory;
@@ -31,6 +30,7 @@ import nl.toolforge.karma.core.history.ModuleHistoryEvent;
 import nl.toolforge.karma.core.history.ModuleHistoryException;
 import nl.toolforge.karma.core.history.ModuleHistoryFactory;
 import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.vc.Authenticator;
 import nl.toolforge.karma.core.vc.Authenticators;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
@@ -335,7 +335,7 @@ public final class CVSRunner implements Runner {
     }
   }
 
-  
+
   /**
    * @see #update(Module, DevelopmentLine, Version)
    */

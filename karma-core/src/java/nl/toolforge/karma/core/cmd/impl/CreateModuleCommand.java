@@ -32,10 +32,6 @@ import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.AuthenticatorKey;
 import nl.toolforge.karma.core.vc.Authenticators;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.module.Module;
-import nl.toolforge.karma.core.module.ModuleDigester;
-import nl.toolforge.karma.core.module.ModuleFactory;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,8 +39,8 @@ import org.apache.commons.logging.LogFactory;
 import java.util.regex.PatternSyntaxException;
 
 /**
- * Creates a module in a repository. Modules are created using a layout template (instances of 
- * <code>ModuleLayoutTemplate</code>). 
+ * Creates a module in a repository. Modules are created using a layout template (instances of
+ * <code>ModuleLayoutTemplate</code>).
  *
  * @author D.A. Smedes
  * @version $Id$

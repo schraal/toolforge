@@ -88,7 +88,7 @@ public final class CommandLoader {
 
     // Load the core commands
     //
-    CommandDescriptorMap commandSet = loadCoreCommands();
+    CommandDescriptorMap uniqueCommands = loadCoreCommands();
 
     // Load the plugin commands
     //
@@ -101,10 +101,28 @@ public final class CommandLoader {
     }
 
     while (enum.hasMoreElements()) {
-      commandSet.addAll((CommandDescriptorMap) load((URL) enum.nextElement()));
+
+      CommandDescriptorMap map = (CommandDescriptorMap) load((URL) enum.nextElement());
+
+//      for (Iterator i = map.keySet().iterator(); i.hasNext();) {
+//
+//        CommandDescriptor descriptor = map.get((String) i.next());
+//
+//        for (Iterator j = descriptor.getAliasList().iterator(); j.hasNext();) {
+//          String alias = (String) j.next();
+//          if (uniqueCommands.keySet().contains(alias)) {
+//            throw new CommandLoadException(CommandLoadException.DUPLICATE_COMMAND, new Object[]{alias});
+//          }
+//        }
+//        // At this point, we have not found a duplicate.
+//        //
+//        uniqueCommands.add(descriptor);
+//      }
+
+      uniqueCommands.addAll(map);
     }
 
-    return commandSet;
+    return uniqueCommands;
   }
 
   /**
@@ -155,7 +173,6 @@ public final class CommandLoader {
 
     Digester digester = new Digester();
 
-//    digester.addObjectCreate("commands", ArrayList.class);
     digester.addObjectCreate("commands", CommandDescriptorMap.class);
 
     digester.addFactoryCreate("*/command", CommandDescriptorCreationFactory.class);
