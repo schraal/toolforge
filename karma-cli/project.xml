@@ -67,7 +67,7 @@
 	<build>
 
 		<sourceDirectory>src/java/</sourceDirectory>
-		<unitTestSourceDirectory>src/java</unitTestSourceDirectory>
+<!--		<unitTestSourceDirectory>src/java</unitTestSourceDirectory> -->
 
 <!--		<unitTest>-->
 <!--			<includes>-->
