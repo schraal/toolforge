@@ -148,7 +148,7 @@ public final class ErrorCode {
   }
 
   private Object[] getMessageArguments() {
-    return messageArguments;
+    return (messageArguments == null ? new Object[0] : messageArguments);
   }
 
   public boolean equals(Object o) {
