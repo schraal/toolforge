@@ -220,7 +220,7 @@ public final class CVSRunner implements Runner {
     } else {
       AddCommand addCommand = new AddCommand();
       addCommand.setFiles(new File[]{file});
-      
+
       executeOnCVS(addCommand, file.getParentFile(), null);
 
       CommitCommand commitCommand = new CommitCommand();
@@ -255,8 +255,8 @@ public final class CVSRunner implements Runner {
    * Performs the <code>cvs checkout [-r &lt;symbolic-name&gt;] &lt;module&gt;</code>command for a module.
    * <code>version</code> is used when not <code>null</code> to checkout a module with a symbolic name.
    *
-   * @param module  The module to check out.
-   * @param version The version number for the module to check out.
+   * @param module        The module to check out.
+   * @param version       The version number for the module to check out.
    * @throws CVSException With errorcodes <code>NO_SUCH_MODULE_IN_REPOSITORY</code> when the module does not exist
    *                      in the repository and <code>INVALID_SYMBOLIC_NAME</code>, when the version does not exists for the module.
    */
@@ -265,17 +265,20 @@ public final class CVSRunner implements Runner {
     checkout(module, null, version);
   }
 
-  /**
-   * See {@link #checkout(Module, Version)}. This method defaults to the HEAD of the development branch at hand.
-   *
-   * @param module The module to check out.
-   * @throws CVSException With errorcodes <code>NO_SUCH_MODULE_IN_REPOSITORY</code> when the module does not exist
-   *                      in the repository and <code>INVALID_SYMBOLIC_NAME</code>, when the version does not exists for the module.
-   */
+
   public void checkout(Module module) throws CVSException {
     checkout(module, null, null);
   }
 
+  /**
+   * See {@link #checkout(Module, Version)}. This method defaults to the HEAD of the development branch at hand.
+   *
+   * @param module          The module to check out.
+   * @param developmentLine The development line or <code>null</code> when the TRUNK is the context line.
+   * @throws CVSException   With errorcodes <code>NO_SUCH_MODULE_IN_REPOSITORY</code> when the module does not exist
+   *                        in the repository and <code>INVALID_SYMBOLIC_NAME</code>, when the version does not exists
+   *                        for the module.
+   */
   public void checkout(Module module, DevelopmentLine developmentLine, Version version) throws CVSException {
 
     //todo: proper exception handling
@@ -309,22 +312,12 @@ public final class CVSRunner implements Runner {
     // The checkout directory for a module has to be relative to
 
     executeOnCVS(checkoutCommand, module.getBaseDir().getParentFile(), arguments);
+
     updateModuleHistoryXml(module);
 
     if (readonly) {
       MyFileUtils.makeReadOnly(module.getBaseDir());
     }
-  }
-
-
-
-  /**
-   * For a module, the <code>cvs -q update -Pd</code> command is executed.
-   *
-   * @param module The module that should be updated.
-   */
-  public void update(Module module) throws CVSException {
-    update(module, null);
   }
 
   private void updateModuleHistoryXml(Module module) throws CVSException {
@@ -342,13 +335,37 @@ public final class CVSRunner implements Runner {
     }
   }
 
+  
   /**
-   * For a module, the <code>cvs -q update -Pd -r &lt;symbolic-name&gt;</code> command is executed.
-   *
-   * @param module  The module that should be updated.
-   * @param version The version of the module or <code>null</code> when no specific version applies.
+   * @see #update(Module, DevelopmentLine, Version)
+   */
+  public void update(Module module) throws CVSException {
+    update(module, null);
+  }
+
+  /**
+   * @see #update(Module, DevelopmentLine, Version)
    */
   public void update(Module module, Version version) throws CVSException {
+    update(module, null, version);
+  }
+
+  /**
+   * For a module, the <code>cvs -q update -d -r &lt;symbolic-name&gt;</code> command is executed. Note that empty
+   * directories are not pruned.
+   *
+   * @param module          The module to update.
+   * @param developmentLine The development line or <code>null</code> when the TRUNK is the context line.
+   * @param version         The version of the module or <code>null</code> when no specific version applies.
+   */
+  public void update(Module module, DevelopmentLine developmentLine, Version version) throws CVSException {
+
+    //todo: proper exception handling
+    try {
+      MyFileUtils.makeWriteable(module.getBaseDir(), true);
+    } catch (Exception e) {
+      logger.error("Exception when making module writeable just before updating it.", e);
+    }
 
     boolean readonly = false;
 
@@ -359,9 +376,10 @@ public final class CVSRunner implements Runner {
     UpdateCommand updateCommand = new UpdateCommand();
     updateCommand.setRecursive(true);
     updateCommand.setBuildDirectories(true); //-d
+    updateCommand.setPruneDirectories(false); //-P
 
     if (version != null || module.hasPatchLine()) {
-      updateCommand.setUpdateByRevision(Utils.createSymbolicName(module, version).getSymbolicName());
+      updateCommand.setUpdateByRevision(Utils.createSymbolicName(module, developmentLine, version).getSymbolicName());
       if (version != null) {
         arguments.put("VERSION", version.toString());
         readonly = true;
@@ -373,6 +391,7 @@ public final class CVSRunner implements Runner {
     // todo add data to the exception. this sort of business logic should be here, not in CVSResponseAdapter.
     //
     executeOnCVS(updateCommand, module.getBaseDir(), arguments);
+
     updateModuleHistoryXml(module);
 
     if (readonly) {

@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.vc.cvsimpl.CVSException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.manifest.Module;
 
@@ -148,4 +149,6 @@ public interface Runner {
   public void createPatchLine(Module module) throws VersionControlException ;
 
   public void addModule(Module module, String comment) throws VersionControlException;
+
+  void update(Module module, DevelopmentLine developmentLine, Version version) throws CVSException;
 }

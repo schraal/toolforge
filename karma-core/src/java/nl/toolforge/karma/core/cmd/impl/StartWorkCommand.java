@@ -132,9 +132,9 @@ public class StartWorkCommand extends DefaultCommand {
             runner.createPatchLine(module);
             module.markPatchLine(true);
           }
-          runner.checkout(module, module.getPatchLine(), null);
+          runner.update(module, module.getPatchLine(), null);
         } else {
-          runner.checkout(module);
+          runner.update(module);
         }
 
         // todo development-line should be taken into account

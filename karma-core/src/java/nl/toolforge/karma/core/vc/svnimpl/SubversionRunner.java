@@ -37,6 +37,10 @@ import java.io.File;
  */
 public final class SubversionRunner implements Runner {
 
+  public void update(Module module, DevelopmentLine developmentLine, Version version) throws CVSException {
+
+  }
+
   public SubversionRunner(Location location) throws CVSException {
 
   }
