@@ -12,7 +12,7 @@
 
 		<options/>
 
-		<classname>nl.toolforge.karma.core.cmd.impl.UpdateAllModulesCommand</classname>
+		<classname>nl.toolforge.karma.cli.cmd.UpdateAllModulesImpl</classname>
 
 		<help/>
 

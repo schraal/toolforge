@@ -33,16 +33,9 @@ public interface Runner {
 	 *
 	 * @param module
 	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>.
+	 * @throws VersionControlException When the module does not exist in the repository.
 	 */
-	public CommandResponse checkout(Module module);
-
-//  /**
-//   * Checks out a module from a version control system.
-//   *
-//   * @param module
-//   * @return Response from the version control system wrapped in a <code>CommandResponse</code>.
-//   */
-//  public CommandResponse checkout(Module module, File checkoutDirectory);
+	public CommandResponse checkout(Module module) throws VersionControlException;
 
 	/**
 	 * Updates an already checked out module on a user's harddisk.

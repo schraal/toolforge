@@ -1,14 +1,11 @@
 package nl.toolforge.karma.cli;
 
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.cmd.CommandFactory;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import org.apache.commons.cli.Option;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
 import java.util.Iterator;
-
-import org.apache.commons.cli.Option;
-import org.apache.commons.lang.StringUtils;
 
 public class CommandRenderer {
 
@@ -17,7 +14,7 @@ public class CommandRenderer {
 	public StringBuffer renderedCommands(Collection commandDescriptors) {
 
 		StringBuffer buffer = new StringBuffer();
-		int k = 1;
+
 		for (Iterator i = commandDescriptors.iterator(); i.hasNext();) {
 
       CommandDescriptor descriptor = (CommandDescriptor) i.next();
@@ -41,14 +38,22 @@ public class CommandRenderer {
 
 				Option o = options[j];
 
-				int FILL = 15; // as a constant ...
-        String PADD = "   ";
+				int FILL = 30; // as a constant ...
+        String leftPadding = "   ";
 
 				buffer.
-					append(PADD).
+					append(leftPadding).
 					append("-" + o.getOpt()).
-					append(", --" + o.getLongOpt()).append(StringUtils.repeat(" ", FILL - o.getLongOpt().length())).
-					append(PADD).append(o.getDescription()).
+					append(", --" + o.getLongOpt());
+
+				String args = "";
+				if (o.hasArg()) {
+					args = " <".concat(o.getArgName()).concat(">");
+				}
+
+				buffer.
+					append(args.concat(StringUtils.repeat(" ", 30 - (o.getLongOpt() + args).length()))).
+					append(leftPadding).append(o.getDescription()).
 					append("\n");
 			}
     }

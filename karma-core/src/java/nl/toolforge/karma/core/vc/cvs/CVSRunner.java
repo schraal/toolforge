@@ -96,45 +96,45 @@ public final class CVSRunner implements Runner {
 			throw new CVSException(CVSException.MODULE_EXISTS_IN_REPOSITORY, new Object[]{module.getName(), module.getLocation().getId()});
 		}
 
-			ImportCommand importCommand = new ImportCommand();
-			importCommand.setModule(module.getName());
-			importCommand.setLogMessage("Module " + module.getName() + " created on " + new Date().toString());
-			importCommand.setVendorTag(module.getName() + "_MAINLINE");
-			importCommand.setReleaseTag(module.getName() + "_0-0");
+		ImportCommand importCommand = new ImportCommand();
+		importCommand.setModule(module.getName());
+		importCommand.setLogMessage("Module " + module.getName() + " created on " + new Date().toString());
+		importCommand.setVendorTag(module.getName() + "_MAINLINE");
+		importCommand.setReleaseTag(module.getName() + "_0-0");
 
-			// Create a temporary structure
-			//
-			File tmp = null;
-			try {
-				tmp = FileUtils.createTempDirectory();
-			} catch (IOException e) {
-				throw new KarmaRuntimeException("Panic! Failed to create temporary directory.");
-			}
+		// Create a temporary structure
+		//
+		File tmp = null;
+		try {
+			tmp = FileUtils.createTempDirectory();
+		} catch (IOException e) {
+			throw new KarmaRuntimeException("Panic! Failed to create temporary directory.");
+		}
 
-			File moduleDirectory = new File(tmp.getPath(), module.getName());
-			if (!moduleDirectory.mkdir()) {
-				throw new KarmaRuntimeException("Panic! Failed to create temporary directory for module " + module.getName());
-			}
+		File moduleDirectory = new File(tmp.getPath(), module.getName());
+		if (!moduleDirectory.mkdir()) {
+			throw new KarmaRuntimeException("Panic! Failed to create temporary directory for module " + module.getName());
+		}
 
-			File moduleInfo = new File(tmp.getPath(), module.getName() + File.separator + SourceModule.MODULE_INFO);
+		File moduleInfo = new File(tmp.getPath(), module.getName() + File.separator + SourceModule.MODULE_INFO);
 
-			try {
-				moduleInfo.createNewFile();
-			} catch (IOException e) {
-				throw new KarmaRuntimeException("Panic! Failed to create 'module.info' in " + moduleInfo.getParent() + ".");
-			}
+		try {
+			moduleInfo.createNewFile();
+		} catch (IOException e) {
+			throw new KarmaRuntimeException("Panic! Failed to create 'module.info' in " + moduleInfo.getParent() + ".");
+		}
 
-			// Override localpath setting in the CVS client, as we are importing the thing from a temporary location.
-			//
-			client.setLocalPath(moduleInfo.getParent());
+		// Override localpath setting in the CVS client, as we are importing the thing from a temporary location.
+		//
+		client.setLocalPath(moduleInfo.getParent());
 
-			executeOnCVS(importCommand, null);
+		executeOnCVS(importCommand, null);
 
-			// Remove the temporary structure.
-			//
-			FileUtils.delete(tmp);
+		// Remove the temporary structure.
+		//
+		FileUtils.delete(tmp);
 
-			return adapter;
+		return adapter;
 	}
 
 	/**
@@ -146,13 +146,17 @@ public final class CVSRunner implements Runner {
 	 *
 	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
 	 */
-	public CommandResponse checkout(Module module) {
+	public CommandResponse checkout(Module module) throws CVSException {
 
 		CheckoutCommand checkoutCommand = new CheckoutCommand();
 		checkoutCommand.setModule(module.getName());
 		checkoutCommand.setPruneDirectories(true);
 
 		executeOnCVS(checkoutCommand, null);
+
+		if (adapter.hasStatus(CVSResponseAdapter.MODULE_NOT_FOUND)) {
+			throw new CVSException(CVSException.NO_SUCH_MODULE_IN_REPOSITORY, new Object[]{module.getName(), module.getLocation().getId()});
+		}
 
 		return adapter;
 	}
@@ -168,12 +172,6 @@ public final class CVSRunner implements Runner {
 		UpdateCommand updateCommand = new UpdateCommand();
 		updateCommand.setRecursive(true);
 		updateCommand.setPruneDirectories(true);
-
-		// TODO The manifest-name should prepend the module.
-
-		//checkoutDirectory.mkdirs(); // if not yet existing, it will be created
-
-		//client.setLocalPath(checkoutDirectory.getPath());
 
 		executeOnCVS(updateCommand, module.getName());
 
@@ -204,7 +202,7 @@ public final class CVSRunner implements Runner {
 		// Step 1 : Add the file to the CVS repository
 		//
 		AddCommand addCommand = new AddCommand();
-		addCommand.setMessage("Testcase message ... ");
+		addCommand.setMessage("Initial checkin in repository.");
 
 		String path = client.getLocalPath() + File.separator + module.getName();
 		File fileToAdd = new File(path + File.separator + fileName);

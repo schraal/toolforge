@@ -2,6 +2,7 @@ package nl.toolforge.karma.cli;
 
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.Manifest;
+import nl.toolforge.karma.core.prefs.Preferences;
 import nl.toolforge.karma.core.bundle.BundleCache;
 import nl.toolforge.karma.core.cmd.CommandContext;
 import nl.toolforge.karma.core.cmd.CommandFactory;
@@ -108,7 +109,7 @@ public class CLI {
 					if (line.trim().toLowerCase().startsWith("help") || line.trim().startsWith("?")) {
 
 						writer.writeln("\n\n" + FRONTEND_MESSAGES.getString("message.VALID_COMMANDS"));
-						writer.blankLine();
+//						writer.blankLine();
 
 						CommandRenderer renderer = new CommandRenderer();
 						StringBuffer renderedBuffer = renderer.renderedCommands(CommandFactory.getInstance().getCommands());
@@ -136,6 +137,11 @@ public class CLI {
 			}
 			writer.writeln(FRONTEND_MESSAGES.getString("message.EXIT"));
 			logger.info("Exiting Karma ...");
+
+			// Flush the preferences.
+			//
+			Preferences.getInstance().flush();
+
 			System.exit(0);
 		}
 		catch (IOException e) {

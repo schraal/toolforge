@@ -45,7 +45,7 @@ mkdir -p $KARMA_CONFIG_DIR
 
 # Now finally we are able to run karma
 #
-$JAVACMD -cp $CLASSPATH -Dbootstrap.configuration=$HOME/.karma/karma.properties  -Dkarma.classloaderrepository.config=bin/karma.classpath -jar lib/karma-launcher-1.2.jar nl.toolforge.karma.cli.CLI $@
+$JAVACMD -cp $CLASSPATH -Dbootstrap.configuration=$HOME/.karma/karma.properties  -Druntime.mode=COMMAND_LINE_MODE -Dkarma.classloaderrepository.config=bin/karma.classpath -jar lib/karma-launcher-1.2.jar nl.toolforge.karma.cli.CLI $@
 
 
 

@@ -79,7 +79,7 @@ public abstract class CommandResponse {
 	 * @param statusIdentifier A status identifier. Should be unique.
 	 *
 	 */
-	public final void addStatusUpdate(Integer statusIdentifier) throws CommandException {
+	public synchronized final void addStatusUpdate(Integer statusIdentifier) throws CommandException {
 
 		if (statusUpdates.contains(statusIdentifier)) {
 			throw new CommandException(CommandException.DUPLICATE_COMMAND_STATUS);

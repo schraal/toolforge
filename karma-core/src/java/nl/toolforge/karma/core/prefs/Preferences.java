@@ -22,26 +22,17 @@ import java.util.*;
  * <p>A user's environment consists of the following :</p>
  *
  * <ul>
- *   <li/>A home directory, where Karma enabled projects are stored. All project source code is checked out using this
- *        directory as the root. The environment variable <code>KARMA_HOME</code> or <code>karma.home</code> can be
- *        used to assign a directory. Using '<code>java -Dkarma.home</code> overrides the value of
- *        <code>KARMA_HOME</code>. This way, multiple threads of Karma can be run.
- *   <li/>A configuration directory, where Karma gets its configuration.  This configuration directory is presented to
- *        the Karma runtime as a <code>karma.configuration.directory</code> system property.
- *   <li/>A <code>karma.properties</code>, contained in the configuration directory. This property file has a number of
- *        default properties:
- *        <table>
- *          <tr>
- *            <td><code>karma.development.home</code></td>
- *            <td>Path to the directory where Karma will checkout manifests.</td>
- *          </tr>
- *        </table>
+ *   <li/>A project home directory, where Karma enabled projects are stored. All project source code is checked out
+ *        using this directory as the root. The environment variable identified by {@link #DEVELOPMENT_HOME_DIRECTORY_PROPERTY}
+ *        is used to assign a directory.
+ *   <li/>A configuration directory, where Karma gets its configuration. The configuration (property file) is loaded
+ *        by the Karma runtime as a <code>bootstrap.configuration</code> system property.
  * </ul>
  *
  * <p>This class is a <b>BOOTSTRAP</b> class, not dependent on any other Karma classes.
  *
- * TODO TESTMODE should be refactored out and an implementation with a factory should be used. This was a quick hack.
- * TODO the 'create'-mechanism and TESTMODE are duplicate methods.
+ * <p>Configuration that is changed when using Karma, is written in a <code>preferences</code> file in the directory
+ * indicated by {@link #CONFIGURATION_DIRECTORY_PROPERTY}.
  *
  * @author W.M.Oosterom
  * @author D.A. Smedes
@@ -52,21 +43,23 @@ public final class Preferences {
 
 	private static Log logger = LogFactory.getLog(Preferences.class);
 
-	//
-	//
-
 	/**
 	 * This property is used to determine the path to the bootstrap properties file (<code>karma.properties</code>). The
 	 * convention is that a filename <b>NOT</b> starting with a <code>/</code> means that it will be loaded from the
-	 * classpath (the filename can be preceded with a ; otherwise it will be loaded from
+	 * classpath, otherwise the value for the property will be considered an absolute filename.
 	 */
 	public static final String BOOTSTRAP_CONFIGURATION_FILE_PROPERTY = "bootstrap.configuration";
 
 	/**
-	 * The property that contains the configuration directory for Karma. This property is expected to be set in the
-	 * bootstrap configuration file (see {@link #BOOTSTRAP_CONFIGURATION_FILE_PROPERTY}).
+	 * Property for the configuration directory where Karma should locate configuration. Note that
+	 * {@link #BOOTSTRAP_CONFIGURATION_FILE_PROPERTY} is merely a startup thing. If that property is not set, this
+	 * property will be read from as a system property and when present, <code>karma.properties</code> will be read
+	 * from the directory indicated by this property.
 	 */
 	public static final String CONFIGURATION_DIRECTORY_PROPERTY = "configuration.directory";
+
+	// The following properties are present in the bootstrap configuration file (generally karma.properties).
+	//
 
 	/**
 	 * The property that contains the development home directory for Karma; where projects are stored on the local
@@ -78,11 +71,11 @@ public final class Preferences {
 	//
 
 
-	private static final boolean COMMAND_LINE_MODE = System.getProperty("MODE", "UNKNOWN").equals("COMMAND_LINE_MODE");
-
-	/** Determines testmodes and disables file access */
-	public static final boolean TESTMODE =
-		(System.getProperty("TESTMODE") == null ? false : System.getProperty("TESTMODE").equals("true"));
+	private static final boolean COMMAND_LINE_MODE = System.getProperty("runtime.mode", "UNKNOWN").equals("COMMAND_LINE_MODE");
+//
+//	/** Determines testmodes and disables file access */
+//	public static final boolean TESTMODE =
+//		(System.getProperty("TESTMODE") == null ? false : System.getProperty("TESTMODE").equals("true"));
 
 	/** The property that contains the configuration directory for Karma. */
 	//public static final String CONFIGURATION_DIRECTORY_PROPERTY = "karma.configuration.directory";
@@ -99,18 +92,18 @@ public final class Preferences {
 	 * <code>karma.manifest-store.vc</code> namespace, to be able to update these directories from a version controlled
 	 * repository.
 	 */
-	public static final String MANIFEST_STORE_DIRECTORY_PROPERTY = "karma.manifest-store.directory";
+	public static final String MANIFEST_STORE_DIRECTORY_PROPERTY = "manifest-store.directory";
 
-	public static final String MANIFEST_STORE_HOSTNAME_PROPERTY = "karma.manifest-store.vc.hostname";
-	public static final String MANIFEST_STORE_PORT_PROPERTY = "karma.manifest-store.vc.port";
-	public static final String MANIFEST_STORE_REPOSITORY_PROPERTY = "karma.manifest-store.vc.repository";
-	public static final String MANIFEST_STORE_USERNAME_PROPERTY = "karma.manifest-store.vc.username";
-	public static final String MANIFEST_STORE_PASSWORD_PROPERTY = "karma.manifest-store.vc.password";
+	public static final String MANIFEST_STORE_HOSTNAME_PROPERTY = "manifest-store.vc.hostname";
+	public static final String MANIFEST_STORE_PORT_PROPERTY = "manifest-store.vc.port";
+	public static final String MANIFEST_STORE_REPOSITORY_PROPERTY = "manifest-store.vc.repository";
+	public static final String MANIFEST_STORE_USERNAME_PROPERTY = "manifest-store.vc.username";
+	public static final String MANIFEST_STORE_PASSWORD_PROPERTY = "manifest-store.vc.password";
 
 	/** The property that identifies the manifest that was last used by Karma. */
-	public static final  String MANIFEST_HISTORY_PROPERTY = "karma.manifest.history";
+	public static final  String MANIFEST_HISTORY_PROPERTY = "manifest.history";
 
-	public static final String LOCATION_STORE_DIRECTORY_PROPERTY = "karma.location-store.directory";
+	public static final String LOCATION_STORE_DIRECTORY_PROPERTY = "location-store.directory";
 
 	private static List requiredProperties = new ArrayList();
 
@@ -176,7 +169,7 @@ public final class Preferences {
 	}
 
 	private Properties values = new Properties();
-  private Properties bootstrapConfiguration = new Properties();
+	private Properties bootstrapConfiguration = new Properties();
 
 	// Private constructor to prevent direct instantiation
 	//
@@ -187,7 +180,7 @@ public final class Preferences {
 		try {
 
 			String bootstrapConfigurationFile = System.getProperty(BOOTSTRAP_CONFIGURATION_FILE_PROPERTY);
-      bootstrapConfigurationFile = (bootstrapConfigurationFile == null ? null : bootstrapConfigurationFile.trim());
+			bootstrapConfigurationFile = (bootstrapConfigurationFile == null ? null : bootstrapConfigurationFile.trim());
 
 			if (bootstrapConfigurationFile == null) {
 				throw new KarmaRuntimeException(
@@ -214,7 +207,7 @@ public final class Preferences {
 
 		// We first try to load the preferences that might be there on disk
 		//
-		load(bootstrapConfiguration.getProperty(CONFIGURATION_DIRECTORY_PROPERTY));
+		load(getConfigurationDirectoryAsString());
 
 		// Next we traverse the bootstrap properties in the karma.properties file, which could override
 		// the preferences that are loaded before. The preferences might be outdated.
@@ -227,27 +220,21 @@ public final class Preferences {
 			}
 
 		} catch (Exception e) {
-			logger.error("Could not load " + Preferences.CONFIGURATION_DIRECTORY_PROPERTY + "/karma.properties, exiting...");
-			throw new KarmaRuntimeException("Could not load karma.properties. Has the configuration dir been set ? Exiting...", e);
+			logger.error("Could not load startup configuration, exiting...");
+			throw new KarmaRuntimeException("Could not load startup configuration, exiting...", e);
 		}
 
-		// Lets store the prefs to a file (if possible), which now should be up to date.
+		// Store preferences to a file.
 		//
 		flush();
 	}
 
-//	private void initUserEnvironment(boolean create) {
-		private void initUserEnvironment() {
-
-		// Determine the Operation System the user works on
-		//
-		//operatingSystem = System.getProperty("os.name");
-
+	private void initUserEnvironment() {
 
 		// Try to obtain the 'karma.configuration.directory property, which was optionally
 		// passed as a Java command line option.
 		//
-		karmaConfigurationDirectory = values.getProperty(CONFIGURATION_DIRECTORY_PROPERTY);
+		karmaConfigurationDirectory = System.getProperty(CONFIGURATION_DIRECTORY_PROPERTY);
 
 		if ((karmaConfigurationDirectory == null) || (karmaConfigurationDirectory.length() == 0)) {
 			karmaConfigurationDirectory = defaultKarmaConfigurationDirectory;
@@ -338,26 +325,30 @@ public final class Preferences {
 
 	public void flush() {
 
-		if (!TESTMODE) {
-			if (COMMAND_LINE_MODE) {
-				FileOutputStream out = null;
-				try {
-					out = new FileOutputStream(new File(getConfigurationDirectoryAsString(), "preferences"));
-					values.store(out, "Karma Preferences");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				finally {
-					if (out != null) {
-						try {
-							out.close();
-						}
-						catch (IOException e) {
-							// ignore
-						}
+		// todo what about TESTMODE; needed it in the beginning, but I doubt we still need it.
+//		if (!TESTMODE) {
+		if (COMMAND_LINE_MODE) {
+			FileOutputStream out = null;
+			try {
+				out = new FileOutputStream(new File(getConfigurationDirectoryAsString(), "preferences"));
+				values.store(out, "Karma Preferences");
+
+				logger.info("Karma preferences written to " + getConfigurationDirectoryAsString());
+
+			} catch (IOException e) {
+				logger.error("Could not write preferences to " + getConfigurationDirectoryAsString());
+			}
+			finally {
+				if (out != null) {
+					try {
+						out.close();
+					}
+					catch (IOException e) {
+						// ignore
 					}
 				}
 			}
+//			}
 		}
 	}
 
@@ -369,28 +360,28 @@ public final class Preferences {
 	 */
 	private void load(String configDir) {
 
-		if (COMMAND_LINE_MODE) {
-			FileInputStream in = null;
-			try {
-				in = new FileInputStream(new File(configDir, "preferences"));
-				values.load(in);
-			}
-			catch (IOException e) {
-				logger.info("No preferences could be found. Ignoring ...");
-			}
-			finally {
-				if (in != null) {
-					try {
-						in.close();
-					}
-					catch (IOException e) {
-						logger.info("No preferences could be found. Ignoring ...");
-					}
+//		if (COMMAND_LINE_MODE) {
+		FileInputStream in = null;
+		try {
+			in = new FileInputStream(new File(configDir, "preferences"));
+			values.load(in);
+		}
+		catch (IOException e) {
+			logger.info("No preferences could be found. Ignoring ...");
+		}
+		finally {
+			if (in != null) {
+				try {
+					in.close();
+				}
+				catch (IOException e) {
+					logger.info("No preferences could be found. Ignoring ...");
 				}
 			}
-		} else {
-			logger.info("NOT in COMMAND_LINE_MODE");
 		}
+//		} else {
+//			logger.info("NOT in COMMAND_LINE_MODE");
+//		}
 	}
 
 	/**
@@ -537,6 +528,11 @@ public final class Preferences {
 			logger.info("Property 'locale' has not been set. Default to ENGLISH.");
 			return Locale.ENGLISH;
 		}
+	}
+
+	public final void setManifestHistory(String manifestName) {
+		put(MANIFEST_HISTORY_PROPERTY, manifestName);
+//		flush();
 	}
 }
 

@@ -19,7 +19,7 @@ public abstract class ListManifests extends DefaultCommand {
 	protected Set manifests = null;
 
 	/**
-	 * This constructor performs all generic (enduser-independent functionality). Implementation are
+	 * This constructor performs all generic (enduser-independent functionality).
 	 *
 	 * @throws ManifestException See {@link ManifestException#NO_MANIFEST_STORE_DIRECTORY}.
 	 */
@@ -34,10 +34,6 @@ public abstract class ListManifests extends DefaultCommand {
 	 * @return The list of manifests.
 	 */
 	protected Set getManifests() {
-
-		if (manifests == null) {
-			 throw new KarmaRuntimeException("The constructor of this class was not called to initialize local properties.");
-		}
 		return manifests;
 	}
 

@@ -40,7 +40,7 @@ public final class SubversionRunner implements Runner {
 		return null;
 	}
 
-  public CommandResponse checkout(Module module) {
+  public CommandResponse checkout(Module module) throws SVNException {
     return null;
   }
 

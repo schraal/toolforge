@@ -47,7 +47,7 @@ public class UpdateModuleCommand extends DefaultCommand {
 
     Runner runner = getContext().getRunner(module);
 
-    CommandResponse response = new SimpleCommandResponse();
+    CommandResponse response = null;
     if (getContext().getCurrent().isLocal(module)) {
       response = runner.update(module);
     } else {

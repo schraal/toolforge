@@ -20,6 +20,9 @@ public class CVSException extends VersionControlException {
 	/** The module already exists in the repository. */
 	public static final ErrorCode MODULE_EXISTS_IN_REPOSITORY = new ErrorCode("CVS-00015");
 
+	/** The module does not exist in the repository */
+  public static final ErrorCode NO_SUCH_MODULE_IN_REPOSITORY = new ErrorCode("CVS-00016");
+
 	public CVSException(ErrorCode errorCode) {
 		super(errorCode);
 	}
