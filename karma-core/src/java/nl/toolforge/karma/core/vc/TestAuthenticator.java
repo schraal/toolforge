@@ -1,9 +1,8 @@
 package nl.toolforge.karma.core.vc;
 
-import nl.toolforge.karma.core.test.BaseTest;
-import nl.toolforge.karma.core.location.LocationLoader;
 import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.vc.cvsimpl.CVSRepository;
+import nl.toolforge.karma.core.location.LocationLoader;
+import nl.toolforge.karma.core.test.BaseTest;
 
 /**
  * @author D.A. Smedes

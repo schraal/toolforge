@@ -18,18 +18,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest;
 
-import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
-import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.vc.DevelopmentLine;
-import nl.toolforge.karma.core.vc.VersionControlSystem;
-import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.AuthenticationException;
-
 import java.io.File;
-import java.io.IOException;
 import java.util.Set;
 import java.util.regex.PatternSyntaxException;
+
+import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
+import nl.toolforge.karma.core.vc.AuthenticationException;
+import nl.toolforge.karma.core.vc.DevelopmentLine;
+import nl.toolforge.karma.core.vc.VersionControlException;
 
 
 /**
