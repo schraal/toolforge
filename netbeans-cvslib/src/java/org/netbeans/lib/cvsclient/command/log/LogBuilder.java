@@ -276,12 +276,9 @@ public class LogBuilder implements Builder {
   }
 
   private void processRevisionDate(String line) {
-
-
-
     StringTokenizer token = new StringTokenizer(line, ";", false); //NOI18N
     if (token.hasMoreTokens()) {
-      revision.setDateString(new String(token.nextToken().substring(DATE.length())));
+      revision.setDateString(token.nextToken().substring(DATE.length()));
     }
     if (token.hasMoreTokens()) {
       revision.setAuthor(token.nextToken().substring(AUTHOR.length()).intern());
@@ -292,6 +289,7 @@ public class LogBuilder implements Builder {
     if (token.hasMoreTokens()) {
       revision.setLines(token.nextToken().substring(LINES.length()).intern());
     }
+    
     addingLogMessage = true;
     tempBuffer = new StringBuffer();
   }

@@ -379,8 +379,13 @@ public class LogInformation extends FileInfoContainer {
         this.date = DATE_FORMAT.parse(dateString);
       }
       catch (Exception ex) {
-        throw new RuntimeException(ex);
-//        BugLog.getInstance().bug("Couldn't parse date `" + dateString + "'.");
+        // The above code is known to throw random exceptions when it should
+        // be working fine. Since these exceptions cause a lot of problems,
+        // we are going to ignore  them and see how that goes. The original
+        // netbeans code was also ignoring these exceptions but it tried to
+        // log a "bug", which would lead to stacktraces in the karma output.
+        
+        //BugLog.getInstance().bug("Couldn't parse date `" + dateString + "'.");
       }
     }
 
