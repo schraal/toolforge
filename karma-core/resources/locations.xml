@@ -1,11 +1,13 @@
-lm<?xml version="1.0" ?>
+<?xml version="1.0" ?>
 
 <locations>
 
+	<!-- The 'id'-attribute maps on a 'location'-attribute in a module -->
+
 	<location type="cvs-repository" id="cvs-local">
 		<host>localhost</host>
-        <port>2401</port>
-        <repository>/home/cvs</repository>
+		<port>2401</port>
+		<repository>/home/cvs</repository>
 	</location>
 
 	<location type="cvs-repository" id="sourceforge">

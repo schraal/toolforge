@@ -1,8 +1,7 @@
 package nl.toolforge.karma.core;
 
-import nl.toolforge.karma.core.vc.VersionControlSystem;
-
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Implementation for a manifest.
@@ -47,12 +46,26 @@ public class ManifestImpl implements Manifest {
 		modules.add(module);
 	}
 
-	public final Module createModule(VersionControlSystem vcs, String name) throws KarmaException {
-		return null;
+	public final Module createModule(int typeIdentifier, String name, String locationAlias) throws KarmaException {
+		return ModuleFactory.getInstance().createModule(typeIdentifier, name, locationAlias);
 	}
 
-	public final Module createModule(VersionControlSystem vcs, String name, boolean b) throws KarmaException {
-		return null;
+	public final Module createModule(int typeIdentifier, String name, String locationAlias, boolean addToFile) throws KarmaException {
+
+		Module module = ModuleFactory.getInstance().createModule(typeIdentifier, name, locationAlias);
+
+		addModule(module);
+
+		if (addToFile) {
+			// TODO logger.debug();
+			try {
+				flush();
+			} catch (IOException i) {
+				throw new KarmaException(KarmaException.MANIFEST_FLUSH_ERROR, i);
+			}
+		}
+
+		return module;
 	}
 
 	public final File getPath() {
@@ -74,5 +87,10 @@ public class ManifestImpl implements Manifest {
 
 	public String getName() {
 		return manifestName;
+	}
+
+	void flush() throws IOException {
+
+
 	}
 }

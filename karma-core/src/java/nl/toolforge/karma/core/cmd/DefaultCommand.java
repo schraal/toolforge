@@ -1,6 +1,8 @@
 package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.Module;
+import nl.toolforge.karma.core.vc.Runner;
 import org.apache.commons.cli.Options;
 
 import java.util.Map;
@@ -14,7 +16,7 @@ import java.util.Map;
 public abstract class DefaultCommand implements Command {
 
 	private CommandDescriptor descriptor = null;
-	private CommandContext ctx = null;
+	private CommandContext contextRef = null;
 
 	public DefaultCommand() {}
 
@@ -22,10 +24,10 @@ public abstract class DefaultCommand implements Command {
 	 * Sets the command context for this command. The command needs the command context during
 	 * the executing phase.
 	 *
-	 * @param context The <code>CommandContext</code> for this command.
+	 * @param contextRef The <code>CommandContext</code> for this command.
 	 */
-	public final void setContext(CommandContext context) {
-		this.ctx = context;
+	public final void setContext(CommandContext contextRef) {
+		this.contextRef = contextRef;
 	}
 
 	/**
@@ -73,7 +75,7 @@ public abstract class DefaultCommand implements Command {
 	 * @return The commands' command context.
 	 */
 	public final CommandContext getContext() {
-		return ctx;
+		return contextRef;
 	}
 
 	/**
@@ -100,4 +102,5 @@ public abstract class DefaultCommand implements Command {
 	 * @throws KarmaException
 	 */
 	//public abstract CommandResponse executeCommand() throws KarmaException;
+
 }

@@ -4,6 +4,8 @@ import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.location.BaseLocation;
 import nl.toolforge.karma.core.location.Location;
 
+import java.util.Locale;
+
 /**
  *
  * @author D.A. Smedes
@@ -11,6 +13,12 @@ import nl.toolforge.karma.core.location.Location;
  * @version $Id$
  */
 public final class CVSLocationImpl extends BaseLocation {
+
+	/** Default port number : <code>2401</code> */
+	public static final int DEFAULT_PORT = 2401;
+
+	/** Default protocol : <code>pserver</code> */
+	public static final String DEFAULT_PROTOCOL = "pserver";
 
 	private String host = null;
 	private String username = null;
@@ -20,7 +28,7 @@ public final class CVSLocationImpl extends BaseLocation {
 	private String repository = null;
 
 	public CVSLocationImpl(String id) throws KarmaException {
-         super(id, Location.Type.CVS_REPOSITORY);
+		super(id, Location.Type.CVS_REPOSITORY);
 	}
 
 	/**
@@ -28,11 +36,11 @@ public final class CVSLocationImpl extends BaseLocation {
 	 *
 	 * @param host The CVS username path (<code>:pserver:asmedes@<b>localhost</b>:2401/home/cvsroot</code>
 	 */
-	public final void setHost(String host) {
+	public void setHost(String host) {
 		this.host = host;
 	}
 
-	public final String getHost() {
+	String getHost() {
 		return host;
 	}
 
@@ -41,10 +49,10 @@ public final class CVSLocationImpl extends BaseLocation {
 	 *
 	 * @param username The CVS username path (<code>:pserver:<b>asmedes</b>@localhost:2401/home/cvsroot</code>
 	 */
-	public final void setUsername(String username) {
+	public void setUsername(String username) {
 		this.username = username;
 	}
-	public final String getUsername() {
+	String getUsername() {
 		return username;
 	}
 
@@ -54,13 +62,13 @@ public final class CVSLocationImpl extends BaseLocation {
 	 *
 	 * @param encodedPassword The CVS password in the normal (<b>* insecure *</b>) password.
 	 */
-	public final void setPassword(String encodedPassword) {
+	public void setPassword(String encodedPassword) {
 
 		// TODO some encoding scheme should be applied.
 		//
 		this.password = encodedPassword;
 	}
-	final String getPassword() {
+	String getPassword() {
 		return password;
 	}
 
@@ -69,22 +77,35 @@ public final class CVSLocationImpl extends BaseLocation {
 	 *
 	 * @param protocol The CVS protocol (<code>:<b>pserver</b>:asmedes@localhost:2401/home/cvsroot</code>
 	 */
-	public final void setProtocol(String protocol) {
+	public void setProtocol(String protocol) {
+		if (protocol == null) {
+			protocol = DEFAULT_PROTOCOL;
+		}
 		this.protocol = protocol;
 	}
-	public final String getProtocol() {
+	String getProtocol() {
 		return protocol;
 	}
 
 	/**
-	 * The CVS repository port.
+	 * The CVS repository port, should be an valid port number.
 	 *
 	 * @param port The CVS repository path (<code>:pserver:asmedes@localhost:<b>2401</b>/home/cvsroot</code>
 	 */
-	public final void setPort(int port) {
+	public void setPort(int port) {
 		this.port = port;
 	}
-	public final int getPort() {
+	void setPort(String port) {
+
+		int p = -1;
+		try {
+			p = Integer.parseInt(port);
+		} catch (NumberFormatException n) {
+			this.port = DEFAULT_PORT;
+		}
+		this.port = p;
+	}
+	int getPort() {
 		return port;
 	}
 
@@ -93,10 +114,46 @@ public final class CVSLocationImpl extends BaseLocation {
 	 *
 	 * @param repository The CVS repository path (<code>:pserver:asmedes@localhost:2401<b>/home/cvsroot</b></code>
 	 */
-	public final void setRepository(String repository) {
+	public void setRepository(String repository) {
 		this.repository = repository;
 	}
-	public final String getRepository() {
+	String getRepository() {
 		return repository;
 	}
+
+	/**
+	 * See {@link #getCVSROOT}.
+	 *
+	 * @return See {@link #getCVSROOT}.
+	 */
+	public String toString() {
+
+		try {
+			return getCVSROOT();
+		} catch (CVSException c) {
+			return CVSException.INVALID_CVSROOT.getErrorMessage(Locale.ENGLISH);
+		}
+	}
+
+	/**
+	 * Returns the <code>CVSROOT</code> as a string. Something like <code>:pserver:asmedes@localhost:2401/cvs/pub</code>.
+	 *
+	 * @return The <code>CVSROOT</code> as a string.
+	 * @throws CVSException See {@link CVSException#INVALID_CVSROOT}
+	 */
+	public String getCVSROOT() throws CVSException {
+
+		// TODO CVSROOT should be validated here by a pattern !
+		//
+
+		StringBuffer buffer = new StringBuffer(":" + protocol + ":");
+
+		buffer.append(username).append("@");
+		buffer.append(host).append(":");
+		buffer.append(port).append(repository.startsWith("/") ? "" : "/");
+		buffer.append(repository);
+
+		return buffer.toString();
+	}
+
 }

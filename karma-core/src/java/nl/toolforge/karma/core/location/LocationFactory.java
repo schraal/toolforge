@@ -35,6 +35,12 @@ public final class LocationFactory {
 
 	private LocationFactory() {}
 
+	/**
+	 * Gets the singleton instance of the location factory. This instance can be used to get access to all location
+	 * objects.
+	 *
+	 * @return A location factory.
+	 */
 	public static LocationFactory getInstance() {
 
 		if (instance == null) {
@@ -79,14 +85,15 @@ public final class LocationFactory {
 	}
 
 	/**
-	 * Loads all authenticator <code>xml</code> files in the directory identified by the
-	 * {@link nl.toolforge.karma.core.prefs.Preferences#LOCATION_STORE_DIRECTORY_PROPERTY} property.
+	 * See {@link #load()}
 	 *
 	 * @param locationFilesPath
 	 *        The path where all location XML files can be found.
 	 * @param authenticationFilePath
 	 *        The path to the location where <code>location-authentication.xml</code> can be found. The final "/" is not
 	 *        required.
+	 *
+	 * @throws KarmaException See {@link #load()}
 	 *
 	 * TODO make sure that all xml files are validated before being used.
 	 */
@@ -170,6 +177,21 @@ public final class LocationFactory {
 
 	public final Map getLocations() {
 		return locations;
+	}
+
+	/**
+	 * Gets a <code>Location</code> instance by its <code>locationAlias</code>.
+	 *
+	 * @param locationAlias The <code>location</code>-attribute from the <code>module</code>-element in the manifest.
+	 * @return A <code>Location</code> instance, representing e.g. a CVS repository or a Maven repository.
+	 * @throws KarmaException See {@link KarmaException#LOCATION_NOT_FOUND}.
+	 */
+	public final Location get(String locationAlias) throws KarmaException {
+
+		if (locations.containsKey((locationAlias))) {
+			return (Location) locations.get(locationAlias);
+		}
+		throw new KarmaException(KarmaException.LOCATION_NOT_FOUND);
 	}
 
 	/**

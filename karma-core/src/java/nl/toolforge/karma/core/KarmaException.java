@@ -68,7 +68,7 @@ public class KarmaException extends Exception {
 	public static final ErrorCode DUPLICATE_COMMAND = new ErrorCode("CORE-00007");
 
 	/** Duplicate command descriptor alias in commands XML file */
-	public static final ErrorCode DUPLICATE_ALIAS = new ErrorCode("CORE-00008");
+	public static final ErrorCode DUPLICATE_COMMAND_ALIAS = new ErrorCode("CORE-00008");
 
 	/** No location files were found. A developer should have a directory configured in karma.properties. */
 	public static final ErrorCode NO_LOCATION_DATA_FOUND = new ErrorCode("CORE-00009");
@@ -82,6 +82,9 @@ public class KarmaException extends Exception {
 	/** No manifest has been assigned to the <code>CommandContext</code>  */
 	public static final ErrorCode NO_MANIFEST_SELECTED = new ErrorCode("CORE-00031");
 
+	/** IO Error when trying to flush the manifest file to disk */
+	public static final ErrorCode MANIFEST_FLUSH_ERROR = new ErrorCode("CORE-00032");
+
 	/** The console could not be initialized with user defined settings. Settings could not be available. */
 	public static final ErrorCode CONSOLE_INITIALIZATION_ERROR = new ErrorCode("CORE-00040");
 
@@ -90,6 +93,13 @@ public class KarmaException extends Exception {
 
 	/** Invalid option for this command */
 	public static final ErrorCode INVALID_COMMAND_OPTION = new ErrorCode("CORE-00051");
+
+	/**
+	 * Location descriptor does not exist. This happens when a module's 'location'-attribute cannot be found by the
+	 * <code>LocationFactory</code>, which contains references to all <code>Location</code> objects mapped in
+	 * <code>locations.xml</code>.
+	 */
+	public static final ErrorCode LOCATION_NOT_FOUND = new ErrorCode("CORE-00060");
 
 	protected ErrorCode errorCode = null;
 

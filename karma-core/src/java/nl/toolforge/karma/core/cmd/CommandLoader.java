@@ -136,13 +136,14 @@ public final class CommandLoader {
 					String alias = commandElement.getAttribute("alias");
 
 					if (!uniqueAliasses.add(alias)) {
-						throw new KarmaException(KarmaException.DUPLICATE_ALIAS);
+						throw new KarmaException(KarmaException.DUPLICATE_COMMAND_ALIAS);
 					}
 
 					String clazzName = commandElement.getElementsByTagName("classname").item(0).getFirstChild().getNodeValue();
 					String explanation = commandElement.getElementsByTagName("description").item(0).getFirstChild().getNodeValue();
 
 					CommandDescriptor descriptor = new CommandDescriptor(commandName, alias, options, clazzName);
+          descriptor.setDescription(explanation);
 
 					// TODO : dependencies should be added. Might not be required for version 2.0 (CVS support only)
 					// descriptor.setDependencies(null);

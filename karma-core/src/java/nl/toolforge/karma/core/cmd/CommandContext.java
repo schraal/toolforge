@@ -1,12 +1,17 @@
 package nl.toolforge.karma.core.cmd;
 
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.Manifest;
-import nl.toolforge.karma.core.ManifestException;
-import nl.toolforge.karma.core.ManifestLoader;
+import nl.toolforge.karma.core.*;
+import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
+import nl.toolforge.karma.core.vc.subversion.SubversionRunner;
+import nl.toolforge.karma.core.vc.cvs.CVSRunner;
+import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.location.LocationFactory;
+import nl.toolforge.karma.core.location.Location;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.PosixParser;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
@@ -20,7 +25,9 @@ import java.util.*;
  *
  * @version $Id$
  */
-public class CommandContext {
+public final class CommandContext {
+
+	private static Log logger = LogFactory.getLog(CommandContext.class);
 
 	private static ManifestLoader manifestLoader = ManifestLoader.getInstance();
 
@@ -56,7 +63,7 @@ public class CommandContext {
 
 		if (!initialized) {
 			Set descriptors = CommandLoader.getInstance().load();
-      commands = new Hashtable();
+			commands = new Hashtable();
 
 			// Store all commands by name in a hash
 			//
@@ -91,7 +98,7 @@ public class CommandContext {
 	 * @return The currently active manifest.
 	 * @throws KarmaException See {@link KarmaException#NO_MANIFEST_SELECTED}
 	 */
-	public final Manifest getCurrent() throws KarmaException {
+	public Manifest getCurrent() throws KarmaException {
 
 		if (currentManifest == null) {
 			throw new KarmaException(KarmaException.NO_MANIFEST_SELECTED);
@@ -105,7 +112,7 @@ public class CommandContext {
 	 * @param manifestName
 	 * @throws KarmaException
 	 */
-	public final void changeCurrent(String manifestName) throws KarmaException {
+	public void changeCurrent(String manifestName) throws KarmaException {
 		currentManifest = manifestLoader.load(manifestName);
 	}
 
@@ -114,8 +121,8 @@ public class CommandContext {
 	 *
 	 * @return See <code>ManifestLoader.getAll()</code>.
 	 */
-	public final Set getAll() throws ManifestException {
-    return manifestLoader.getAll();
+	public Set getAll() throws ManifestException {
+		return manifestLoader.getAll();
 	}
 
 	/**
@@ -159,6 +166,11 @@ public class CommandContext {
 		if (command == null) {
 			throw new KarmaException(KarmaException.INVALID_COMMAND);
 		}
+
+		// Store a reference to this context in the command
+		//
+		command.setContext(this);
+
 		return command.execute();
 	}
 
@@ -175,4 +187,30 @@ public class CommandContext {
 	public boolean isCommand(String name) {
 		return commandNames.contains(name);
 	}
+
+
+
+	/**
+	 * A <code>Runner</code> might be required for a command to execute something on a version control system. A module
+	 * can determine which implementation of a runner it requires through the
+	 * {@link nl.toolforge.karma.core.Module#getLocation} method.
+	 *
+	 * @param module The module for which a runner is required.
+	 * @return A version control specific runner.
+	 */
+	public Runner getRunner(Module module) throws KarmaException {
+
+		Location location = module.getLocation();
+
+		if (location instanceof CVSLocationImpl) {
+			logger.debug("Getting new CVSRunner instance.");
+			return new CVSRunner(location);
+		}
+		if (location instanceof SubversionLocationImpl) {
+			logger.debug("Getting new CVSRunner instance.");
+			return new SubversionRunner(module.getLocation());
+		}
+		throw new KarmaRuntimeException("Location instance invalid.");
+	}
+
 }

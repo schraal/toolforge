@@ -1,5 +1,7 @@
 package nl.toolforge.karma.core;
 
+import nl.toolforge.karma.core.location.Location;
+
 
 /**
  * <p>A module is an important concept for the Karma tool. It represents a main building block of an application system.
@@ -17,11 +19,14 @@ package nl.toolforge.karma.core;
  */
 public interface Module {
 
+	public static final int SOURCE_MODULE = 0;
+	public static final int JAR_MODULE = 1;
+
 	/** Element name for an include-element in a manifest XML file */
 	public static final String INCLUDE_ELEMENT_NAME = "include";
 
 	public static final State WORKING = new State("WORKING");
-    public static final State DYNAMIC = new State("DYNAMIC");
+	public static final State DYNAMIC = new State("DYNAMIC");
 	public static final State STATIC = new State("STATIC");
 
 	/** The <code>name</code>-attribute for a module. */
@@ -33,33 +38,27 @@ public interface Module {
 	/** The <code>name</code>-attribute for an <code>include</code>-element. */
 	public static final String INCLUDE_NAME_ATTRIBUTE = "name";
 
-    /**                                                       ;
+	/**                                                       ;
 	 * Retrieves a modules' name, the <code>artifact-id</code> attribute of the a module.
-     *
-     * @return The modules' name.
-     */
-    public String getName();
+	 *
+	 * @return The modules' name.
+	 */
+	public String getName();
 
 	/**
-	 * If the module element in the manifest contains a <code>version</code> attribute, this method will return the
-	 * value of that attribute.
+	 * Returns the <code>Location</code> instance, which is derived from the <code>location</code>-attribute.
 	 *
-	 * @return The module version, if that exists.
-	 *
-	 * @throws KarmaException When a <code>version</code> attribute is not available for the module.
+	 * @return
+	 * @throws KarmaException
 	 */
-	public String getVersion() throws KarmaException;
+	public Location getLocation() throws KarmaException;
 
-	public void setVersion(String version) throws KarmaException;
-
-	public nl.toolforge.karma.core.location.Location getRepository();
-
-	/**
-	 * Provides a reference to a modules' {@link nl.toolforge.karma.core.ModuleController} instance.
-	 *
-	 * @return A reference to the modules' <code>ModuleController</code>.
-	 */
-	public ModuleController getController();
+//	/**
+//	 * Provides a reference to a modules' {@link nl.toolforge.karma.core.ModuleController} instance.
+//	 *
+//	 * @return A reference to the modules' <code>ModuleController</code>.
+//	 */
+//	public ModuleController getController();
 
 	/**
 	 * Sets the {@link State} of this module.
@@ -68,7 +67,7 @@ public interface Module {
 	 */
 	public void setState(State state);
 
-    //public File getPath();
+	//public File getPath();
 
 	/**
 	 * <p>Inner class representing the 'state' of a module. Three states exist at the moment : <code>WORKING</code>,

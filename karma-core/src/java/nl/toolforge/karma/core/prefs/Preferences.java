@@ -192,7 +192,7 @@ public final class Preferences
 				// Read from classpath
 				//
 				//logger.error("Application runs in test mode.");
-				props.load(getClass().getClassLoader().getResourceAsStream("resources/test/karma.properties"));
+				props.load(getClass().getClassLoader().getResourceAsStream("karma.properties"));
 			}
 
 			for (Enumeration e = props.propertyNames(); e.hasMoreElements();) {

@@ -3,6 +3,8 @@ package nl.toolforge.karma.core;
 import nl.toolforge.core.util.file.XMLFilenameFilter;
 import nl.toolforge.karma.core.prefs.Preferences;
 import nl.toolforge.karma.core.prefs.UnavailableValueException;
+import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.location.LocationFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -191,21 +193,39 @@ public final class ManifestLoader {
 
 				Element node = (Element) moduleElements.item(i);
 
+				// Mandatory fields
+				//
+				String moduleName = node.getAttribute(Module.NAME_ATTRIBUTE);
+				String locationAlias = node.getAttribute(Module.LOCATION_ATTRIBUTE);
+
+				Location location = LocationFactory.getInstance().get(locationAlias);
+
 				if (node.getNodeName().equals(SourceModule.ELEMENT_NAME)) {
 
-					SourceModule sourceModule = new SourceModule(node.getAttribute(Module.NAME_ATTRIBUTE));
-					sourceModule.setVersion(node.getAttribute(SourceModule.VERSION_ATTRIBUTE));
+					// SourceModule specific fields
+					//
+					String version = node.getAttribute(SourceModule.VERSION_ATTRIBUTE);
+
+					SourceModule sourceModule;
+					if (version == null) {
+						sourceModule = new SourceModule(moduleName, location);
+					} else {
+						sourceModule = new SourceModule(moduleName, location, version);
+					}
 					//sourceModule.setBranch(node.getAttribute(SourceModule.BRANCH_ATTRIBUTE));
 
 					manifest.addModule(sourceModule);
 
 				} else if (node.getNodeName().equals(JarModule.ELEMENT_NAME)) {
 
-					String moduleName = node.getAttribute(Module.NAME_ATTRIBUTE);
 					String version = node.getAttribute(JarModule.VERSION_ATTRIBUTE);
 
-					JarModule jarModule = new JarModule(moduleName);
-					jarModule.setVersion(version);
+					JarModule jarModule;
+					if (version == null) {
+						jarModule = new JarModule(moduleName, location);
+					} else {
+						jarModule = new JarModule(moduleName, location, version);
+					}
 
 					manifest.addModule(jarModule);
 

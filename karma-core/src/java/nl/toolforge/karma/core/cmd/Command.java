@@ -101,4 +101,11 @@ public interface Command {
 	 * @throws KarmaException To be documented.
 	 */
 	public CommandResponse execute() throws KarmaException;
+
+	/**
+	 * Stores a reference to a <code>CommandContext</code>.
+	 *
+	 * @param context An initialized command context.
+	 */
+	public void setContext(CommandContext context);
 }
