@@ -129,7 +129,7 @@ public final class CVSRunner implements Runner {
     //
     this.listener = new CVSResponseAdapter();
 
-    logger.debug("CVSRunner using CVSROOT : " + cvsLocation.toString());
+    logger.debug("CVSRunner using CVSROOT : " + cvsLocation.getCVSRoot());
     globalOptions.setCVSRoot(cvsLocation.getCVSRoot());
   }
 

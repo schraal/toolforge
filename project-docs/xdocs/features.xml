@@ -22,11 +22,11 @@
   </p>
 
   <ul>
-    <li/>Source code compilation with <code>javac</code> and <code>jikes</code>.
-    <li/>Modules determine their dependencies and compile them when necessary.
-    <li/>
-    <li/>
-    <li/>
+	  <li>Source code compilation with <code>javac</code> and <code>jikes</code>.</li>
+	  <li>Modules determine their dependencies and compile them when necessary.</li>
+	  <li/>
+	  <li/>
+	  <li/>
   </ul>
 
   </subsection>
@@ -39,12 +39,12 @@
   </p>
 
   <ul>
-    <li/>Four main types of modules, each with a standardized directory
-         structure.
-    <li/>Working contexts allow for and organized structure of software
+    <li>Four main types of modules, each with a standardized directory
+	    structure.</li>
+    <li>Working contexts allow for and organized structure of software
          projects, one for each client ... or project. The amount of working
-         contexts is unlimited.
-    <li/>
+	 contexts is unlimited.</li>
+ <li></li>
 
   </ul>
 
@@ -58,10 +58,10 @@
   </p>
 
   <ul>
-    <li/>Help system; each command is well-documented.
-    <li/>Commands can have any number of aliasses; users can implement their
-         own favourites.
-    <li/>
+	  <li>Help system; each command is well-documented.</li>
+    <li>Commands can have any number of aliasses; users can implement their
+	    own favourites.</li>
+    <li></li>
   </ul>
 
   </subsection>
@@ -69,9 +69,9 @@
   <subsection name="Developer Features">
 
   <ul>
-    <li/>Clearly documented Java API allowing extensions to 
-    <li/>Easy to create plugins to extend Karma with commands
-    <li/>
+	  <li>Clearly documented Java API allowing extensions to </li>
+	  <li>Easy to create plugins to extend Karma with commands</li>
+	    <li/>
   </ul>
 
   </subsection>
