@@ -182,7 +182,7 @@ public final class WorkingContext {
    */
   public WorkingContext(String workingContext, File configBaseDir) {
 
-    if (!workingContext.matches("[\\w\\-]+")) {
+    if (!workingContext.matches("\\w[\\w\\-]*")) {
       workingContext = DEFAULT;
     }
     this.workingContext = workingContext;

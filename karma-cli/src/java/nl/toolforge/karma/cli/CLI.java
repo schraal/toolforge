@@ -26,72 +26,29 @@ public final class CLI {
   private static Log logger = LogFactory.getLog(CLI.class);
 
 
-  public static void main(String[] args) {
-
-    try {
-      if (args.length == 0) {
-
-        System.out.println("\nCommand-line is missing ...\n\n");
-        System.out.println("CLI usage :\n\n");
-
-        System.out.println("karma <command-line-string>              Runs the command that is passed as a command-line-string");
-
-        System.exit(1);
-      }
-
-      CLI cli = new CLI();
-
-      try {
-        cli.runCommand(args);
-      } catch (CommandException e) {
-
-        System.out.println("\n" + "[ karma ] " + e.getMessage());
-
-        System.exit(1);
-      }
-      System.exit(0);
-    } catch (Exception e) {
-      logger.error("Exception caught by CLI catch-all.", e);
-      System.out.println("Exception caught by CLI catch-all. Message: " + e.getMessage() + "\n");
-      System.exit(1);
-    }
-  }
-
-  private void runCommand(String[] arguments) throws CommandException {
-
-    boolean updateStores = false;
-
-    String[] actuals = null;
-    String commandName = null;
-    int index = 0;
-
-    // Filter out the optional '-u' and the command name
-    //
-    if (arguments.length > 0) {
-      if (arguments[0].equals("-u")) {
-        updateStores = true;
-        actuals = new String[arguments.length - 2];
-        commandName = arguments[1];
-        index = 2;
-      } else {
-        actuals = new String[arguments.length - 1];
-        commandName = arguments[0];
-        index = 1;
-      }
-    }
+  /**
+   *
+   * @param args  The working context (0), whether to update (1) and the command
+   *              plus his options (3 ...).
+   */
+  public void runCli(String[] args) {
+    boolean updateStores = new Boolean(args[1]).booleanValue();
+    String commandName = args[2];
+    String[] commandOptions = new String[args.length - 3];
 
     int j = 0;
-
-    for (int i = index; i < arguments.length; i++) {
-      actuals[j] = arguments[i];
+    for (int i = 3; i < args.length; i++) {
+      commandOptions[j] = args[i];
       j++;
     }
 
     // todo WorkingContext should be initializing the logging system. Some other way.
-
-    WorkingContext workingContext =
-        new WorkingContext(Preferences.userRoot().get(WorkingContext.WORKING_CONTEXT_PREFERENCE, WorkingContext.DEFAULT));
-
+    WorkingContext workingContext;
+    if ( args[0] == null || args[0].equals("") ) {
+      workingContext = new WorkingContext(Preferences.userRoot().get(WorkingContext.WORKING_CONTEXT_PREFERENCE, WorkingContext.DEFAULT));
+    } else {
+      workingContext = new WorkingContext(args[0]);
+    }
     WorkingContextConfiguration configuration = new WorkingContextConfiguration(workingContext);
 
     try {
@@ -103,24 +60,37 @@ public final class CLI {
 
     System.out.println("[ karma ] Checking command ...");
 
-    Command command = null;
     try {
-      CommandFactory factory = CommandFactory.getInstance();
-      command = factory.getCommand(commandName, actuals);
-    } catch (CommandLoadException e) {
-      throw new CommandException(e.getErrorCode(),  e.getMessageArguments());
-    }
+      Command command = null;
+      try {
+        CommandFactory factory = CommandFactory.getInstance();
+        command = factory.getCommand(commandName, commandOptions);
+      } catch (CommandLoadException e) {
+        throw new CommandException(e.getErrorCode(),  e.getMessageArguments());
+      }
 
-    System.out.println("[ karma ] Command `" + command.getName() + "` ok !");
-    System.out.println("[ karma ] Working context : " + workingContext.getName());
+      System.out.println("[ karma ] Command `" + command.getName() + "` ok !");
+      System.out.println("[ karma ] Working context : " + workingContext.getName());
 
-    CommandContext commandContext = new CommandContext(workingContext);
-    try {
-      commandContext.init(new CLICommandResponseHandler(), updateStores);
-    }  catch (CommandException e) {
+      CommandContext commandContext = new CommandContext(workingContext);
+      try {
+        commandContext.init(new CLICommandResponseHandler(), updateStores);
+      }  catch (CommandException e) {
+        System.out.println("\n" + "[ karma ] " + e.getMessage());
+      }
+
+      commandContext.execute(command);
+    } catch (CommandException e) {
+
       System.out.println("\n" + "[ karma ] " + e.getMessage());
-    }
 
-    commandContext.execute(command);
+      System.exit(1);
+    } catch (Exception e) {
+      logger.error("Exception caught by CLI catch-all.", e);
+      System.out.println("Exception caught by CLI catch-all. Message: " + e.getMessage() + "\n");
+      System.exit(1);
+    }
+    System.exit(0);
   }
+
 }

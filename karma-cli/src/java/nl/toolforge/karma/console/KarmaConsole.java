@@ -59,27 +59,17 @@ public final class KarmaConsole {
 
   private String lastLine = "";
   private boolean immediate = true;
-//  private Manifest manifest = null;
   private CommandContext commandContext = null;
 
   public KarmaConsole() {}
 
-  /**
-   * Startup class for the command line interface.
-   *
-   * @param args As per the contract; we don't use it.
-   */
-  public static void main(String[] args) {
-    KarmaConsole karmaConsole = new KarmaConsole();
-    karmaConsole.runConsole(args);
-  }
 
   /**
-   * This one does the trick. Requires one (optional) argument : a working workingContext identifier.
    *
-   * @param args Arguments passed to Karma.
+   * @param args  The working context (0), whether to update (1) and the command
+   *              plus his options (3 ...).
    */
-  private void runConsole(String[] args) {
+  public void runConsole(String[] args) {
 
     Runtime.getRuntime().addShutdownHook(new Thread() {
 
@@ -106,10 +96,12 @@ public final class KarmaConsole {
 
     // If the '-w <working-context> option is used, use it.
     //
-    WorkingContext workingContext =
-        (args.length == 0 ?
-        new WorkingContext(Preferences.userRoot().get(WorkingContext.WORKING_CONTEXT_PREFERENCE, WorkingContext.DEFAULT)) :
-        new WorkingContext(args[0]));
+    WorkingContext workingContext;
+    if ( args[0] == null || args[0].equals("") ) {
+      workingContext = new WorkingContext(Preferences.userRoot().get(WorkingContext.WORKING_CONTEXT_PREFERENCE, WorkingContext.DEFAULT));
+    } else {
+      workingContext = new WorkingContext(args[0]);
+    }
 
     writeln(
         "\n" +
@@ -232,7 +224,7 @@ public final class KarmaConsole {
     commandContext = new CommandContext(workingContext);
     try {
 //      long start = System.currentTimeMillis();
-      commandContext.init(new ConsoleCommandResponseHandler(this), true);
+      commandContext.init(new ConsoleCommandResponseHandler(this), new Boolean(args[1]).booleanValue());
 //      System.out.println("TOTAL STARTUP-TIME: " + (System.currentTimeMillis() - start));
     } catch (CommandException e) {
       logger.warn(e.getMessage());

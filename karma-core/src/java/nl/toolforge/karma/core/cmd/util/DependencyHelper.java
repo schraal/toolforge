@@ -121,8 +121,11 @@ public final class DependencyHelper {
           if (doPackage) {
             path = new DependencyPath(manifest.getBuildBaseDirectory(), new File(dep.getModule(), resolveArchiveName(depModule)));
           } else {
+//todo: in case of tests we need the resources as well.
             path = new DependencyPath(manifest.getBuildBaseDirectory(), new File(dep.getModule(), "build"));
           }
+          System.out.println(path);
+          System.out.println(path.exists());
           if (!path.exists()) {
             throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getModule()});
           }
