@@ -35,7 +35,7 @@ public final class ModuleDescriptor {
 
   private String version = null;
 //  private Version version = null;
-  private String developmentLine = null;
+//  private String developmentLine = null;
 //  private DevelopmentLine developmentLine = null;
 
   /**
@@ -95,20 +95,6 @@ public final class ModuleDescriptor {
 
   public String getVersion() {
     return version;
-  }
-
-  public void setDevelopmentLine(String developmentLine) {
-
-    // todo persoonlijk wil ik liever development-line in de xml-file, maar die Digester valt daarover.
-
-    if (developmentLine == null || !developmentLine.matches(DevelopmentLine.DEVELOPMENT_LINE_PATTERN_STRING)) {
-      throw new PatternSyntaxException(
-          "Pattern mismatch for version. Should match " + DevelopmentLine.DEVELOPMENT_LINE_PATTERN_STRING, developmentLine, -1);
-    }
-    this.developmentLine = developmentLine;
-  }
-  public String getDevelopmentLine() {
-    return developmentLine;
   }
 
   /**

@@ -4,6 +4,7 @@ import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
+import nl.toolforge.karma.core.vc.PatchLine;
 import org.apache.commons.digester.Digester;
 import org.apache.maven.project.Dependency;
 import org.xml.sax.SAXException;
@@ -35,7 +36,7 @@ public class SourceModule extends BaseModule {
 
   private State state = null;
   private Version version = null;
-  private DevelopmentLine developmentLine = null;
+  private boolean patchLine = false;
   private File baseDir = null;
   protected static List dependencies = null; // Lazy loading, the first time it is initialized and cached.
 
@@ -47,30 +48,43 @@ public class SourceModule extends BaseModule {
    * @param location Mandatory parameter; location of the module.
    */
   public SourceModule(String name, Location location) {
-    super(name, location);
+    this(name, location, null);
   }
 
   /**
    *
    */
   public SourceModule(String name, Location location, Version version) {
-    this(name, location, version, null);
-  }
 
-  public SourceModule(String name, Location location, DevelopmentLine line) {
-    this(name, location, null, line);
-  }
-
-  public SourceModule(String name, Location location, Version version, DevelopmentLine line) {
-
-    this(name, location);
-
+    super(name, location);
     this.version = version;
-    this.developmentLine = line;
   }
 
-  public final DevelopmentLine getDevelopmentLine() {
-    return developmentLine;
+//  public SourceModule(String name, Location location, DevelopmentLine line) {
+//    this(name, location);
+//  }
+
+//  public SourceModule(String name, Location location, Version version, DevelopmentLine line) {
+//
+//    this(name, location);
+//
+//    this.version = version;
+//    this.patchLine = line;
+//  }
+
+  /**
+   * @return <code>null</code> if a PatchLine does not exist for this module, otherwise the <code>PatchLine</code>
+   *   instance for this module.
+   */
+  public final PatchLine getPatchLine() {
+    if (patchLine) {
+      return new PatchLine(PatchLine.NAME_PREFIX + "_" + getVersionAsString());
+    }
+    return null;
+  }
+
+  public final void setPatchLine() {
+    patchLine = true;
   }
 
   /**
@@ -103,13 +117,16 @@ public class SourceModule extends BaseModule {
   }
 
   /**
-   * Checks if this module is developed on a development line, other than the
-   * {@link nl.toolforge.karma.core.vc.model.MainLine}.
+   * Checks if this module has been patched (and is thus part of a <code>ReleaseManifest</code>).
    *
-   * @return <code>true</code> when this module is developed on a development line, <code>false</code> if it isn't.
+   * @return <code>true</code> when this module has a patch-line attached to it, <code>false</code> if it isn't.
    */
-  public boolean hasDevelopmentLine() {
-    return developmentLine != null;
+  public boolean hasPatchLine() {
+    if (hasVersion()) {
+      // todo check in cvs (or rather, has to be done upon loading the manifest).
+      return patchLine;
+    }
+    return false;
   }
 
   // has to leave !!!! dit zootje gaat naar dependencyutil enzo.
@@ -125,7 +142,7 @@ public class SourceModule extends BaseModule {
 //  }
 
   /**
-   * When initialized by <code>Manifest</code>, a module is assigned its base directory, relative to the manifest. The
+   * When initialized by <code>AbstractManifest</code>, a module is assigned its base directory, relative to the manifest. The
    * base directory is used internally for base-directory-aware methods.
    *
    * @param baseDir

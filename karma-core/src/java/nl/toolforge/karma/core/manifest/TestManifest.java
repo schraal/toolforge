@@ -17,21 +17,21 @@ public class TestManifest extends BaseTest {
   public void testManifest() {
 
     try {
-      Manifest m = new Manifest("test-manifest-1");
+      DevelopmentManifest m = new DevelopmentManifest("test-manifest-1");
       m.load(getClassLoader());
 
       assertTrue("test-manifest-1".equals(m.getName()));
       assertTrue("1-0".equals(m.getVersion()));
 
       //assertNotNull(m.getDescription()); //todo something wrong in the digester rules.xml
-      assertEquals(5, m.size());
+      assertEquals(3, m.size());
 
-      m = new Manifest("test-manifest-1");
+      m = new DevelopmentManifest("test-manifest-1");
       m.load(getClassLoader());
-      assertEquals(5, m.size());
+      assertEquals(3, m.size());
 
     } catch (Exception e) {
-//      e.printStackTrace();
+      e.printStackTrace();
       fail(e.getMessage());
     }
   }
@@ -39,11 +39,11 @@ public class TestManifest extends BaseTest {
   public void testModuleCache() {
 
     try {
-      Manifest m = new Manifest("test-manifest-1");
+      DevelopmentManifest m = new DevelopmentManifest("test-manifest-1");
       m.load(getClassLoader());
 
-      assertEquals(5, m.getAllModules().size());
-      assertEquals(5, m.getAllModules().size());
+      assertEquals(3, m.getAllModules().size());
+      assertEquals(3, m.getAllModules().size());
 
     } catch (Exception e) {
       fail(e.getMessage());
@@ -52,7 +52,7 @@ public class TestManifest extends BaseTest {
 
   public void testAddAndGetModule() {
 
-    Manifest m = new Manifest("a");
+    DevelopmentManifest m = new DevelopmentManifest("a");
     try {
       m.addModule(null);
       fail("Should have failed. No null allowed.");

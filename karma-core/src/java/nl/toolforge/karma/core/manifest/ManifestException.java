@@ -6,7 +6,7 @@ import java.util.Locale;
 
 
 /**
- * Exception thrown by the Manifest Domain.
+ * Exception thrown by the AbstractManifest Domain.
  *
  * @author D.A. Smedes
  * @version $Id$

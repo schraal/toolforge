@@ -40,35 +40,16 @@ public class ModuleFactory {
 
     Location location = LocationFactory.getInstance().get(descriptor.getLocation());
 
-    DevelopmentLine developmentLine = null;
-    if (descriptor.getDevelopmentLine() != null) {
-      developmentLine = new DevelopmentLine(descriptor.getDevelopmentLine());
-    }
     Version version = null;
     if (descriptor.getVersion() != null) {
       version = new Version(descriptor.getVersion());
     }
-//    DevelopmentLine developmentLine = descriptor.getDevelopmentLine();
-//    Version version = descriptor.getVersion();
 
     //
     // Create a SourceModule instance.
     //
     if (version != null) {
 
-      if (developmentLine != null) {
-        //
-        // <module name="" location="" version="" development-line="">
-        //
-        switch (descriptor.getType()) {
-          case ModuleDescriptor.SOURCE_MODULE :
-            module = new SourceModule(descriptor.getName(), location, version, developmentLine);
-            break;
-          case ModuleDescriptor.MAVEN_MODULE :
-            module = new MavenModule(descriptor.getName(), location, version, developmentLine);
-            break;
-        }
-      } else {
         //
         // <module name="" location="" version="">
         //
@@ -80,19 +61,6 @@ public class ModuleFactory {
             module = new MavenModule(descriptor.getName(), location, version);
             break;
         }
-      }
-    } else if (developmentLine != null) {
-      //
-      // <module name="" location="" development-line="">
-      //
-      switch (descriptor.getType()) {
-        case ModuleDescriptor.SOURCE_MODULE :
-          module = new SourceModule(descriptor.getName(), location, developmentLine);
-          break;
-        case ModuleDescriptor.MAVEN_MODULE :
-          module = new MavenModule(descriptor.getName(), location, developmentLine);
-          break;
-      }
     } else {
       //
       // <module name="" location="">

@@ -10,6 +10,7 @@ import nl.toolforge.karma.core.manifest.ManifestCollector;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.manifest.ManifestFactory;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
@@ -121,8 +122,13 @@ public final class CommandContext {
    */
   public void changeCurrentManifest(String manifestName) throws LocationException, ManifestException {
 
-    Manifest newManifest = new Manifest(manifestName);
-    newManifest.load(getLocalEnvironment());
+    ManifestFactory manifestFactory = ManifestFactory.getInstance(getLocalEnvironment());
+
+    Manifest newManifest = manifestFactory.createManifest(manifestName);
+
+//
+//    Manifest newManifest = new Manifest(manifestName);
+//    newManifest.load(getLocalEnvironment());
 
     // If we are here, loading the new manifest was succesfull.
     //

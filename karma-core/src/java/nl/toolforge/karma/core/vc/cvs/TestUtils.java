@@ -19,10 +19,6 @@ public class TestUtils extends LocalCVSInitializer {
       //
       assertEquals(new CVSTag(MainLine.NAME_PREFIX + "_0-0"), Utils.createSymbolicName(module, Version.INITIAL_VERSION));
 
-      module = new SourceModule("a", getTestLocation(), new DevelopmentLine("B1"));
-
-      assertEquals(new CVSTag("B1_0-2"), Utils.createSymbolicName(module, new Version("0-2")));
-
     } catch (Exception e) {
       fail(e.getMessage());
     }

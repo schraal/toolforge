@@ -33,25 +33,11 @@ public class TestModule extends BaseTest {
       assertNull(s.getVersion());
       assertEquals("N/A", s.getVersionAsString());
 
-      s = new SourceModule("a", l, new DevelopmentLine("B"));
-      assertNotNull(s);
-      assertFalse(s.hasVersion());
-      assertTrue(s.hasDevelopmentLine());
-      assertEquals(new DevelopmentLine("B"), s.getDevelopmentLine());
-
       s = new SourceModule("a", l, new Version("0-1"));
       assertNotNull(s);
       assertTrue(s.hasVersion());
-      assertFalse(s.hasDevelopmentLine());
+      assertFalse(s.hasPatchLine());
       assertEquals(new Version("0-1"), s.getVersion());
-      assertEquals("0-1", s.getVersionAsString());
-
-       s = new SourceModule("a", l, new Version("0-1"), new DevelopmentLine("B"));
-      assertNotNull(s);
-      assertTrue(s.hasVersion());
-      assertTrue(s.hasDevelopmentLine());
-      assertEquals(new Version("0-1"), s.getVersion());
-      assertEquals(new DevelopmentLine("B"), s.getDevelopmentLine());
       assertEquals("0-1", s.getVersionAsString());
 
     } catch (LocationException e) {

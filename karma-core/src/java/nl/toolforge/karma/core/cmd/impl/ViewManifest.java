@@ -10,6 +10,7 @@ import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.PatchLine;
 import nl.toolforge.karma.core.vc.model.MainLine;
 import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
 import nl.toolforge.karma.core.Version;
@@ -77,7 +78,8 @@ public class ViewManifest extends DefaultCommand {
       } else {
         moduleData[3] = "";
       }
-      moduleData[4] = (module.getDevelopmentLine() == null ? MainLine.NAME_PREFIX : module.getDevelopmentLine().getName());
+//      moduleData[4] = (module.getDevelopmentLine() == null ? MainLine.NAME_PREFIX : module.getDevelopmentLine().getName());
+      moduleData[4] = (module.hasPatchLine() ? "!!!" : "");
       moduleData[5] = module.getStateAsString();
       moduleData[6] = module.getLocation().getId();
 

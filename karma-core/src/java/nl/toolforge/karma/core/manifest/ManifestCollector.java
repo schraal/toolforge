@@ -78,8 +78,12 @@ public class ManifestCollector {
 
     String manifestId = Preferences.userRoot().get(LocalEnvironment.LAST_USED_MANIFEST_PREFERENCE, null);
     if (manifestId != null) {
-      Manifest manifest = new Manifest(manifestId);
-      manifest.load(getLocalEnvironment());
+
+      ManifestFactory manifestFactory = ManifestFactory.getInstance(getLocalEnvironment());
+      Manifest manifest = manifestFactory.createManifest(manifestId);
+
+//      Manifest manifest = new Manifest(manifestId);
+//      manifest.load(getLocalEnvironment());
 
       return manifest;
     }

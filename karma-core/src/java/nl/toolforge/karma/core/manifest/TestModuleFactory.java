@@ -20,10 +20,8 @@ public class TestModuleFactory extends BaseTest {
 
     ModuleDescriptor d1 = new ModuleDescriptor("module-1", "src", "local-test");
     d1.setVersion("0-1");
-    d1.setDevelopmentLine("MAIN");
 
     ModuleDescriptor d2 = new ModuleDescriptor("module-1", "src", "local-test");
-    d2.setDevelopmentLine("MAIN");
 
     ModuleDescriptor d3 = new ModuleDescriptor("module-1", "src", "local-test");
     d3.setVersion("0-1");

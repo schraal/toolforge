@@ -247,7 +247,8 @@ public final class CVSRunner implements Runner {
     CheckoutCommand checkoutCommand = new CheckoutCommand();
     checkoutCommand.setModule(module.getName());
 
-    if (version != null || ((SourceModule) module).hasDevelopmentLine()) {
+//    if (version != null || ((SourceModule) module).hasDevelopmentLine()) {
+    if (version != null || ((SourceModule) module).hasPatchLine()) {
       checkoutCommand.setCheckoutByRevision(Utils.createSymbolicName(module, version).getSymbolicName());
       if (version != null) {
         arguments.put("VERSION", version.toString());
@@ -282,7 +283,7 @@ public final class CVSRunner implements Runner {
     updateCommand.setRecursive(true);
     updateCommand.setPruneDirectories(true);
 
-    if (version != null || ((SourceModule) module).hasDevelopmentLine()) {
+    if (version != null || ((SourceModule) module).hasPatchLine()) {
       updateCommand.setUpdateByRevision(Utils.createSymbolicName(module, version).getSymbolicName());
       if (version != null) {
         arguments.put("VERSION", version.toString());

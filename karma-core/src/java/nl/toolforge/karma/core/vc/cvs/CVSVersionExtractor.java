@@ -141,6 +141,45 @@ public final class CVSVersionExtractor implements VersionExtractor {
     }
   }
 
+  /**
+   * If the local checkout has the correct tag (Module.getPatchLine()), this method returns <code>true</code>.
+   * 
+   * @param manifest
+   * @param module
+   * @return
+   * @throws VersionControlException
+   */
+  public boolean isOnPatchLine(Manifest manifest, Module module) throws VersionControlException {
+
+    StandardAdminHandler handler = new StandardAdminHandler();
+
+    try {
+      Entry[] entries = handler.getEntriesAsArray(new File(manifest.getDirectory(), module.getName()));
+
+      Entry moduleInfo = null;
+      for (int i = 0; i < entries.length; i++) {
+
+        if (entries[i].getName().equals(SourceModule.MODULE_INFO)) {
+          moduleInfo = entries[i];
+        }
+      }
+      try {
+        if (moduleInfo == null || moduleInfo.getTag() == null) {
+          return false;
+        }
+        return moduleInfo.getTag().matches(((SourceModule) module).getPatchLine().getName());
+      } catch (Exception e) {
+        throw new CVSException(CVSException.LOCAL_MODULE_ERROR, new Object[]{module.getName()});
+      }
+
+    } catch (IOException e) {
+      throw new CVSException(CVSException.LOCAL_MODULE_ERROR, new Object[]{module.getName()});
+    } catch (ManifestException e) {
+      throw new CVSException(e.getErrorCode(), e.getMessageArguments());
+    }
+  }
+
+
   private static List collectVersions(Module module) throws CVSException {
 
     // todo : this method should probably check if the module is at all compliant with the standards set by Karma.
@@ -161,10 +200,10 @@ public final class CVSVersionExtractor implements VersionExtractor {
 
 
     Pattern pattern = null;
-    if (((SourceModule) module).hasDevelopmentLine()) {
+    if (((SourceModule) module).hasPatchLine()) {
       // We are working on a branch
       //
-      String branchName = ((SourceModule) module).getDevelopmentLine().getName();
+      String branchName = ((SourceModule) module).getPatchLine().getName();
 
       pattern = Pattern.compile(branchName.concat("_").concat(Version.VERSION_PATTERN_STRING));
     } else {

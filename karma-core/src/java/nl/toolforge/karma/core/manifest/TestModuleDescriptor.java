@@ -11,13 +11,8 @@ public class TestModuleDescriptor extends TestCase {
   public void testSettersAndGetters() {
 
     ModuleDescriptor m = new ModuleDescriptor("a", "src", "o");
-    m.setDevelopmentLine("s");
     m.setVersion("0-1");
-//    m.setLocation("a");
-//    m.setName("b");
-//    m.setType("o");
-
-    assertEquals("s", m.getDevelopmentLine());
+    
     assertEquals("0-1", m.getVersion());
     assertEquals("o", m.getLocation());
     assertEquals("a", m.getName());

@@ -1,10 +1,11 @@
-package nl.toolforge.karma.core.manifest;
+package nl.toolforge.karma.core.manifest.digester;
 
 import org.apache.commons.digester.AbstractObjectCreationFactory;
 import org.xml.sax.Attributes;
+import nl.toolforge.karma.core.manifest.ModuleDescriptor;
 
 /**
- * Creation factory to be able to create {@link ModuleDescriptor} instances. The reason to have this class
+ * Creation factory to be able to create {@link nl.toolforge.karma.core.manifest.ModuleDescriptor} instances. The reason to have this class
  * is that Digester at some point calls <code>hashCode()</code> on newly created <code>ModuleDescriptor</code> instances
  * and this fails with a <code>NullPointerException</code> if <code>name</code> or <code>location</locetion> are still
  * <code>null</code>; Digester somehow calls upon the setName() and setLocation() later on in the process.

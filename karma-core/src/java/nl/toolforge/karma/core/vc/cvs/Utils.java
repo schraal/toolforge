@@ -29,16 +29,16 @@ public final class Utils {
       SourceModule m = (SourceModule) module;
 
       if (version == null) {
-        if (m.hasDevelopmentLine()) {
-          return new CVSTag(m.getDevelopmentLine().getName());
+        if (m.hasPatchLine()) {
+          return new CVSTag(m.getPatchLine().getName());
         } else {
           // We are using the TRUNK.
           //
           new CVSTag("");
         }
       } else {
-        if (m.hasDevelopmentLine()) {
-          return new CVSTag(m.getDevelopmentLine().getName() + "_" + version.getVersionNumber());
+        if (m.hasPatchLine()) {
+          return new CVSTag(m.getPatchLine().getName() + "_" + version.getVersionNumber());
         } else {
           return new CVSTag(MainLine.NAME_PREFIX + "_" + version.getVersionNumber());
         }
