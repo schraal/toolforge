@@ -72,25 +72,6 @@
   <build>
 
     <sourceDirectory>src/java/</sourceDirectory>
-    <!--		<unitTestSourceDirectory>src/java</unitTestSourceDirectory> -->
-
-    <!--		<unitTest>-->
-    <!--			<includes>-->
-    <!--				<include>**/Test*.java</include>-->
-    <!--			</includes>-->
-    <!--			<excludes/>-->
-    <!--		</unitTest>-->
-    <!---->
-    <!--		<resources>-->
-    <!--			<resource>-->
-    <!--				<directory>resources</directory>-->
-    <!--				<targetPath>resources</targetPath>-->
-    <!--				<includes>-->
-    <!--					<include>**/*.xml</include>-->
-    <!--					<include>**/*.dtd</include>-->
-    <!--				</includes>-->
-    <!--			</resource>-->
-    <!--		</resources>-->
 
   </build>
 
