@@ -169,19 +169,28 @@ public class PackageModule extends AbstractBuildCommand {
       executeDelete(getBuildEnvironment().getModuleBuildDirectory(), "*.jar");
 
       Copy copy = null;
+      FileSet fileSet = null;
 
-      copy = new Copy();
-      copy.setProject(getProjectInstance());
-      copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
-      copy.setOverwrite(true);
+      //copy resources
+      commandResponse.addMessage(new StatusMessage("Copying the resources..."));
+      if (new File(getCurrentModule().getBaseDir(), "resources").exists()) {
+        copy = new Copy();
+        copy.setProject(getProjectInstance());
+        copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
+        copy.setOverwrite(true);
 
-      FileSet fileSet = new FileSet();
-      fileSet.setDir(new File(getCurrentModule().getBaseDir(), "resources"));
-      fileSet.setIncludes("**/*");
+        fileSet = new FileSet();
+        fileSet.setDir(new File(getCurrentModule().getBaseDir(), "resources"));
+        fileSet.setIncludes("**/*");
 
-      copy.addFileset(fileSet);
-      target.addTask(copy);
+        copy.addFileset(fileSet);
+        target.addTask(copy);
+      } else {
+        commandResponse.addMessage(new StatusMessage("No resources available."));
+      }
 
+      //copy META-INF
+      commandResponse.addMessage(new StatusMessage("Copying the META-INF..."));
       copy = new Copy();
       copy.setProject(getProjectInstance());
       copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
@@ -389,8 +398,8 @@ e.printStackTrace();
         e.printStackTrace();
       }
 
-      executeDelete(getBuildEnvironment().getModuleBuildDirectory(), "*.ear");
       commandResponse.addMessage(new StatusMessage("Deleting previous ear file."));
+      executeDelete(getBuildEnvironment().getModuleBuildDirectory(), "*.ear");
 
       commandResponse.addMessage(new StatusMessage("Copying META-INF dir."));
       Copy copy = new Copy();
@@ -401,6 +410,7 @@ e.printStackTrace();
       FileSet fileSet = new FileSet();
       fileSet.setDir(getCurrentModule().getBaseDir());
       fileSet.setIncludes("META-INF/**");
+      fileSet.setExcludes("META-INF/application.xml");
 
       // Filtering
       //
