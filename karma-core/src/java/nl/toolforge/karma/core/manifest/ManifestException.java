@@ -20,6 +20,8 @@ package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.ErrorCode;
 
+import java.text.MessageFormat;
+
 
 /**
  * Exception thrown by the AbstractManifest Domain.
@@ -69,10 +71,10 @@ public class ManifestException extends Exception {
    * When a modules' <code>project.xml</code> cannot be found.
    */
   public static final ErrorCode DEPENDENCY_FILE_NOT_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00013");
-	/**
-	 * When a module has not yet been checked out for this manifest
-	 */
-	public static final ErrorCode MODULE_NOT_LOCAL = new ErrorCode(EXCEPTION_PREFIX + "00014");
+  /**
+   * When a module has not yet been checked out for this manifest
+   */
+  public static final ErrorCode MODULE_NOT_LOCAL = new ErrorCode(EXCEPTION_PREFIX + "00014");
   /**
    * When the <code>dependencies.xml</code> file could not be loaded correctly.
    */
@@ -116,10 +118,16 @@ public class ManifestException extends Exception {
    * @return
    */
   public final String getErrorMessage() {
-    if (messageArguments != null && messageArguments.length > 0) {
-      errorCode.setMessageArguments(messageArguments);
+//    if (messageArguments != null && messageArguments.length > 0) {
+//      errorCode.setMessageArguments(messageArguments);
+//    }
+//    return errorCode.getErrorMessage();
+    if (getMessageArguments() != null && getMessageArguments().length != 0) {
+      MessageFormat messageFormat = new MessageFormat(getErrorCode().getErrorMessage());
+      return messageFormat.format(getMessageArguments());
+    } else {
+      return getErrorCode().getErrorMessage();
     }
-    return errorCode.getErrorMessage();
   }
 
   public String getMessage() {

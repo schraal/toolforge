@@ -34,7 +34,7 @@ import java.util.Properties;
  */
 public final class WorkingContext {
 
-  public final static String WORKING_CONTEXT = "karma.working-context";
+  public final static String WORKING_CONTEXT_PREFERENCE = "karma.working-context";
 
   private final static String DEFAULT_CONVERSION_PATTERN = "%d{HH:mm:ss} [%5p] - %m%n";
 
@@ -121,6 +121,9 @@ public final class WorkingContext {
 
   public static final String LOCAL_REPOSITORY = "jar.repository";
 
+  /** The default working context. */
+  public static final String DEFAULT = "default";
+
   private static File localRepositoryBaseDir = null;
   private static File configurationBaseDir = null;
 
@@ -135,6 +138,7 @@ public final class WorkingContext {
   private ManifestCollector manifestCollector = null;
   private ManifestLoader manifestLoader = null;
   private LocationLoader locationLoader = null;
+
 
   /**
    * <p>Constructs a working context, relative to the default locations. The default location for Karma configuration
@@ -191,13 +195,16 @@ public final class WorkingContext {
 
     this.configuration = (configuration == null ? new Properties() : configuration);
 
+    initialize();
+
+    // todo this thingie should be read from karma.properties
+    //
+
     // The repository where Karma can locate jar files (dependencies).
     //
     if (getConfiguration().getProperty(LOCAL_REPOSITORY) != null) {
       localRepositoryBaseDir = new File(getConfiguration().getProperty(LOCAL_REPOSITORY));
     }
-
-    initialize();
   }
 
   /**

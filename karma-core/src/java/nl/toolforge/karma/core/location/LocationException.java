@@ -19,7 +19,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.location;
 
 import nl.toolforge.karma.core.ErrorCode;
-import nl.toolforge.karma.core.vc.VersionControlException;
+
+import java.text.MessageFormat;
 
 /**
  * <p>Exceptions relating to <code>Location</code>s. As with all other <code>KarmaExceptions</code>, exceptions can
@@ -60,9 +61,11 @@ public final class LocationException extends Exception {
    * {@link nl.toolforge.karma.core.boot.WorkingContext#getLocationStore()}.
    */
   public static final ErrorCode NO_LOCATION_DATA_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00006");
-  /** The location was configured incorrectly. */
-  public static final ErrorCode LOCATION_CONFIGURATION_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00007");
+
+
+
   /** Missing location property */
+
   public static final ErrorCode MISSING_LOCATION_PROPERTY = new ErrorCode(EXCEPTION_PREFIX + "00010");
   /**
    * The manifest-store is configured based on properties in <code>karma.properties</code>. This error code is
@@ -103,6 +106,17 @@ public final class LocationException extends Exception {
    */
   public static final ErrorCode CONNECTION_EXCEPTION = new ErrorCode(EXCEPTION_PREFIX + "00019");
 
+
+  /** The location was configured incorrectly. */
+//  public static final ErrorCode LOCATION_CONFIGURATION_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00007");
+
+  // Location configuration error codes. Used when the locations xml are misconfigured.
+  //
+
+  public static final ErrorCode INVALID_LOCATION_TYPE = new ErrorCode(EXCEPTION_PREFIX + "00020");
+
+
+
   public LocationException(ErrorCode errorCode) {
     this(errorCode, null);
   }
@@ -127,10 +141,18 @@ public final class LocationException extends Exception {
    * Helper method to get the localized error message based on the {@link nl.toolforge.karma.core.ErrorCode}.
    */
   public final String getErrorMessage() {
-    if (messageArguments != null && messageArguments.length > 0) {
-      errorCode.setMessageArguments(messageArguments);
+//    if (messageArguments != null && messageArguments.length > 0) {
+//      errorCode.setMessageArguments(messageArguments);
+//    }
+//    return errorCode.getErrorMessage();
+
+    if (getMessageArguments() != null && getMessageArguments().length != 0) {
+      MessageFormat messageFormat = new MessageFormat(getErrorCode().getErrorMessage());
+      return messageFormat.format(getMessageArguments());
+    } else {
+      return getErrorCode().getErrorMessage();
     }
-    return errorCode.getErrorMessage();
+
   }
 
   public String getMessage() {

@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<document>
+
+<properties>
+  <title>Reference Documentation</title>
+</properties>
+
+<body>
+
+  <section name="Default Directory Layout">
+  
+  <p>
+    When a working context is created, a number of directories are created on
+    your local harddisk. The following default structure is available:
+  </p>
+
+  <p>
+    <table>
+
+    <tr>
+      <th>Directory</th>
+      <th>Explanation</th>
+    </tr>
+
+    <tr>
+      <td><code>${user.home}/.karma</code></td>
+      <td></td>
+    </tr>
+
+    <tr>
+      <td><code>${user.home}/karma/.repository</code></td>
+      <td>
+      This directory acts as the root directory for a local jar
+      repository. The contents of the repository is modelled much like <a
+      href="http://maven.apache.org">Maven</a> does. Everyone familiar with
+      Maven should know what that means. If you're not familiar with Maven :
+      jar libraries are stored as
+      <code>&lt;groupId&gt;/jars/&lt;artifactId&gt;-&lt;version&gt;.jar</code>.
+      For now, one example will do : <code>log4j-1.2.8.jar</code> is stored
+      in the repository as <code>log4j/jars/log4j-1.2.8.jar</code> and it
+      generally referred to as a dependency on `log4j-1.2.8`.
+      </td>
+    </tr>
+
+    <tr>
+      <td><code>${user.home}/.karma/&lt;working-context&gt;</code></td>
+      <td>
+      Each working context has its own configuration directory. Right now,
+      the only file that is stored here is
+      <code>workingcontext.properties</code>, which contains the configuration
+      for the manifest-store and the location-store.
+      </td>
+    </tr>
+
+    <tr>
+      <td><code>${user.home}/karma</code></td>
+      <td>
+      </td>
+    </tr>
+
+    <tr>
+      <td><code>${user.home}/karma/&lt;working-context&gt;</code></td>
+      <td>
+      </td>
+    </tr>
+
+    <tr>
+      <td><code>${user.home}/karma/.admin</code></td>
+      <td>
+      </td>
+    </tr>
+
+    <tr>
+      <td><code>${user.home}/karma/&lt;working-context&gt;</code></td>
+      <td>
+      </td>
+    </tr>
+
+    <tr>
+      <td><code>${user.home}/karma/&lt;working-context&gt;/.admin/manifest-store</code></td>
+      <td>
+      </td>
+    </tr>
+
+    <tr>
+      <td><code>${user.home}/karma/&lt;working-context&gt;/.admin/location-store</code></td>
+      <td>
+      </td>
+    </tr>
+
+    <tr>
+      <td><code>${user.home}/karma/&lt;working-context&gt;/projects</code></td>
+      <td>
+      </td>
+    </tr>
+
+    </table>
+  </p>
+
+  </section>
+
+  <section name="Manifest Directory Layout">
+
+  <p>
+    When a manifest is updated locally (i.e. through the
+    <code>update-all-modules</code> command - see the <a
+    href="../commands/index.html">commands</a> section -), a directory
+    structure is created under
+    <code>${user.home}/karma/&lt;working-context&gt;/projects</code>; the
+    manifests' subdirectory is always the manifests' name.
+  </p>
+
+  <p>
+    Example : when manifest <code>oracle-10g-dev</code> is updated in working
+    context <code>product-dev</code>, the following directory will be created:
+  </p>
+
+  <source>
+${user.home}/karma/product-dev/projects/oracle-10g-dev/
+  </source>
+
+  <p>
+    All of a manifests' modules get their own subdirectory. The modules' name
+    is the the subdirectory name.
+  </p>
+
+  </section>
+
+  <section name="Module Temporary Structure">
+
+  <p>
+    Besides a modules' inherent structure (which is contained in a version
+    control system), a module also has a temporary structure which is used by
+    Karma during its operations.
+  </p>
+
+  <p>
+    [ TO BE DONE ]
+  </p>
+
+  </section>  
+
+</body>
+
+</document>

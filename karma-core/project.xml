@@ -66,7 +66,7 @@
     <developer>
       <name>Age Mooy</name>
       <id>amooy</id>
-      <email>age.mooy@gmail.com</email>
+      <email>a.mooy@toolforge.nl</email>
       <organization>toolforge</organization>
       <roles>
         <role>Developer</role>
@@ -154,14 +154,14 @@
     <dependency>
       <groupId>toolforge</groupId>
       <artifactId>toolforge-core</artifactId>
-      <version>1.0</version>
+      <version>1.1-dev</version>
     </dependency>
-
-    <dependency>
-      <groupId>toolforge</groupId>
-      <artifactId>karma-launcher</artifactId>
-      <version>1.5</version>
-    </dependency>
+<!---->
+<!--    <dependency>-->
+<!--      <groupId>toolforge</groupId>-->
+<!--      <artifactId>karma-launcher</artifactId>-->
+<!--      <version>1.6-dev</version>-->
+<!--    </dependency>-->
 
     <dependency>
       <groupId>netbeans</groupId>

@@ -117,7 +117,8 @@ public class BaseTest extends TestCase {
       FileUtils.deleteDirectory(localRepo);
     } catch (IOException e) {
       fail(e.getMessage());
-    } catch (InterruptedException e) {
+    }
+    catch (InterruptedException e) {
       fail(e.getMessage());
     }
   }

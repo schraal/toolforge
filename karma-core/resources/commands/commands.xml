@@ -176,7 +176,9 @@
   <command name="clean-all-modules" alias="clam">
     <description lang="en">Removes all built artifacts.</description>
     <classname>nl.toolforge.karma.core.cmd.impl.CleanAll</classname>
-    <help lang="en"/>
+    <help lang="en">
+      Cleans all modules in the manifest. Cleaning means that the build artifacts for all modules will be removed.
+    </help>
   </command>
 
 

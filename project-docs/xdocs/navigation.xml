@@ -38,7 +38,9 @@
     </menu>
 
     <menu name="Reference Manual">
-      <item name="Working Context" href="/reference/working-context/index.html"/>
+      <item name="Working Context" href="/reference/working-context/index.html" collapse="false">
+        <item name="Directories" href="/reference/working-context/directories.html"/>
+      </item>
       <item name="Manifests" href="/reference/manifests/index.html"/>
 
       <item name="Modules" href="/reference/modules/index.html" collapse="false">

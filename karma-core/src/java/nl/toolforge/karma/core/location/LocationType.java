@@ -28,11 +28,10 @@ public final class LocationType {
     this.type = type;
   }
 
-  public static LocationType getTypeInstance(String type) throws LocationException{
+  public static LocationType getTypeInstance(String type) {
 
-    if (!type.matches(CVS+"|"+SUBVERSION+"|"+DIRECTORY)) {
-      System.out.println("Undefined location type specified: "+type);
-      throw new LocationException(LocationException.LOCATION_CONFIGURATION_ERROR);
+    if (!type.matches(CVS + "|" + SUBVERSION + "|" + DIRECTORY)) {
+      throw new IllegalArgumentException("Type should match `" + CVS + "|" + SUBVERSION + "|" + DIRECTORY + "`");
     }
     return new LocationType(type);
   }

@@ -27,7 +27,14 @@ public class LocationFactory {
 
   public Location createLocation(LocationDescriptor descriptor) throws LocationException {
 
-    if (LocationType.getTypeInstance(descriptor.getType()).equals(LocationType.CVS)) {
+    LocationType type = null;
+    try {
+      type = LocationType.getTypeInstance(descriptor.getType());
+    } catch (IllegalArgumentException e) {
+      throw new LocationException(LocationException.INVALID_LOCATION_TYPE, new Object[]{descriptor.getType(), descriptor.getId()});
+    }
+
+    if (type.equals(LocationType.CVS)) {
 
       CVSRepository cvsLocation = new CVSRepository(descriptor.getId());
 
@@ -39,7 +46,7 @@ public class LocationFactory {
 
       return cvsLocation;
 
-    } else if (LocationType.getTypeInstance(descriptor.getType()).equals(LocationType.SUBVERSION)) {
+    } else if (type.equals(LocationType.SUBVERSION)) {
 
       SubversionRepository cvsLocation = new SubversionRepository(descriptor.getId());
 

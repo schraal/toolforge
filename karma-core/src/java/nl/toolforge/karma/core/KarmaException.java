@@ -22,6 +22,8 @@ package nl.toolforge.karma.core;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.manifest.ManifestException;
 
+import java.text.MessageFormat;
+
 /**
  *
  *
@@ -145,10 +147,16 @@ public class KarmaException extends Exception {
    *         will return <code>Throwable.getMessage()</code>.
    */
   public String getErrorMessage() {
-    if (messageArguments != null && messageArguments.length > 0) {
-      errorCode.setMessageArguments(messageArguments);
+//    if (messageArguments != null && messageArguments.length > 0) {
+//      errorCode.setMessageArguments(messageArguments);
+//    }
+//    return errorCode.getErrorMessage();
+    if (getMessageArguments() != null && getMessageArguments().length != 0) {
+      MessageFormat messageFormat = new MessageFormat(getErrorCode().getErrorMessage());
+      return messageFormat.format(getMessageArguments());
+    } else {
+      return getErrorCode().getErrorMessage();
     }
-    return errorCode.getErrorMessage();
   }
 
   /**

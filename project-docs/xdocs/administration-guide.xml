@@ -36,13 +36,13 @@
 
   <source>
   <![CDATA[
-  <?xml version="1.0"?>
+<?xml version="1.0"?>
 
-  <manifest name="helloworld" type="development" version="1-0">
-    <modules>
-      <module name="helloworld" location="local"/>
-    </modules>
-  </manifest>
+<manifest name="helloworld" type="development" version="1-0">
+  <modules>
+    <module name="helloworld" location="local"/>
+  </modules>
+</manifest>
   ]]>
   </source>
   
@@ -73,18 +73,18 @@
   <source>
 
   <![CDATA[
-  <?xml version="1.0"?>
+<?xml version="1.0"?>
 
-  <locations>
+<locations>
 
-    <location type="cvs-repository" id="local">
-      <protocol>local</protocol>
-      <host>localhost</host>
-      <port>2401</port>
-      <repository>/home/cvs</repository>
-    </location>
+  <location type="cvs-repository" id="local">
+    <protocol>local</protocol>
+    <host>localhost</host>
+    <port>2401</port>
+    <repository>/home/cvs</repository>
+  </location>
 
-  </locations>
+</locations>
   ]]>
   </source>
 
@@ -110,8 +110,8 @@
   </p>
 
   <source>
-    /1 :pserver:asmedes@cvs.toolforge.nl:2401/cvs/karma B$#H er_9
-    /1 :pserver:asmedes@cvs.toolforge.nl:2418/cvs/cli B$^G er_9
+/1 :pserver:asmedes@cvs.toolforge.nl:2401/cvs/karma B$#H er_9
+/1 :pserver:asmedes@cvs.toolforge.nl:2418/cvs/cli B$^G er_9
   </source>
 
   <p>
@@ -131,11 +131,11 @@
 
   <source>
   <![CDATA[
-  <?xml version="1.0"?>
+<?xml version="1.0"?>
 
-  <authenticators>
-    <authenticator id="local" username="asmedes"/>
-  </authenticators>
+<authenticators>
+  <authenticator id="local" username="asmedes"/>
+</authenticators>
   ]]>
   </source>
   

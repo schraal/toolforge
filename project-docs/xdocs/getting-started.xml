@@ -104,7 +104,7 @@
     Karma can be started in the following ways:
   </p>
 
-  <source>karma console -w &lt;working-context&gt;</source>
+  <source>karma -w &lt;working-context&gt;</source>
 
   <source>karma &lt;command&gt; &lt;command-options&gt;</source>
 
@@ -120,7 +120,7 @@
     Karma can be started in the following ways:
   </p>
 
-  <source>karma.bat console -w &lt;working-context&gt;</source>
+  <source>karma.bat -w &lt;working-context&gt;</source>
 
   <source>karma.bat &lt;command&gt; &lt;command-options&gt;</source>
 

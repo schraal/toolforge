@@ -93,14 +93,6 @@ public class CommandRenderer {
   private static StringBuffer printCommand(CommandDescriptor descriptor, Option[] options, boolean showOptions, boolean showHelp) {
 
     StringBuffer buffer = new StringBuffer();
-
-    //
-    // Render all options
-    //
-
-    // Command name + alias
-    //
-//    buffer.append("\n");
     String commandNameAlias = descriptor.getName()+" ("+descriptor.getAlias()+")";
 
     buffer.

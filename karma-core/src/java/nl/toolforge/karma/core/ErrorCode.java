@@ -38,7 +38,7 @@ public final class ErrorCode {
 
   private static Locale currentLocale = null;
 
-  private Object[] messageArguments = new Object[]{};
+//  private Object[] messageArguments = new Object[]{};
 
   static {
 
@@ -70,9 +70,9 @@ public final class ErrorCode {
    *
    * @param messageArguments An Object array (currently only <code>String</code> instances are supported).
    */
-  public final void setMessageArguments(Object[] messageArguments) {
-    this.messageArguments = messageArguments;
-  }
+//  public final void setMessageArguments(Object[] messageArguments) {
+//    this.messageArguments = messageArguments;
+//  }
 
   /**
    * <p>Gets a localized error message for the <code>ErrorCode</code> instance. Error messages are defined in a
@@ -153,9 +153,9 @@ public final class ErrorCode {
     return errorCode;
   }
 
-  private Object[] getMessageArguments() {
-    return messageArguments;
-  }
+//  private Object[] getMessageArguments() {
+//    return messageArguments;
+//  }
 
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -171,5 +171,6 @@ public final class ErrorCode {
   public int hashCode() {
     return (errorCode != null ? errorCode.hashCode() : 0);
   }
+
 }
 

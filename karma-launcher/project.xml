@@ -6,10 +6,10 @@
   <groupId>toolforge</groupId>
   <id>karma-launcher</id>
   <package>nl.toolforge.karma.launcher</package>
-    <currentVersion>1.6-dev</currentVersion>
+  <currentVersion>1.6-dev</currentVersion>
 
   <inceptionYear>2002</inceptionYear>
-  
+
   <organization>
     <name>Toolforge</name>
     <url>http://sourceforge.net/projects/toolforge</url>

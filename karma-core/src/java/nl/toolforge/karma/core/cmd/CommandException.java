@@ -20,6 +20,8 @@ package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.ErrorCode;
 
+import java.text.MessageFormat;
+
 /**
  * Exceptions thrown during the execution of a command.
  *
@@ -131,7 +133,7 @@ public class CommandException extends Exception {
   public static final ErrorCode UNCOMMITTED_NEW_FILES = new ErrorCode(EXCEPTION_PREFIX + "00055");
 
   public static final ErrorCode UNCOMMITTED_CHANGED_FILES = new ErrorCode(EXCEPTION_PREFIX + "00056");
-  
+
   public static final ErrorCode UNCOMMITTED_REMOVED_FILES = new ErrorCode(EXCEPTION_PREFIX + "00057");
 
   /**
@@ -183,10 +185,17 @@ public class CommandException extends Exception {
    * @return
    */
   public final String getErrorMessage() {
-    if (messageArguments != null && messageArguments.length > 0) {
-      errorCode.setMessageArguments(messageArguments);
+//    if (messageArguments != null && messageArguments.length > 0) {
+//      errorCode.setMessageArguments(messageArguments);
+//    }
+
+    if (getMessageArguments() != null && getMessageArguments().length != 0) {
+      MessageFormat messageFormat = new MessageFormat(getErrorCode().getErrorMessage());
+      return messageFormat.format(getMessageArguments());
+    } else {
+      return getErrorCode().getErrorMessage();
     }
-    return getErrorCode().getErrorMessage();
+//    return getErrorCode().getErrorMessage();
   }
 
   public String getMessage() {
@@ -204,6 +213,5 @@ public class CommandException extends Exception {
   public final Object[] getMessageArguments() {
     return messageArguments;
   }
-
 
 }

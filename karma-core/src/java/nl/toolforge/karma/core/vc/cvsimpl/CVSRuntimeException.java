@@ -20,6 +20,8 @@ package nl.toolforge.karma.core.vc.cvsimpl;
 
 import nl.toolforge.karma.core.ErrorCode;
 
+import java.text.MessageFormat;
+
 /**
  * <p>This exception is thrown by the {@link CVSResponseAdapter} when an error message was received from CVS. The listener
  * mechanism that is used by the Netbeans API sends events to a listener. Succesfull commands to CVS are passed to a
@@ -71,10 +73,16 @@ final class CVSRuntimeException extends RuntimeException {
    * @return
    */
   public final String getErrorMessage() {
-    if (messageArguments != null && messageArguments.length > 0) {
-      errorCode.setMessageArguments(messageArguments);
+    if (getMessageArguments() != null && getMessageArguments().length != 0) {
+      MessageFormat messageFormat = new MessageFormat(getErrorCode().getErrorMessage());
+      return messageFormat.format(getMessageArguments());
+    } else {
+      return getErrorCode().getErrorMessage();
     }
-    return errorCode.getErrorMessage();
+//    if (messageArguments != null && messageArguments.length > 0) {
+//      errorCode.setMessageArguments(messageArguments);
+//    }
+//    return errorCode.getErrorMessage();
   }
 
   /**
