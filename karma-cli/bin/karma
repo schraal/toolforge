@@ -36,24 +36,17 @@ CLASSPATH="$KARMA_HOME/resources"
 for JAR in $JARS ; do
   CLASSPATH=$CLASSPATH:$JAR
 done
+
+PLUGINS=`ls $KARMA_HOME/lib/plugins/*.jar`
+for PLUGIN in $PLUGINS ; do
+  CLASSPATH=$CLASSPATH:$PLUGIN
+done
+
 CLASSPATH=$CLASSPATH:$JAVA_HOME/lib/tools.jar
-
-#
-# The first parameter is the working context identifier.
-#
-
-#
-# The seconds parameter is the working context identifier.
-#
-if [ "x$2" = "x" ]; then
-    LOGLEVEL=INFO
-fi
-
-#echo LOGLEVEL = $LOGLEVEL
 
 # Now finally we are able to run karma
 #
-$JAVACMD -Dkarma.home=$KARMA_HOME -Dloglevel=$LOGLEVEL -cp $CLASSPATH nl.toolforge.karma.cli.CLI $@
+$JAVACMD -Dkarma.home=$KARMA_HOME -Dloglevel=DEBUG -cp $CLASSPATH nl.toolforge.karma.cli.FireAway $@
 
 
 

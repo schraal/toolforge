@@ -29,22 +29,30 @@ import nl.toolforge.karma.core.manifest.Manifest;
  *
  * @author W.H. Schraal
  */
-public class CLICommandResponseHandler implements CommandResponseHandler {
+public class ConsoleCommandResponseHandler implements CommandResponseHandler {
+
+  private KarmaConsole karmaConsole = null;
+
+  public ConsoleCommandResponseHandler(KarmaConsole karmaConsole) {
+    this.karmaConsole = karmaConsole;
+  }
 
   public void commandHeartBeat() {}
 
   public void commandResponseChanged(CommandResponseEvent event) {
-    System.out.println(event.getEventMessage().getMessageText());
+    karmaConsole.writeln(event.getEventMessage().getMessageText());
   }
 
   public void commandResponseFinished(CommandResponseEvent event) {
-    System.out.println("");
+    karmaConsole.writeln("");
   }
 
   /**
-   * Unused.
+   * Sets another manifest to be the current manifest on the console.
+   *
+   * @param manifest The new (current) manifest for the console.
    */
   public void manifestChanged(Manifest manifest) {
-    //
+    karmaConsole.setManifest(manifest);
   }
 }
