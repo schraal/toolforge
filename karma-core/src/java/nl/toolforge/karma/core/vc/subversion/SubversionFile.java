@@ -1,6 +1,6 @@
-package nl.toolforge.karma.vc.subversion;
+package nl.toolforge.karma.core.vc.subversion;
 
-import nl.toolforge.karma.vc.ManagedFile;
+import nl.toolforge.karma.core.vc.ManagedFile;
 
 /**
  * Subversion implementation of a <code>ManagedFile</code>.

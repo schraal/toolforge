@@ -1,8 +1,8 @@
-package nl.toolforge.karma.vc.subversion;
+package nl.toolforge.karma.core.vc.subversion;
 
 import nl.toolforge.karma.core.Module;
-import nl.toolforge.karma.vc.ManagedFile;
-import nl.toolforge.karma.vc.VersionControlSystem;
+import nl.toolforge.karma.core.vc.ManagedFile;
+import nl.toolforge.karma.core.vc.VersionControlSystem;
 
 /**
  * <p>Subversion implementation of the version control system.

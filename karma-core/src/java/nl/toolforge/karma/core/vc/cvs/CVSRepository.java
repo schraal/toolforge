@@ -1,8 +1,8 @@
-package nl.toolforge.karma.vc.cvs;
+package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.Module;
-import nl.toolforge.karma.vc.ManagedFile;
-import nl.toolforge.karma.vc.VersionControlSystem;
+import nl.toolforge.karma.core.vc.VersionControlSystem;
+import nl.toolforge.karma.core.vc.ManagedFile;
 
 /**
  * CVSRepository repository implementation. This class relies heavily on the Netbeans

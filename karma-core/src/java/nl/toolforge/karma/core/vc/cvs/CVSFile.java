@@ -1,6 +1,6 @@
-package nl.toolforge.karma.vc.cvs;
+package nl.toolforge.karma.core.vc.cvs;
 
-import nl.toolforge.karma.vc.ManagedFile;
+import nl.toolforge.karma.core.vc.ManagedFile;
 
 /**
  * CVSRepository implementation of a <code>ManagedFile</code>. A reference to this file

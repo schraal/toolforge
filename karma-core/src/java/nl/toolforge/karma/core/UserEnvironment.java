@@ -1,5 +1,9 @@
 package nl.toolforge.karma.core;
 
+import nl.toolforge.karma.core.prefs.Preferences;
+import nl.toolforge.karma.core.prefs.UnavailableValueException;
+import nl.toolforge.karma.core.exception.ErrorCode;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,10 +44,11 @@ public final class UserEnvironment {
     /** The property that contains the configuration directory for Karma. */
     public static final String CONFIGURATION_DIRECTORY_PROPERTY = "karma.configuration.directory";
 
-    /** The property that contains the development home directory for Karma; where projects are stored on the local
+    /**
+	 * The property that contains the development home directory for Karma; where projects are stored on the local
      * harddisk.
      */
-    public static final String HOME_DIRECTORY_PROPERTY = "karma.development.home";
+    public static final String DEVELOPMENT_HOME_DIRECTORY_PROPERTY = "karma.development.home";
 
     /**
      * <p>The property that represents the directory on a user's local system where Karma administration files
@@ -77,16 +82,16 @@ public final class UserEnvironment {
         requiredProperties.add(MANIFEST_STORE_PASSWORD_PROPERTY);
     }
 
-    // Private variable that holds the user's Karma home directory, the root
+    // Private variable that holds the user's development home directory, the root
     // directory where the user has stored his/her Karma managed projects.
     //
-    private static String karmaHomeDirectory = null;
+    private static String developmentHome = System.getProperty(DEVELOPMENT_HOME_DIRECTORY_PROPERTY);
 
-    // See 'karmaHomeDirectory'; when that parameter is null, the defaultKarmaHomeDirectory
+    // See 'developmentHome'; when that parameter is null, the defaultDevelopmentHome
     // will be returned. This paramater is initialized in a static block, based on the
     // user's operation system.
     //
-    private static String defaultKarmaHomeDirectory = System.getProperty("user.home").concat(File.separator).concat("karma-projects");
+    private static String defaultDevelopmentHome = System.getProperty("user.home").concat(File.separator).concat("karma-projects");
 
     // The configuration directory where karma can locate its configuration files
     //
@@ -158,18 +163,18 @@ public final class UserEnvironment {
                 try {
                     new File(karmaConfigurationDirectory).createNewFile();
                 } catch (IOException i) {
-                    throw new KarmaRuntimeException("Creation of Karma configuration directory failed.");
+					throw new KarmaRuntimeException(KarmaRuntimeException.CONFIG_HOME_CANNOT_BE_CREATED);
                 }
             }
         }
 
-        karmaHomeDirectory = System.getProperty(HOME_DIRECTORY_PROPERTY);
+        developmentHome = System.getProperty(DEVELOPMENT_HOME_DIRECTORY_PROPERTY);
 
-        if ((karmaHomeDirectory == null) || (karmaHomeDirectory.length() == 0)) {
+        if ((developmentHome == null) || (developmentHome.length() == 0)) {
 
             // The property wasn't passed with the 'java' command during startup, so we're
-            // going to use the defaultKarmaHomeDirectory property.
-            karmaHomeDirectory = defaultKarmaHomeDirectory;
+            // going to use the defaultDevelopmentHome property.
+            developmentHome = defaultDevelopmentHome;
 
             // If the home directory does not yet exist, it will be created, but only
             // if the 'create' parameter is 'true'
@@ -177,9 +182,9 @@ public final class UserEnvironment {
             if (create == true) {
 
                 try {
-                    new File(karmaHomeDirectory).createNewFile();
+                    new File(developmentHome).createNewFile();
                 } catch (IOException i) {
-                    throw new KarmaRuntimeException("Creation of Karma home directory failed.");
+                    throw new KarmaRuntimeException(KarmaRuntimeException.DEVELOPMENT_HOME_CANNOT_BE_CREATED);
                 }
             }
         }
@@ -207,9 +212,9 @@ public final class UserEnvironment {
     public static Map getCurrentConfiguration() throws KarmaRuntimeException {
 
         try {
-            throw new KarmaRuntimeException("Not implemented yet. Lazy bastard you are Arjen.");
+            throw new KarmaRuntimeException(KarmaRuntimeException.LAZY_BASTARD);
         } catch (Exception e) {
-            throw new KarmaRuntimeException("Current configuration could not be resolved. This is serious!");
+            throw new KarmaRuntimeException(KarmaRuntimeException.MISSING_CONFIGURATION);
         }
     }
 
@@ -217,24 +222,23 @@ public final class UserEnvironment {
     }
 
     /**
-     * Retrieves the user's home directory, where all projects are stored.
+     * Retrieves the user's development home directory, where all projects are stored.
      *
      * @return The user's karma home directory.
-     * @throws NullPointerException When the
+     * @throws KarmaException When the development home directory cannot be referenced to by a <code>File</code>.
      */
-    public static File getKarmaHomeDirectory() {
+    public static File getDevelopmentHome() throws KarmaException {
 
         File home = null;
 
         try {
-            if (karmaHomeDirectory == null) {
-                home = new File(defaultKarmaHomeDirectory);
+            if (developmentHome == null) {
+                home = new File(defaultDevelopmentHome);
             }  else {
-                home = new File(karmaHomeDirectory);
+                home = new File(developmentHome);
             }
         } catch (NullPointerException n) {
-            //logger.debug("Karma home directory is null. Without this directory, nothing can work");
-            throw n;
+            throw new KarmaException(ErrorCode.CORE_NO_DEVELOPMENT_HOME);
         }
 
         return home;
@@ -247,10 +251,10 @@ public final class UserEnvironment {
      */
     public static String getKarmaHomeDirectoryAsString() {
 
-        if (karmaHomeDirectory == null) {
-            return defaultKarmaHomeDirectory;
+        if (developmentHome == null) {
+            return defaultDevelopmentHome;
         }  else {
-            return karmaHomeDirectory;
+            return developmentHome;
         }
     }
 
@@ -260,7 +264,7 @@ public final class UserEnvironment {
      * @return The user's karma configuration directory.
      * @throws NullPointerException When the
      */
-    public static File getConfigurationDirectory() {
+    public static File getConfigurationDirectory() throws KarmaException {
 
         File home = null;
 
@@ -271,8 +275,7 @@ public final class UserEnvironment {
                 home = new File(karmaConfigurationDirectory);
             }
         } catch (NullPointerException n) {
-            //logger.debug("Karma configuration directory is null. Without this directory, nothing can work");
-            throw n;
+			throw new KarmaException(ErrorCode.CORE_NO_CONFIGURATION_DIRECTORY);
         }
 
         return home;
@@ -299,4 +302,19 @@ public final class UserEnvironment {
     public static String getOperationSystem() {
         return operatingSystem;
     }
+
+	public static File getManifestStore() throws ManifestException {
+
+		File home = null;
+
+		try {
+			home = new File(Preferences.getInstance().get(MANIFEST_STORE_DIRECTORY_PROPERTY));
+		} catch (NullPointerException n) {
+			throw new ManifestException(ManifestException.NO_MANIFEST_STORE_DIRECTORY);
+		} catch (UnavailableValueException u) {
+			throw new ManifestException(ManifestException.NO_MANIFEST_STORE_DIRECTORY);
+		}
+
+		return home;
+	}
 }

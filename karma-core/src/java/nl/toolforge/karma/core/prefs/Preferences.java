@@ -64,6 +64,16 @@ public final class Preferences
         flush();
     }
 
+	/**
+	 * Retrieves a property value by <code>key</code>. If the value for <code>key</code> is not found, the
+	 * <code>defaultValue</code> will be returned.
+	 *
+	 * @param key
+	 * @param defaultValue
+	 *
+	 * @return The value for <code>key</code>, or <code>defaultValue</code> if no value was found for key
+	 *         <code>key</code>.
+	 */
     public String get(String key, String defaultValue) {
         String returnValue = defaultValue;
 

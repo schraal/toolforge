@@ -1,4 +1,4 @@
-package nl.toolforge.karma.vc;
+package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.Module;
 

@@ -1,6 +1,6 @@
 package nl.toolforge.karma.core.cmd;
 
-import nl.toolforge.karma.core.ErrorCode;
+import nl.toolforge.karma.core.exception.ErrorCode;
 import nl.toolforge.karma.core.KarmaException;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
@@ -23,7 +23,7 @@ public class CommandContext {
 	/**
 	 * <p>Checks if this <code>CommandContext</code> has been initialized. A non-initialized context cannot be used and
 	 * methods in this class will throw a <code>KarmaException</code> with error code
-	 * <code>KarmaException.COMMAND_CONTEXT_NOT_INITIALIZED</code> if a non-initialized context is encountered.
+	 * <code>KarmaException.CORE_COMMAND_CONTEXT_NOT_INITIALIZED</code> if a non-initialized context is encountered.
 	 *
 	 * @return <code>true</code> if this command context has been initialized, false if it isn't
 	 */
@@ -56,7 +56,7 @@ public class CommandContext {
 	public CommandResponse execute(String commandLine) throws KarmaException {
 
 		if (!isInitialized()) {
-			throw new KarmaException(ErrorCode.COMMAND_CONTEXT_NOT_INITIALIZED);
+			throw new KarmaException(ErrorCode.CORE_COMMAND_CONTEXT_NOT_INITIALIZED);
 		}
 
 		CommandLineParser parser = new PosixParser();
@@ -71,7 +71,7 @@ public class CommandContext {
 	public CommandResponse execute(Command command) throws KarmaException {
 
 		if (!isInitialized()) {
-			throw new KarmaException(ErrorCode.COMMAND_CONTEXT_NOT_INITIALIZED);
+			throw new KarmaException(ErrorCode.CORE_COMMAND_CONTEXT_NOT_INITIALIZED);
 		}
 
 		return new CommandResponse();

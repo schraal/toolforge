@@ -13,7 +13,7 @@ public class TestCommandLoader extends TestCase {
 
 	public void testParse1() {
 
-        CommandLoader cl = CommandLoader.getInstance();
+		CommandLoader cl = CommandLoader.getInstance();
 
 		try {
 			List l = cl.parse("commands-example.xml");

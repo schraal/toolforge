@@ -1,6 +1,6 @@
 package nl.toolforge.karma.core.cmd;
 
-import nl.toolforge.karma.core.ErrorCode;
+import nl.toolforge.karma.core.exception.ErrorCode;
 import nl.toolforge.karma.core.KarmaException;
 import org.apache.commons.cli.Options;
 

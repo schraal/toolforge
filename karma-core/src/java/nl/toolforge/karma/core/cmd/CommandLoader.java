@@ -1,19 +1,18 @@
 package nl.toolforge.karma.core.cmd;
 
-import nl.toolforge.karma.core.ErrorCode;
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.UserEnvironment;
+import nl.toolforge.karma.core.exception.ErrorCode;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionBuilder;
+import org.apache.commons.cli.Options;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.OptionBuilder;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +22,12 @@ import java.util.List;
  * is <code>commands.xml</code>, which is located in the directory described by
  * {@link nl.toolforge.karma.core.UserEnvironment#CONFIGURATION_DIRECTORY_PROPERTY}.
  *
+ * <p>TODO the xml instance should be checked by a DTD or XML Schema document.
+ *
  * @author W.M. Oosterom
  * @author D.A. Smedes
+ *
+ * @version
  */
 public final class CommandLoader {
 
@@ -136,8 +139,8 @@ public final class CommandLoader {
 						options.addOption(option);
 					}
 
-					String commandName = commandElement.getElementsByTagName("full-name").item(0).getFirstChild().getNodeValue();
-					String alias = commandElement.getElementsByTagName("alias").item(0).getFirstChild().getNodeValue();
+					String commandName = commandElement.getAttribute("name");
+					String alias = commandElement.getAttribute("alias");
 					String clazzName = commandElement.getElementsByTagName("classname").item(0).getFirstChild().getNodeValue();
 					String explanation = commandElement.getElementsByTagName("description").item(0).getFirstChild().getNodeValue();
 
@@ -145,7 +148,17 @@ public final class CommandLoader {
 
 					// TODO : dependencies should be added. Might not be required for version 2.0 (CVS support only)
 					// descriptor.setDependencies(null);
-					descriptor.setHelp(commandElement.getElementsByTagName("help").item(0).getFirstChild().getNodeValue());
+
+					// If there is a help element for the command ...
+					//
+					if (commandElement.getElementsByTagName("help").getLength() > 0) {
+
+						Element helpElement = (Element) commandElement.getElementsByTagName("help").item(0);
+
+						if (helpElement.getFirstChild() != null) {
+							descriptor.setHelp(helpElement.getFirstChild().getNodeValue());
+						}
+					}
 
 					// Assign the Options object to the command descriptor. At this point, the command
 					// can use the Options object.
@@ -155,8 +168,7 @@ public final class CommandLoader {
 				}
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
-
+			throw new KarmaException(ErrorCode.CORE_COMMAND_DESCRIPTOR_XML_ERROR, e);
 		}
 		return descriptors;
 	}

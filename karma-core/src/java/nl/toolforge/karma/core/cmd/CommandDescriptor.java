@@ -1,7 +1,7 @@
 package nl.toolforge.karma.core.cmd;
 
+import nl.toolforge.karma.core.exception.ErrorCode;
 import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.ErrorCode;
 import org.apache.commons.cli.Options;
 
 import java.util.Hashtable;
@@ -10,6 +10,8 @@ import java.util.Map;
 /**
  *
  * @author D.A. Smedes
+ *
+ * @version
  */
 public final class CommandDescriptor {
 
@@ -41,7 +43,7 @@ public final class CommandDescriptor {
 		try {
 			this.commandImpl = Class.forName(commandImpl);
 		} catch (ClassNotFoundException c) {
-			throw new KarmaException(ErrorCode.CORE_COMMAND_IMPLEMENTATION_CLASS_NOT_FOUND);
+			throw new KarmaException(ErrorCode.CORE_COMMAND_IMPLEMENTATION_CLASS_NOT_FOUND, c);
 		}
 	}
 

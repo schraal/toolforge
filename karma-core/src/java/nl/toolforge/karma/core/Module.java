@@ -18,6 +18,12 @@ public interface Module {
     public static final State DYNAMIC = new State("DYNAMIC");
 	public static final State STATIC = new State("STATIC");
 
+	/** The <code>name</code>-attribute for a module. */
+	public static final String NAME_ATTRIBUTE = "name";
+
+	/** The <code>location</code>-attribute for a module. */
+	public static final String LOCATION_ATTRIBUTE = "location";
+
     /**
      * Retrieves a modules' name, the <code>artifact-id</code> attribute of the a module.
      *

@@ -15,6 +15,12 @@ import nl.toolforge.karma.core.expr.VersionExpression;
  */
 public class SourceModule implements Module {
 
+	/** The <code>version</code>-attribute for a module. */
+	public static final String VERSION_ATTRIBUTE = "version";
+
+	/** The <code>branch</code>-attribute for a module. */
+	public static final String BRANCH_ATTRIBUTE = "branch";
+
     private static State state = null;
 
     private String name = null;

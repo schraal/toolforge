@@ -1,6 +1,6 @@
 package nl.toolforge.karma.core;
 
-import nl.toolforge.karma.vc.VersionControlSystem;
+import nl.toolforge.karma.core.vc.VersionControlSystem;
 
 import java.io.File;
 
@@ -16,6 +16,9 @@ import java.io.File;
  * @author D.A. Smedes
  */
 public interface Manifest {
+
+	public static final String NAME_ATTRIBUTE = "name";
+	public static final String VERSION_ATTRIBUTE = "version"; // Currently functionally unused
 
     public String getName();
 
@@ -33,7 +36,7 @@ public interface Manifest {
      * create the module in the version control system. If the module already exists in the
      * version control system, a <code>KarmaException</code> will be thrown. When the module
      * should be added to the manifest anyway, the
-     * {@link #createModule(nl.toolforge.karma.vc.VersionControlSystem, java.lang.String, boolean)} should be used.
+     * {@link #createModule(nl.toolforge.karma.core.vc.VersionControlSystem, java.lang.String, boolean)} should be used.
      *
      * <p>This method is not intended to load modules from a manifest file into the Manifest
      * instance. See {@link nl.toolforge.karma.core.ManifestLoader}.
@@ -68,4 +71,10 @@ public interface Manifest {
      * @return A <code>File</code> reference, such as <code>/home/asmedes/dev/manifests/karma-1.0.xml</code>
      */
     public File getPath();
+
+	public int countSourceModules();
+
+	public int countAllModules();
+
+	public int countJarModules();
 }

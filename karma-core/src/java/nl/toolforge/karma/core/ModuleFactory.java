@@ -1,6 +1,6 @@
 package nl.toolforge.karma.core;
 
-import nl.toolforge.karma.vc.VersionControlSystem;
+import nl.toolforge.karma.core.vc.VersionControlSystem;
 
 /**
  * Factory class to create modules. Note that we're talking about <b>new</b> modules, <b>not</b> existing modules in a

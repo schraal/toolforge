@@ -20,7 +20,7 @@ public class TestUserEnvironment extends TestCase {
 
         // Fake 'java -Dkarma.home.directory=/home/asmedes/dev/projects
         //
-        System.setProperty("karma.home.directory", "/home/asmedes/dev/projects/");
+        System.setProperty("karma.development.home", "/home/asmedes/dev/projects/");
 
         UserEnvironment u = UserEnvironment.getInstance(false);
         assertEquals(u.getKarmaHomeDirectoryAsString(),
@@ -35,7 +35,7 @@ public class TestUserEnvironment extends TestCase {
         UserEnvironment u = UserEnvironment.getInstance(false);
 
         try {
-            //assertTrue(u.getKarmaHomeDirectory().equals());
+            //assertTrue(u.getDevelopmentHome().equals());
         } catch (NullPointerException n) {
             fail();
         }

@@ -1,4 +1,4 @@
-package nl.toolforge.karma.vc;
+package nl.toolforge.karma.core.vc;
 
 /**
  * Instances of this type represent files that are being managed by a version control system. A checkout of a module
