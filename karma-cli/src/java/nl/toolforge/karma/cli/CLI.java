@@ -1,27 +1,23 @@
 package nl.toolforge.karma.cli;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ResourceBundle;
-import java.text.MessageFormat;
-
+import nl.toolforge.karma.cli.cmd.CLICommandResponseHandler;
+import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.bundle.BundleCache;
+import nl.toolforge.karma.core.cmd.CommandContext;
+import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.cmd.CommandFactory;
+import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.karma.core.manifest.Manifest;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import nl.toolforge.karma.cli.cmd.CLICommandResponseHandler;
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.LocalEnvironment;
-import nl.toolforge.karma.core.ErrorCode;
-import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.manifest.Manifest;
-import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.bundle.BundleCache;
-import nl.toolforge.karma.core.cmd.CommandContext;
-import nl.toolforge.karma.core.cmd.CommandFactory;
-import nl.toolforge.karma.core.cmd.CommandException;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
 
 /**
  * <p>The <code>CLI</code> is the command-line interface for Karma. The class presents a simple-to-use command-line
@@ -63,7 +59,7 @@ public class CLI {
         logger.warn(e.getMessage(), e);
       }
 
-      Manifest currentManifest = ctx.getCurrent();
+      Manifest currentManifest = ctx.getCurrentManifest();
       if (currentManifest != null) {
         ConsoleConfiguration.setManifest(currentManifest);
 

@@ -39,11 +39,11 @@ public class SelectManifestImpl extends SelectManifest {
     //
     super.execute(); // Ignore the response from the superclass
 
-		ConsoleConfiguration.setManifest(getContext().getCurrent());
+		ConsoleConfiguration.setManifest(getContext().getCurrentManifest());
 
 		// Store this manifest as the last used manifest.
 		//
-		Preferences.userRoot().put(LocalEnvironment.LAST_USED_MANIFEST_PREFERENCE, getContext().getCurrent().getName());
+		Preferences.userRoot().put(LocalEnvironment.LAST_USED_MANIFEST_PREFERENCE, getContext().getCurrentManifest().getName());
 		try {
 			Preferences.userRoot().flush();
 		} catch (BackingStoreException e) {
