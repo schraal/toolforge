@@ -1,8 +1,7 @@
 package nl.toolforge.karma.core;
 
-import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -231,6 +230,7 @@ public final class LocalEnvironment {
       return location;
 
     } catch (Exception e) {
+		logger.debug(e);
       throw new LocationException(LocationException.INVALID_MANIFEST_STORE_LOCATION);
     }
   }
