@@ -95,11 +95,6 @@ public class ParallelRunner {
    */
   public void execute(int blockSize, long delayInMilliseconds) {
 
-
-    // todo abstract should work for all subtypes...
-
-    // todo implement blockSize mechanism
-
     Map modules = manifest.getAllModules();
 
     // Initialize status overview map
@@ -112,7 +107,7 @@ public class ParallelRunner {
 
     int index = 0;
 
-    logger.info("Starting " + modules.size() + " threads, with a delay of " + delayInMilliseconds + " ms.");
+    logger.debug("Starting " + modules.size() + " threads, with a delay of " + delayInMilliseconds + " ms.");
 
     // Start each task in parallel ...
     //
@@ -122,6 +117,7 @@ public class ParallelRunner {
         Constructor constructor = impl.getConstructor(new Class[]{Module.class});
         threads[index] = (RunnerThread) constructor.newInstance(new Object[]{(Module) i.next()});
       } catch (Exception e) {
+        logger.error(e);
         throw new KarmaRuntimeException("Could not start a RunnerThread instance.");
       }
 

@@ -310,7 +310,7 @@ public final class CVSRunner implements Runner {
     }
 
     // The checkout directory for a module has to be relative to
-    
+
     executeOnCVS(checkoutCommand, module.getBaseDir().getParentFile(), arguments);
 
     updateModuleHistoryXml(module);
@@ -575,22 +575,22 @@ public final class CVSRunner implements Runner {
   public LogInformation log(Manifest manifest) throws CVSException {
 
 
-    RlogCommand logCommand = new RlogCommand();
+  RlogCommand logCommand = new RlogCommand();
 
-    String[] modules = new String[manifest.getAllModules().size()];
-    int j = 0;
-    for (Iterator i = manifest.getAllModules().values().iterator(); i.hasNext();) {
-      modules[j] = getModuleOffset((Module) i.next()) + "/" + Module.MODULE_DESCRIPTOR;
-      j++;
-    }
+  String[] modules = new String[manifest.getAllModules().size()];
+  int j = 0;
+  for (Iterator i = manifest.getAllModules().values().iterator(); i.hasNext();) {
+  modules[j] = getModuleOffset((Module) i.next()) + "/" + Module.MODULE_DESCRIPTOR;
+  j++;
+  }
 
-    logCommand.setModules(modules);
+  logCommand.setModules(modules);
 
-    executeOnCVS(logCommand, new File("."), null);
+  executeOnCVS(logCommand, new File("."), null);
 
-    // Another hook into ext support.
-    //
-    return ((CVSResponseAdapter) this.listener).getLogInformation();
+  // Another hook into ext support.
+  //
+  return ((CVSResponseAdapter) this.listener).getLogInformation();
   }
 
   */
@@ -646,7 +646,7 @@ public final class CVSRunner implements Runner {
     try {
       RlogCommand logCommand = new RlogCommand();
       logCommand.setModule(getModuleOffset(module));
-      
+
       executeOnCVS(logCommand, MyFileUtils.getSystemTempDirectory(), null);
     } catch (CVSException e) {
       return false;
@@ -675,7 +675,7 @@ public final class CVSRunner implements Runner {
   }
 
   /**
-   * Runs a CVS command on the repository (through the Netbeans API). contextDirectory is assigned to client.setLocalPath()
+   * Runs a CVS command on the repository (through the Netbeans API). When a co
    *
    * @param command          A command object, representing the CVS command.
    * @param contextDirectory The directory from where the command should be run.
@@ -699,44 +699,71 @@ public final class CVSRunner implements Runner {
         throw new NullPointerException("Context directory cannot be null.");
       }
 
-      Client client = new Client(getConnection(), new StandardAdminHandler());
-      client.setLocalPath(contextDirectory.getPath());
+      CVSException exception = null;
 
-      logger.debug("Running CVS command : '" + command.getCVSCommand() + "' in " + client.getLocalPath());
+      int retries = 0;
 
-      try {
-        // A CVSResponseAdapter is registered as a listener for the response from CVS. This one adapts to Karma
-        // specific stuff.
-        //
+      while (retries < 3) {
 
-        long start = System.currentTimeMillis();
+        Client client = new Client(getConnection(), new StandardAdminHandler());
+        client.setLocalPath(contextDirectory.getPath());
 
-        ((CVSResponseAdapter) listener).setArguments(args);
-        client.getEventManager().addCVSListener(listener);
-        client.executeCommand(command, globalOptions);
-
-        logger.debug("CVS command finished in " + (System.currentTimeMillis() - start) + " ms.");
-
-      } catch (CommandException e) {
-        logger.error(e.getMessage(), e);
-        if (e.getUnderlyingException() instanceof CVSRuntimeException) {
-          ErrorCode code = ((CVSRuntimeException) e.getUnderlyingException()).getErrorCode();
-          Object[] messageArgs = ((CVSRuntimeException) e.getUnderlyingException()).getMessageArguments();
-          throw new CVSException(code, messageArgs);
-        } else {
-          throw new CVSException(CVSException.INTERNAL_ERROR, new Object[]{globalOptions.getCVSRoot()});
+        if (retries == 0) {
+          logger.debug("Running CVS command : '" + command.getCVSCommand() + "' in " + client.getLocalPath());
         }
-      } catch (AuthenticationException e) {
-        logger.error(e.getMessage(), e);
-        throw new CVSException(CVSException.AUTHENTICATION_ERROR, new Object[]{client.getGlobalOptions().getCVSRoot()});
-      } finally {
-        // See the static block in this class and corresponding documentation.
-        //
+
         try {
-          client.getConnection().close();
-        } catch (IOException e) {
-          throw new CVSException(CVSException.INTERNAL_ERROR, new Object[]{globalOptions.getCVSRoot()});
+          // A CVSResponseAdapter is registered as a listener for the response from CVS. This one adapts to Karma
+          // specific stuff.
+          //
+
+          long start = System.currentTimeMillis();
+
+          ((CVSResponseAdapter) listener).setArguments(args);
+          client.getEventManager().addCVSListener(listener);
+          client.executeCommand(command, globalOptions);
+
+          logger.debug("CVS command finished in " + (System.currentTimeMillis() - start) + " ms.");
+
+          // Apparently, were done succesfully.
+          //
+          break;
+
+        } catch (CommandException e) {
+          logger.error(e.getMessage(), e);
+          if (e.getUnderlyingException() instanceof CVSRuntimeException) {
+            ErrorCode code = ((CVSRuntimeException) e.getUnderlyingException()).getErrorCode();
+            Object[] messageArgs = ((CVSRuntimeException) e.getUnderlyingException()).getMessageArguments();
+            throw new CVSException(code, messageArgs);
+          } else {
+            throw new CVSException(CVSException.INTERNAL_ERROR, new Object[]{globalOptions.getCVSRoot()});
+          }
+        } catch (AuthenticationException e) {
+          // Over here, we have implemented a retry-mechanism.
+          //
+          if (retries == 3) {
+            if (e.getUnderlyingThrowable() instanceof IOException) {
+              logger.error("Cannot retry any longer.", e);
+            }
+            exception = new CVSException(CVSException.INTERNAL_ERROR, new Object[]{client.getGlobalOptions().getCVSRoot()});
+          } else {
+            logger.info("Retrying CVS command : '" + command.getCVSCommand() + "' in " + client.getLocalPath());
+//            logger.error(e.getMessage(), e);
+          }
+          retries ++;
+        } finally {
+          // See the static block in this class and corresponding documentation.
+          //
+          try {
+            client.getConnection().close();
+          } catch (IOException e) {
+            throw new CVSException(CVSException.INTERNAL_ERROR, new Object[]{globalOptions.getCVSRoot()});
+          }
         }
+      }
+
+      if (exception != null) {
+        throw exception;
       }
     }
   }
@@ -800,3 +827,4 @@ public final class CVSRunner implements Runner {
   }
 
 }
+

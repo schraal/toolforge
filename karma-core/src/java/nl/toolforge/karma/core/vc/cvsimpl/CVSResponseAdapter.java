@@ -184,6 +184,10 @@ public final class CVSResponseAdapter implements CVSListener {
     //
     String message = event.getMessage();
 
+//    if (message.length() > 0) {
+//      System.out.println(message);
+//    }
+
     if (message.startsWith("Checking in")) {
 
       // TODO Localize message
@@ -194,15 +198,6 @@ public final class CVSResponseAdapter implements CVSListener {
         logger.debug("'SuccessMessage' not routed to CommandResponseHandler : " + event.getMessage());
       }
 
-    } else if (message.startsWith("cvs server: Updating")) {
-
-      // TODO Could be used to call some sort of heartbeat mechanism.
-      //
-//      if (response != null) {
-//        response.addMessage(new SuccessMessage("Module has been updated."));
-//      } else {
-//        logger.debug("'SuccessMessage' not routed to CommandResponseHandler : " + event.getMessage());
-//      }
     } else if (message.startsWith("cvs server: cannot find module")) {
 
       throw new CVSRuntimeException(VersionControlException.MODULE_NOT_IN_REPOSITORY, getArguments("MODULE, REPOSITORY"));
@@ -226,7 +221,7 @@ public final class CVSResponseAdapter implements CVSListener {
 
       throw new CVSRuntimeException(CVSException.SECURITY_VIOLATION);
 
-    } 
+    }
   }
 
 }

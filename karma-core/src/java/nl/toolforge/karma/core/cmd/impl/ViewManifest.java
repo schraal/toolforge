@@ -48,7 +48,7 @@ import java.util.Map;
  */
 public class ViewManifest extends DefaultCommand {
 
-  Log logger = LogFactory.getLog(ViewManifest.class);
+  protected Log logger = LogFactory.getLog(ViewManifest.class);
 
   private List renderedList = null;
   private CommandResponse commandResponse = new CommandResponse();
@@ -82,7 +82,7 @@ public class ViewManifest extends DefaultCommand {
     Collections.sort(sourceModules, new ModuleComparator());
 
     ParallelRunner runner = new ParallelRunner(manifest, CVSLogThread.class);
-    runner.execute(500); // Blocks ...
+    runner.execute(0); // Blocks ...
 
     Map statusOverview = runner.retrieveResults();
 
@@ -148,11 +148,13 @@ public class ViewManifest extends DefaultCommand {
       } else {
         moduleData[6] = "";
         if (moduleStatus.connectionFailure()) {
-          moduleData[7] = "<Connection failed>";
+          moduleData[7] = module.getLocation().getId() + " : <Connection failed>";
         } else if (moduleStatus.authenticationFailure()) {
-          moduleData[7] = "<Authentication failed>";
+          moduleData[7] = module.getLocation().getId() + "<Authentication failed>";
+        } else if (moduleStatus.internalError()) {
+          moduleData[7] = module.getLocation().getId() + "<Internal Error>";
         } else {
-          moduleData[7] = "<Not in repository>";
+          moduleData[7] = module.getLocation().getId() + "<Not in repository>";
         }
       }
       renderedList.add(moduleData);

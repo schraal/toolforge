@@ -47,7 +47,7 @@ import nl.toolforge.karma.core.vc.threads.RunnerResult;
 public interface ModuleStatus extends RunnerResult {
 
   public Version getNextVersion();
-  
+
   public Version getNextMajorVersion();
 
   public Version getLastVersion();
@@ -64,4 +64,5 @@ public interface ModuleStatus extends RunnerResult {
 
   public boolean authenticationFailure();
 
+  public boolean internalError();
 }

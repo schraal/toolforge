@@ -89,13 +89,18 @@ public class CVSRepository extends VersionControlSystem {
       throw new LocationException(c.getErrorCode());
     }
 
-    try {
-      connection.open();
-    } catch (CommandAbortedException e) {
-      throw new LocationException(CVSException.INTERNAL_ERROR);
-    } catch (org.netbeans.lib.cvsclient.connection.AuthenticationException e) {
+    if (isAvailable()) {
+      try {
+        connection.open();
+      } catch (CommandAbortedException e) {
+        throw new LocationException(CVSException.INTERNAL_ERROR);
+      } catch (org.netbeans.lib.cvsclient.connection.AuthenticationException e) {
+        throw new LocationException(CVSException.AUTHENTICATION_ERROR, new Object[]{getId()});
+      }
+    } else {
       throw new LocationException(CVSException.AUTHENTICATION_ERROR, new Object[]{getId()});
     }
+
   }
 
   public void setPassword(String password) {

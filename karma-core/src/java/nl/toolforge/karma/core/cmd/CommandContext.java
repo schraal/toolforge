@@ -144,6 +144,7 @@ public final class CommandContext implements ChangeListener {
         modificationMap.put(manifest, lastMod);
       }
     } catch (Exception e) {
+      logger.error(e);
       modificationMap.clear();
     }
   }
@@ -207,7 +208,7 @@ public final class CommandContext implements ChangeListener {
       managed = false;
       manager.suspendListener(this);
 
-      logger.error(new ErrorEvent(m.getErrorCode()));
+      logger.error(m);
 
       // todo in karma-core-1.1 this should be improved. Right now, the probability of this process failing is remote.
       //
@@ -217,7 +218,7 @@ public final class CommandContext implements ChangeListener {
       managed = false;
       manager.suspendListener(this);
 
-      logger.error("Error while processing manifests during automatic reload; " + e.getMessage());
+      logger.error("Error while processing manifests during automatic reload; " + e.getMessage(), e);
     }
   }
 
@@ -276,6 +277,7 @@ public final class CommandContext implements ChangeListener {
       try {
         manager.register(this);
       } catch (ListenerManagerException e) {
+        logger.error(e);
         throw new KarmaRuntimeException(e.getMessage());
       }
 

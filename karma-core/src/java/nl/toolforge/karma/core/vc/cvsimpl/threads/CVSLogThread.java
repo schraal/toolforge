@@ -68,7 +68,7 @@ public class CVSLogThread extends RunnerThread {
       moduleStatus.setExistsInRepository(true);
 
     } catch (VersionControlException e) {
-      logger.error(e.getMessage());
+      logger.error(e.getMessage(), e);
       ErrorCode code = e.getErrorCode();
       if (code.equals(LocationException.CONNECTION_EXCEPTION) ||
           code.equals(CVSException.INVALID_CVSROOT)) {
@@ -80,10 +80,13 @@ public class CVSLogThread extends RunnerThread {
       if (code.equals(CVSException.AUTHENTICATION_ERROR)) {
         ((CVSModuleStatus) moduleStatus).setAuthenticationFailure();
       }
+      if (code.equals(CVSException.INTERNAL_ERROR)) {
+        ((CVSModuleStatus) moduleStatus).setInternalError();
+      }
     } catch (AuthenticationException e) {
       // todo duplicate with the above. mechanism to be refactored.
       //
-      logger.error(e.getMessage());
+      logger.error(e.getMessage(), e);
       ((CVSModuleStatus) moduleStatus).setAuthenticationFailure();
     }
 
