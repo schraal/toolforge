@@ -20,6 +20,8 @@ package nl.toolforge.karma.console;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Hashtable;
 
 import org.apache.commons.cli.Option;
 import org.apache.commons.lang.StringUtils;
@@ -30,12 +32,14 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandFactory;
 import nl.toolforge.karma.core.cmd.CommandLoadException;
 
-public class CommandRenderer {
+public final class CommandRenderer {
 
   public static final int COMMAND_FILL = 40;
   public static final int OPTION_FILL = 50;
 
   public static String commands = null;
+
+  private static Map helpCache = null;
 
   private CommandRenderer() {}
 
@@ -47,6 +51,14 @@ public class CommandRenderer {
    */
   public static String renderCommand(String commandName) throws CommandLoadException, CommandException {
 
+    if (helpCache == null) {
+      helpCache = new Hashtable();
+    } else {
+      if (helpCache.containsKey(commandName)) {
+        return (String) helpCache.get(commandName);
+      }
+    }
+
     CommandDescriptor descriptor = CommandFactory.getInstance().getCommandDescriptor(commandName);
 
     if (descriptor == null) {
@@ -56,7 +68,10 @@ public class CommandRenderer {
     Collection optionsCollection = descriptor.getOptions().getOptions();
     Option[] options = (Option[]) optionsCollection.toArray(new Option[optionsCollection.size()]);
 
-    return new StringBuffer().append(printCommand(descriptor, options, true, true)).toString();
+    String cachedItem = printCommand(descriptor, options, true, true).toString();
+    helpCache.put(commandName, cachedItem);
+
+    return cachedItem;
   }
 
   /**
