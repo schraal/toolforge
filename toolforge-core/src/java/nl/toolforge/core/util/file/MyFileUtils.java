@@ -67,7 +67,7 @@ public final class MyFileUtils {
     String osName = System.getProperty("os.name");
     Process proc = null;
     if (osName.toUpperCase().startsWith("WINDOWS")) {
-      proc = Runtime.getRuntime().exec("cmd.exe /c attrib -r *.*");
+      proc = Runtime.getRuntime().exec("cmd.exe /c attrib -R " + dir + File.separator + "*.* /S /D");
     } else if (osName.toUpperCase().startsWith("LINUX")) {
       proc = Runtime.getRuntime().exec("chmod -Rf u+w " + dir + File.separator);
     } else {
