@@ -117,11 +117,14 @@ public class TestModule extends AbstractBuildCommand {
     //
     Project project = getAntProject("test-module.xml");
 
+    logger.debug("Setting 'module-source-dir' to: "+getBuildEnvironment().getModuleTestSourceDirectory().getPath());
+    logger.debug("Setting 'module-test-dir' to: "+getBuildEnvironment().getModuleTestBuildDirectory().getPath());
     project.setProperty("module-source-dir", getBuildEnvironment().getModuleTestSourceDirectory().getPath());
     project.setProperty("module-test-dir", getBuildEnvironment().getModuleTestBuildDirectory().getPath());
 
     try {
 
+      logger.debug("Setting 'module-compile-dir' to: "+getCompileDirectory().getPath());
       project.setProperty("module-compile-dir", getCompileDirectory().getPath());
 
       // todo should be replaced by call to DependencyHelper.getTestClassPath()
@@ -140,6 +143,7 @@ public class TestModule extends AbstractBuildCommand {
 
       deps += f.getPath();
 
+      logger.debug("Setting 'module-classpath' to: "+deps);
       project.setProperty("module-classpath", deps);
 
     } catch (DependencyException d) {
