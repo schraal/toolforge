@@ -1,26 +1,29 @@
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.build.BuildUtil;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
-import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.SourceModule;
-import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
+import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.manifest.Manifest;
-import nl.toolforge.karma.core.build.BuildUtil;
-import org.apache.tools.ant.taskdefs.War;
+import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.SourceModule;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+
+import java.io.File;
 
 /**
  * @author D.A. Smedes
  * @version $Id$
  */
-public class PackageModule extends DefaultCommand {
+public class PackageModule extends AbstractBuildCommand {
 
-  private static final String WAR___DESTINATION_FILE_PROPERTY = "war-destination-dir";
+  private static final String MODULE_PACKAGE_NAME_PROPERTY = "module-package-name";
+  private static  final String MODULE_WEBXML_PROPERTY = "module-webxml";
 
   private CommandResponse commandResponse = new ActionCommandResponse();
 
@@ -30,47 +33,34 @@ public class PackageModule extends DefaultCommand {
 
   public void execute() throws CommandException {
 
-    // todo move to aspect; this type of checking can be done by one aspect.
-    //
-    if (!getContext().isManifestLoaded()) {
-      throw new CommandException(ManifestException.NO_ACTIVE_MANIFEST);
-    }
+    super.execute();
 
-    String moduleName = getCommandLine().getOptionValue("m");
+    Project project = getAntProject();
 
-    Module module = null;
-    Manifest currentManifest = null;
     try {
-      // todo move this bit to aspect-code.
-      //
-      currentManifest = getContext().getCurrentManifest();
-      module = (SourceModule) currentManifest.getModule(moduleName);
+
+      project.setProperty(MODULE_BUILD_DIR_PROPERTY, getBuildDirectory().getPath());
+      project.setProperty(MODULE_PACKAGE_NAME_PROPERTY, new File(getBuildDirectory(), getCurrentManifest().resolveJarName(getCurrentModule())).getPath());
+
+      if (getCurrentModule().getName().startsWith(Module.WEBAPP_PREFIX)) {
+        // Create a war-file
+        //
+        project.setProperty(MODULE_WEBXML_PROPERTY, new File(getCurrentModule().getBaseDir(), "WEB-INF/web.xml".replace('/', File.separatorChar)).getPath());
+        project.setProperty(MODULE_BASEDIR_PROPERTY, getCurrentModule().getBaseDir().getPath());
+        project.executeTarget(BUILD_TARGET_WAR);
+      } else {
+        // Create a jar-file
+        //
+        project.executeTarget(BUILD_TARGET_JAR);
+      }
+      CommandMessage message = new SimpleCommandMessage("Module " + getCurrentModule().getName() + " packaged succesfully."); // todo localize message
+      commandResponse.addMessage(message);
 
     } catch (ManifestException m) {
       throw new CommandException(m.getErrorCode(), m.getMessageArguments());
-    }
-
-    // Packaging a module consists of the following tasks:
-    //
-    // If it is a webapp-module:
-    // - create a <war>-task to create a web application archive
-    // - specify the following data-items:
-
-    String destFile = "";
-
-    // If the manifest contains a package
-
-
-    BuildUtil util = new BuildUtil(currentManifest);
-    Project project = util.getAntProject(module);
-
-    project.setProperty(WAR___DESTINATION_FILE_PROPERTY, "/tmp/bla.war");
-
-    try {
-      project.executeTarget("war");
-    } catch (BuildException e) {
+    }catch (BuildException e) {
       e.printStackTrace();
-      throw new CommandException(CommandException.BUILD_FAILED, new Object[] {moduleName});
+      throw new CommandException(CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
     }
   }
 

@@ -14,21 +14,21 @@ import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ModuleDescriptor;
 import nl.toolforge.karma.core.manifest.ModuleFactory;
 import nl.toolforge.karma.core.manifest.util.SourceModuleLayoutTemplate;
+import nl.toolforge.karma.core.manifest.util.WebappModuleLayoutTemplate;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import org.apache.commons.cli.CommandLine;
 
 /**
- * Creates a module in a repository. The command provides the option to create the module in the current manifest as
- * well.
+ * Creates a module in a repository. Modules are created using a layout template (instances of 
+ * <code>ModuleLayoutTemplate</code>). 
  *
  * @author D.A. Smedes
- * @version $Id:
- * @since 2.0
+ * @version $Id$
  */
 public class CreateModuleCommand extends DefaultCommand {
-  
+
   private CommandResponse commandResponse = new ActionCommandResponse();
 
   public CreateModuleCommand(CommandDescriptor descriptor) {
@@ -61,7 +61,12 @@ public class CreateModuleCommand extends DefaultCommand {
       //
       Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getLocalEnvironment().getDevelopmentHome());
       runner.setCommandResponse(getCommandResponse());
-      runner.create(module, comment, new SourceModuleLayoutTemplate());
+
+      if (moduleName.startsWith(Module.WEBAPP_PREFIX)) {
+        runner.create(module, new WebappModuleLayoutTemplate());
+      } else {
+        runner.create(module, new SourceModuleLayoutTemplate());
+      }
 
       // If we get to this point, creation of the module was succesfull.
       //

@@ -198,7 +198,6 @@ public final class CVSVersionExtractor implements VersionExtractor {
     LogInformation logInformation = runner.log(module);
     Collection currentVersions = logInformation.getAllSymbolicNames();
 
-
     Pattern pattern = null;
     if (((SourceModule) module).hasPatchLine()) {
       // We are working on a branch

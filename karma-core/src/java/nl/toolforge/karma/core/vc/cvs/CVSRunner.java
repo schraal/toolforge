@@ -252,6 +252,7 @@ public final class CVSRunner implements Runner {
 
     Map arguments = new Hashtable();
     arguments.put("MODULE", module.getName());
+    arguments.put("REPOSITORY", module.getLocation().getId());
 
     CheckoutCommand checkoutCommand = new CheckoutCommand();
     checkoutCommand.setModule(module.getName());
@@ -287,6 +288,7 @@ public final class CVSRunner implements Runner {
 
     Map arguments = new Hashtable();
     arguments.put("MODULE", module.getName());
+    arguments.put("REPOSITORY", module.getLocation().getId());
 
     UpdateCommand updateCommand = new UpdateCommand();
     updateCommand.setRecursive(true);
@@ -325,7 +327,6 @@ public final class CVSRunner implements Runner {
 
     Map arguments = new Hashtable();
     arguments.put("MODULE", module.getName());
-//    arguments.put("FILE", fileName);
 
     // Step 1 : Add the file to the CVS repository
     //
@@ -343,10 +344,7 @@ public final class CVSRunner implements Runner {
 
       if (!fileToAdd.exists()) {
         try {
-
-//          if (files[i].indexOf(File.separator)) {
           File dir = new File(modulePath, files[i]).getParentFile();
-//          }
 
           if (dir.mkdirs()) {
             cvsFilesCollection.add(dir);
@@ -498,6 +496,7 @@ public final class CVSRunner implements Runner {
 
     Map arguments = new Hashtable();
     arguments.put("MODULE", module.getName());
+    arguments.put("REPOSITORY", module.getLocation().getId());
 
     CheckoutCommand checkoutCommand = new CheckoutCommand();
     checkoutCommand.setModule(module.getName() + "/" + SourceModule.MODULE_INFO);
@@ -533,6 +532,10 @@ public final class CVSRunner implements Runner {
     if (module == null) {
       return false;
     }
+
+    Map arguments = new Hashtable();
+    arguments.put("MODULE", module.getName());
+    arguments.put("REPOSITORY", module.getLocation().getId());
 
     CheckoutCommand checkoutCommand = new CheckoutCommand();
     checkoutCommand.setModule(module.getName() + "/" + SourceModule.MODULE_INFO);

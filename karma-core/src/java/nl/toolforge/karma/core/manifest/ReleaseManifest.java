@@ -27,16 +27,21 @@ public final class ReleaseManifest extends AbstractManifest {
   }
 
   /**
-   * Adds a module to a <code>ReleaseManifest</code>. This method is called by
+   * <p>Adds a module to a <code>ReleaseManifest</code>. This method is called by
    * <a href="http://jakarta.apache.org/commons/digester">Digester</a> during the
    * {@link #load(nl.toolforge.karma.core.LocalEnvironment)}-process.
+   *
+   * <p>This method also checks if the module is available locally. If so, the module will be matched with the module
+   * on disk to check if they are equal. This is to ensure that a changed manifest-definition is reflected on disk. If
+   * the manifest shows another module (which is in fact determined by its location), the version on disk will be
+   * removed.
    *
    * @param descriptor The object representing a &lt;module&gt;-elemeent from a manifest XML file.
    * @throws nl.toolforge.karma.core.location.LocationException When an invalid location was passed with <code>descriptor</code>. This occurs when no
    *   location-id has been identified in the <code>locations.xml</code>-file in the manifest-store.
    * @throws ManifestException
    */
-  public final void addModule(ModuleDescriptor descriptor) throws LocationException, ManifestException {
+  public synchronized final void addModule(ModuleDescriptor descriptor) throws LocationException, ManifestException {
 
     // todo duidelijk beschrijven hoe het state mechanisme wordt aangestuurd door dit ding.
     //
@@ -74,6 +79,10 @@ public final class ReleaseManifest extends AbstractManifest {
       throw new ManifestException(ManifestException.DUPLICATE_MODULE, new Object[]{module.getName(), getName()});
     }
     getModulesForManifest().put(module.getName(), module);
+
+    // As a last check, determine if an 'old' local version is available.
+    //
+    removeLocal((SourceModule) module);
   }
 
   /**

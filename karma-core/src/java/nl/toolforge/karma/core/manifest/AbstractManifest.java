@@ -2,21 +2,32 @@ package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
+import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
+import nl.toolforge.karma.core.vc.cvs.CVSException;
+import nl.toolforge.core.util.file.MyFileUtils;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.xmlrules.DigesterLoader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.io.FileUtils;
 import org.xml.sax.SAXException;
+import org.netbeans.lib.cvsclient.CVSRoot;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,6 +37,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 /**
  * <p>
@@ -185,6 +197,19 @@ public abstract class AbstractManifest implements Manifest {
     }
 
     copyToThis((AbstractManifest) manifest);
+
+    // As a final step, check all modules in the manifest and remove modules that are not in the manifest anymore
+    // but still on disk.
+
+    // todo should notify the user (responselistener)
+    //
+
+    // todo should move all modules to a 'modules' sub-directory, for better scanning purposes.
+//    Collection modules = getAllModules().values();
+//    for (Iterator i = modules.iterator(); i.hasNext();) {
+//      Module module = (Module) i.next();
+//
+//    }
   }
 
   /**
@@ -475,6 +500,8 @@ public abstract class AbstractManifest implements Manifest {
    *        <code>&lt;module-name&gt;_&lt;version&gt;.jar</code>.
    * </ul>
    *
+   * <p>The extension if <code>.war</code> if the module is a <code>webapp</code>-module.
+   *
    * @param module A <code>SourceModule</code> instance.
    * @return The artifact-name as determined the way as described above.
    * @throws ManifestException
@@ -482,6 +509,10 @@ public abstract class AbstractManifest implements Manifest {
   public final String resolveJarName(Module module) throws ManifestException {
 
     String jar = module.getName() + "_";
+
+    // todo introduce a method to determine if a module is webapp-module; maybe its own class.
+    //
+    String extension = (module.getName().startsWith(Module.WEBAPP_PREFIX) ? ".war" : ".jar");
 
     try {
       if (((SourceModule) module).getState().equals(Module.WORKING)) {
@@ -491,7 +522,7 @@ public abstract class AbstractManifest implements Manifest {
       } else { // STATIC module
         jar += ((SourceModule) module).getVersionAsString();
       }
-      jar += ".jar";
+      jar += extension;
     } catch (VersionControlException v) {
       throw new ManifestException(v.getErrorCode(), v.getMessageArguments());
     }
@@ -540,11 +571,7 @@ public abstract class AbstractManifest implements Manifest {
         //
 
         Set moduleDependencies = null;
-//        try {
-          moduleDependencies = ((SourceModule) module).getDependencies();
-//        } catch (ManifestException e) {
-//          e.printStackTrace();
-//        }
+        moduleDependencies = ((SourceModule) module).getDependencies();
 
         // Iterate over all dependencies. If it is a module dep, check if we already have an
         // entry in the interdep-collection; create one when necessary.
@@ -577,6 +604,61 @@ public abstract class AbstractManifest implements Manifest {
     }
 
     return interDependencies;
+  }
+
+  /**
+   * <p>Checks is <code>module</code> should be removed locally. This can - e.g. - happen if the module was checked out
+   * from a location elsewhere and the module with the same name but with a different location has been defined in the
+   * manifest, before the module was cleaned locally.
+   *
+   * <p>This method only supports CVS.
+   *
+   * @param module
+   * @return <code>true</code> if a local version has been removed or <code>false</code> if nothing has been removed.
+   */
+  protected boolean removeLocal(SourceModule module) {
+
+    // todo this method is not abstract ! handles CVS only.
+
+    if (isLocal(module)) {
+
+      File rootFile = new File(module.getBaseDir(), "CVS/Root");
+
+
+      String cvsRootString = null;
+      try {
+        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(rootFile)));
+
+        cvsRootString = in.readLine();
+        in.close();
+
+      } catch (FileNotFoundException e) {
+        throw new KarmaRuntimeException("Panic ! CVS/Root file missing for module " + module.getName());
+      } catch (IOException e) {
+        throw new KarmaRuntimeException(e.getMessage());
+      }
+
+      CVSRoot cvsRoot = CVSRoot.parse(cvsRootString);
+
+      Location loc = module.getLocation();
+      try {
+        if (loc instanceof CVSLocationImpl) {
+          if (!cvsRoot.toString().equals(((CVSLocationImpl)loc).getCVSRootAsString())) {
+            FileUtils.deleteDirectory(module.getBaseDir());
+            logger.info("Mismatch between local module and definition in manifest solved (manifest:" + this.getName() + ", module:" + module.getName() + ")");
+          }
+
+          return true;
+        }
+      } catch (CVSException e) {
+        e.printStackTrace();
+        // todo excception handling
+      } catch (IOException e) {
+        throw new KarmaRuntimeException(e.getMessage());
+      }
+
+    }
+    return false;
   }
 
 }

@@ -26,6 +26,7 @@ public final class WebappModuleLayoutTemplate implements ModuleLayoutTemplate {
   public String[] getFileElements() {
     return new String[] {
       SourceModule.MODULE_INFO,
+      "dependencies.xml",
       "WEB-INF/web.xml"};
   }
 

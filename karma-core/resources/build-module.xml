@@ -8,26 +8,49 @@
 
   </target>
 
-  <target name="jar" depends="compile" >
+  <target name="init-build-dir">
+
+    <!-- '${module-build-dir}' maps to ${development.home}/<manifest-name>/build/<module-name>-->
+    <mkdir dir="${module-build-dir}"/>
+
+  </target>
+
+  <!-- ************************ -->
+  <!-- build-module (bm)        -->
+  <!-- ************************ -->
+
+  <target name="build-module" depends="init-build-dir">
+
+    <!-- '${module-build-dir}' maps to ${development.home}/<manifest-name>/build/<module-name>-->
+    <!-- '${module-source-dir}' maps to ${development.home}/<manifest-name>/<module-name>/src/java-->
+    <!-- '${compile-classpath}' is determined by Module.getDependencies -->
+
+    <javac destdir="${module-build-dir}" srcdir="${module-source-dir}" classpath="${compile-classpath}"/>
+
+  </target>
+
+  <!-- *************************************** -->
+  <!-- package-module (pa); resulting in a jar -->
+  <!-- *************************************** -->
+
+  <target name="package-module-as-jar" depends="init-build-dir">
 
     <!-- Remove all jar-files -->
-    <delete dir="${jar-base-dir}" includes="*.jar"/>
+    <delete dir="${module-build-dir}" includes="*.jar"/>
 
-    <jar destfile="${jar-file-name}" basedir="${jar-base-dir}"/>
-
-  </target>
-
-  <target name="compile">
-
-    <mkdir dir="${javac-destination-dir}"/>
-
-    <javac destdir="${javac-destination-dir}" srcdir="${javac-source-dir}" classpath="${javac-classpath}"/>
+    <jar destfile="${module-package-name}" basedir="${module-build-dir}"/>
 
   </target>
 
-  <target name="war">
+  <!-- *************************************** -->
+  <!-- package-module (pa); resulting in a war -->
+  <!-- *************************************** -->
 
-    <war destfile="${war-destination-file}"/> 
+  <target name="package-module-as-war" depends="init-build-dir">
+
+    <delete dir="${module-build-dir}" includes="*.war"/>
+
+    <war destfile="${module-package-name}" basedir="${module-basedir}" webxml="${module-webxml}"/>
 
   </target>
 

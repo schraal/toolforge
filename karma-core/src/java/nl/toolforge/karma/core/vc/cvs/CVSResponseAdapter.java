@@ -70,29 +70,35 @@ public final class CVSResponseAdapter implements CVSListener {
       argList.add((String) tokenizer.nextElement());
     }
 
-    Object[] argArray = new Object[argList.size()];
+    // First pass ... count actual available parameters; is there a value for each requested key ?
+    //
+
     int j = 0;
     for (Iterator i = argList.iterator(); i.hasNext();) {
-      argArray[j] = arguments.get((String) i.next());
-      j++;
-
+      String value = (String) arguments.get((String) i.next());
+//      if (value != null) {
+//        j += 1;
+//      }
+      j = (value == null ? j : (j += 1));
     }
+
+    // Second pass ... assign values
+    //
+
+    Object[] argArray = new Object[j];
+    j = 0;  // Reset
+    for (Iterator i = argList.iterator(); i.hasNext();) {
+      String value = (String) arguments.get((String) i.next());
+      if (value != null) {
+        argArray[j] = value;
+        j++;
+      }
+    }
+
+    arguments = null; // Reset this session ...
+
     return argArray;
   }
-
-//  public void setModuleName(String moduleName) {
-//    this.moduleName = moduleName;
-//  }
-//  private String getModuleName() {
-//    return moduleName;
-//  }
-//
-//  public void setVersion(String version) {
-//    this.version = version;
-//  }
-//  private String getVersion() {
-//    return version;
-//  }
 
   /**
    * <p>Copied from the Netbeans API documentation : Called when a file is removed.

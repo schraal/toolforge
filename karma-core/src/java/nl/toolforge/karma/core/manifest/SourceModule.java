@@ -1,6 +1,8 @@
 package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.vc.PatchLine;
 import org.apache.commons.digester.Digester;
@@ -127,7 +129,11 @@ public class SourceModule extends BaseModule {
     this.baseDir = baseDir;
   }
 
-  private File getBaseDir() {
+  public File getBaseDir() {
+
+    if (baseDir == null) {
+      throw new KarmaRuntimeException("Basedir not set.");
+    }
     return baseDir;
   }
 

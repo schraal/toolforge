@@ -3,6 +3,7 @@ package nl.toolforge.karma.core.manifest;
 import nl.toolforge.karma.core.location.Location;
 
 import java.util.regex.PatternSyntaxException;
+import java.io.File;
 
 
 /**
@@ -62,6 +63,9 @@ public interface Module {
    * Returns the <code>Location</code> instance, which is derived from the <code>location</code>-attribute.
    */
   public Location getLocation();
+
+
+  public File getBaseDir();
 
   /**
    * <p>Sets a modules' state.</p>
