@@ -32,16 +32,16 @@ public class PatchLine extends DevelopmentLine {
 
   /**
    * Name prefix for the symbolic name that is applied to the module when a patchline is created. A symbolic name
-   * would look like this : <code>PATCHLINE|v_0-2</code>, indicating that a patchline is created for
+   * would look like this : <code>PATCHLINE_0-2</code>, indicating that a patchline is created for
    * version <code>0-2</code>.
    */
   public static final String NAME_PREFIX = "PATCHLINE";
 
-  public static final String VERSION_SEPARATOR_PATTERN = "\\|v_";
-  public static final String VERSION_SEPARATOR = "|v_";
+  public static final String VERSION_SEPARATOR_PATTERN = "_";
+  public static final String VERSION_SEPARATOR = "_";
 
-  public static final String PATCH_SEPARATOR_PATTERN = "\\|p_";
-  public static final String PATCH_SEPARATOR = "|p_";
+  public static final String PATCH_SEPARATOR_PATTERN = "_";
+  public static final String PATCH_SEPARATOR = "_";
 
   private Version version = null;
 
@@ -60,20 +60,16 @@ public class PatchLine extends DevelopmentLine {
     return NAME_PREFIX + VERSION_SEPARATOR_PATTERN + Version.VERSION_PATTERN_STRING;
   }
 
-//  public String getSymbolicName() {
-//    return NAME_PREFIX + PATCH_SEPARATOR + version.getVersionNumber();
-//  }
-
   /**
    * Given the patch line for a module, a matching pattern is required to select the corresponding patch versions. A
-   * patch line <code>PATCHLINE|v_0-0</code> will generate patch versions like <code>PATCHLINE|p_0-0-0</code>,
-   * <code>PATCHLINE|p_0-0-1</code> etc. This method will then return the following pattern string :
-   * <code>PATCHLINE|p_0-0-\d{1,4}</code>
+   * patch line <code>PATCHLINE_0-0</code> will generate patch versions like <code>PATCHLINE_0-0-1</code>,
+   * <code>PATCHLINE_0-0-2</code> etc. This method will then return the following pattern string :
+   * <code>PATCHLINE_0-0-\d{1,4}</code>
    *
    * @return See the method description.
    */
   public String getMatchingPattern() {
-    // Something like should be returned, where 0-0 is the version to which the patch applies: PATCHLINE|p_0-0-{1}\\d{1,2}
+    // Something like should be returned, where 0-0 is the version to which the patch applies: PATCHLINE_0-0-{1}\\d{1,2}
     return NAME_PREFIX + PATCH_SEPARATOR_PATTERN + version.getVersionNumber() + Patch.PATCH_PATTERN_POSTFIX;
   }
 }
