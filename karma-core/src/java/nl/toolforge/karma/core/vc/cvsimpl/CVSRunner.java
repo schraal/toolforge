@@ -300,7 +300,7 @@ public final class CVSRunner implements Runner {
       ModuleHistoryFactory factory = ModuleHistoryFactory.getInstance(module.getBaseDir());
       File historyLocation = factory.getModuleHistory(module).getHistoryLocation();
       command.setFiles(new File[]{historyLocation});
-      command.setResetStickyOnes(true);
+      command.setResetStickyOnes(true);  //-A
       executeOnCVS(command, module.getBaseDir(), null);
       logger.debug("Done updating history.xml to HEAD.");
     } catch (ModuleHistoryException mhe) {
@@ -324,7 +324,8 @@ public final class CVSRunner implements Runner {
 
     UpdateCommand updateCommand = new UpdateCommand();
     updateCommand.setRecursive(true);
-    updateCommand.setPruneDirectories(true);
+    updateCommand.setBuildDirectories(true); //-d
+    updateCommand.setPruneDirectories(true); //-P
 
     if (version != null || module.hasPatchLine()) {
       updateCommand.setUpdateByRevision(Utils.createSymbolicName(module, version).getSymbolicName());
