@@ -37,8 +37,10 @@
 				<li/>Refer to the documentation site for the <code>karma-core</code> and follow the
              steps for the JUnit test setup. There is a manual procedure to follow before
              the <code>karma-core</code> module can be succesfully deployed as a jar in the
-             Maven repository. The quick route is to disable junit tests in the <code>karma-core</code>
-             module and execute the <code>jar:install</code> goal upon the module.
+             Maven repository (honestly, that piece of documentation is missing : unpack
+             karma-core/resources/test-CVSROOT.tgz in a directory of your choice and configure
+             that directory in karma-core/resources/test-cvs.properties. Then : execute
+             the <code>jar:install</code> goal on karma-core.
 				<li/>Last, but not least, the <code>karma-cli</code> module should be compiled. Use
 				     <code>java:compile</code> on the <code>karma-cli</code> module to compile the sources
              into the <code>target/classes</code> directory.
@@ -77,14 +79,14 @@
 						<td><code>/home/asmedes/karma/locations</code> (default value)</td>
 					</tr>
 				</table>
-				<li/>Copy <code>karma-core/resources/templates/locations.xml.template</code> as
-				     <code>locations.xml</code> (only the extension is important) to the directory
-             you configured for <code>location.store</code> in <code>karma.properties</code>.
-				<li/>Copy <code>karma-core/resources/templates/repository-authenticators.xml.template</code>
-             as <code>repository-authenticators.xml</code> to <code>$HOME/.karma</code>.
-				<li/>Copy <code>karma-launcher-1.2.jar</code> into the <code>lib</code> directory
-             of your <code>karma-cli</code> module directory (create that directory if it
-             doesn't exist.
+<!--				<li/>Copy <code>karma-core/resources/templates/locations.xml.template</code> as-->
+<!--				     <code>locations.xml</code> (only the extension is important) to the directory-->
+<!--             you configured for <code>location.store</code> in <code>karma.properties</code>.-->
+<!--				<li/>Copy <code>karma-core/resources/templates/repository-authenticators.xml.template</code>-->
+<!--             as <code>repository-authenticators.xml</code> to <code>$HOME/.karma</code>.-->
+<!--				<li/>Copy <code>karma-launcher-1.2.jar</code> into the <code>lib</code> directory-->
+<!--             of your <code>karma-cli</code> module directory (create that directory if it-->
+<!--             doesn't exist.-->
 			</ul>
 
 		</section>
