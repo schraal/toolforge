@@ -1,12 +1,11 @@
 package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.ManifestException;
+import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.QueryCommandResponse;
-import nl.toolforge.karma.core.cmd.CommandResponseHandler;
-import nl.toolforge.karma.core.location.LocationException;
 
 /**
  * <p>This command activates a manifest, which is a general requirement for most other commands. The newly activated
@@ -18,8 +17,9 @@ import nl.toolforge.karma.core.location.LocationException;
  * @version $Id$
  */
 public class SelectManifest extends DefaultCommand {
+  private CommandResponse commandResponse = new ActionCommandResponse();
 
-	public SelectManifest(CommandDescriptor descriptor) {
+  public SelectManifest(CommandDescriptor descriptor) {
 		super(descriptor);
 	}
 
@@ -38,5 +38,9 @@ public class SelectManifest extends DefaultCommand {
     }
 		new QueryCommandResponse();
 	}
+
+  public CommandResponse getCommandResponse() {
+    return this.commandResponse;
+  }
 
 }

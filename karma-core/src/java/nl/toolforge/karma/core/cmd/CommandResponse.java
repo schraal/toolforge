@@ -70,6 +70,7 @@ public abstract class CommandResponse {
    */
 	public void addMessage(CommandMessage message) {
     commandMessages.add(message);
+//todo
     listener.commandHeartBeat();
   }
 

@@ -12,8 +12,9 @@ import nl.toolforge.karma.core.ManifestException;
 import nl.toolforge.karma.core.ModuleMap;
 import nl.toolforge.karma.core.SourceModule;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
-import nl.toolforge.karma.core.cmd.CommandResponseHandler;
+import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
+import nl.toolforge.karma.core.cmd.QueryCommandResponse;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
 
@@ -26,6 +27,7 @@ public class ViewManifest extends DefaultCommand {
   Log logger = LogFactory.getLog(ViewManifest.class);
 
   private List renderedList = null;
+  private CommandResponse commandResponse = new QueryCommandResponse();
 
   public ViewManifest(CommandDescriptor descriptor) {
     super(descriptor);
@@ -81,7 +83,11 @@ public class ViewManifest extends DefaultCommand {
     }
 	}
 
-	/**
+  public CommandResponse getCommandResponse() {
+    return this.commandResponse;
+  }
+
+  /**
 	 * <p>Returns the contents of the manifest in a two-dimensional <code>String[]</code> data-structure, for easy
 	 * reference. The contents of this structure can be queried through <code>renderedList.get(i)</code>. This call
 	 * retrieves a <code>String[]</code> with the most important data items for each module.
