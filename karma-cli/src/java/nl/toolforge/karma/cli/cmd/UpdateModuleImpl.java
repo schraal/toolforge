@@ -32,12 +32,13 @@ import nl.toolforge.karma.core.cmd.impl.UpdateModuleCommand;
  */
 public class UpdateModuleImpl extends UpdateModuleCommand {
 
-  public UpdateModuleImpl(CommandDescriptor descriptor) throws CommandException {
+  public UpdateModuleImpl(CommandDescriptor descriptor) {
     super(descriptor);
   }
 
   public void execute() throws CommandException {
-    SuccessMessage message = new SuccessMessage("Updating module, please wait ...");
+
+    SuccessMessage message = new SuccessMessage(getFrontendMessages().getString("message.UPDATE_MODULE_STARTED"), new Object[]{getCommandLine().getOptionValue("m")});
     response.addMessage(message);
 
     super.execute();
