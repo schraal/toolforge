@@ -58,7 +58,7 @@ goto end
 
 :init
 SET KARMA_JAVACMD="%JAVA_HOME%\bin\java.exe"
-SET KARMA_LOGLEVEL=INFO
+SET KARMA_LOGLEVEL=DEBUG
 SET KARMA_CLASSPATH="%KARMA_HOME%\resources;%KARMA_HOME%\lib\;%KARMA_HOME%\lib\plugins\;%JAVA_HOME%\lib\tools.jar"
 SET KARMA_LAUNCHER_JAR=%KARMA_HOME%\lib\karma-launcher.jar
 

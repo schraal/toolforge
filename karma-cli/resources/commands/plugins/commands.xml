@@ -106,9 +106,9 @@
     </options>
     <classname>nl.toolforge.karma.cli.cmd.UpdateModuleImpl</classname>
     <help lang="en">
-			The update command updates a module on a developer's local disk. Optionally, a version-number
-			can be provided, to update to a specific version. The version-number must comply to the pattern
-			rules for version numbers as defined by ...
+      The update command updates a module on a developer's local disk. Optionally, a version-number
+      can be provided, to update to a specific version. The version-number must comply to the pattern
+      rules for version numbers as defined by ...
     </help>
   </command>
 
@@ -126,7 +126,7 @@
     <description lang="en">Views the active manifest.</description>
     <classname>nl.toolforge.karma.cli.cmd.ViewManifestImpl</classname>
     <help lang="en">
-			This command shows the status of the current manifest.
+      This command shows the status of the current manifest.
     </help>
   </command>
 
@@ -142,34 +142,6 @@
     <classname>nl.toolforge.karma.cli.cmd.ViewModuleHistory</classname>
     <help lang="en"/>
   </command>
-
-
-
-  <command name="promote-module" alias="prm">
-
-    <description lang="en">Promotes a module to the next version.</description>
-
-    <options>
-      <option opt="m" longOpt="module" hasArgs="true" required="true" description="The module name">
-        <arg>module-name</arg>
-      </option>
-      <option opt="c" longOpt="comment" hasArgs="true" required="true" description="The developer's comment">
-        <arg>comment</arg>
-      </option>
-      <option opt="v" longOpt="version" hasArgs="true" required="false" description="The new version number for the module">
-        <arg>new-version</arg>
-      </option>
-      <option opt="f" longOpt="force" hasArgs="false" required="false" description="Promote with uncommitted work as well"/>
-    </options>
-
-    <classname>nl.toolforge.karma.core.cmd.impl.PromoteCommand</classname>
-
-    <help lang="en">
-      Promoting a module is
-    </help>
-
-  </command>
-
 
 
   <command name="select-manifest" alias="slm">
@@ -198,11 +170,11 @@
     <classname>nl.toolforge.karma.cli.cmd.ListManifestsImpl</classname>
 
     <help lang="en">
-			There is a central repository (generally maintained in a version control system), which contains all the
-			available manifests. This repository is configured in the builder.properties file. There
-			can be only one such a repository configured in the builder. With the update-manifests command manifests
-			are downloaded from the manifest repository and put on the local file system. The list-manifests command
-			lists these local manifests. Only these manifests are available for the Karma runtime.
+      There is a central repository (generally maintained in a version control system), which contains all the
+      available manifests. This repository is configured in the builder.properties file. There
+      can be only one such a repository configured in the builder. With the update-manifests command manifests
+      are downloaded from the manifest repository and put on the local file system. The list-manifests command
+      lists these local manifests. Only these manifests are available for the Karma runtime.
     </help>
 
   </command>
