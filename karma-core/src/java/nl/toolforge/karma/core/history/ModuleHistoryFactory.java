@@ -36,7 +36,7 @@ public class ModuleHistoryFactory {
             System.out.println("loading history from: "+history);
 
             Digester digester = new Digester();
-            digester.setValidating(true);
+            digester.setValidating(false);
             digester.addObjectCreate("history", "nl.toolforge.karma.core.history.ModuleHistory");
             digester.addObjectCreate("history/event", "nl.toolforge.karma.core.history.Event");
             digester.addSetProperties("history/event");
@@ -47,7 +47,7 @@ public class ModuleHistoryFactory {
             digester.addSetNext("history/event/datetime", "setDatetime", "java.util.Date");
             digester.addSetNext("history/event", "addEvent", "nl.toolforge.karma.core.history.Event");
 
-            ModuleHistory moduleHistory = (ModuleHistory) digester.parse(new File("resources/test/history.xml"));
+            ModuleHistory moduleHistory = (ModuleHistory) digester.parse(history);
             System.out.println(moduleHistory);
             return moduleHistory;
 

@@ -11,11 +11,13 @@ public class TestModuleHistoryFactory extends LocalCVSInitializer {
 
     public void testGetHistory() {
         try {
+            checkoutDefaultModule1();
+
             File projectRoot = getDevelopmentHome();
             ModuleHistoryFactory factory = ModuleHistoryFactory.getInstance(projectRoot);
             assertNotNull(factory);
 
-            ModuleHistory moduleHistory = factory.getModuleHistory("core-1");
+            ModuleHistory moduleHistory = factory.getModuleHistory(DEFAULT_MODULE_1);
             assertNotNull(moduleHistory);
 
             moduleHistory.save();
