@@ -18,6 +18,19 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.console;
 
+import nl.toolforge.karma.cli.cmd.ConsoleCommandResponseHandler;
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.boot.WorkingContext;
+import nl.toolforge.karma.core.bundle.BundleCache;
+import nl.toolforge.karma.core.cmd.CommandContext;
+import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.manifest.ManifestException;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -28,20 +41,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import nl.toolforge.karma.cli.cmd.ConsoleCommandResponseHandler;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.boot.WorkingContext;
-import nl.toolforge.karma.core.bundle.BundleCache;
-import nl.toolforge.karma.core.cmd.CommandContext;
-import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.manifest.Manifest;
-import nl.toolforge.karma.core.manifest.ManifestException;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 /**
  * <p>The <code>KarmaConsole</code> is the command-line interface for Karma. The class presents a simple-to-use command-line
@@ -78,7 +79,6 @@ public final class KarmaConsole {
     karmaConsole.runConsole(args);
   }
 
-
   /**
    * This one does the trick. Requires one (optional) argument : a working workingContext identifier.
    *
@@ -107,15 +107,18 @@ public final class KarmaConsole {
       }
     });
 
-    String workingContextName = null;
+    // If the '-w <working-context> option is used, use it.
+    //
+    workingContext =
+        (args.length == 0 ?
+        new WorkingContext(Preferences.userRoot().get(WorkingContext.WORKING_CONTEXT_PREFERENCE, WorkingContext.DEFAULT)) :
+        new WorkingContext(args[0]));
 
     try {
-
-      // to be compliant, the -w option is given, but for the rest, it serves no purpose.
-      //
-      workingContextName = args[1];
-    } catch (IndexOutOfBoundsException i) {
-      workingContextName = null;
+      Preferences.userRoot().put(WorkingContext.WORKING_CONTEXT_PREFERENCE, workingContext.getName());
+      Preferences.userRoot().flush();
+    } catch (BackingStoreException e) {
+      // Too bad ...
     }
 
     // Initialize the command workingContext
@@ -127,13 +130,7 @@ public final class KarmaConsole {
         "Welcome to Karma !!!\n" +
         "********************\n");
 
-    if (workingContextName == null) {
-      writeln("Loading working context `default` ...");
-    } else {
-      writeln("Loading working context `" + workingContextName + "` ...");
-    }
-
-    workingContext = new WorkingContext(workingContextName);
+    writeln("Loading working context `" + workingContext.getName() + "` ...");
 
     writeln("Checking manifest store configuration ...");
     checkConfiguration("MANIFEST-STORE");
@@ -217,7 +214,7 @@ public final class KarmaConsole {
           }
           writeln(message);
           logger.error(e.getMessage(), e);
-        } 
+        }
       }
     }
     catch (RuntimeException r) {
@@ -230,15 +227,14 @@ public final class KarmaConsole {
     }
   }
 
-
   private void checkConfiguration(String configKey) {
 
     Collection config = (List) workingContext.getInvalidConfiguration().get(configKey);
 
     while (config.size() > 0) {
 
-      // Warning, modifies the configuration ...
-      //
+// Warning, modifies the configuration ...
+//
       BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
       Iterator i = config.iterator();
 
@@ -256,8 +252,8 @@ public final class KarmaConsole {
         try {
           value = reader.readLine().trim();
         } catch (IOException e) {
-          // todo moet anders ........
-          //
+// todo moet anders ........
+//
           e.printStackTrace();
         }
 

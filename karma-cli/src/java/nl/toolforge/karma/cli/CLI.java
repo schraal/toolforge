@@ -74,8 +74,8 @@ public final class CLI {
 
     // todo WorkingContext should be initializing the logging system. Some other way.
 
-    String workingContextName = Preferences.userRoot().get(WorkingContext.WORKING_CONTEXT, "default");
-    WorkingContext workingContext = new WorkingContext(workingContextName);
+    WorkingContext workingContext =
+        new WorkingContext(Preferences.userRoot().get(WorkingContext.WORKING_CONTEXT_PREFERENCE, WorkingContext.DEFAULT));
 
     System.out.println("Checking command ...");
 
@@ -87,7 +87,7 @@ public final class CLI {
     }
 
     System.out.println("Command `" + command.getName() + "` ok !");
-    System.out.println("Working context : " + workingContextName);
+    System.out.println("Working context : " + workingContext.getName());
 
     CommandContext commandContext = new CommandContext(workingContext);
     try {

@@ -30,7 +30,7 @@ public class SetWorkingContext extends DefaultCommand {
     String workingContextName = getCommandLine().getOptionValue("w");
 
     try {
-      Preferences.userRoot().put(WorkingContext.WORKING_CONTEXT, workingContextName);
+      Preferences.userRoot().put(WorkingContext.WORKING_CONTEXT_PREFERENCE, workingContextName);
       Preferences.userRoot().flush();
 
       response.addMessage(new SuccessMessage("Working context set to " + workingContextName));

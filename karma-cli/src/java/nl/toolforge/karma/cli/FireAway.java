@@ -17,33 +17,22 @@ public final class FireAway {
   public static void main(String[] args) {
 
     if (args.length == 0) {
-
-      System.out.println("\nYou are almost there ...\n\n");
-      System.out.println("Please start Karma in one of the following ways :\n\n");
-
-      System.out.println("karma console [-w <working-context>]     Starts the Karma console.");
-      System.out.println("karma <command-line-string>              Runs the command that is passed as a command-line-string");
-
-      System.exit(1);
-
-    } else {
-
-      if (CONSOLE.equals(args[0])) {
-
-        String[] consoleArgs = new String[args.length - 1];
-
-        for (int i = 1; i < args.length; i++) {
-          consoleArgs[i-1] = args[i];
-        }
-        // Run the console.
-        //
-        KarmaConsole.main(consoleArgs);
-      } else {
-        // Run the command line.
-        //
-        CLI.main(args);
-      }
-      System.exit(0);
+      KarmaConsole.main(new String[0]);
     }
+
+//    if (CONSOLE.equals(args[0])) {
+    if ("-w".equals(args[0])) {
+
+      String[] consoleArgs = new String[1];
+      consoleArgs[0] = args[1];
+      // Run the console.
+      //
+      KarmaConsole.main(consoleArgs);
+    } else {
+      // Run the command line.
+      //
+      CLI.main(args);
+    }
+    System.exit(0);
   }
 }
