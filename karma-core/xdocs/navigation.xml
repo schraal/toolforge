@@ -23,19 +23,51 @@
     </menu>
 
     <menu name="Interface Apps">
-	<item name="Command Line Interface"  href="../karma-cli"/>
-	<item name="Aura GUI" />
+        <item name="Command Line Interface"  href="../karma-cli"/>
+        <item name="Aura GUI" />
 
-      	<submenu name="Plugins">
+      	<item name="Plugins">
       		<item name="Intelli-J" href="/plugins/intelli-j.html"/>
       		<item name="Eclipse" href="/plugins/eclipse.html"/>
       		<item name="JDeveloper" href="/plugins/jdeveloper.html"/>
       		<item name="Maven Plugin" href=""/>
-      	</submenu>
+      	</item>
 
     </menu>
 
     <menu name="Documentation">
+      <item name="Reference" href="/reference/index.html" collapse="true">
+        <item name="Introduction"/>
+        <item name="Karma - What about it ?"/>
+        <item name="Concepts" href="/reference/concepts/index.html" collapse="true">
+          <item name="Manifests">
+            <item name="Types"/>
+          </item>
+          <item name="Components"/>
+          <item name="Modules" href="/reference/concepts/modules/index.html" collapse="true">
+            <item name="Types"/>
+            <item name="States"/>
+            <item name="Layout" href="/reference/concepts/modules/layout.html"/>
+          </item>
+        </item>
+        <item name="Command Line Interface : karma-cli" collapse="true">
+          <item name="Build management commands"/>
+          <item name="Version management commands"/>
+          <item name="Release management commands"/>
+        </item>
+        <item name="Version control aspects" collapse="true">
+          <item name="CVS support"/>
+          <item name="Future support"/>
+        </item>
+        <item name="Implementing Karma in your organisation" collapse="true">
+          <item name="Modularize, then componentize"/>
+          <item name="Implementation roadmap"/>
+        </item>
+        <item name="Integration with tools" collapse="true">
+          <item name="IDE support / plugins"/>
+        </item>
+      </item>
+
       <item name="Commands"              href="/commands.html"/>
       <item name="Version Management"    href="/version-management.html"/>
       <item name="State Management"      href="/state-management.html"/>
