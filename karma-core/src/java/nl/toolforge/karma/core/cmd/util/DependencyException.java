@@ -27,6 +27,7 @@ public class DependencyException extends Exception {
 
   public static final ErrorCode DUPLICATE_ARTIFACT_VERSION = new ErrorCode(EXCEPTION_PREFIX + "00002");
   public static final ErrorCode EAR_DEPENDENCY_NOT_DEFINED = new ErrorCode(EXCEPTION_PREFIX + "00003");
+  public static final ErrorCode EAR_DEPENDENCY_NOT_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00005");
 
   public DependencyException(ErrorCode errorCode) {
     this(errorCode, null);

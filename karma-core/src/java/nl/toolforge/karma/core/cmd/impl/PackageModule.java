@@ -20,7 +20,6 @@ package nl.toolforge.karma.core.cmd.impl;
 
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -425,9 +424,6 @@ public class PackageModule extends AbstractBuildCommand {
 
     DependencyHelper helper = new DependencyHelper(getCurrentManifest());
 
-    final String ARCHIVES_PROPERTIES = "archives.properties";
-    final String ARCHIVES_INCLUDES   = "archives.includes";
-
     try {
 
       // Create an ear-file
@@ -453,43 +449,21 @@ public class PackageModule extends AbstractBuildCommand {
 
         if (m.matches()) {
           moduleName = m.group(1);
-          Module module = getCurrentManifest().getModule(moduleName);
+          Module mod;
+          try {
+            mod = getCurrentManifest().getModule(moduleName);
+          } catch (ManifestException me) {
+            throw new DependencyException(DependencyException.EAR_DEPENDENCY_NOT_FOUND, new Object[]{moduleName});
+          }
 
-          map.put(moduleName, helper.resolveArchiveName(module));
+          map.put(moduleName, helper.resolveArchiveName(mod));
           //check whether the module is in the dependencies
-          if (!helper.hasModuleDependency(getCurrentModule(), module, true)) {
+          if (!helper.hasModuleDependency(getCurrentModule(), mod, true)) {
             throw new DependencyException(DependencyException.EAR_DEPENDENCY_NOT_DEFINED, new Object[]{moduleName});
           }
         } else {
           //todo: throw new Exception();
         }
-      }
-
-      //create a archive.properties and a archives.includes.
-      //the first one is used for replacing the special tokens in the application.xml
-      //the second one is used for packaging purposes.
-      try {
-        File moduleBuildDir = getBuildEnvironment().getModuleBuildDirectory();
-        moduleBuildDir.mkdirs();
-        File archivesProperties = new File(moduleBuildDir, ARCHIVES_PROPERTIES);
-        File archivesIncludes = new File(moduleBuildDir, ARCHIVES_INCLUDES);
-        archivesProperties.createNewFile();
-        archivesIncludes.createNewFile();
-        FileWriter write1 = new FileWriter(archivesProperties);
-        FileWriter write2 = new FileWriter(archivesIncludes);
-
-        for (Iterator it = map.keySet().iterator(); it.hasNext(); ) {
-          String key = (String) it.next();
-          String value = (String) map.get(key);
-
-          write1.write(key+"="+value+"\n");
-          write2.write(key+"/"+value+"\n");
-        }
-
-        write1.close();
-        write2.close();
-      } catch (IOException e) {
-        e.printStackTrace();
       }
 
       commandResponse.addMessage(new StatusMessage("Deleting previous ear file."));
@@ -508,8 +482,9 @@ public class PackageModule extends AbstractBuildCommand {
 
       // Filtering
       //
+      helper.createModuleDependenciesFilter(module);
       FilterSet filterSet = copyMetaInf.createFilterSet();
-      filterSet.setFiltersfile(new File(getBuildEnvironment().getModuleBuildDirectory(), ARCHIVES_PROPERTIES));
+      filterSet.setFiltersfile(new File(getBuildEnvironment().getModuleBuildDirectory(), DependencyHelper.MODULE_DEPENDENCIES_PROPERTIES));
 
       copyMetaInf.addFileset(fileSet);
       target.addTask(copyMetaInf);
@@ -575,9 +550,6 @@ public class PackageModule extends AbstractBuildCommand {
 
       target2.addTask(ear);
       project.executeTarget("ear");
-    } catch (ManifestException m) {
-      m.printStackTrace();
-      throw new CommandException(m.getErrorCode(), m.getMessageArguments());
     } catch (BuildException e) {
       e.printStackTrace();
       if (logger.isDebugEnabled()) {

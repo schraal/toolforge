@@ -11,9 +11,13 @@ import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvsimpl.Utils;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
+import net.sf.sillyexceptions.OutOfTheBlueException;
 
 /**
  * Dependency management is heavily used by Karma. This helper class provides methods to resolve dependencies, check
@@ -23,6 +27,8 @@ import java.util.Set;
  * @version $Id$
  */
 public final class DependencyHelper {
+
+  public final static String MODULE_DEPENDENCIES_PROPERTIES = "module-dependencies.properties";
 
   private Manifest manifest = null;
 
@@ -127,6 +133,49 @@ public final class DependencyHelper {
   }
 
   /**
+   * Create a properties file that contains mappings from module name to
+   * module name plus version. E.g. karma-core -> karma-core_0-1.
+   * <p>
+   * The properties file is called 'module-dependencies.properties' and is
+   * stored in the build directory of the given module.
+   * </p>
+   */
+  public void createModuleDependenciesFilter(Module module) throws ModuleTypeException, DependencyException {
+    BuildEnvironment env = new BuildEnvironment(manifest, module);
+
+    FileWriter write1 = null;
+    try {
+      Set moduleDeps = module.getDependencies();
+      Iterator it = moduleDeps.iterator();
+
+      File moduleBuildDir = env.getModuleBuildDirectory();
+      moduleBuildDir.mkdirs();
+      File archivesProperties = new File(moduleBuildDir, MODULE_DEPENDENCIES_PROPERTIES);
+      archivesProperties.createNewFile();
+      write1 = new FileWriter(archivesProperties);
+
+      while (it.hasNext()) {
+        ModuleDependency dep = (ModuleDependency) it.next();
+        if (dep.isModuleDependency()) {
+          Module mod = manifest.getModule(dep.getModule());
+
+          write1.write(mod.getName()+"="+resolveArtifactName(mod)+"\n");
+        }
+      }
+    } catch (ManifestException me) {
+      me.printStackTrace();
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+    } finally {
+      try {
+        write1.close();
+      } catch (Exception e) {
+        throw new OutOfTheBlueException("Unexpected exception when closing file writer.", e);
+      }
+    }
+  }
+
+  /**
    * Check whether a certain module has an other module as a dependency.
    *
    * @param module      The module for which is checked whether it has <code>dependency</code> as a dependency.
@@ -203,25 +252,61 @@ public final class DependencyHelper {
   }
 
   /**
-   * <p>Determines the correct artifact name for <code>module</code>. The artifact-name is determined as follows:
+   * Determines the correct artifact name for <code>module</code>.
+   * The artifact-name is determined as follows:
    *
    * <ul>
    *   <li/>If the state of the module is <code>WORKING</code>, the artifact-name is
-   *        <code>&lt;module-name&gt;_WORKING.jar</code>.
+   *        <code>&lt;module-name&gt;_WORKING</code>.
    *   <li/>If the state of the module is <code>DYNAMIC</code>, the artifact-name is
-   *        <code>&lt;module-name&gt;_&lt;latest-versions&gt;.jar</code>.
+   *        <code>&lt;module-name&gt;_&lt;latest-versions&gt;</code>.
    *   <li/>If the state of the module is <code>STATIC</code>, the artifact-name is
+   *        <code>&lt;module-name&gt;_&lt;version&gt;</code>.
+   * </ul>
+   *
+   * @param module  The module for which to determine the artifact name.
+   * @return The artifact name
+   */
+  public String resolveArtifactName(Module module) throws DependencyException {
+
+    String artifact = module.getName() + "_";
+
+    try {
+      if (manifest.getState(module).equals(Module.WORKING)) {
+        artifact += Module.WORKING.toString();
+      } else if (manifest.getState(module).equals(Module.DYNAMIC)) {
+        artifact += (Utils.getLocalVersion(module));
+      } else { // STATIC module
+        artifact += ((SourceModule) module).getVersionAsString();
+      }
+    } catch (VersionControlException v) {
+      throw new DependencyException(v.getErrorCode(), v.getMessageArguments());
+    }
+
+    return artifact;
+  }
+
+  /**
+   * <p>Determines the correct archive name for <code>module</code>. The archive
+   * name is determined as follows:
+   *
+   * <ul>
+   *   <li/>If the state of the module is <code>WORKING</code>, the archive-name is
+   *        <code>&lt;module-name&gt;_WORKING.jar</code>.
+   *   <li/>If the state of the module is <code>DYNAMIC</code>, the archive-name is
+   *        <code>&lt;module-name&gt;_&lt;latest-versions&gt;.jar</code>.
+   *   <li/>If the state of the module is <code>STATIC</code>, the archive-name is
    *        <code>&lt;module-name&gt;_&lt;version&gt;.jar</code>.
    * </ul>
    *
-   * <p>The extension if <code>.war</code> if the module is a <code>webapp</code>-module.
+   * <p>The extension is <code>.war</code> if the module is a
+   * <code>webapp</code>-module and <code>.ear</code> if the module is an
+   * <code>eapp</code>-module
    *
    * @param module A <code>SourceModule</code> instance.
-   * @return The artifact-name as determined the way as described above.
+   * @return The archive-name as determined the way as described above.
    */
   public String resolveArchiveName(Module module) throws ModuleTypeException, DependencyException {
-
-    String jar = module.getName() + "_";
 
     // todo introduce a method to determine if a module is webapp-module; maybe its own class.
     //
@@ -233,21 +318,7 @@ public final class DependencyHelper {
     } else {
       extension = ".jar";
     }
-
-    try {
-      if (manifest.getState(module).equals(Module.WORKING)) {
-        jar += Module.WORKING.toString();
-      } else if (manifest.getState(module).equals(Module.DYNAMIC)) {
-        jar += (Utils.getLocalVersion(module));
-      } else { // STATIC module
-        jar += ((SourceModule) module).getVersionAsString();
-      }
-      jar += extension;
-    } catch (VersionControlException v) {
-      throw new DependencyException(v.getErrorCode(), v.getMessageArguments());
-    }
-
-    return jar;
+    return resolveArtifactName(module) + extension;
   }
 
 
