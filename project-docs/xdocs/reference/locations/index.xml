@@ -8,7 +8,71 @@
   <body>
     <section name="Locations">
       <p>
+        Modules are stored in locations. Currently the only supported type of location
+        is a CVS repository. We intend to add more types of locations after the 1.0
+        release. Possible other types are subversion, disk, ClearCase.
       </p>
+      <p>
+        When creating a module you have to specify the location in which to create the module.
+        When including a module in your manifest you have to specify the location of
+        the module. For Karma this is the only way to know where to retrieve the modules.
+      </p>
+      <p>
+        Locations are defined in an xml file. An example of such an xml file is:
+<source>
+<![CDATA[
+  <?xml version="1.0" ?>
+
+  <locations>
+    <location type="cvs-repository" id="cvs-local">
+      <protocol>[ local | ext | pserver ]</protocol>
+      <host>localhost</host>
+      <port>2401</port>
+      <repository>/home/cvs</repository>
+    </location>
+  </locations>
+]]>
+</source>
+        The <code>type</code> attribute specifies the type of the location, which currently
+        has to be <code>cvs-repository</code>. The <code>id</code> attribute defined the unique
+        id by which the location is identified. This <code>id</code> is used when specifying a module's
+        location when creating it or including it in a manifest.
+      </p>
+      <p>
+        In case of a <code>cvs-repository</code> type location the following elements are
+        valid:
+        <table>
+          <tr>
+            <th>Element name</th>
+            <th>Description</th>
+            <th>Values</th>
+          </tr>
+          <tr>
+            <td>protocol</td>
+            <td>Specifies which protocol is used for accessing the CVS server.</td>
+            <td>local, pserver or ext</td>
+          </tr>
+          <tr>
+            <td>host</td>
+            <td>
+              The name of the server which hosts the CVS server. Is localhost in case
+              of a local reporistory.
+            </td>
+            <td>E.g.: cvs.sf.net or localhost</td>
+          </tr>
+          <tr>
+            <td>port</td>
+            <td>The port number. Ignored in case of a local repository.</td>
+            <td>E.g. 2401.</td>
+          </tr>
+          <tr>
+            <td>repository</td>
+            <td>The full path to the location of the modules in the CVS repo.</td>
+            <td>E.g. /cvs/karma/modules</td>
+          </tr>
+        </table>
+      </p>
+
     </section>
  </body>
 </document>
