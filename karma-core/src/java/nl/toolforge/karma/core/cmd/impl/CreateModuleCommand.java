@@ -115,7 +115,10 @@ public class CreateModuleCommand extends DefaultCommand {
         runner.create(module, comment, new SourceModuleLayoutTemplate());
         message = new SuccessMessage(getFrontendMessages().getString("message.SRC_MODULE_CREATED"), new Object[]{moduleName, locationAlias});
       } else if (moduleType.equals(Module.LIBRARY_MODULE)) {
-        throw new KarmaRuntimeException("NOT IMPLEMENTED.");
+        runner.create(module, comment, new LibModuleLayoutTemplate());
+        message = new SuccessMessage(getFrontendMessages().getString("message.LIB_MODULE_CREATED"), new Object[]{moduleName, locationAlias});
+      } else {
+        throw new KarmaRuntimeException("NOT IMPLEMENTED, module type: "+moduleType);
       }
 
       // Ensure that only this message is passed back to the client

@@ -27,10 +27,11 @@ import java.io.File;
  * directory-structure:
  *
  * <ul>
- * <li/><code>module.info</code>
- * <li/><code>dependencies.xml</code>
  * <li/><code>src/java</code>
- * <li/><code>resources/</code>
+ * <li/><code>src/resources</code>
+ * <li/><code>test/java</code>
+ * <li/><code>test/resources</code>
+ * <li/><code>src/META-INF</code>
  * </ul>
  *
  * @author D.A. Smedes
@@ -43,7 +44,6 @@ public final class SourceModuleLayoutTemplate implements ModuleLayoutTemplate {
   public FileTemplate[] getFileElements() {
     return new FileTemplate[] {
       new FileTemplate(new File("/templates/cvsignore.template"), new File(".cvsignore")),
-//      new FileTemplate(new File("/templates/module.info.template"), new File(Module.MODULE_INFO)),
       new FileTemplate(new File("/templates/module-descriptor.xml_template"), new File(Module.MODULE_DESCRIPTOR)),
       new FileTemplate(new File("/templates/dependencies.xml_template"), new File("dependencies.xml"))
     };
@@ -52,9 +52,10 @@ public final class SourceModuleLayoutTemplate implements ModuleLayoutTemplate {
   public String[] getDirectoryElements() {
     return new String[] {
       "src/java",
+      "src/resources",
+      "test/java",
       "test/resources",
-      "resources",
-      "META-INF"};
+      "src/META-INF"};
   }
 
 }

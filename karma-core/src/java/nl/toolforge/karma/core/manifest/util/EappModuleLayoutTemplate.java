@@ -26,9 +26,7 @@ import java.io.File;
  * <p>Layout for an eapp-module. A eapp-module has the following directory-structure:
  *
  * <ul>
- * <li/><code>module.info</code>
- * <li/><code>resources/</code>
- * <li/><code>META-INF/application.xml/</code>
+ * <li/><code>src/META-INF</code>
  * </ul>
  *
  * @author D.A. Smedes
@@ -41,15 +39,14 @@ public final class EappModuleLayoutTemplate implements ModuleLayoutTemplate {
   public FileTemplate[] getFileElements() {
     return new FileTemplate[] {
       new FileTemplate(new File("/templates/cvsignore.template"), new File(".cvsignore")),
-//      new FileTemplate(new File("/templates/module.info.template"), new File(Module.MODULE_INFO)),
       new FileTemplate(new File("/templates/module-descriptor.xml_template"), new File(Module.MODULE_DESCRIPTOR)),
       new FileTemplate(new File("/templates/dependencies.xml_template"), new File("dependencies.xml")),
-      new FileTemplate(new File("/templates/application.xml_template"), new File("META-INF", "application.xml"))
+      new FileTemplate(new File("/templates/application.xml_template"), new File("src/META-INF", "application.xml"))
     };
   }
 
   public String[] getDirectoryElements() {
     return new String[] {
-      "resources"};
+      "src/META-INF"};
   }
 }

@@ -23,23 +23,17 @@ import nl.toolforge.karma.core.manifest.Module;
 import java.io.File;
 
 /**
- * <p>Layout for a webapp-module. A web-module has the following directory-structure:
+ * <p>Layout for a lib-module. A lib-module (implemented by the
+ * {@link nl.toolforge.karma.core.manifest.LibModule} class) has the following
+ * directory-structure:
  *
  * <ul>
- * <li/><code>module.info</code>
- * <li/><code>dependencies.xml</code>
- * <li/><code>src/java</code>
- * <li/><code>src/resources</code>
- * <li/><code>test/java</code>
- * <li/><code>test/resources</code>
- * <li/><code>src/web</code>
- * <li/><code>src/web/WEB-INF</code>
  * </ul>
  *
- * @author D.A. Smedes
+ * @author W.H. Schraal
  * @version $Id$
  */
-public final class WebappModuleLayoutTemplate implements ModuleLayoutTemplate {
+public final class LibModuleLayoutTemplate implements ModuleLayoutTemplate {
 
   // todo constructor met xml file naam waar de layout gevonden kan worden.
 
@@ -47,18 +41,11 @@ public final class WebappModuleLayoutTemplate implements ModuleLayoutTemplate {
     return new FileTemplate[] {
       new FileTemplate(new File("/templates/cvsignore.template"), new File(".cvsignore")),
       new FileTemplate(new File("/templates/module-descriptor.xml_template"), new File(Module.MODULE_DESCRIPTOR)),
-      new FileTemplate(new File("/templates/dependencies.xml_template"), new File("dependencies.xml")),
-      new FileTemplate(new File("/templates/web.xml_template"), new File("src/web/WEB-INF","web.xml"))
     };
   }
 
   public String[] getDirectoryElements() {
-    return new String[] {
-      "src/java",                              // Java sources
-      "test/java",                             // Java JUnit tests
-      "src/resources",
-      "test/resources",                        // Test meuk
-      "src/web",                               // Web-resources such as html, images and the like
-      "src/web/WEB-INF"};                      // Runtime libraries
+    return new String[] {};
   }
+
 }
