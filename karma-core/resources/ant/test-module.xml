@@ -29,7 +29,7 @@
 
       <!-- todo: pad moet anders -->
       <classpath>
-        <pathelement path="${module-classpath}:${module-test-dir}:${module-source-dir}/../resources:${module-source-dir}/../../resources"/>
+        <pathelement path="${module-classpath}:${module-test-dir}:${module-source-dir}/../resources:${module-source-dir}/../../src/resources"/>
       </classpath>
 
       <formatter type="xml"/>

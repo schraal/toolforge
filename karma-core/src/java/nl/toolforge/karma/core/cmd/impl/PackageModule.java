@@ -169,7 +169,7 @@ public class PackageModule extends AbstractBuildCommand {
 
       //copy resources
       commandResponse.addMessage(new StatusMessage("Copying the resources..."));
-      if (new File(getCurrentModule().getBaseDir(), "resources").exists()) {
+      if (new File(getCurrentModule().getBaseDir(), "src/resources").exists()) {
         copy = new Copy();
         copy.setProject(getProjectInstance());
         copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
@@ -177,7 +177,7 @@ public class PackageModule extends AbstractBuildCommand {
         copy.setIncludeEmptyDirs(false);
 
         fileSet = new FileSet();
-        fileSet.setDir(new File(getCurrentModule().getBaseDir(), "resources"));
+        fileSet.setDir(new File(getCurrentModule().getBaseDir(), "src/resources"));
         fileSet.setIncludes("**/*");
 
         copy.addFileset(fileSet);
@@ -196,8 +196,7 @@ public class PackageModule extends AbstractBuildCommand {
 
       fileSet = new FileSet();
       fileSet.setDir(getCurrentModule().getBaseDir());
-      fileSet.setIncludes("META-INF/**");
-      fileSet.setExcludes("resources");
+      fileSet.setIncludes("src/META-INF/**");
 
       copy.addFileset(fileSet);
       target.addTask(copy);
@@ -255,15 +254,15 @@ public class PackageModule extends AbstractBuildCommand {
 
       FileSet fileSet = new FileSet();
       fileSet.setDir(getCurrentModule().getBaseDir());
-      fileSet.setIncludes("WEB-INF/**");
-      fileSet.setExcludes("WEB-INF/web.xml");
+      fileSet.setIncludes("src/web/WEB-INF/**");
+      fileSet.setExcludes("src/web/WEB-INF/web.xml");
 
       copy.addFileset(fileSet);
       copy.execute();
 
       // Fileset that copies contents of 'web' to the package directory.
       //
-      File webdir = new File(getCurrentModule().getBaseDir(), "web");
+      File webdir = new File(getCurrentModule().getBaseDir(), "src/web");
       if (webdir.exists()) {
         copy = new Copy();
         copy.setProject(getProjectInstance());
@@ -310,7 +309,7 @@ public class PackageModule extends AbstractBuildCommand {
       war.setProject(getProjectInstance());
       war.setDestFile(packageName);
       war.setBasedir(getBuildEnvironment().getModulePackageDirectory());
-      war.setWebxml(new File(getCurrentModule().getBaseDir(), "WEB-INF/web.xml".replace('/', File.separatorChar)));
+      war.setWebxml(new File(getCurrentModule().getBaseDir(), "src/web/WEB-INF/web.xml".replace('/', File.separatorChar)));
 
       war.execute();
 
@@ -342,7 +341,7 @@ public class PackageModule extends AbstractBuildCommand {
       //reading the application.xml
       DescriptorReader reader = new DescriptorReader(DescriptorReader.APPLICATION_XML);
       try {
-        reader.parse(new File(getCurrentModule().getBaseDir(), "META-INF"));
+        reader.parse(new File(getCurrentModule().getBaseDir(), "src/META-INF"));
       } catch (IOException e) {
         throw new CommandException(CommandException.PACKAGE_FAILED_NO_APPLICATION_XML, new Object[]{module.getName()});
       } catch (SAXException e) {
@@ -412,7 +411,7 @@ public class PackageModule extends AbstractBuildCommand {
 
       FileSet fileSet = new FileSet();
       fileSet.setDir(getCurrentModule().getBaseDir());
-      fileSet.setIncludes("META-INF/**");
+      fileSet.setIncludes("src/META-INF/**");
 
       // Filtering
       //
@@ -472,8 +471,8 @@ public class PackageModule extends AbstractBuildCommand {
       ear.setProject(getProjectInstance());
       ear.setDestFile(packageName);
       ear.setBasedir(getBuildEnvironment().getModulePackageDirectory());
-      ear.setExcludes("META-INF/application.xml");
-      ear.setAppxml(new File(getBuildEnvironment().getModulePackageDirectory(), "META-INF/application.xml".replace('/', File.separatorChar)));
+      ear.setExcludes("src/META-INF/application.xml");
+      ear.setAppxml(new File(getBuildEnvironment().getModulePackageDirectory(), "src/META-INF/application.xml".replace('/', File.separatorChar)));
 
       ear.execute();
 

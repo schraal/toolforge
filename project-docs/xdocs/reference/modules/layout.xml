@@ -24,6 +24,16 @@
               <td>/</td>
             </tr>
             <tr>
+              <td>src/resources</td>
+              <td>-</td>
+              <td>/</td>
+            </tr>
+            <tr>
+              <td>src/META-INF</td>
+              <td>-</td>
+              <td>/META-INF</td>
+            </tr>
+            <tr>
               <td>test/java</td>
               <td>test</td>
               <td>-</td>
@@ -32,16 +42,6 @@
               <td>test/resources</td>
               <td>-</td>
               <td>-</td>
-            </tr>
-            <tr>
-              <td>resources</td>
-              <td>-</td>
-              <td>/</td>
-            </tr>
-            <tr>
-              <td>META-INF</td>
-              <td>-</td>
-              <td>/META-INF</td>
             </tr>
             <tr>
               <td>&lt;module dependencies&gt;</td>
@@ -71,6 +71,11 @@
               <td>/WEB-INF/classes</td>
             </tr>
             <tr>
+              <td>src/resources</td>
+              <td>-</td>
+              <td>/WEB-INF/classes</td>
+            </tr>
+            <tr>
               <td>test/java</td>
               <td>test</td>
               <td>-</td>
@@ -81,19 +86,14 @@
               <td>-</td>
             </tr>
             <tr>
-              <td>resources</td>
+              <td>src/web</td>
               <td>-</td>
               <td>/</td>
             </tr>
             <tr>
-              <td>WEB-INF</td>
+              <td>src/web/WEB-INF</td>
               <td>-</td>
               <td>/WEB-INF</td>
-            </tr>
-            <tr>
-              <td>web</td>
-              <td>-</td>
-              <td>/</td>
             </tr>
             <tr>
               <td>&lt;module dependencies&gt;</td>
@@ -118,7 +118,7 @@
               <th>Package</th>
             </tr>
             <tr>
-              <td>META-INF</td>
+              <td>src/META-INF</td>
               <td>-</td>
               <td>/META-INF</td>
             </tr>
