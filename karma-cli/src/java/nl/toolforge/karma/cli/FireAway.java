@@ -19,22 +19,23 @@ public final class FireAway {
     if (args.length == 0) {
       printUsage();
     } else {
-      //possible option values
+      // Possible option values
+      //
       boolean update = false;
       String context = "";
 
-      //check for options
+      // Check for options
+      //
       int tel = 0;
       while ( (tel < args.length) && args[tel].startsWith("-") ) {
         if ( args[tel].equals("-u") ) {
-          //update location- and manifest store.
-          System.out.println("-u");
+          // Update location- and manifest store.
+          //
           update = true;
           tel += 1;
         } else if ( args[tel].equals("-w") ) {
-          //set working context
-          System.out.println("-w");
-          //check whether there is an argument, which does not start with a '-'.
+          // Check whether there is an argument, which does not start with a '-'.
+          //
           if ( (tel+1 < args.length) && !args[tel+1].startsWith("-") ) {
             context = args[tel+1];
             tel += 2;
