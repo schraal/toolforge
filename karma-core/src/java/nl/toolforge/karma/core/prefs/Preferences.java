@@ -195,7 +195,7 @@ public final class Preferences
 				// Read from classpath
 				//
 				//logger.error("Application runs in test mode.");
-				props.load(getClass().getClassLoader().getResourceAsStream("karma.properties"));
+				props.load(getClass().getClassLoader().getResourceAsStream("resources/test/karma.properties"));
 			}
 
 			for (Enumeration e = props.propertyNames(); e.hasMoreElements();) {
@@ -489,7 +489,7 @@ public final class Preferences
 		}
 	}
 	/**
-	 * Gets the operating system (family)name (WINDOWS, UNIX) that the current user works on.
+	 * Gets the operating system (family)name (WINDOWS, UNIX) for the environment the user works on..
 	 *
 	 * @return The operating system (family)name that the user works on.
 	 */

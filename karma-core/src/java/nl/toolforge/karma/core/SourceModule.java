@@ -104,7 +104,7 @@ public class SourceModule extends BaseModule {
 	/**
 	 * @see {@link nl.toolforge.karma.core.Module#getController}
 	 */
-	public final ModuleController getController() {
-		return null;
-	}
+//	public final ModuleController getController() {
+//		return null;
+//	}
 }

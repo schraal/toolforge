@@ -12,6 +12,10 @@ import nl.toolforge.karma.core.vc.VersionControlException;
  */
 public class CVSException extends VersionControlException {
 
+	public CVSException(ErrorCode errorCode) {
+		super(errorCode);
+	}
+
 	/** When no valid <code>CVSROOT</code> could be compiled from <code>CVSLocationImpl</code> instance variables. */
 	public static final ErrorCode INVALID_CVSROOT = new ErrorCode("CVS-00010");
 

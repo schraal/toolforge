@@ -9,6 +9,8 @@ import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.SymbolicName;
 import nl.toolforge.karma.core.vc.cvs.CVSException;
 
+import java.io.File;
+
 /**
  * // TODO Lots of todo's, subversion implementation
  *
@@ -22,11 +24,15 @@ public final class SubversionRunner implements Runner {
 
 	}
 
+	public CommandResponse add(File file) {
+		return null;
+	}
+
 	public CommandResponse execute(Command command) {
 		return null;
 	}
 
-	public CommandResponse checkout(Module module) {
+	public CommandResponse checkout(Module module, File checkoutDirectory) {
 		return null;
 	}
 

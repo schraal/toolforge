@@ -80,7 +80,7 @@
 		<dependency>
 			<groupId>netbeans</groupId>
 			<artifactId>netbeans-cvs</artifactId>
-			<jar>netbeans-cvs.jar</jar>
+			<version>beta3.6</version>
 		</dependency>
 
 	</dependencies>
@@ -88,26 +88,6 @@
 	<build>
 
 		<sourceDirectory>src/java/</sourceDirectory>
-		<!--		<unitTestSourceDirectory>src/java</unitTestSourceDirectory>-->
-
-		<!--		<unitTest>-->
-		<!--			<includes>-->
-		<!--				<include>**/Test*.java</include>-->
-		<!--			</includes>-->
-		<!---->
-		<!--			<resources>-->
-		<!--				<resource>-->
-		<!--					<directory>resources/test</directory>-->
-		<!--					<targetPath>resources/test</targetPath>-->
-		<!--					<includes>-->
-		<!--						<include>**/*.xml</include>-->
-		<!--						<include>**/*.dtd</include>-->
-		<!--						<include>**/*.properties</include>-->
-		<!--					</includes>-->
-		<!--				</resource>-->
-		<!--			</resources>-->
-		<!---->
-		<!--		</unitTest>-->
 
 		<resources>
 			<resource>
@@ -120,6 +100,27 @@
 				</includes>
 			</resource>
 		</resources>
+
+		<unitTestSourceDirectory>src/java</unitTestSourceDirectory>
+
+		<unitTest>
+			<includes>
+				<include>**/Test*.java</include>
+			</includes>
+
+			<resources>
+				<resource>
+					<directory>resources/test</directory>
+					<targetPath>resources/test</targetPath>
+					<includes>
+						<include>**/*.xml</include>
+						<include>**/*.dtd</include>
+						<include>**/*.properties</include>
+					</includes>
+				</resource>
+			</resources>
+
+		</unitTest>
 
 	</build>
 

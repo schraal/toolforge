@@ -4,6 +4,8 @@ import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.location.Location;
 import org.netbeans.lib.cvsclient.connection.PServerConnection;
 import org.netbeans.lib.cvsclient.connection.StandardScrambler;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Class representing a connection to a CVS repository. The current implementation can only deliver
@@ -16,6 +18,7 @@ import org.netbeans.lib.cvsclient.connection.StandardScrambler;
  */
 public final class CVSConnection {
 
+	private static Log logger = LogFactory.getLog(CVSConnection.class);
 	private CVSLocationImpl location = null;
 
 	/**
@@ -33,24 +36,4 @@ public final class CVSConnection {
 				"Wrong implementation of Location interface. Must be a CVSLocationImpl instance.", c);
 		}
 	}
-
-	/**
-	 * The <code>org.netbeans.lib.cvsclient PServerConnection</code> implementation. This implementation is required
-	 * when a <code>org.netbeans.lib.cvsclient.Client</code> connection is used to fire away on the CVS repository.
-	 *
-	 * @return A <code>PServerConnection</code> initialized with connection data for a CVS repository.
-	 */
-	public PServerConnection getConnection() {
-
-		PServerConnection connection = new PServerConnection();
-
-		connection.setHostName(location.getHost());
-		connection.setUserName(location.getUsername());
-		connection.setEncodedPassword(StandardScrambler.getInstance().scramble(location.getPassword()));
-		connection.setPort(location.getPort());
-		connection.setRepository(location.getRepository());
-
-		return connection;
-	}
-
 }

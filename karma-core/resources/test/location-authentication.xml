@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+
+<authenticators>
+
+	<location type="cvs-repository" id="cvs-local">
+
+		<!-- Username for the -->
+		<username>asmedes</username>
+		<password>_9Ghssi</password>
+		<protocol>pserver</protocol>
+
+	</location>
+
+	<location type="maven-repository" id="maven-local">
+
+        <!-- Whatever fields are required for a Maven repository -->
+
+		<!-- TODO -->
+
+	</location>
+
+</authenticators>

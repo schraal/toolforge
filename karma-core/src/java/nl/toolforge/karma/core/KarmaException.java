@@ -16,7 +16,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class KarmaException extends Exception {
 
-  private static Log logger = LogFactory.getLog(KarmaException.class);
+  //private static Log logger = LogFactory.getLog(KarmaException.class);
 	private static Preferences prefs = Preferences.getInstance();
 
 	// TODO : Work trough all errorcodes and come up with a nice setup of codes.
@@ -148,7 +148,7 @@ public class KarmaException extends Exception {
 
 	public void printStackTrace() {
 
-		logger.error("ERRORCODE : " + errorCode.getErrorCode());
+		//logger.error("ERRORCODE : " + errorCode.getErrorCode());
 
 		super.printStackTrace();
 	}

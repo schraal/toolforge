@@ -3,6 +3,8 @@ package nl.toolforge.karma.core.vc;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 
+import java.io.File;
+
 /**
  * This interface defines methods for runner classes that perform actions on a physical version control system.
  *
@@ -13,12 +15,20 @@ import nl.toolforge.karma.core.cmd.CommandResponse;
 public interface Runner {
 
 	/**
+	 * Adds a file to the version control system.
+	 *
+	 * @param file
+	 * @return
+	 */
+	public CommandResponse add(File file);
+
+	/**
 	 * Checks out a module from a version control system.
 	 *
 	 * @param module
 	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>.
 	 */
-	public CommandResponse checkout(Module module);
+	public CommandResponse checkout(Module module, File checkoutDirectory);
 
 	/**
 	 * Updates an already checked out module on a user's harddisk.

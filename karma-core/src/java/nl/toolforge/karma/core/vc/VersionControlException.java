@@ -17,4 +17,7 @@ public abstract class VersionControlException extends KarmaException {
 	/** Generated when a branch was created on a module which already existed. */
 	public static final ErrorCode DUPLICATE_BRANCH = new ErrorCode("VC-00010");
 
+	public VersionControlException(ErrorCode errorCode) {
+		super(errorCode);
+	}
 }

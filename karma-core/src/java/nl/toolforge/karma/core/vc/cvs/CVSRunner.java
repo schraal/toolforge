@@ -10,8 +10,13 @@ import nl.toolforge.karma.core.vc.SymbolicName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.Client;
+import org.netbeans.lib.cvsclient.connection.AuthenticationException;
 import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
 import org.netbeans.lib.cvsclient.command.GlobalOptions;
+import org.netbeans.lib.cvsclient.command.CommandException;
+import org.netbeans.lib.cvsclient.command.checkout.CheckoutCommand;
+
+import java.io.File;
 
 /**
  * <p>Runner class for CVS. Executes stuff on a CVS repository.
@@ -39,9 +44,9 @@ public final class CVSRunner implements Runner {
 	 */
 	public CVSRunner(Location location) throws CVSException {
 
-		CVSLocationImpl cvsLocation = null;
+    CVSLocationImpl cvsLocation = null;
 		try {
-			location = ((CVSLocationImpl) location);
+			cvsLocation = ((CVSLocationImpl) location);
 		} catch (ClassCastException e) {
 			logger.error("Wrong type for location. Should be CVSLocationImpl.",e);
 		}
@@ -50,7 +55,7 @@ public final class CVSRunner implements Runner {
 
 		// Initialize a CVS client
 		//
-		client = new Client(new CVSConnection(location).getConnection(), new StandardAdminHandler());
+		client = new Client(cvsLocation.getConnection(), new StandardAdminHandler());
 
 		// A CVSResponseAdapter is registered as a listener for the response from CVS. This one adapts to Karma
 		// specific stuff.
@@ -61,9 +66,9 @@ public final class CVSRunner implements Runner {
 		//
 		//client.setLocalPath(executionDir.getPath());
 
-		logger.debug("CVSRunner using CVSROOT : " + cvsLocation.getCVSROOT());
+		logger.debug("CVSRunner using CVSROOT : " + cvsLocation.toString());
 
-		globalOptions.setCVSRoot(cvsLocation.getCVSROOT());
+		globalOptions.setCVSRoot(cvsLocation.getCVSRootAsString());
 	}
 
 	/**
@@ -109,9 +114,23 @@ public final class CVSRunner implements Runner {
 	 * Performs the <code>cvs checkout &lt;module&gt;</code>command.
 	 *
 	 * @param module
-	 * @return The CVS response wrapped in a <code>CommandResponse</code>.
+	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
 	 */
-	public CommandResponse checkout(Module module) {
+	public CommandResponse checkout(Module module, File checkoutDirectory) {
+
+    CheckoutCommand checkoutCommand = new CheckoutCommand();
+    checkoutCommand.setModule(module.getName());
+		checkoutCommand.setPruneDirectories(true);
+		checkoutCommand.setCheckoutDirectory(checkoutDirectory.getPath());
+
+		try {
+			client.executeCommand(checkoutCommand, globalOptions);
+		} catch (CommandException e) {
+			e.printStackTrace();
+		} catch (AuthenticationException e) {
+			e.printStackTrace();
+		}
+
 		return null;
 	}
 
@@ -119,7 +138,7 @@ public final class CVSRunner implements Runner {
 	 * For a module, the <code>cvs -q update -Pd</code>command is executed.
 	 *
 	 * @param module
-	 * @return The CVS response wrapped in a <code>CommandResponse</code>.
+	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
 	 */
 	public CommandResponse update(Module module) {
 		return null;
@@ -129,9 +148,19 @@ public final class CVSRunner implements Runner {
 	 * For a module, the <code>cvs commit -m &lt;commitMessage&gt;</code>command is executed.
 	 *
 	 * @param file
-	 * @return The CVS response wrapped in a <code>CommandResponse</code>.
+	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
 	 */
 	public CommandResponse commit(ManagedFile file) {
+		return null;
+	}
+
+	/**
+	 * Adds a file to the CVS repository.
+	 *
+	 * @param file A file that is not yet in the CVS repository.
+	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
+	 */
+	public CommandResponse add(File file) {
 		return null;
 	}
 
@@ -139,7 +168,7 @@ public final class CVSRunner implements Runner {
 	 * For a module, the <code>cvs -q update -Pd</code>command is executed.
 	 *
 	 * @param module
-	 * @return The CVS response wrapped in a <code>CommandResponse</code>.
+	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
 	 */
 	public CommandResponse commit(Module module) {
 		return null;

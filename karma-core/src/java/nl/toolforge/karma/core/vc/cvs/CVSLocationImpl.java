@@ -1,12 +1,18 @@
 package nl.toolforge.karma.core.vc.cvs;
 
-import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.location.BaseLocation;
 import nl.toolforge.karma.core.location.Location;
 
+import java.io.File;
 import java.util.Locale;
 
+import org.netbeans.lib.cvsclient.CVSRoot;
+import org.netbeans.lib.cvsclient.connection.Connection;
+import org.netbeans.lib.cvsclient.connection.ConnectionFactory;
+
 /**
+ * <p>Class representing a location to a CVS repository. This class is not the 'real' connection, as that is handled
+ * by other classes in the sequence, yet it is a helper around the <code>org.netbeans.lib.cvsclient.CVSRoot</code>.
  *
  * @author D.A. Smedes
  *
@@ -20,6 +26,9 @@ public final class CVSLocationImpl extends BaseLocation {
 	/** Default protocol : <code>pserver</code> */
 	public static final String DEFAULT_PROTOCOL = "pserver";
 
+	/** Protocol for local CVS access */
+	public static final String LOCAL = "local";
+
 	private String host = null;
 	private String username = null;
 	private String password = null;
@@ -27,8 +36,23 @@ public final class CVSLocationImpl extends BaseLocation {
 	private int port = -1;
 	private String repository = null;
 
-	public CVSLocationImpl(String id) throws KarmaException {
+	private String cvsRootString = null;
+
+	public CVSLocationImpl(String id) {
 		super(id, Location.Type.CVS_REPOSITORY);
+	}
+
+	/**
+	 * Configures an instance for a local CVS repository. These repositories can be accessed using a CVSROOT such as
+	 * <code>:local:/home/cvsroots/root1/module1</code>.
+	 *
+	 * @param localPath A <code>File</code> reference to the local path.
+	 *
+	 * TODO Depending on other vc implementations, this method might have to be propagated up the class hierarchy.
+	 */
+	public void configureLocalRepository(File localPath) {
+		setProtocol(LOCAL);
+		setRepository(localPath.getPath());
 	}
 
 	/**
@@ -75,20 +99,21 @@ public final class CVSLocationImpl extends BaseLocation {
 	/**
 	 * The CVS repository protocol (<code>ext</code>, <code>pserver</code>, etc).
 	 *
-	 * @param protocol The CVS protocol (<code>:<b>pserver</b>:asmedes@localhost:2401/home/cvsroot</code>
+	 * @param protocol The CVS protocol (<code>:<b>pserver</b>:asmedes@localhost:2401/home/cvsroot</code>. Protocol
+	 *   strings are converted to lowercase.
 	 */
 	public void setProtocol(String protocol) {
 		if (protocol == null) {
 			protocol = DEFAULT_PROTOCOL;
 		}
-		this.protocol = protocol;
+		this.protocol = protocol.toLowerCase();
 	}
 	String getProtocol() {
 		return protocol;
 	}
 
 	/**
-	 * The CVS repository port, should be an valid port number.
+	 * The CVS repository port number, or zero when the port is not defined.
 	 *
 	 * @param port The CVS repository path (<code>:pserver:asmedes@localhost:<b>2401</b>/home/cvsroot</code>
 	 */
@@ -97,13 +122,11 @@ public final class CVSLocationImpl extends BaseLocation {
 	}
 	void setPort(String port) {
 
-		int p = -1;
 		try {
-			p = Integer.parseInt(port);
+			this.port = Integer.parseInt(port);
 		} catch (NumberFormatException n) {
 			this.port = DEFAULT_PORT;
 		}
-		this.port = p;
 	}
 	int getPort() {
 		return port;
@@ -115,6 +138,10 @@ public final class CVSLocationImpl extends BaseLocation {
 	 * @param repository The CVS repository path (<code>:pserver:asmedes@localhost:2401<b>/home/cvsroot</b></code>
 	 */
 	public void setRepository(String repository) {
+
+		if ((repository == null) || (repository.length() == 0)) {
+			throw new IllegalArgumentException("Repository cannot be null.");
+		}
 		this.repository = repository;
 	}
 	String getRepository() {
@@ -122,38 +149,67 @@ public final class CVSLocationImpl extends BaseLocation {
 	}
 
 	/**
-	 * See {@link #getCVSROOT}.
 	 *
-	 * @return See {@link #getCVSROOT}.
+	 * @return
 	 */
 	public String toString() {
 
 		try {
-			return getCVSROOT();
+			return getCVSRootAsString();
 		} catch (CVSException c) {
 			return CVSException.INVALID_CVSROOT.getErrorMessage(Locale.ENGLISH);
 		}
 	}
 
 	/**
-	 * Returns the <code>CVSROOT</code> as a string. Something like <code>:pserver:asmedes@localhost:2401/cvs/pub</code>.
+	 * Returns a connection object to a CVS repository.
 	 *
-	 * @return The <code>CVSROOT</code> as a string.
+	 * @return A CVS Connection object.
 	 * @throws CVSException See {@link CVSException#INVALID_CVSROOT}
 	 */
-	public String getCVSROOT() throws CVSException {
+	public Connection getConnection() throws CVSException {
 
-		// TODO CVSROOT should be validated here by a pattern !
-		//
+		if (cvsRootString != null) {
+			createCVSRoot();
+		}
+
+		return ConnectionFactory.getConnection(getCVSRootAsString());
+	}
+
+	private synchronized void createCVSRoot() throws CVSException {
 
 		StringBuffer buffer = new StringBuffer(":" + protocol + ":");
 
-		buffer.append(username).append("@");
-		buffer.append(host).append(":");
-		buffer.append(port).append(repository.startsWith("/") ? "" : "/");
-		buffer.append(repository);
+		if (buffer.toString().equals(":".concat(LOCAL).concat(":"))) {
 
-		return buffer.toString();
+			// Returns ':local:<repositoru>'
+			//
+			if (repository == null) {
+				throw new CVSException(CVSException.INVALID_CVSROOT);
+			}
+
+			buffer.append(repository);
+
+		} else {
+
+			if ((getUsername() == null) || (getHost() == null) || (getPort() == -1)){
+				throw new CVSException(CVSException.INVALID_CVSROOT);
+			}
+
+			buffer.append(username).append(":").append(password).append("@");
+			buffer.append(host).append(":");
+			buffer.append(port).append(repository.startsWith("/") ? "" : "/");
+			buffer.append(repository);
+		}
+		cvsRootString = buffer.toString();
 	}
 
+	public String getCVSRootAsString() throws CVSException {
+
+		if (cvsRootString == null) {
+			createCVSRoot();
+		}
+
+		return cvsRootString;
+	}
 }
