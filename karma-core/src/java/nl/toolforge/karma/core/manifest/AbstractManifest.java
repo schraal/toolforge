@@ -23,8 +23,11 @@ import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.threads.ParallelRunner;
 import nl.toolforge.karma.core.vc.cvs.AdminHandler;
 import nl.toolforge.karma.core.vc.cvs.Utils;
+import nl.toolforge.karma.core.vc.cvs.threads.CVSLogThread;
+import nl.toolforge.karma.core.vc.cvs.threads.PatchLineThread;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -125,7 +128,7 @@ public abstract class AbstractManifest implements Manifest {
    *
    * @throws ManifestException When loading the manifest failed.
    */
-  public final synchronized void load() throws ManifestException {
+  public synchronized void load() throws ManifestException {
 
     moduleCache.clear();
     modules.clear();
@@ -135,15 +138,38 @@ public abstract class AbstractManifest implements Manifest {
     ManifestFactory factory = ManifestFactory.getInstance();
     Manifest manifest = factory.parse(getName());
 
+    if (manifest instanceof ReleaseManifest) {
+      checkForPatchLines(manifest);
+    }
+
     copyToThis((AbstractManifest) manifest);
 
     // todo As a final step, check all modules in the manifest and remove modules that are not in the manifest anymore
     // but still on disk.
 
-    // todo should notify the user (responselistener)
-    //
-
     // todo should move all modules to a 'modules' sub-directory, for better scanning purposes.
+  }
+
+  /**
+   * Checks (in parallel) if modules have a PatchLine associated.
+   *
+   * @param manifest
+   */
+  private void checkForPatchLines(Manifest manifest) {
+
+    ParallelRunner runner = new ParallelRunner(manifest, PatchLineThread.class);
+    runner.execute();
+
+    // todo timing issue ... COULD last forever.
+    //
+    while (!runner.finished()) {
+
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
   }
 
   /**

@@ -24,6 +24,8 @@ import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.cvs.threads.PatchLineThread;
+import nl.toolforge.karma.core.vc.threads.ParallelRunner;
 
 import java.io.File;
 
@@ -65,9 +67,6 @@ public final class ReleaseManifest extends AbstractManifest {
     // todo duidelijk beschrijven hoe het state mechanisme wordt aangestuurd door dit ding.
     //
 
-    // todo if module has no version --> throw an exception. Release manifests can only contain versioned modules.
-    //
-
     if (descriptor.getVersion() == null) {
       throw new ManifestException(ManifestException.MODULE_WITHOUT_VERSION, new Object[]{descriptor.getName()});
     }
@@ -91,20 +90,6 @@ public final class ReleaseManifest extends AbstractManifest {
       setState(module, Module.STATIC);
     }
 
-    // Determine if a (physical (branch)) patch line has already been created for the module.
-    //
-    try {
-      // todo performance impact analysis
-      //
-      Runner runner = RunnerFactory.getRunner(module.getLocation());
-      if (runner.hasPatchLine(module)) {
-        module.markPatchLine(true);
-      }
-    } catch (VersionControlException v) {
-      throw new KarmaRuntimeException("hmm, hier iets beters voor verzinnen.");
-    }
-
-
     if (getModulesForManifest().containsKey(module.getName())) {
       throw new ManifestException(ManifestException.DUPLICATE_MODULE, new Object[]{module.getName(), getName()});
     }
@@ -114,37 +99,5 @@ public final class ReleaseManifest extends AbstractManifest {
     //
     removeLocal(module);
   }
-
-//  public final Module.State getLocalState(Module module) {
-//
-//    if (!module.isLocal()) {
-//      return Module.STATIC;
-//    } else {
-//
-//      FilenameFilter filter = new FilenameFilter() {
-//        public boolean accept(File dir, String name) {
-//          if ((name != null) && name.matches(".WORKING|.STATIC|.DYNAMIC")) {
-//            return true;
-//          } else {
-//            return false;
-//          }
-//        }
-//      };
-//
-//      String[] stateFiles = new File(getDirectory(), module.getName()).list(filter);
-//
-//      if (stateFiles == null || stateFiles.length == 0 ) {
-//        return Module.STATIC;
-//      }
-//
-//      if (stateFiles.length > 0 && ".WORKING".equals(stateFiles[0])) {
-//        return Module.WORKING;
-//      }
-//      return Module.STATIC;
-//    }
-//  }
-
-
-
 
 }
