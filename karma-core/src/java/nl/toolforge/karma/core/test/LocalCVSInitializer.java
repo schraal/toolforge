@@ -6,7 +6,6 @@ import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
-import nl.toolforge.karma.core.vc.cvs.InitializationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -33,130 +32,121 @@ import java.util.Random;
  */
 public class LocalCVSInitializer extends BaseTest {
 
-	public LocalCVSInitializer() {
+  private static Log logger = LogFactory.getLog(LocalCVSInitializer.class);
 
-		logger.debug("Arjen");
+  /** The name of the a test module in the test repository */
+  protected static final String DEFAULT_MODULE_1 = "CORE-test-module-1";
 
-	}
+  private static CVSLocationImpl location = null;
+  private File tempDevelopmentHome = null;
 
-	private static Log logger = LogFactory.getLog(LocalCVSInitializer.class);
+  /** Can be used to access random <code>int</code>s. */
+  protected static Random randomizer = new Random();
 
-	/** The name of the a test module in the test repository */
-	protected static final String DEFAULT_MODULE_1 = "CORE-test-module-1";
+  public void setUp() throws InitializationException {
 
-	private static CVSLocationImpl location = null;
-	private File tempDevelopmentHome = null;
+    super.setUp(); // ...
 
-	/** Can be used to access random <code>int</code>s. */
-	protected static Random randomizer = new Random();
+    String localPath = null; // Reference to test CVSROOT directory.
 
-	public void setUp() throws InitializationException {
+    try {
+      Properties props = new Properties();
+      props.load(getClass().getClassLoader().getResourceAsStream("test-cvs.properties"));
+      localPath = props.getProperty("cvs.local.path");
 
-		String localPath = null; // Reference to test CVSROOT directory.
+      logger.debug("cvs.local.path = " + localPath);
 
-		try {
-			Properties props = new Properties();
-			props.load(getClass().getClassLoader().getResourceAsStream("test-cvs.properties"));
-			localPath = props.getProperty("cvs.local.path");
-
-			logger.debug("cvs.local.path = " + localPath);
-
-			location = new CVSLocationImpl("local");
+      location = new CVSLocationImpl("local");
       location.setProtocol(CVSLocationImpl.LOCAL);
-			location.setRepository(localPath);
+      location.setRepository(localPath);
 
-//			File localRepository = new File(localPath);
+    } catch (Exception e) {
+      throw new InitializationException(
+        "Local CVS repository could not be initialized. Trying to initialize repository at : ".concat(localPath));
+    }
 
-//			if (localRepository.exists()) {
-//				location.configureLocalRepository(new File(localPath));
-//			} else {
-//				throw new Exception();
-//			}
+    // Create a temporary directory in '/tmp' or 'C:\Temp' where the tests can checkout stuff. This directory gets a
+    // random name.
+    //
+    try {
 
-		} catch (Exception e) {
-			throw new InitializationException(
-				"Local CVS repository could not be initialized. Trying to initialize repository at : ".concat(localPath));
-		}
+      int someInt = randomizer.nextInt();
+      someInt = (someInt< 0 ? someInt * -1 : someInt); // > 0
 
-		// Create a temporary directory in '/tmp' or 'C:\Temp' where the tests can checkout stuff. This directory gets a
-		// random name.
-		//
-		try {
+      tempDevelopmentHome = File.createTempFile("" + someInt, null);
+      tempDevelopmentHome.delete();
+      tempDevelopmentHome.mkdir();
 
-			tempDevelopmentHome = File.createTempFile("" + randomizer.nextInt(), null);
-			tempDevelopmentHome.delete();
-			tempDevelopmentHome.mkdir();
+      logger.info("Temporary directory " + tempDevelopmentHome.getPath() + " created.");
 
-			logger.info("Temporary directory " + tempDevelopmentHome.getPath() + " created.");
+    } catch (IOException e) {
+      throw new InitializationException("Directory in " + System.getProperty("TMP_DIR") + " could be created.");
+    }
+  }
 
-		} catch (IOException e) {
-			throw new InitializationException("Directory in " + System.getProperty("TMP_DIR") + " could be created.");
-		}
-	}
-
-	/**
-	 * Deletes the temporary directory.
-	 */
-	public void tearDown() {
+  /**
+   * Deletes the temporary directory.
+   */
+  public void tearDown() {
 //		if (tempDevelopmentHome.delete()) {
 //			logger.info("Temporary directory " + tempDevelopmentHome.getPath() + " deleted.");
 //		} else {
 //			logger.info("Temporary directory " + tempDevelopmentHome.getPath() + " could not be deleted.");
 //		}
-	}
+  }
 
-	/**
-	 * Gets the <code>CVSLocationImpl</code> that can be used for junit testing.
-	 */
-	protected CVSLocationImpl getTestLocation() {
-		return location;
-	}
+  /**
+   * Gets the <code>CVSLocationImpl</code> that can be used for junit testing.
+   */
+  protected CVSLocationImpl getTestLocation() {
+    return location;
+  }
 
-	/**
-	 * Creates a randomly named test filename in the module directory (<code>testModule</code>) for the test cvs
-	 * repository. Names are of the form <code>test_&lt;random-int&gt;</code>.
-	 */
-	protected File getTestFileName(String testModule) throws InitializationException {
+  /**
+   * Creates a randomly named test filename in the module directory (<code>testModule</code>) for the test cvs
+   * repository. Names are of the form <code>test_&lt;random-int&gt;</code>.
+   */
+  protected String getTestFileName() throws InitializationException {
 
-		File file = new File("test_" + randomizer.nextInt());
+    int someInt = randomizer.nextInt();
+    someInt = (someInt< 0 ? someInt * -1 : someInt); // > 0
 
-		try {
-			file.createNewFile();
-		} catch (IOException e) {
-			throw new InitializationException("Initialization failure >> " + e.getMessage());
-		}
+    return "test_" + someInt + ".nobody.txt";
+  }
 
-		return file;
-	}
+  /**
+   * Gets the temporary development home for the testrun. In a normal runtime environment, this would be equivalent
+   * with <code>new File({@link nl.toolforge.karma.core.prefs.Preferences#getDevelopmentHome})</code>.
+   * @return
+   */
+  protected File getDevelopmentHome() {
+    return tempDevelopmentHome;
+  }
 
-	/**
-	 * Gets the temporary development home for the testrun. In a normal runtime environment, this would be equivalent
-	 * with <code>new File({@link nl.toolforge.karma.core.prefs.Preferences#getDevelopmentHome})</code>.
-	 * @return
-	 */
-	protected File getDevelopmentHome() {
-		return tempDevelopmentHome;
-	}
+  protected File getModuleHome(String moduleName) {
+    return new File(tempDevelopmentHome.getPath() + File.separator + moduleName);
+  }
 
-	/**
-	 * <p>Tests if a checkout can be performed on {@link #DEFAULT_MODULE_1}, which is both a test as well as preparation
-	 * for methods in extension classes.
-	 */
-	public final void testAaaaaaa_CheckoutDefaultModule1() {
+  /**
+   * <p>Checks out {@link #DEFAULT_MODULE_1}, which can then be used to test against.
+   */
+  public final void checkoutDefaultModule1() {
 
-		try {
-			Runner runner = new CVSRunner(getTestLocation());
+    try {
+      Runner runner = new CVSRunner(getTestLocation());
 
-			FakeModule module = new FakeModule(DEFAULT_MODULE_1, location);
+      FakeModule module = new FakeModule(DEFAULT_MODULE_1, location);
+      module.setLocalPath(getDevelopmentHome());
 
-			CommandResponse response = runner.checkout(module, tempDevelopmentHome);
+      runner.checkout(module);
 
-			assertEquals(new CVSException(CVSException.INVALID_CVSROOT), response.getException());
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail(e.getMessage());
+    }
+  }
 
-		} catch (Exception e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
-	}
-
+  protected final Runner getTestRunner() throws CVSException {
+    return new CVSRunner(getTestLocation());
+  }
 }

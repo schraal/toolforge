@@ -16,27 +16,27 @@ import nl.toolforge.karma.core.KarmaRuntimeException;
  */
 public class BaseTest extends TestCase {
 
-	public void setUp() {
+  public void setUp() {
 
-		// Fake some parameters that would have been passed to the JVM
-		//
+    // Fake some parameters that would have been passed to the JVM
+    //
 
-		// The following is required to allow the Preferences class to use the test-classpath
-		//
-		System.setProperty("TESTMODE", "true");
+    // The following is required to allow the Preferences class to use the test-classpath
+    //
+    System.setProperty("TESTMODE", "true");
 
-		// Overrides karma.properties for Junit testing.
-		//
-		System.setProperty(Preferences.BOOTSTRAP_CONFIGURATION_FILE_PROPERTY, "karma.properties");
+    // Overrides karma.properties for Junit testing.
+    //
+    System.setProperty(Preferences.BOOTSTRAP_CONFIGURATION_FILE_PROPERTY, "karma.properties");
 
-		// Initialize the LocationFactory
-		//
+    // Initialize the LocationFactory
+    //
 
-		try {
-			LocationFactory locationFactory = LocationFactory.getInstance();
-			locationFactory.load(getClass().getClassLoader().getResourceAsStream("locations.xml"));
-		} catch (KarmaException e) {
-			throw new KarmaRuntimeException("BaseTest setup error", e);
-		}
-	}
+    try {
+      LocationFactory locationFactory = LocationFactory.getInstance();
+      locationFactory.load(getClass().getClassLoader().getResourceAsStream("locations.xml"));
+    } catch (KarmaException e) {
+      throw new KarmaRuntimeException("BaseTest setup error", e);
+    }
+  }
 }

@@ -3,7 +3,6 @@ package nl.toolforge.karma.core;
 import nl.toolforge.karma.core.location.Location;
 
 import java.io.File;
-import java.io.IOException;
 
 
 /**

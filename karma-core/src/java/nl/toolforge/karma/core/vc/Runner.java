@@ -15,13 +15,13 @@ import java.io.File;
 public interface Runner {
 
 	/**
-	 * Adds a file to the version control system.
+	 * Adds a file to the version control system. If the file does not exists, the file will be created.
 	 *
 	 * @param module The module that contains the file (or will contain the file).
-	 * @param filePath The full path to the filename that should be added to the version control system repository.
-	 * @return
+	 * @param fileName The filename of the file that should be added to the version control system repository.
+	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>.
 	 */
-	public CommandResponse add(Module module, File filePath);
+	public CommandResponse add(Module module, String fileName);
 
 	/**
 	 * Checks out a module from a version control system.
@@ -29,7 +29,7 @@ public interface Runner {
 	 * @param module
 	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>.
 	 */
-	public CommandResponse checkout(Module module, File checkoutDirectory);
+	public CommandResponse checkout(Module module);
 
 	/**
 	 * Updates an already checked out module on a user's harddisk.

@@ -4,6 +4,8 @@ import nl.toolforge.karma.core.KarmaException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Command response objects are returned by the execute method of the Command Object. It is recognized that a GUI needs
@@ -19,12 +21,15 @@ public abstract class CommandResponse {
 
 	private List commandMessages = null;
 
+  private Set statusUpdates = null;
+
 	// Contains the exception that was thrown during execution of the command
 	//
 	private Exception commandException = null;
 
 	public CommandResponse() {
 		commandMessages = new ArrayList();
+    statusUpdates = new HashSet();
 	}
 
 	/**
@@ -61,4 +66,35 @@ public abstract class CommandResponse {
 	protected void add(CommandMessage message) {
 		commandMessages.add(message);
 	}
+
+  /**
+   * The response maintains an list of status updates that have been set by commands. For instance, a CVS repository
+   * generates a <code>fileAdded</code> event, when a file has been added. The class the fetches these events, should
+   * implement constant values for these statusses and add them here. This class can then be queried for these
+   * statusses and do something with it.
+   *
+   * @see #hasStatus
+   *
+   * @param statusIdentifier A status identifier. Should be unique.
+   *
+   */
+  public final void addStatusUpdate(Integer statusIdentifier) throws CommandException {
+
+    if (statusUpdates.contains(statusIdentifier)) {
+      throw new CommandException(CommandException.DUPLICATE_COMMAND_STATUS);
+    }
+
+    statusUpdates.add(statusIdentifier);
+  }
+
+  /**
+   * Checks if this response has a status update <code>statusIdentifier</code> attached.
+   *
+   * @param statusIdentifier A status identifier.
+   *
+   * @return <code>true</code> when this response has the status update attached, <code>false</code> if it hasn't.
+   */
+  public final boolean hasStatus(Integer statusIdentifier) {
+    return statusUpdates.contains(statusIdentifier);
+  }
 }

@@ -4,8 +4,10 @@ import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.test.LocalCVSInitializer;
 import nl.toolforge.karma.core.test.FakeModule;
+import nl.toolforge.karma.core.KarmaException;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * <p>This class tests all stuff in the <code>cvs</code> package. For this to work properly, you should unpack the
@@ -17,55 +19,42 @@ import java.io.File;
  */
 public class TestCVSRunner extends LocalCVSInitializer {
 
-	public void testConstructor() {
+  public void testConstructor() {
 
-		try {
-			Runner runner = new CVSRunner(getTestLocation());
+    try {
+      Runner runner = getTestRunner();
 
-			assertNotNull(runner);
+      assertNotNull(runner);
 
-		} catch (Exception e) {
-			fail(e.getMessage());
-		}
-	}
+    } catch (CVSException e) {
+      fail(e.getMessage());
+    }
+  }
 
-//	/**
-//	 * <p>Must be done before anything else can be done.
-//	 */
-//	public final void testCheckoutDefaultModule1() {
-//
-//		try {
-//			Runner runner = new CVSRunner(getTestLocation());
-//
-//			FakeModule module = new FakeModule(DEFAULT_MODULE_1, getTestLocation());
-//
-//			CommandResponse response = runner.checkout(module, getDevelopmentHome());
-//
-//			assertEquals(new CVSException(CVSException.INVALID_CVSROOT), response.getException());
-//
-//		} catch (Exception e) {
-//			fail(e.getMessage());
-//		}
-//	}
+  public void testAdd1() {
 
-	public void testAdd1() {
+    Runner runner = null;
+    try {
+      runner = getTestRunner();
+    } catch (CVSException e) {
+      fail(e.getMessage());
+    }
 
-		try {
-			Runner runner = new CVSRunner(getTestLocation());
+    try {
 
-			// Prepare a fake module. All set to work for JUnit testing.
-			//
-			FakeModule module = new FakeModule(DEFAULT_MODULE_1, getTestLocation());
-      module.setLocalPath(getDevelopmentHome());
+      checkoutDefaultModule1();
 
-			File newFile = new File("test-file.txt");
+      // Prepare a fake module. All set to work for JUnit testing.
+      //
+      FakeModule module = new FakeModule(DEFAULT_MODULE_1, getTestLocation());
+      module.setLocalPath(getModuleHome(DEFAULT_MODULE_1));
 
-			CommandResponse response = runner.add(module, newFile);
+      CommandResponse response = runner.add(module, getTestFileName());
 
-			assertEquals(new CVSException(CVSException.INVALID_CVSROOT), response.getException());
+      assertTrue(response.hasStatus(CVSResponseAdapter.FILE_ADDED_OK));
 
-		} catch (Exception e) {
-			fail(e.getMessage());
-		}
-	}
+    } catch (KarmaException e) {
+      fail(e.getMessage());
+    }
+  }
 }

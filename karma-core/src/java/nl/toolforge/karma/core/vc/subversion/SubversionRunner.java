@@ -24,7 +24,7 @@ public final class SubversionRunner implements Runner {
 
 	}
 
-	public CommandResponse add(Module module, File filePath) {
+	public CommandResponse add(Module module, String fileName) {
 		return null;
 	}
 
@@ -35,6 +35,10 @@ public final class SubversionRunner implements Runner {
 	public CommandResponse checkout(Module module, File checkoutDirectory) {
 		return null;
 	}
+
+  public CommandResponse checkout(Module module) {
+    return null;
+  }
 
 	public CommandResponse update(Module module) {
 		return null;

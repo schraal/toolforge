@@ -2,10 +2,10 @@ package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.CommandException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.event.*;
-
 
 /**
  * Adapts a response from CVS to Karma specific messages. This class listens to CVS responses as per the Netbeans API.
@@ -16,14 +16,19 @@ import org.netbeans.lib.cvsclient.event.*;
  */
 public final class CVSResponseAdapter extends CommandResponse implements CVSListener {
 
+  public static final Integer FILE_ADDED_OK = new Integer(0);
+  public static final Integer FILE_REMOVED_OK = new Integer(1);
+
 	private static Log logger = LogFactory.getLog(CVSResponseAdapter.class);
 
 	/**
-	 *
-	 * @param message
+	 * Adds a message to a <code>CommandResponse</code>s' messages list.
+   *
+	 * @param message A <code>CommandMessage</code>. All types are valid, yet it is wise to add a
+   *   <code>CVSCommandMessage</code>
 	 */
 	public void addMessage(CommandMessage message) {
-		//
+		add(message);
 	}
 
 	/**
@@ -34,6 +39,11 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
 	public void fileRemoved(FileRemovedEvent event) {
 
 		logger.debug("FileRemovedEvent from CVS : " + event.toString());
+
+    if (!hasStatus(FILE_REMOVED_OK)) {
+      try { addStatusUpdate(FILE_REMOVED_OK); } catch (CommandException e) { } // Ignore
+    }
+
 	}
 
 	/**
@@ -57,6 +67,15 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
 	 * @param event The event from CVS.
 	 */
 	public void fileAdded(FileAddedEvent event) {
+
+    String messageText = "File " + event.getFilePath() + " has been added to the CVS repository.";
+
+    addMessage(new CVSCommandMessage(messageText));
+
+    if (!hasStatus(FILE_ADDED_OK)) {
+      try { addStatusUpdate(FILE_ADDED_OK); } catch (CommandException e) { } // Ignore
+    }
+
 		logger.debug("FileAddedEvent from CVS : " + event.toString());
 	}
 
@@ -97,6 +116,9 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
 	 */
 	public void messageSent(MessageEvent event) {
 		logger.debug("MessageEvent from CVS : " + event.toString());
+
+
+
 	}
 
 }

@@ -17,4 +17,16 @@ public class CommandException extends KarmaException {
 	 * part of the current manifest, this error code is generated.
 	 */
 	public static final ErrorCode MODULE_NOT_IN_MANIFEST = new ErrorCode("CMD-00010");
+
+  /**
+   * Used when a duplicate status update is added to a command response.
+   *
+   * @see CommandResponse#addStatusUpdate
+   */
+  public static final ErrorCode DUPLICATE_COMMAND_STATUS = new ErrorCode("CMD-00020");
+
+  public CommandException(ErrorCode errorCode) {
+    super(errorCode);
+  }
+
 }
