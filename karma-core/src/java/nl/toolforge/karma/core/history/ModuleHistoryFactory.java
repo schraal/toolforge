@@ -80,11 +80,11 @@ public class ModuleHistoryFactory {
         digester.addObjectCreate("history", "nl.toolforge.karma.core.history.ModuleHistory");
         digester.addObjectCreate("history/event", "nl.toolforge.karma.core.history.ModuleHistoryEvent");
         digester.addSetProperties("history/event");
-        digester.addObjectCreate("history/event/datetime", "java.template.Date");
+        digester.addObjectCreate("history/event/datetime", "java.util.Date");
         digester.addSetProperties("history/event/datetime");
         digester.addFactoryCreate("history/event/version", "nl.toolforge.karma.core.VersionCreationFactory");
         digester.addSetNext("history/event/version", "setVersion", "nl.toolforge.karma.core.Version");
-        digester.addSetNext("history/event/datetime", "setDatetime", "java.template.Date");
+        digester.addSetNext("history/event/datetime", "setDatetime", "java.util.Date");
         digester.addSetNext("history/event", "addEvent", "nl.toolforge.karma.core.history.ModuleHistoryEvent");
 
         moduleHistory = (ModuleHistory) digester.parse(historyLocation);
