@@ -32,15 +32,16 @@ import java.util.Set;
  * that are required to use the <code>build-module.xml</code> properly.
  *
  * @author D.A. Smedes
+ * @author W.H. Schraal
  * @version $Id$
  */
 public abstract class AbstractBuildCommand extends DefaultCommand {
 
   private static final Log logger = LogFactory.getLog(AbstractBuildCommand.class);
 
-  private static final String DEPENDENCY_SEPARATOR_CHAR = ",";
+  protected static final String DEPENDENCY_SEPARATOR_CHAR = ",";
 
-  private static final String DEFAULT_BUILD_DIR = "build";
+  protected static final String DEFAULT_BUILD_DIR = "build";
 
   /**
    * Mapper to the target in <code>build-module.xml</code> to build a module.
@@ -202,11 +203,10 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
    */
   protected abstract File getSourceDirectory() throws ManifestException;
 
+  
   protected String getJarDependencies(Set dependencies, boolean relative) throws ManifestException, CommandException {
 
     StringBuffer buffer = new StringBuffer();
-
-    File baseDir = getCurrentManifest().getDirectory();
 
     for (Iterator iterator = dependencies.iterator(); iterator.hasNext();) {
       ModuleDependency dep = (ModuleDependency) iterator.next();
@@ -293,7 +293,6 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
 
     DefaultLogger logger = new DefaultLogger();
-    logger.setMessageOutputLevel(Project.MSG_DEBUG);
     // todo hmm, this mechanism doesn't integrate with the commandresponse mechanism
     //
     logger.setOutputPrintStream(System.out);
@@ -305,10 +304,8 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
     //
     Project project = new Project();
     project.addBuildListener(logger);
-//    project.setProperty("ant.home", ".");
-//    project.setProperty("ANT_HOME", ".");
-//    System.setProperty("ant.home", ".");
     project.init();
+
     // Read in the build.xml file
     //
     ProjectHelper helper = new ProjectHelperImpl();

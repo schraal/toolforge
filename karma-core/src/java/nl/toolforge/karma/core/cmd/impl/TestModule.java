@@ -1,10 +1,10 @@
 package nl.toolforge.karma.core.cmd.impl;
 
 import java.io.File;
+import java.util.Set;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Diagnostics;
 
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
@@ -44,12 +44,10 @@ public class TestModule extends AbstractBuildCommand {
       // a manifest).
       //
       File srcBase = getSourceDirectory();
-System.out.println("sourcedir: "+srcBase);
       if (!srcBase.exists()) {
-        // No point in building a module, if no src/java is available.
+        // No point in building a module, if no test/java is available.
         //
-        //todo: make the test dir dynamic (getSourceDir()).
-        throw new CommandException(CommandException.NO_TEST_DIR, new Object[] {getCurrentModule().getName()});
+        throw new CommandException(CommandException.NO_TEST_DIR, new Object[] {getCurrentModule().getName(), getSourceDirectory()});
       }
 
       // Configure the Ant project
@@ -58,15 +56,12 @@ System.out.println("sourcedir: "+srcBase);
       project.setProperty(MODULE_BUILD_DIR_PROPERTY, getBuildDirectory().getPath());
       project.setProperty(MODULE_COMPILE_DIR_PROPERTY, getCompileDirectory().getPath());
       project.setProperty(MODULE_CLASSPATH_PROPERTY, getDependencies(getCurrentModule().getDependencies(), false));
-
     } catch (ManifestException e) {
       e.printStackTrace();
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
 
     try {
-//System.out.println(project);
-//Diagnostics.doReport(System.out);
       project.executeTarget(TEST_MODULE_TARGET);
     } catch (BuildException e) {
       e.printStackTrace();
@@ -121,5 +116,31 @@ System.out.println("sourcedir: "+srcBase);
     return new File(new File(getCurrentManifest().getDirectory(), getCurrentModule().getName()), "test/java");
   }
 
+  /**
+   * Overrides {@link AbstractBuildCommand#getDependencies(java.util.Set, boolean)}. Adds the jar
+   * of the current module to the dependencies. This jar is needed to be able to compile the unit tests.
+   *
+   * @param dependencies
+   * @param relative
+   * @return
+   * @throws ManifestException
+   * @throws CommandException
+   */
+  protected String getDependencies(Set dependencies, boolean relative) throws ManifestException, CommandException {
+    //construct the name of the module's jar file
+    //todo: this should be done more general
+    File f = new File(getCurrentManifest().getDirectory(), DEFAULT_BUILD_DIR);
+    f = new File(f, getCurrentModule().getName());
+    f = new File(f, getCurrentManifest().resolveArchiveName(getCurrentModule()));
+
+    //add the module's jar in front of the module's dependencies (if present)
+    String deps = super.getDependencies(dependencies, relative);
+    if (deps != null && !deps.equals("")) {
+      deps = f.getPath() + DEPENDENCY_SEPARATOR_CHAR + deps;
+    } else {
+      deps = f.getPath();
+    }
+    return deps;
+  }
 
 }
