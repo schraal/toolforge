@@ -159,6 +159,9 @@
 			<includes>
 				<include>**/Test*.java</include>
 			</includes>
+			<excludes>
+				<exclude>**/impl/TestModule.java</exclude>
+			</excludes>
 		</unitTest>
 	</build>
 
