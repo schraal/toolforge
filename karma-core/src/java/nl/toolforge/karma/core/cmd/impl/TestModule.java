@@ -18,23 +18,23 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
+import java.io.File;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandFactory;
+import nl.toolforge.karma.core.cmd.CommandLoadException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.ErrorMessage;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
-import nl.toolforge.karma.core.cmd.CommandLoadException;
-import nl.toolforge.karma.core.cmd.util.BuildEnvironment;
 import nl.toolforge.karma.core.cmd.util.DependencyException;
 import nl.toolforge.karma.core.cmd.util.DependencyHelper;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-
-import java.io.File;
 
 /**
  * Run the unit tests of a given module.
@@ -70,8 +70,9 @@ public class TestModule extends AbstractBuildCommand {
       command.registerCommandResponseListener(getResponseListener());
       command.execute();
     } catch (CommandException ce) {
-      if ( ce.getErrorCode().equals(CommandException.DEPENDENCY_DOES_NOT_EXIST) ||
-          ce.getErrorCode().equals(CommandException.BUILD_FAILED) ) {
+      if (    ce.getErrorCode().equals(CommandException.DEPENDENCY_DOES_NOT_EXIST) ||
+              ce.getErrorCode().equals(CommandException.BUILD_FAILED) ||
+              ce.getErrorCode().equals(DependencyException.DEPENDENCY_NOT_FOUND) ) {
         commandResponse.addMessage(new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments()));
         throw new CommandException(ce, CommandException.TEST_FAILED, new Object[]{module.getName()});
       } else {
@@ -88,12 +89,10 @@ public class TestModule extends AbstractBuildCommand {
       }
     }
 
-    BuildEnvironment env = new BuildEnvironment(getCurrentManifest(), getCurrentModule());
-
     // Define the location where junit source files are stored for a module (the default location in the context of
     // a manifest).
     //
-    if (!env.getModuleTestSourceDirectory().exists()) {
+    if (!getBuildEnvironment().getModuleTestSourceDirectory().exists()) {
       // No point in building a module, if no test/java is available.
       //
       throw new CommandException(CommandException.NO_TEST_DIR, new Object[] {getCurrentModule().getName(), "test"});
@@ -103,9 +102,8 @@ public class TestModule extends AbstractBuildCommand {
     //
     Project project = getAntProject("test-module.xml");
 
-    project.setProperty("module-source-dir", env.getModuleTestSourceDirectory().getPath());
-    project.setProperty("module-build-dir", env.getModuleBuildDirectory().getPath());
-    project.setProperty("module-test-dir", env.getModuleTestBuildDirectory().getPath());
+    project.setProperty("module-source-dir", getBuildEnvironment().getModuleTestSourceDirectory().getPath());
+    project.setProperty("module-test-dir", getBuildEnvironment().getModuleTestBuildDirectory().getPath());
     project.setProperty("module-compile-dir", getCompileDirectory().getPath());
     try {
 

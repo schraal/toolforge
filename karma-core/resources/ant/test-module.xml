@@ -4,15 +4,18 @@
 
   <target name="run">
 
-    <mkdir dir="${module-build-dir}/xml"/>
+    <!-- debug -->
+    <echo level="info" message="module-source-dir: ${module-source-dir}"/>
+    <echo level="info" message="module-classpath: ${module-classpath}"/>
+    <echo level="info" message="module-build-dir: ${module-test-dir}"/>
+
+    <mkdir dir="${module-test-dir}/xml"/>
 
     <javac
-      destdir="${module-build-dir}"
+      destdir="${module-test-dir}"
       srcdir="${module-source-dir}"
       classpath="${module-classpath}"
       debug="true"/>
-
-    <!-- <echo message="classpath: ${module-classpath}:${module-build-dir}/${module-test-dir}:${module-source-dir}/../resources"/> -->
 
     <available property="excludes-file-present" file="${module-source-dir}/excludes.properties"/>
 
@@ -26,12 +29,12 @@
 
       <!-- todo: pad moet anders -->
       <classpath>
-        <pathelement path="${module-classpath}:${module-build-dir}/${module-test-dir}:${module-source-dir}/../resources:${module-source-dir}/../../resources"/>
+        <pathelement path="${module-classpath}:${module-test-dir}:${module-source-dir}/../resources:${module-source-dir}/../../resources"/>
       </classpath>
 
       <formatter type="xml"/>
 
-      <batchtest todir="${module-build-dir}/${module-test-dir}/xml">
+      <batchtest todir="${module-test-dir}/xml">
         <fileset dir="${module-source-dir}">
           <include name="**/*.java"/>
           <excludesfile name="${module-source-dir}/excludes.properties" if="excludes-file-present"/>

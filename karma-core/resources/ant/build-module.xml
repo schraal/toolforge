@@ -4,8 +4,12 @@
 
   <target name="run">
 
-    <!-- Remove the old jar file(s). -->
+    <!-- debug -->
+    <echo level="debug" message="module-build-dir: ${module-build-dir}"/>
+    <echo level="debug" message="classpath: ${classpath}"/>
+    <echo level="debug" message="module-source-dir: ${module-source-dir}"/>
 
+    <!-- Remove the old jar file(s). -->
     <delete>
       <fileset dir="${module-build-dir}">
         <include name="*.jar"/>
@@ -13,7 +17,6 @@
     </delete>
 
     <!-- Compile all sources -->
-
     <javac
       destdir="${module-build-dir}"
       classpath="${classpath}"

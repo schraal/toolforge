@@ -1,20 +1,15 @@
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.cmd.DefaultCommand;
+import java.io.File;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+
+import nl.toolforge.karma.core.cmd.ActionCommandResponse;
+import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.CommandDescriptor;
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
-import nl.toolforge.karma.core.cmd.util.BuildEnvironment;
-import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ManifestException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.taskdefs.Javadoc;
-import org.apache.tools.ant.taskdefs.Echo;
-
-import java.io.File;
 
 /**
  * Generates Javadoc API documentation for the given module.
@@ -40,14 +35,12 @@ public class DocModule extends AbstractBuildCommand {
 
     super.execute();
 
-    BuildEnvironment env = new BuildEnvironment(getCurrentManifest(), getCurrentModule());
-
     Project project = getAntProject("doc-module.xml");
 
-    project.setProperty(JAVADOC_OUTPUT_DIR, env.getModuleJavadocDirectory().getPath());
+    project.setProperty(JAVADOC_OUTPUT_DIR, getBuildEnvironment().getModuleJavadocDirectory().getPath());
     project.setProperty(MODULE_NAME, getCurrentModule().getName());
     project.setProperty(MODULE_STATE, getCurrentManifest().getState(getCurrentModule()).toString());
-    project.setProperty(MODULE_SRC, env.getModuleSourceDirectory().getPath());
+    project.setProperty(MODULE_SRC, getBuildEnvironment().getModuleSourceDirectory().getPath());
 
     try {
       project.executeTarget("run");

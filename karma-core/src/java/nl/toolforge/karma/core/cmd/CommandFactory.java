@@ -18,14 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd;
 
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.MissingArgumentException;
-import org.apache.commons.cli.MissingOptionException;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
-import org.apache.commons.cli.UnrecognizedOptionException;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -36,9 +28,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.io.File;
 
-import nl.toolforge.karma.core.boot.WorkingContext;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.MissingArgumentException;
+import org.apache.commons.cli.MissingOptionException;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.apache.commons.cli.UnrecognizedOptionException;
+
+import net.sf.sillyexceptions.OutOfTheBlueException;
 
 /**
  * This factory is the single resource of Command objects. <code>KarmaRuntimeException</code>s are thrown when
@@ -68,8 +67,6 @@ public final class CommandFactory {
   }
 
   private synchronized void init() throws CommandLoadException {
-
-//    Set descriptors = CommandLoader.getInstance().load();
 
     Set descriptors = CommandLoader.getInstance().load();
 
@@ -275,6 +272,14 @@ public final class CommandFactory {
    * parameter).
    */
   private CommandDescriptor getCommandDescriptor(String commandId) {
+
+    try {
+      init(); //this fixes the bug where the previous value of an option is returned
+    } catch (CommandLoadException cle) {
+      //this can not happen, since the init has already been called in the constructor
+      //and it was successful then.
+      throw new OutOfTheBlueException("Tried to reload the commands, but failed. This is strange because they have been loaded earlier with success");
+    }
 
     if (commandsByName.containsKey(commandId)) {
       return (CommandDescriptor) commandsByName.get(commandId);

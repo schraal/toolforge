@@ -1,5 +1,11 @@
 package nl.toolforge.karma.core.cmd.util;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import nl.toolforge.core.util.collection.CollectionUtil;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.manifest.Manifest;
@@ -9,13 +15,6 @@ import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.Utils;
-import org.apache.tools.ant.BuildException;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 /**
  * Dependency management is heavily used by Karma. This helper class provides methods to resolve dependencies, check
@@ -46,7 +45,7 @@ public final class DependencyHelper {
   public String getClassPath(Module module) throws DependencyException {
 
     Set moduleDeps = getModuleDependencies(module);
-    Set jarDeps = getModuleDependencies(module);
+    Set jarDeps = getJarDependencies(module);
 
     if (jarDeps.size() == 0) {
       if (moduleDeps.size() == 0) {
@@ -99,7 +98,8 @@ public final class DependencyHelper {
 
         File dependencyJar = null;
         try {
-          dependencyJar = new File(env.getModuleBuildDirectory() + File.separator + resolveArchiveName(manifest.getModule(dep.getModule())));
+          File moduleBuildRoot = new File(env.getBuildRootDirectory(), dep.getModule());
+          dependencyJar = new File(moduleBuildRoot, resolveArchiveName(manifest.getModule(dep.getModule())));
         } catch (ManifestException e) {
           throw new DependencyException(e.getErrorCode(), e.getMessageArguments());
         }

@@ -23,8 +23,22 @@ public class BuildEnvironment {
     this.module = module;
   }
 
-  private File getBuildRootDirectory() {
+  public File getBuildRootDirectory() {
     return new File(manifest.getBaseDirectory(), "build");
+  }
+
+  /**
+   * manifest/build/module; location where a modules' artifacts end up, like compiled classes,
+   * tests, packages, etc.
+   *
+   * @return
+   */
+  public File getModuleBuildRootDirectory() {
+
+    File moduleBuildDir = new File(getBuildRootDirectory(), module.getName());
+    moduleBuildDir.mkdirs();
+
+    return moduleBuildDir;
   }
 
   /**
@@ -34,7 +48,7 @@ public class BuildEnvironment {
    */
   public File getModuleBuildDirectory() {
 
-    File moduleBuildDir = new File(new File(getBuildRootDirectory(), module.getName()), "build");
+    File moduleBuildDir = new File(getModuleBuildRootDirectory(), "build");
     moduleBuildDir.mkdirs();
 
     return moduleBuildDir;
@@ -47,7 +61,7 @@ public class BuildEnvironment {
    */
   public File getModuleTestBuildDirectory() {
 
-    File moduleTestDirectory = new File(new File(getBuildRootDirectory(), module.getName()), "test");
+    File moduleTestDirectory = new File(getModuleBuildRootDirectory(), "test");
     moduleTestDirectory.mkdirs();
 
     return moduleTestDirectory;
@@ -55,7 +69,7 @@ public class BuildEnvironment {
 
   public File getModuleJavadocDirectory() {
 
-    File moduleJavadocDirectory = new File(new File(getBuildRootDirectory(), module.getName()), "javadoc");
+    File moduleJavadocDirectory = new File(getModuleBuildRootDirectory(), "javadoc");
     moduleJavadocDirectory.mkdirs();
 
     return moduleJavadocDirectory;
@@ -63,7 +77,7 @@ public class BuildEnvironment {
 
   public File getModulePackageDirectory() {
 
-    File modulePackageDirectory = new File(new File(getBuildRootDirectory(), module.getName()), "package");
+    File modulePackageDirectory = new File(getModuleBuildRootDirectory(), "package");
     modulePackageDirectory.mkdirs();
 
     return modulePackageDirectory;

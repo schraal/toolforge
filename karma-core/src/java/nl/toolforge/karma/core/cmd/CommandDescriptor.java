@@ -78,14 +78,6 @@ public final class CommandDescriptor {
     this.description = description;
   }
 
-//  public void setDescription(String description) {
-//    this.description = description;
-//  }
-//
-//  public String getDescription() {
-//    return this.description;
-//  }
-
   /**
    * @param options The name of the command (the lt;options&gt;-child-element attribute of the &lt;command&gt;-element).
    */

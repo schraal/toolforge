@@ -18,15 +18,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
-import nl.toolforge.karma.core.cmd.util.BuildEnvironment;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
 
 /**
  * Remove all built stuff of the given module.
@@ -46,13 +46,9 @@ public class CleanModule extends AbstractBuildCommand {
 
     super.execute();
 
-    BuildEnvironment env = null;
-
     try {
-      env = new BuildEnvironment(getCurrentManifest(), getCurrentModule());
-
       Project project = getAntProject("clean-module.xml");
-      project.setProperty("module-build-dir", env.getModuleBuildDirectory().getPath());
+      project.setProperty("module-build-dir", getBuildEnvironment().getModuleBuildRootDirectory().getPath());
       project.executeTarget("run");
 
       // todo: localize message
@@ -61,7 +57,7 @@ public class CleanModule extends AbstractBuildCommand {
 
     } catch (BuildException e) {
       e.printStackTrace();
-      throw new CommandException(CommandException.CLEAN_MODULE_FAILED, new Object[] {env.getModuleBuildDirectory().getPath()});
+      throw new CommandException(CommandException.CLEAN_MODULE_FAILED, new Object[] {getBuildEnvironment().getModuleBuildDirectory().getPath()});
     }
   }
 

@@ -125,6 +125,13 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
   }
 
   /**
+   * Retrieve the build environment, which is initialized with the current manifest and module.
+   */
+  protected BuildEnvironment getBuildEnvironment() {
+    return env;
+  }
+  
+  /**
    * Returns the compile directory for a module, relative to the manifests' <code>build</code> directory.
    *
    * @return
@@ -135,7 +142,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
       throw new IllegalArgumentException("Module cannot be null.");
     }
 
-    File base = env.getModuleBuildDirectory();
+    File base = env.getModuleBuildRootDirectory();
 
     if (module.getDeploymentType().equals(Module.WEBAPP)) {
       return new File(base, "build/WEB-INF/classes");
