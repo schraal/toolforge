@@ -34,7 +34,7 @@
       </fileset>
     </delete>
 
-    <echo message="${module-classpath}"/>
+    <!-- <echo message="${module-classpath}"/> -->
 
     <javac
       destdir="${module-build-dir}/${module-compile-dir}"
@@ -68,7 +68,8 @@
       classpath="${module-classpath}"
       debug="true"/>
 
-    <echo message="classpath: ${module-classpath}:${module-build-dir}/${module-test-dir}:${module-source-dir}/../resources"/>
+    <!-- <echo message="classpath: ${module-classpath}:${module-build-dir}/${module-test-dir}:${module-source-dir}/../resources"/> -->
+
     <available property="excludes-file-present" file="${module-source-dir}/excludes.properties"/>
     <junit
       printsummary="yes"
@@ -121,7 +122,7 @@
     <!-- Remove all jar-files -->
     <delete dir="${module-build-dir}" includes="*.jar"/>
 
-    <echo message="${module-build-dir}, ${module-base-dir}, ${module-includes}"/>
+    <!-- <echo message="${module-build-dir}, ${module-base-dir}, ${module-includes}"/> -->
 
     <!-- copy resources from the module src to the package dir -->
     <!-- todo: refactor this so it works in a proper way. I really hate myself -->
@@ -157,16 +158,18 @@
     </delete>
 
     <copy todir="${module-build-dir}/${module-package-dir}" overwrite="true">
-      <fileset dir="${module-base-dir}" includes="${module-includes}"/>
+      <fileset dir="${module-base-dir}/web" includes="**/*"/>
+    </copy>
+    <copy todir="${module-build-dir}/${module-package-dir}" overwrite="true">
+      <fileset dir="${module-base-dir}" includes="${module-includes}" excludes="web"/>
     </copy>
 
     <!-- For standalone wars, all deps are copied to WEB-INF/lib and packaged as such.-->
 
-    <delete quiet="yes" >
-      <fileset dir="${module-build-dir}/${module-package-dir}/WEB-INF/lib" includes="**"/>
-    </delete>
-
+    <echo message="${manifest-build-dir} - ${module-module-dependencies}"/>
+    <echo message="${karma-jar-repository} - ${module-jar-dependencies}"/>
     <copy todir="${module-build-dir}/${module-package-dir}/WEB-INF/lib" flatten="yes" >
+
       <!-- Module dependencies, appear as <dependency module=""/> -->
       <fileset dir="${manifest-build-dir}" includes="${module-module-dependencies}"/>
       <!-- Jar dependencies, from the jar-repository -->
