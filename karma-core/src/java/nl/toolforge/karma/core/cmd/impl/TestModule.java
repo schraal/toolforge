@@ -25,6 +25,9 @@ import nl.toolforge.karma.core.manifest.ManifestException;
  */
 public class TestModule extends AbstractBuildCommand {
 
+  private final static String DEFAULT_TEST_SRC_DIRECTORY="test/java";
+  private final static String DEFAULT_TEST_BUILD_DIRECTORY="test";
+
   private CommandResponse commandResponse = new ActionCommandResponse();
 
   public TestModule(CommandDescriptor descriptor) {
@@ -65,10 +68,11 @@ public class TestModule extends AbstractBuildCommand {
       project.executeTarget(TEST_MODULE_TARGET);
     } catch (BuildException e) {
       e.printStackTrace();
-      throw new CommandException(CommandException.TEST_FAILED, new Object[] {getCurrentModule().getName()});
+      throw new CommandException(CommandException.TEST_FAILED, new Object[] {DEFAULT_TEST_SRC_DIRECTORY});
     }
 
-    message = new SuccessMessage("Module " + getCurrentModule().getName() + " tested succesfully."); // todo localize message
+    // todo: localize message
+    message = new SuccessMessage("Module " + getCurrentModule().getName() + " tested succesfully.");
     commandResponse.addMessage(message);
   }
 
@@ -90,7 +94,7 @@ public class TestModule extends AbstractBuildCommand {
 
     // the rest, for the time being.
     //
-    return new File(new File(getCurrentManifest().getDirectory(), "test"), getCurrentModule().getName());
+    return new File(new File(getCurrentManifest().getDirectory(), DEFAULT_TEST_BUILD_DIRECTORY), getCurrentModule().getName());
   }
 
   /**
@@ -113,7 +117,7 @@ public class TestModule extends AbstractBuildCommand {
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
     }
-    return new File(new File(getCurrentManifest().getDirectory(), getCurrentModule().getName()), "test/java");
+    return new File(new File(getCurrentManifest().getDirectory(), getCurrentModule().getName()), DEFAULT_TEST_SRC_DIRECTORY);
   }
 
   /**
