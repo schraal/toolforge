@@ -158,12 +158,6 @@
     </dependency>
 
     <dependency>
-      <groupId>netbeans</groupId>
-      <artifactId>cvslib</artifactId>
-      <version>3.6</version>
-    </dependency>
-
-    <dependency>
       <groupId>sillyexceptions</groupId>
       <artifactId>sillyexceptions</artifactId>
       <version>1.0.1</version>
