@@ -56,6 +56,8 @@ public class PackageModule extends AbstractBuildCommand {
     try {
 
       project.setProperty(MODULE_BUILD_DIR_PROPERTY, getBuildDirectory().getPath());
+      project.setProperty(MODULE_COMPILE_DIR_PROPERTY, getCompileDirectory().getPath());
+      project.setProperty(MODULE_PACKAGE_DIR_PROPERTY, getPackageDirectory().getPath());
 
       String packageName = new File(getBuildDirectory(), getCurrentManifest().resolveArchiveName(getCurrentModule())).getPath();
       project.setProperty(MODULE_PACKAGE_NAME_PROPERTY, packageName);
@@ -83,7 +85,7 @@ public class PackageModule extends AbstractBuildCommand {
 
         // Include all module-dependencies --> copied to WEB-INF/lib
         //
-        String moduleDeps = getModuleDependencies(getCurrentModule().getDependencies(), true);
+        String moduleDeps = getModuleDependencies(getCurrentModule().getDependencies(), true, DEPENDENCY_SEPARATOR_CHAR);
         project.setProperty(MODULE_MODULE_DEPENDENCIES_PROPERTY, moduleDeps);
 
         // Set the base location for jar dependencies.
@@ -92,7 +94,7 @@ public class PackageModule extends AbstractBuildCommand {
 
         // Include all jar dependencies --> copied to WEB-INF/lib
         //
-        String jarDeps = getJarDependencies(getCurrentModule().getDependencies(), true);
+        String jarDeps = getJarDependencies(getCurrentModule().getDependencies(), true, DEPENDENCY_SEPARATOR_CHAR);
         project.setProperty(MODULE_JAR_DEPENDENCIES_PROPERTY, jarDeps);
 
 //        project.setProperty(MODULE_EXCLUDES_PROPERTY, "*.war");
@@ -178,22 +180,6 @@ public class PackageModule extends AbstractBuildCommand {
 
   public CommandResponse getCommandResponse() {
     return commandResponse;
-  }
-
-  protected File getBuildDirectory() throws ManifestException {
-
-    if (module == null) {
-      throw new IllegalArgumentException("Module cannot be null.");
-    }
-
-    // the rest, for the time being.
-    //
-    return new File(new File(getCurrentManifest().getDirectory(), "build"), getCurrentModule().getName());
-  }
-
-  protected File getCompileDirectory() throws ManifestException {
-    //package does not compile anything.
-    return null;
   }
 
   protected File getSourceDirectory() throws ManifestException {

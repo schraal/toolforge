@@ -39,9 +39,12 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
   private static final Log logger = LogFactory.getLog(AbstractBuildCommand.class);
 
-  protected static final String DEPENDENCY_SEPARATOR_CHAR = ",";
+  protected static final char DEPENDENCY_SEPARATOR_CHAR = ',';
+  protected static final char CLASSPATH_SEPARATOR_CHAR = ';';
 
   protected static final String DEFAULT_BUILD_DIR = "build";
+  protected final static String DEFAULT_TEST_BUILD_DIRECTORY = "test";
+  protected final static String DEFAULT_PACKAGE_DIRECTORY = "package";
 
   /**
    * Mapper to the target in <code>build-module.xml</code> to build a module.
@@ -52,6 +55,11 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
    * Mapper to the target in <code>build-module.xml</code> to test a module.
    */
   protected static final String TEST_MODULE_TARGET = "test-module";
+
+  /**
+   * Mapper to the target in <code>build-module.xml</code> to clean a module.
+   */
+  protected static final String CLEAN_MODULE_TARGET = "clean-module";
 
   /**
    * Mapper to the target in <code>build-module.xml</code> to package a module as a <code>jar</code>-file.
@@ -75,7 +83,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
   /**
    * Property describing the full path-name to the modules' <code>build</code> directory; this is generally pointing
-   * to <code>&lt;development-home&gt/&lt;manifest-name&gt/build</code>.
+   * to <code>&lt;development-home&gt/&lt;manifest-name&gt/build/&lt;module-name&gt</code>.
    */
   protected static final String MODULE_BUILD_DIR_PROPERTY = "module-build-dir";
 
@@ -84,6 +92,18 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
    * where compiled classes will be stored.
    */
   protected static final String MODULE_COMPILE_DIR_PROPERTY = "module-compile-dir";
+
+  /**
+   * Property describing the <strong>relative</strong> path-name (to {@link #MODULE_BUILD_DIR_PROPERTY} to the directory
+   * where compiled tests and the results of the tests will be stored.
+   */
+  protected static final String MODULE_TEST_DIR_PROPERTY = "module-test-dir";
+
+  /**
+   * Property describing the <strong>relative</strong> path-name (to {@link #MODULE_BUILD_DIR_PROPERTY} to the directory
+   * where the exploded package will be stored.
+   */
+  protected static final String MODULE_PACKAGE_DIR_PROPERTY = "module-package-dir";
 
   /**
    * Property containing the compile classpath while building a module.
@@ -185,7 +205,17 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
    * @return
    * @throws ManifestException
    */
-  protected abstract File getBuildDirectory() throws ManifestException;
+  protected final File getBuildDirectory() throws ManifestException {
+
+    if (module == null) {
+      throw new IllegalArgumentException("Module cannot be null.");
+    }
+
+    // the rest, for the time being.
+    //
+    return new File(new File(getCurrentManifest().getDirectory(), "build"), getCurrentModule().getName());
+  }
+
 
   /**
    * Returns the compile directory for a module.
@@ -193,7 +223,48 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
    * @return
    * @throws ManifestException
    */
-  protected abstract File getCompileDirectory() throws ManifestException;
+  protected final File getCompileDirectory() throws ManifestException {
+
+    if (module == null) {
+      throw new IllegalArgumentException("Module cannot be null.");
+    }
+
+    if (module.getDeploymentType().equals(Module.WEBAPP)) {
+      return new File("build/WEB-INF/classes");
+    } else {
+      return new File("build");
+    }
+  }
+
+  /**
+   * Returns the test directory for a module.
+   *
+   * @return
+   * @throws ManifestException
+   */
+  protected final File getTestDirectory() throws ManifestException {
+
+    if (module == null) {
+      throw new IllegalArgumentException("Module cannot be null.");
+    }
+
+    return new File(DEFAULT_TEST_BUILD_DIRECTORY);
+  }
+
+  /**
+   * Returns the package directory for a module.
+   *
+   * @return
+   * @throws ManifestException
+   */
+  protected final File getPackageDirectory() throws ManifestException {
+
+    if (module == null) {
+      throw new IllegalArgumentException("Module cannot be null.");
+    }
+
+    return new File(DEFAULT_PACKAGE_DIRECTORY);
+  }
 
   /**
    * Returns the source directory for a module.
@@ -204,7 +275,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
   protected abstract File getSourceDirectory() throws ManifestException;
 
   
-  protected String getJarDependencies(Set dependencies, boolean relative) throws ManifestException, CommandException {
+  protected String getJarDependencies(Set dependencies, boolean relative, char separator) throws ManifestException, CommandException {
 
     StringBuffer buffer = new StringBuffer();
 
@@ -223,14 +294,14 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
         buffer.append(jar);
         if (iterator.hasNext()) {
-          buffer.append(DEPENDENCY_SEPARATOR_CHAR);
+          buffer.append(separator);
         }
       }
     }
     return buffer.toString();
   }
 
-  protected String getModuleDependencies(Set dependencies, boolean relative) throws ManifestException, CommandException {
+  protected String getModuleDependencies(Set dependencies, boolean relative, char separator) throws ManifestException, CommandException {
 
     StringBuffer buffer = new StringBuffer();
 
@@ -264,7 +335,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
         buffer.append(jar);
         if (iterator.hasNext()) {
-          buffer.append(DEPENDENCY_SEPARATOR_CHAR);
+          buffer.append(separator);
         }
       }
     }
@@ -272,14 +343,19 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
   }
 
   protected String getDependencies(Set dependencies, boolean relative) throws ManifestException, CommandException {
+    return getDependencies(dependencies, relative, DEPENDENCY_SEPARATOR_CHAR);
+  }
 
-    String moduleDeps = getModuleDependencies(dependencies, relative);
-    String jarDeps = getJarDependencies(dependencies, relative);
+  protected String getDependencies(Set dependencies, boolean relative, char separator) throws ManifestException, CommandException {
+
+    String moduleDeps = getModuleDependencies(dependencies, relative, separator);
+    String jarDeps = getJarDependencies(dependencies, relative, separator);
 
     if (!"".equals(jarDeps) && !"".equals(moduleDeps)) {
-      moduleDeps += DEPENDENCY_SEPARATOR_CHAR;
+      moduleDeps += separator;
     }
 
+    logger.debug("Dependencies: "+moduleDeps + jarDeps);
     return moduleDeps + jarDeps;
   }
 
@@ -298,7 +374,9 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
     logger.setOutputPrintStream(System.out);
     logger.setErrorPrintStream(System.out);
 
+//    logger.setMessageOutputLevel(Project.MSG_DEBUG); // Always handy ...
 //    logger.setMessageOutputLevel(Project.MSG_VERBOSE); // Always handy ...
+    logger.setMessageOutputLevel(Project.MSG_INFO); // Always handy ...
 
     // Configure underlying ant to run a command.
     //

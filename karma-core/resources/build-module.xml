@@ -27,14 +27,22 @@
 
     <mkdir dir="${module-build-dir}/${module-compile-dir}"/>
 
-    <delete dir="${module-build-dir}" includes="*.jar"/>
+    <!-- Remove the old jar file. -->
+    <delete>
+      <fileset dir="${module-build-dir}">
+        <include name="*.jar"/>
+      </fileset>
+    </delete>
+
+    <echo message="${module-classpath}"/>
 
     <javac
       destdir="${module-build-dir}/${module-compile-dir}"
       classpath="${module-classpath}"
       source="1.4"
       includes="**/*.java"
-      compiler="modern">
+      compiler="modern"
+      debug="true">
 
       <src path="${module-source-dir}"/>
 
@@ -52,15 +60,16 @@
     <!-- '${module-source-dir}' maps to ${development.home}/<manifest-name>/<module-name>/src/java-->
     <!-- '${compile-classpath}' is determined by Module.getDependencies -->
 
-    <mkdir dir="${module-build-dir}/${module-compile-dir}/xml"/>
+    <mkdir dir="${module-build-dir}/${module-test-dir}/xml"/>
 
     <javac
-      destdir="${module-build-dir}/${module-compile-dir}"
+      destdir="${module-build-dir}/${module-test-dir}"
       srcdir="${module-source-dir}"
-      classpath="${module-classpath}"/>
+      classpath="${module-classpath}"
+      debug="true"/>
 
     <junit
-      printsummary="no"
+      printsummary="yes"
       showoutput="yes"
       fork="no"
       errorproperty="unittestsfailed"
@@ -68,19 +77,28 @@
       reloading="false">
 
       <classpath>
-        <pathelement path="${module-classpath}:${module-build-dir}/${module-compile-dir}"/>
+        <pathelement path="${module-classpath}:${module-build-dir}/${module-test-dir}"/>
       </classpath>
 
       <formatter type="xml"/>
 
-      <batchtest todir="${module-build-dir}/${module-compile-dir}/xml">
+      <batchtest todir="${module-build-dir}/${module-test-dir}/xml">
         <fileset dir="${module-source-dir}">
           <include name="**/*.java"/>
           <exclude name=""/>
         </fileset>
       </batchtest>
     </junit>
+    <fail message="Tests failed." if="unittestsfailed"/>
+    
+  </target>
 
+  <!-- *********************************************************** -->
+  <!-- clean-module (clm); removes build and test stuff of module  -->
+  <!-- *********************************************************** -->
+
+  <target name="clean-module">
+    <delete dir="${module-build-dir}" />
   </target>
 
   <!-- *************************************** -->
@@ -94,13 +112,20 @@
 
     <echo message="${module-build-dir}, ${module-base-dir}, ${module-includes}"/>
 
-    <copy todir="${module-build-dir}" overwrite="true">
+    <!-- copy resources from the module src to the package dir -->
+    <copy todir="${module-build-dir}/${module-package-dir}" overwrite="true">
       <fileset dir="${module-base-dir}" includes="${module-includes}"/>
     </copy>
 
+    <!-- copy resources from the module build to the package dir -->
+    <copy todir="${module-build-dir}/${module-package-dir}" overwrite="true">
+      <fileset dir="${module-build-dir}/${module-compile-dir}" includes="**/*.class"/>
+    </copy>
+
+    <!-- todo: the /.. needs to be configured -->
     <jar
       destfile="${module-package-name}"
-      basedir="${module-build-dir}"
+      basedir="${module-build-dir}/${module-package-dir}"
       excludes="${module-excludes}"
       />
 
@@ -118,7 +143,7 @@
 
     <echo message="1"/>
 
-    <copy todir="${module-build-dir}" overwrite="true">
+    <copy todir="${module-build-dir}/${module-package-dir}" overwrite="true">
       <fileset dir="${module-base-dir}" includes="${module-includes}"/>
     </copy>
 
@@ -127,12 +152,12 @@
     <!-- For standalone wars, all deps are copied to WEB-INF/lib and packaged as such.-->
 
     <delete quiet="yes" >
-      <fileset dir="${module-build-dir}/WEB-INF/lib" includes="**"/>
+      <fileset dir="${module-build-dir}/${module-package-dir}/WEB-INF/lib" includes="**"/>
     </delete>
 
     <echo message="3"/>
 
-    <copy todir="${module-build-dir}/WEB-INF/lib" flatten="yes" >
+    <copy todir="${module-build-dir}/${module-package-dir}/WEB-INF/lib" flatten="yes" >
       <!-- Module dependencies, appear as <dependency module=""/> -->
       <fileset dir="${manifest-build-dir}" includes="${module-module-dependencies}"/>
       <!-- Jar dependencies, from the jar-repository -->
@@ -143,7 +168,7 @@
 
     <!-- Package the module -->
 
-    <war destfile="${module-package-name}" basedir="${module-build-dir}" webxml="${module-webxml}"/>
+    <war destfile="${module-package-name}" basedir="${module-build-dir}/${module-package-dir}" webxml="${module-webxml}"/>
 
   </target>
 
@@ -156,7 +181,7 @@
     <delete dir="${module-build-dir}" includes="*.ear;archives.*"/>
 
     <!-- copy the eapp stuff, while replacing module ids in application.xml -->
-    <copy todir="${module-build-dir}" overwrite="true">
+    <copy todir="${module-build-dir}/${module-package-dir}" overwrite="true">
       <fileset dir="${module-base-dir}" includes="${module-includes}"/>
       <filterset>
         <filtersfile file="${module-build-dir}/archives.properties"/>
@@ -164,13 +189,13 @@
     </copy>
 
     <!-- copy the external jars and wars-->
-    <copy todir="${module-build-dir}" flatten="yes">
-      <fileset dir="${module-build-dir}/.." includesfile="${module-build-dir}/archives.includes"/>
+    <copy todir="${module-build-dir}/${module-package-dir}" flatten="yes">
+      <fileset dir="${module-build-dir}" includesfile="${module-build-dir}/archives.includes"/>
     </copy>
 
     <ear
       destfile="${module-package-name}"
-      basedir="${module-build-dir}"
+      basedir="${module-build-dir}/${module-package-dir}"
       appxml="${module-appxml}"
       excludes="${module-excludes}"
       />

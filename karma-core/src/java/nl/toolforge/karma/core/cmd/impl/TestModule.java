@@ -26,7 +26,6 @@ import nl.toolforge.karma.core.manifest.ManifestException;
 public class TestModule extends AbstractBuildCommand {
 
   private final static String DEFAULT_TEST_SRC_DIRECTORY="test/java";
-  private final static String DEFAULT_TEST_BUILD_DIRECTORY="test";
 
   private CommandResponse commandResponse = new ActionCommandResponse();
 
@@ -57,8 +56,12 @@ public class TestModule extends AbstractBuildCommand {
       //
       project.setProperty(MODULE_SOURCE_DIR_PROPERTY, srcBase.getPath());
       project.setProperty(MODULE_BUILD_DIR_PROPERTY, getBuildDirectory().getPath());
+      project.setProperty(MODULE_TEST_DIR_PROPERTY, getTestDirectory().getPath());
+System.out.println("1");
       project.setProperty(MODULE_COMPILE_DIR_PROPERTY, getCompileDirectory().getPath());
-      project.setProperty(MODULE_CLASSPATH_PROPERTY, getDependencies(getCurrentModule().getDependencies(), false));
+System.out.println("2");
+      project.setProperty(MODULE_CLASSPATH_PROPERTY, getDependencies(getCurrentModule().getDependencies(), false, CLASSPATH_SEPARATOR_CHAR));
+System.out.println("3");
     } catch (ManifestException e) {
       e.printStackTrace();
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
@@ -68,7 +71,7 @@ public class TestModule extends AbstractBuildCommand {
       project.executeTarget(TEST_MODULE_TARGET);
     } catch (BuildException e) {
       e.printStackTrace();
-      throw new CommandException(CommandException.TEST_FAILED, new Object[] {DEFAULT_TEST_SRC_DIRECTORY});
+      throw new CommandException(CommandException.TEST_FAILED, new Object[] {getCurrentModule().getName()});
     }
 
     // todo: localize message
@@ -78,38 +81,6 @@ public class TestModule extends AbstractBuildCommand {
 
   public CommandResponse getCommandResponse() {
     return this.commandResponse;
-  }
-
-  /**
-   * Returns the build directory for a module.
-   *
-   * @return
-   * @throws ManifestException
-   */
-  protected File getBuildDirectory() throws ManifestException {
-
-    if (module == null) {
-      throw new IllegalArgumentException("Module cannot be null.");
-    }
-
-    // the rest, for the time being.
-    //
-    return new File(new File(getCurrentManifest().getDirectory(), DEFAULT_TEST_BUILD_DIRECTORY), getCurrentModule().getName());
-  }
-
-  /**
-   * Returns the compile directory for a module.
-   *
-   * @return
-   * @throws ManifestException
-   */
-  protected File getCompileDirectory() throws ManifestException {
-
-    if (module == null) {
-      throw new IllegalArgumentException("Module cannot be null.");
-    }
-
-    return new File("");
   }
 
   protected File getSourceDirectory() throws ManifestException {
@@ -130,17 +101,17 @@ public class TestModule extends AbstractBuildCommand {
    * @throws ManifestException
    * @throws CommandException
    */
-  protected String getDependencies(Set dependencies, boolean relative) throws ManifestException, CommandException {
+  protected String getDependencies(Set dependencies, boolean relative, char separator) throws ManifestException, CommandException {
     //construct the name of the module's jar file
     //todo: this should be done more general
     File f = new File(getCurrentManifest().getDirectory(), DEFAULT_BUILD_DIR);
     f = new File(f, getCurrentModule().getName());
-    f = new File(f, getCurrentManifest().resolveArchiveName(getCurrentModule()));
+    f = new File(f, DEFAULT_BUILD_DIR);
 
     //add the module's jar in front of the module's dependencies (if present)
-    String deps = super.getDependencies(dependencies, relative);
+    String deps = super.getDependencies(dependencies, relative, separator);
     if (deps != null && !deps.equals("")) {
-      deps = f.getPath() + DEPENDENCY_SEPARATOR_CHAR + deps;
+      deps = f.getPath() + separator + deps;
     } else {
       deps = f.getPath();
     }

@@ -57,7 +57,7 @@ public class BuildModule extends AbstractBuildCommand {
       project.setProperty(MODULE_SOURCE_DIR_PROPERTY, srcBase.getPath());
       project.setProperty(MODULE_BUILD_DIR_PROPERTY, getBuildDirectory().getPath());
       project.setProperty(MODULE_COMPILE_DIR_PROPERTY, getCompileDirectory().getPath());
-      project.setProperty(MODULE_CLASSPATH_PROPERTY, getDependencies(getCurrentModule().getDependencies(), false));
+      project.setProperty(MODULE_CLASSPATH_PROPERTY, getDependencies(getCurrentModule().getDependencies(), false, CLASSPATH_SEPARATOR_CHAR));
 
     } catch (ManifestException e) {
 //      e.printStackTrace();
@@ -66,6 +66,8 @@ public class BuildModule extends AbstractBuildCommand {
 
     try {
       project.executeTarget(BUILD_MODULE_TARGET);
+    } catch (OutOfMemoryError oome) {
+      throw new CommandException(CommandException.BUILD_FAILED_TOO_MANY_MISSING_DEPENDENCIES, new Object[] {getCurrentModule().getName()});
     } catch (BuildException e) {
       e.printStackTrace();
       throw new CommandException(CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
@@ -77,42 +79,6 @@ public class BuildModule extends AbstractBuildCommand {
 
   public CommandResponse getCommandResponse() {
     return this.commandResponse;
-  }
-
-  /**
-   * Returns the build directory for a module.
-   *
-   * @return
-   * @throws ManifestException
-   */
-  protected File getBuildDirectory() throws ManifestException {
-
-    if (module == null) {
-      throw new IllegalArgumentException("Module cannot be null.");
-    }
-
-    // the rest, for the time being.
-    //
-    return new File(new File(getCurrentManifest().getDirectory(), "build"), getCurrentModule().getName());
-  }
-
-  /**
-   * Returns the compile directory for a module.
-   *
-   * @return
-   * @throws ManifestException
-   */
-  protected File getCompileDirectory() throws ManifestException {
-
-    if (module == null) {
-      throw new IllegalArgumentException("Module cannot be null.");
-    }
-
-    if (module.getDeploymentType().equals(Module.WEBAPP)) {
-      return new File("WEB-INF/classes");
-    } else {
-      return new File("");
-    }
   }
 
   protected File getSourceDirectory() throws ManifestException {
