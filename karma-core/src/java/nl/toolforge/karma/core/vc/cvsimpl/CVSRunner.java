@@ -449,7 +449,7 @@ public final class CVSRunner implements Runner {
     logCommand.setModule(getOffSetLocation(module) + "/" + Module.MODULE_DESCRIPTOR);
 
 //    long start = System.currentTimeMillis();
-    executeOnCVS(logCommand, module.getBaseDir().getParentFile(), arguments);
+    executeOnCVS(logCommand, module.getCheckoutDir(), arguments);
 //    System.out.println("Thread " + this.hashCode() + " took " + (System.currentTimeMillis() - start) + " ms.");
 
     return ((CVSResponseAdapter) this.listener).getLogInformation();
