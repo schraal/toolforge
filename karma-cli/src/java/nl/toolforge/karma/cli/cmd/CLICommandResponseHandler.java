@@ -18,14 +18,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.cli.cmd;
 
+import nl.toolforge.karma.cli.CLI;
 import nl.toolforge.karma.core.cmd.CommandResponseHandler;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.manifest.Manifest;
-import nl.toolforge.karma.cli.ConsoleWriter;
-import nl.toolforge.karma.cli.CLI;
-
-import java.io.OutputStream;
-import java.io.PrintStream;
 
 /**
  * This class is responsible for handling CommandResponses in an interactive way.
