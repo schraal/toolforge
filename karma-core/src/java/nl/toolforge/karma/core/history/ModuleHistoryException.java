@@ -18,6 +18,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.history;
 
+import nl.toolforge.karma.core.ErrorCode;
+
 /**
  * Exception thrown by the module history classes in case of and error.
  *
@@ -25,12 +27,64 @@ package nl.toolforge.karma.core.history;
  */
 public class ModuleHistoryException extends Exception {
 
-  public ModuleHistoryException(String message) {
-    super(message);
+
+  private ErrorCode errorCode = null;
+  private Object[] messageArguments = null;
+
+  /**
+   * This is the prefix that is shown when displaying the error.
+   */
+  public static final String EXCEPTION_PREFIX = "HIS-";
+
+  /**
+   * When <code>history.xml</code> could not be parsed.
+   */
+  public static final ErrorCode INVALID_HISTORY_FILE = new ErrorCode(EXCEPTION_PREFIX + "00001");
+
+    /**
+   * When <code>history.xml</code> does not exist for the module.
+   */
+  public static final ErrorCode HISTORY_FILE_DOES_NOT_EXIST = new ErrorCode(EXCEPTION_PREFIX + "00002");
+
+  public ModuleHistoryException(ErrorCode errorCode) {
+    this(errorCode, null);
   }
 
-  public ModuleHistoryException(String message, Throwable cause) {
-    super(message, cause);
+  public ModuleHistoryException(Throwable t, ErrorCode errorCode) {
+    this(t, errorCode, null);
+  }
+
+  public ModuleHistoryException(ErrorCode errorCode, Object[] messageArguments) {
+    super();
+    this.errorCode = errorCode;
+    this.messageArguments = messageArguments;
+  }
+
+  public ModuleHistoryException(Throwable t, ErrorCode errorCode, Object[] messageArguments) {
+    super(t);
+    this.errorCode = errorCode;
+    this.messageArguments = messageArguments;
+  }
+
+  public String getMessage() {
+    if (messageArguments != null && messageArguments.length > 0) {
+      errorCode.setMessageArguments(messageArguments);
+    }
+    return errorCode.getErrorMessage();
+  }
+
+  /**
+   * Gets the exceptions' {@link nl.toolforge.karma.core.ErrorCode}.
+   */
+  public final ErrorCode getErrorCode() {
+    return errorCode;
+  }
+
+  /**
+   * Retrieves the message arguments for this exception.
+   */
+  public final Object[] getMessageArguments() {
+    return messageArguments;
   }
 
 }

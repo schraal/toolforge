@@ -85,20 +85,11 @@ public class ManifestException extends Exception {
    */
   public static final ErrorCode MODULE_WITHOUT_VERSION = new ErrorCode(EXCEPTION_PREFIX + "00016");
 
-  /**
-   * The manifest should be a development manifest.
-   */
-//  public static final ErrorCode NOT_USED = new ErrorCode(EXCEPTION_PREFIX + "00017");
-
   public static final ErrorCode DUPLICATE_MANIFEST_FILE = new ErrorCode(EXCEPTION_PREFIX + "00018");
 
   public ManifestException(ErrorCode errorCode) {
     this(errorCode, null);
   }
-
-//  public ManifestException(Throwable t, ErrorCode errorCode) {
-//    this(t, errorCode, null);
-//  }
 
   public ManifestException(ErrorCode errorCode, Object[] messageArguments) {
     super();
@@ -112,26 +103,11 @@ public class ManifestException extends Exception {
     this.messageArguments = messageArguments;
   }
 
-  /**
-   * Helper method to get the localized error message based on the {@link nl.toolforge.karma.core.ErrorCode}.
-   *
-   * @return
-   */
-  public final String getErrorMessage() {
+  public String getMessage() {
     if (messageArguments != null && messageArguments.length > 0) {
       errorCode.setMessageArguments(messageArguments);
     }
     return errorCode.getErrorMessage();
-//    if (getMessageArguments() != null && getMessageArguments().length != 0) {
-//      MessageFormat messageFormat = new MessageFormat(getErrorCode().getErrorMessage());
-//      return messageFormat.format(getMessageArguments());
-//    } else {
-//      return getErrorCode().getErrorMessage();
-//    }
-  }
-
-  public String getMessage() {
-    return getErrorMessage();
   }
 
   /**

@@ -40,17 +40,6 @@ public final class LocationException extends Exception {
   public static final String EXCEPTION_PREFIX = "LOC-";
 
   /**
-   * When the authenticator configuration is invalid. This is due to functional errors in the content of the
-   * <code>&lt;&authenticator&gt;</code>-element. Some locations require certain data to be available (username and
-   * password for a <code>pserver</code> location for instance).
-   */
-  public static final ErrorCode INVALID_AUTHENTICATOR_CONFIGURATION = new ErrorCode(EXCEPTION_PREFIX + "00001");
-
-  /**
-   * When the location-type requires authentication configuration to be present.
-   */
-  public static final ErrorCode MISSING_AUTHENTICATOR_CONFIGURATION = new ErrorCode(EXCEPTION_PREFIX + "00002");
-  /**
    * Location descriptor does not exist. This happens when a module's 'location'-attribute cannot be found by the
    * <code>LocationFactory</code>, which contains references to all <code>Location</code> objects mapped in
    * <code>locations.xml</code>.
@@ -62,10 +51,7 @@ public final class LocationException extends Exception {
    */
   public static final ErrorCode NO_LOCATION_DATA_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00006");
 
-
-
   /** Missing location property */
-
   public static final ErrorCode MISSING_LOCATION_PROPERTY = new ErrorCode(EXCEPTION_PREFIX + "00010");
   /**
    * The manifest-store is configured based on properties in <code>karma.properties</code>. This error code is
@@ -79,16 +65,6 @@ public final class LocationException extends Exception {
   public static final ErrorCode INVALID_LOCATION_STORE_LOCATION = new ErrorCode(EXCEPTION_PREFIX + "00012");
 
   public static final ErrorCode DUPLICATE_LOCATION_KEY = new ErrorCode(EXCEPTION_PREFIX + "00013");
-  /**
-   * No authenticator entry is configured that matches the location alias (the <code>id</code>-attribute).
-   */
-  public static final ErrorCode DUPLICATE_AUTHENTICATOR_KEY = new ErrorCode(EXCEPTION_PREFIX + "00014");
-
-  public static final ErrorCode AUTHENTICATOR_LOAD_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00015");
-  /**
-   * No authenticator entry is configured that matches the location alias (the <code>id</code>-attribute).
-   */
-  public static final ErrorCode AUTHENTICATOR_NOT_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00016");
 
   /**
    * An xml file with locations could not be loaded.
@@ -140,23 +116,18 @@ public final class LocationException extends Exception {
   /**
    * Helper method to get the localized error message based on the {@link nl.toolforge.karma.core.ErrorCode}.
    */
-  public final String getErrorMessage() {
+//  public final String getErrorMessage() {
+//    if (messageArguments != null && messageArguments.length > 0) {
+//      errorCode.setMessageArguments(messageArguments);
+//    }
+//    return errorCode.getErrorMessage();
+//  }
+
+  public String getMessage() {
     if (messageArguments != null && messageArguments.length > 0) {
       errorCode.setMessageArguments(messageArguments);
     }
     return errorCode.getErrorMessage();
-
-//    if (getMessageArguments() != null && getMessageArguments().length != 0) {
-//      MessageFormat messageFormat = new MessageFormat(getErrorCode().getErrorMessage());
-//      return messageFormat.format(getMessageArguments());
-//    } else {
-//      return getErrorCode().getErrorMessage();
-//    }
-
-  }
-
-  public String getMessage() {
-    return getErrorMessage();
   }
 
   /**

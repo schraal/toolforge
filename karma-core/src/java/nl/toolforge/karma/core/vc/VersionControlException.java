@@ -64,28 +64,11 @@ public abstract class VersionControlException extends Exception {
     this.messageArguments = messageArguments;
   }
 
-  /**
-   * Helper method to get the localized error message based on the {@link nl.toolforge.karma.core.ErrorCode}.
-   *
-   * @return
-   */
-  public final String getErrorMessage() {
+  public String getMessage() {
     if (messageArguments != null && messageArguments.length > 0) {
       errorCode.setMessageArguments(messageArguments);
     }
-//
-//    if (getMessageArguments() != null && getMessageArguments().length != 0) {
-//      MessageFormat messageFormat = new MessageFormat(getErrorCode().getErrorMessage());
-//      return messageFormat.format(getMessageArguments());
-//    } else {
-//      return getErrorCode().getErrorMessage();
-//    }
-//
     return getErrorCode().getErrorMessage();
-  }
-
-  public String getMessage() {
-    return getErrorMessage();
   }
 
   /**

@@ -15,7 +15,6 @@ public class TestCommandException extends TestCase {
     e = new CommandException(CommandException.TEST_CODE);
 
     assertEquals("CMD-00000 : Test message with arguments `{0}` and `{1}`", e.getMessage());
-    assertEquals("CMD-00000 : Test message with arguments `{0}` and `{1}`", e.getErrorMessage());
 
     e = new CommandException(CommandException.TEST_CODE, new Object[]{"1", "2"});
     assertEquals("CMD-00000 : Test message with arguments `1` and `2`", e.getMessage());

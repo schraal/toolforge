@@ -23,6 +23,8 @@ import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
 import nl.toolforge.karma.core.vc.threads.RunnerThread;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Checks if a module has a PatchLine in the version control repository. If the module that is passed to this instance
@@ -32,6 +34,8 @@ import nl.toolforge.karma.core.vc.threads.RunnerThread;
  * @version $Id$
  */
 public class PatchLineThread extends RunnerThread {
+
+  private static final Log logger = LogFactory.getLog(PatchLineThread.class);
 
   public PatchLineThread(Module module) {
     super(module);
@@ -53,6 +57,7 @@ public class PatchLineThread extends RunnerThread {
       }
 
     } catch (VersionControlException e) {
+      logger.error(e.getMessage());
       exception = e;
     } finally {
       stopRunning();

@@ -18,16 +18,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.vc.cvsimpl.threads;
 
+import nl.toolforge.karma.core.ErrorCode;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.cvsimpl.CVSException;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSModuleStatus;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
-import nl.toolforge.karma.core.vc.cvsimpl.CVSException;
 import nl.toolforge.karma.core.vc.threads.RunnerThread;
-import nl.toolforge.karma.core.ErrorCode;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * A <code>CVSLogThread</code> runs a <code>cvs log</code> command on a modules' <code>.module.info</code> file and
@@ -37,6 +39,8 @@ import nl.toolforge.karma.core.ErrorCode;
  * @version $Id$
  */
 public class CVSLogThread extends RunnerThread {
+
+  private static final Log logger = LogFactory.getLog(CVSLogThread.class);
 
   public CVSLogThread(Module module) {
     super(module);
@@ -64,6 +68,7 @@ public class CVSLogThread extends RunnerThread {
       moduleStatus.setExistsInRepository(true);
 
     } catch (VersionControlException e) {
+      logger.error(e.getMessage());
       ErrorCode code = e.getErrorCode();
       if (code.equals(LocationException.CONNECTION_EXCEPTION) ||
           code.equals(CVSException.INVALID_CVSROOT) ||
