@@ -82,7 +82,6 @@ public class PromoteCommand extends DefaultCommand {
       Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getCurrentManifest().getDirectory());
 
       // TODO check whether files exist that have not yet been committed.
-
       runner.promote(module, comment, nextVersion);
 
       this.newVersion = nextVersion;

@@ -161,8 +161,8 @@ public final class LocationFactory {
           authenticationRoot = (Document) authenticationRoot.importNode(document.getDocumentElement(), true);
         }
       } else {
-        logger.info("No authentication files found in " + env.getConfigurationDirectory().getPath() + ".");
-        //throw new LocationException(LocationException.MISSING_AUTHENTICATOR_CONFIGURATION);
+        logger.error("No authentication files found in " + env.getConfigurationDirectory().getPath() + ".");
+        throw new LocationException(LocationException.MISSING_AUTHENTICATOR_CONFIGURATION);
       }
 
       load(locationRoot, authenticationRoot);

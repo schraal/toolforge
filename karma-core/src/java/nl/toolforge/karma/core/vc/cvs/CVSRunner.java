@@ -202,8 +202,8 @@ public final class CVSRunner implements Runner {
     add(module, template.getFileElements(), template.getDirectoryElements(), tmp);
 
     //module has been created. Now, create the module history.
-    //todo: add author
-    addModuleHistoryEvent(tmp, module, ModuleHistoryEvent.CREATE_MODULE_EVENT, Version.INITIAL_VERSION, new Date(), "", comment);
+    String author = ((CVSLocationImpl) module.getLocation()).getUsername();
+    addModuleHistoryEvent(tmp, module, ModuleHistoryEvent.CREATE_MODULE_EVENT, Version.INITIAL_VERSION, new Date(), author, comment);
 
     tag(module, Version.INITIAL_VERSION, new File(tmp, module.getName()));
 
@@ -440,8 +440,8 @@ public final class CVSRunner implements Runner {
 //    checkout(module, tmp);
 
     //Add an event to the module history.
-    //todo: add author
-    addModuleHistoryEvent(getBasePoint(), module, ModuleHistoryEvent.PROMOTE_MODULE_EVENT, version, new Date(), "", comment);
+    String author = ((CVSLocationImpl) module.getLocation()).getUsername();
+    addModuleHistoryEvent(getBasePoint(), module, ModuleHistoryEvent.PROMOTE_MODULE_EVENT, version, new Date(), author, comment);
 
     File moduleLocation = new File(getBasePoint(), module.getName());
     tag(module, version, moduleLocation);
