@@ -114,6 +114,14 @@ public class CreatePassword extends DefaultCommand {
       }
     }
 
+    try {
+      location.connect();
+    } catch (AuthenticationException e) {
+      response.addEvent(new MessageEvent(this, new SimpleMessage("Warning : connection failed for location '" + locationAlias + "'")));
+    } catch (LocationException e) {
+      response.addEvent(new MessageEvent(this, new SimpleMessage("Warning : connection failed for location '" + locationAlias + "'")));
+    }
+
     if (changed) {
       response.addEvent(new MessageEvent(this, new SimpleMessage("Authenticator changed for location '" + locationAlias + "'")));
     } else {
