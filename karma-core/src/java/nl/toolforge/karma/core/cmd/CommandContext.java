@@ -3,8 +3,12 @@ package nl.toolforge.karma.core.cmd;
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.vc.RunnerFactory;
+import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.LocationFactory;
+import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
@@ -62,6 +66,29 @@ public final class CommandContext {
       }
       this.responseHandler = handler;
       this.env = env;
+
+      // Try updating the location-store.
+      //
+//      try {
+//
+//        CVSLocationImpl location = new CVSLocationImpl("manifest-store");
+//        location.setHost(getLocalEnvironment().getConfigurationDirectory());
+//
+//        Runner runner = RunnerFactory.getRunner();
+//
+//      } catch (LocationException l) {
+//
+//      }
+//
+//      // Try updating the manifest-store.
+//      //
+//      try {
+//
+//
+//      } catch (ManifestException m) {
+//
+//      }
+
 
       // Read in all location data
       //
