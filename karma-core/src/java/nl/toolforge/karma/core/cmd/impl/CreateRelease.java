@@ -164,6 +164,11 @@ public class CreateRelease extends CompositeCommand {
       // todo NEED AN ADDITIONAL method in Manifest : getDevelopmentManifests() ...
 
       Module module = (Module) i.next();
+
+      if (getContext().getCurrentManifest().getState(module).equals(Module.WORKING)) {
+        throw new CommandException(CommandException.MODULE_CANNOT_BE_WORKING_FOR_RELEASE_MANIFEST, new Object[]{module.getName()});
+      }
+
       buffer.append(getModule(module, getCommandLine().hasOption("u")));
     }
 

@@ -81,7 +81,7 @@ public class CommandException extends Exception {
   public static final ErrorCode PROMOTE_ONLY_ALLOWED_ON_WORKING_MODULE = new ErrorCode(EXCEPTION_PREFIX + "00043");
   /** Promote command is not allowed on static and dynamic modules. */
   public static final ErrorCode PROMOTE_WITH_INCREASE_MAJOR_VERSION_NOT_ALLOWED_ON_RELEASE_MANIFEST = new ErrorCode(EXCEPTION_PREFIX + "00075");
-  
+
 
   /**
    * <p>The dependency that is referenced does not exists. This could happen when:
@@ -122,6 +122,8 @@ public class CommandException extends Exception {
   public static final ErrorCode INVALID_LOCATION_TYPE = new ErrorCode(EXCEPTION_PREFIX + "00104");
   /** The working context could not be initialized. */
   public static final ErrorCode CANNOT_INITIALIZE_WORKING_CONTEXT = new ErrorCode(EXCEPTION_PREFIX + "00105");
+  /** A module is encountered with state WORKING. This is not allowed when creating a release manifest. */
+  public static final ErrorCode MODULE_CANNOT_BE_WORKING_FOR_RELEASE_MANIFEST = new ErrorCode(EXCEPTION_PREFIX + "00106");
 
   public CommandException(ErrorCode errorCode) {
     this(errorCode, null);
@@ -130,7 +132,7 @@ public class CommandException extends Exception {
   public CommandException(Throwable t, ErrorCode errorCode) {
     this(t, errorCode, null);
   }
-  
+
   public CommandException(ErrorCode errorCode, Object[] messageArguments) {
     super();
     this.errorCode = errorCode;
