@@ -25,7 +25,7 @@
 
   </command>
 
-  <command name="package" alias="pa">
+  <command name="package-module" alias="pam">
 
     <description lang="en">todo Something.</description>
 
@@ -197,7 +197,7 @@
 
   </command>
 
-  <command name="promote-module" alias="pm">
+  <command name="promote-module" alias="prm">
 
     <description lang="en">Promotes a module to the next version.</description>
 

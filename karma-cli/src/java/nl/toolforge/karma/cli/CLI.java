@@ -149,7 +149,10 @@ public class CLI {
 
         writer.prompt();
 
-        String line = reader.readLine().trim();
+        String line = null;
+        if (reader != null || reader.readLine() != null) {
+          line = reader.readLine().trim();
+        }
 
         if ((line == null) || ("".equals(line.trim()))) {
           continue;
@@ -206,6 +209,10 @@ public class CLI {
     }
     catch (IOException e) {
       logger.error(e.getMessage(), e);
+      System.exit(1);
+    }
+    catch (RuntimeException r) {
+      r.printStackTrace();
       System.exit(1);
     }
   }
