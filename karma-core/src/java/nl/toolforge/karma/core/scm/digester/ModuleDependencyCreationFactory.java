@@ -21,6 +21,7 @@ public class ModuleDependencyCreationFactory extends AbstractObjectCreationFacto
     dependency.setId(attributes.getValue("id"));
     dependency.setVersion(attributes.getValue("version"));
     dependency.setJar(attributes.getValue("jar"));
+    dependency.setPackage(new Boolean(attributes.getValue("package")).booleanValue());
 
     return dependency;
   }

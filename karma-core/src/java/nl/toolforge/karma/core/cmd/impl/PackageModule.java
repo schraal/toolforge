@@ -267,11 +267,11 @@ e.printStackTrace();
         copy.execute();
       }
 
-      // Copy dependencies
+      // Copy dependencies, but only those that need to be packaged
       //
 
-      Set moduleDeps = helper.getModuleDependencies(getCurrentModule(), true);
-      Set jarDeps = helper.getJarDependencies(getCurrentModule(), true);
+      Set moduleDeps = helper.getModuleDependencies(getCurrentModule(), true, true);
+      Set jarDeps = helper.getJarDependencies(getCurrentModule(), true, true);
 
       if (moduleDeps.size() > 0 || jarDeps.size() > 0) {
 
@@ -285,6 +285,7 @@ e.printStackTrace();
         if (moduleDeps.size() > 0) {
           fileSet = new FileSet();
           fileSet.setDir(getBuildEnvironment().getBuildRootDirectory());
+//System.out.println(CollectionUtil.concat(moduleDeps, ','));
           fileSet.setIncludes(CollectionUtil.concat(moduleDeps, ','));
           copy.addFileset(fileSet);
         }
@@ -295,6 +296,7 @@ e.printStackTrace();
           if (jarDeps != null && !"".equals(jarDeps)) {
             fileSet = new FileSet();
             fileSet.setDir(WorkingContext.getLocalRepository());
+//System.out.println(CollectionUtil.concat(jarDeps, ','));
             fileSet.setIncludes(CollectionUtil.concat(jarDeps, ','));
             copy.addFileset(fileSet);
           }
@@ -424,6 +426,7 @@ e.printStackTrace();
       copy.setFlatten(true);
 
       //copy the module dependencies from the application.xml
+//todo: this has to be done depending on the dependencies.
       fileSet = new FileSet();
 
       fileSet.setDir(getBuildEnvironment().getManifestBuildDirectory());
@@ -441,7 +444,7 @@ e.printStackTrace();
 //System.out.println("repo root: "+ WorkingContext.getLocalRepository());
       fileSet.setDir(WorkingContext.getLocalRepository());
 //System.out.println("jar deps: "+CollectionUtil.concat(helper.getJarDependencies(getCurrentModule()), ','));
-      fileSet.setIncludes(CollectionUtil.concat(helper.getJarDependencies(getCurrentModule(), true), ','));
+      fileSet.setIncludes(CollectionUtil.concat(helper.getJarDependencies(getCurrentModule(), true, true), ','));
       copy.addFileset(fileSet);
       copy.execute();
 

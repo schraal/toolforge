@@ -22,18 +22,23 @@ import java.io.File;
 
 /**
  * <p>Describes a dependency for a <code>Module</code>. This class is used by a Digester reading in a file called
- * <code>dependencies.xml</code> which is located in the root for each module that need dependencies. Dpeendencies can
+ * <code>dependencies.xml</code> which is located in the root for each module that need dependencies. Dependencies can
  * be defined in three ways:
  *
  * <ul>
  *   <li/><code>&lt;dependency module="&lt;module-name&gt;"/&gt;</code> defines a dependency to another module that is
- *        part of the same manifest. Those module should be of the correct type (<code>Java - Source Module</code>).
+ *        part of the same manifest. Those modules should be of the correct type (<code>Java - Source Module</code>).
  *   <li/><code>&lt;dependency groupId="" artifactId="" version=""/&gt;</code> defines a dependency Maven-style. This
  *        means that the actual <code>jar</code>-file is found on a local disk in a Maven repository. Karma imposes a
  *        stronger definition of Maven dependencies than Maven does itself. Karma does not allow the following
  *        structure : <code>id="" jar=""</code>.
- *   <li/> todo Define stuff for libmodules
+ *   <li/><code>&lt;dependency libmodule="" artifactId="" version=""/&gt;</code> defines that the
+ *        <code>&lt;artifactId&gt;-&lt;version&gt;.jar</code> package is 'loaded' from the given lib module.
  * </ul>
+ * <p>
+ * As an optional attribute <code>package</code> can be defined, with possible values <code>true</code> or <code>false</code>.
+ * <code>false</code> is the default. This defines whether or not the dependency should be packaged in the current module's package.
+ * </p>
  *
  * @see nl.toolforge.karma.core.cmd.util.DependencyException
  *
@@ -48,6 +53,7 @@ public final class ModuleDependency {
   private String version = null;
   private String module = null;
   private String jar = null;
+  private boolean doPackage = false;
 
   public String getId() {
     return id;
@@ -95,6 +101,14 @@ public final class ModuleDependency {
 
   public void setJar(String jar) {
     this.jar = jar;
+  }
+
+  public void setPackage(boolean b) {
+    this.doPackage = b;
+  }
+
+  public boolean doPackage() {
+    return this.doPackage;
   }
 
   public String getJarDependency() {
@@ -171,4 +185,24 @@ public final class ModuleDependency {
     }
   }
 
+  public String toString() {
+    String result = "<dependency ";
+
+    if (module != null) {
+      result += "module=\"\" ";
+    } else if (groupId != null) {
+      result += "groupId=\"\" ";
+    } else if (id != null) {
+      result += "id=\"\" ";
+    } else {
+      result += "libmodule=\"\" ";
+    }
+    if (doPackage) {
+      result += "package=\"true\" ";
+    } else {
+      result += "package=\"false\" ";
+    }
+    result += "/>";
+    return result;
+  }
 }

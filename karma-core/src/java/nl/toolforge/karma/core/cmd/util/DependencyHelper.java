@@ -75,14 +75,15 @@ public final class DependencyHelper {
 
   /**
    * Gets a <code>Set</code> of <code>String</code>s, each one identifying the absolute path to a module dependency.
-   * See {@link DependencyHelper#getModuleDependencies(Module, boolean)}
+   * All defined module dependencies are returned.
+   * See {@link DependencyHelper#getModuleDependencies(Module, boolean, boolean)}
    *
    * @param module The module for which a dependency-path should be determined.
    * @return See method description.
    * @throws DependencyException When a dependency for a module is not available.
    */
   public Set getModuleDependencies(Module module) throws ModuleTypeException, DependencyException {
-    return getModuleDependencies(module, false);
+    return getModuleDependencies(module, false, false);
   }
 
   /**
@@ -93,10 +94,12 @@ public final class DependencyHelper {
    *
    * @param module The module for which a dependency-path should be determined.
    * @param relative  Whether or not the paths are relative
+   * @param doPackage  Whether to include only the deps that are to be packaged or all deps.
+   *
    * @return See method description.
    * @throws DependencyException When a dependency for a module is not available.
    */
-  public Set getModuleDependencies(Module module, boolean relative) throws ModuleTypeException, DependencyException {
+  public Set getModuleDependencies(Module module, boolean relative, boolean doPackage) throws ModuleTypeException, DependencyException {
 
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
@@ -122,10 +125,12 @@ public final class DependencyHelper {
         if (!dependencyJarLocation.exists()) {
           throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getModule()});
         }
-        if (relative) {
-          s.add(dependencyJar.getPath());
-        } else {
-          s.add(dependencyJarLocation.getPath());
+        if (!doPackage || dep.doPackage()) {
+          if (relative) {
+            s.add(dependencyJar.getPath());
+          } else {
+            s.add(dependencyJarLocation.getPath());
+          }
         }
 
       }
@@ -135,10 +140,11 @@ public final class DependencyHelper {
 
 
   /**
-   * See {@link #getJarDependencies(Module, boolean)}. This method returns a set with the absolute pathnames.
+   * See {@link #getJarDependencies(Module, boolean, boolean)}. This method returns a set with the absolute pathnames.
+   * All defined jar dependencies are returned.
    */
   public Set getJarDependencies(Module module) throws DependencyException {
-    return getJarDependencies(module, false);
+    return getJarDependencies(module, false, false);
   }
 
 
@@ -150,6 +156,8 @@ public final class DependencyHelper {
    * <p>The <code>relative</code> parameters
    *
    * @param module The module for which jar dependencies should be determined.
+   * @param relative  Whether or not the path of the jars is relative or absolute.
+   * @param doPackage  Whether to include only the deps that are to be packaged or all deps.
    *
    * @return A <code>Set</code> containing <code>String</code>s, each one representing the relative path (Maven-style)
    *   to the jar dependency.
@@ -158,7 +166,7 @@ public final class DependencyHelper {
    *   existence of the jar file in either the local jar repository ({@link WorkingContext#getLocalRepository()}) or in
    *   the lib module that is specified as being part of the manifest.
    */
-  public Set getJarDependencies(Module module, boolean relative) throws DependencyException {
+  public Set getJarDependencies(Module module, boolean relative, boolean doPackage) throws DependencyException {
 
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
@@ -169,7 +177,7 @@ public final class DependencyHelper {
     for (Iterator iterator = module.getDependencies().iterator(); iterator.hasNext();) {
 
       ModuleDependency dep = (ModuleDependency) iterator.next();
-
+System.out.println("dep: "+dep);
       if (!dep.isModuleDependency()) {
         try {
           if (!new File(WorkingContext.getLocalRepository(), dep.getJarDependency()).exists()) {
@@ -179,12 +187,13 @@ public final class DependencyHelper {
             throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getJarDependency()});
           }
 
-          if (relative) {
-            s.add(dep.getJarDependency());
-          } else {
-            s.add(WorkingContext.getLocalRepository().getPath() + File.separator +dep.getJarDependency());
+          if (!doPackage || dep.doPackage()) {
+            if (relative) {
+              s.add(dep.getJarDependency());
+            } else {
+              s.add(WorkingContext.getLocalRepository().getPath() + File.separator +dep.getJarDependency());
+            }
           }
-
         } catch (IOException e) {
           throw new DependencyException(e, DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getJarDependency()});
         }
