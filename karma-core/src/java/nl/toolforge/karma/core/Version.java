@@ -7,6 +7,7 @@ import java.util.StringTokenizer;
  * is independent of the version control system.
  *
  * @author D.A. Smedes
+ * @version $Id$ 
  */
 public final class Version implements Comparable {
 

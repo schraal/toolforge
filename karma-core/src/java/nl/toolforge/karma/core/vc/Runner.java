@@ -8,7 +8,7 @@ import nl.toolforge.karma.core.cmd.CommandResponse;
  * This interface defines methods for runner classes that perform actions on a physical version control system.
  *
  * @author D.A. Smedes
- * @version $Id:
+ * @version $Id$
  */
 public interface Runner {
 

@@ -5,7 +5,7 @@ package nl.toolforge.karma.core.vc;
  * (for example) the test department
  *
  * @author D.A. Smedes, Doubleforge
- * @version Id:
+ * @version $Id$
  */
 public class PatchLine extends DevelopmentLine {
 

@@ -10,6 +10,7 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.ErrorMessage;
+import nl.toolforge.karma.core.cmd.CompositeCommand;
 
 import java.util.Iterator;
 
@@ -19,7 +20,8 @@ import java.util.Iterator;
  * @author D.A. Smedes
  * @version $Id$
  */
-public class UpdateAllModulesCommand extends DefaultCommand {
+//public class UpdateAllModulesCommand extends DefaultCommand {
+public class UpdateAllModulesCommand extends CompositeCommand {
 
   private CommandResponse commandResponse = new ActionCommandResponse();
 

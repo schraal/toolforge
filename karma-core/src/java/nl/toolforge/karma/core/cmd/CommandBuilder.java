@@ -2,7 +2,7 @@ package nl.toolforge.karma.core.cmd;
 
 /**
  * @author D.A. Smedes
- * @version $Id:
+ * @version $Id$
  */
 public final class CommandBuilder {
 

@@ -6,7 +6,7 @@ import java.text.MessageFormat;
  * Simple implementation of a command message.
  *
  * @author D.A. Smedes
- * @version $Id:
+ * @version $Id$
  *
  * @deprecated Has been replaced by more specific implementations of CommandMessage.
  */

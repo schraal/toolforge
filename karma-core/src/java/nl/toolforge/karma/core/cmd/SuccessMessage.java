@@ -4,6 +4,8 @@ package nl.toolforge.karma.core.cmd;
 
 /**
  * A CommandMessage that implements a success.
+ *
+ * @version $Id$
  */
 public class SuccessMessage extends AbstractCommandMessage {
   //todo make this a localized message

@@ -5,7 +5,7 @@ package nl.toolforge.karma.core.vc;
  * system through a branch.
  *
  * @author D.A. Smedes
- * @version $Id:
+ * @version $Id$
  */
 public class DevelopmentLine {
 

@@ -6,7 +6,7 @@ import java.text.MessageFormat;
  * Base implementation of a command message. Provides standard implementations for methods handling messages.
  *
  * @author D.A. Smedes
- * @version $Id:
+ * @version $Id$
  */
 public class AbstractCommandMessage implements CommandMessage {
 

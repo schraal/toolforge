@@ -7,6 +7,8 @@ package nl.toolforge.karma.core.cmd;
  * This reponse mainly returns whether the requested action has been executed successfully or not.
  *
  * @author W.H. Schraal
+ *
+ * @version $Id$
  */
 public class ActionCommandResponse extends CommandResponse {
 }

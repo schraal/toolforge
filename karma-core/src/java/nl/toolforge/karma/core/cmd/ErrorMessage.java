@@ -8,7 +8,7 @@ import nl.toolforge.karma.core.KarmaException;
  * @author W.H. Schraal
  * @author D.A. Smedes
  *
- * @version $Id:
+ * @version $Id$
  */
 public class ErrorMessage extends AbstractCommandMessage {
 

@@ -7,6 +7,7 @@ package nl.toolforge.karma.core.cmd;
  * This reponse mainly returns the information the user asked for.
  *
  * @author W.H. Schraal
+ * @version $Id$
  */
 public class QueryCommandResponse extends CommandResponse {
 }

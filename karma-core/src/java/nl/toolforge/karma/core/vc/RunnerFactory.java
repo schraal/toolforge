@@ -14,41 +14,47 @@ import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 
+/**
+ * Factory producing {@link Runner} instances.
+ *
+ * @author D.A. Smedes
+ * @version $Id$
+ */
 public final class RunnerFactory {
 
   private static Log logger = LogFactory.getLog(RunnerFactory.class);
 
   private RunnerFactory() {}
 
-	/**
-	 * A <code>Runner</code> might be required for a command to execute something on a version control system. A module
-	 * can determine which implementation of a runner it requires through the
-	 * {@link nl.toolforge.karma.core.Module#getLocation} method.
-	 *
-	 * @param module The module for which a runner is required.
-	 * @return A version control system specific runner.
-	 */
-	public static Runner getRunner(Module module, File basePoint) throws VersionControlException {
+  /**
+   * A <code>Runner</code> might be required for a command to execute something on a version control system. A module
+   * can determine which implementation of a runner it requires through the
+   * {@link nl.toolforge.karma.core.Module#getLocation} method.
+   *
+   * @param module The module for which a runner is required.
+   * @return A version control system specific <code>Runner</code>.
+   */
+  public static Runner getRunner(Module module, File basePoint) throws VersionControlException {
 
-		Location location = module.getLocation();
+    Location location = module.getLocation();
 
-			if (location instanceof CVSLocationImpl) {
-				logger.debug("Getting new CVSRunner instance.");
+    if (location instanceof CVSLocationImpl) {
+      logger.debug("Getting new CVSRunner instance.");
 
-        CVSRunner runner = new CVSRunner(location, basePoint);
+      CVSRunner runner = new CVSRunner(location, basePoint);
 
-        return runner;
-			}
+      return runner;
+    }
 
-		try {
-			if (location instanceof SubversionLocationImpl) {
-				logger.debug("Getting new CVSRunner instance.");
-				return new SubversionRunner(module.getLocation());
-			}
-		} catch (KarmaException k) {
-			throw new SVNException(VersionControlException.RUNNER_ERROR);
-		}
-		throw new KarmaRuntimeException("Location instance invalid.");
-	}
+    try {
+      if (location instanceof SubversionLocationImpl) {
+        logger.debug("Getting new CVSRunner instance.");
+        return new SubversionRunner(module.getLocation());
+      }
+    } catch (KarmaException k) {
+      throw new SVNException(VersionControlException.RUNNER_ERROR);
+    }
+    throw new KarmaRuntimeException("Location instance invalid.");
+  }
 
 }

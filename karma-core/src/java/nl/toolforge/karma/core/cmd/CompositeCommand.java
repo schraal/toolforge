@@ -10,7 +10,7 @@ import nl.toolforge.karma.core.KarmaException;
  * some command on each of them.
  *
  * @author D.A. Smedes
- * @version $Id:
+ * @version $Id$
  */
 public abstract class CompositeCommand extends DefaultCommand implements CommandResponseListener {
 

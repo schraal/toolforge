@@ -15,7 +15,7 @@ import nl.toolforge.karma.core.cmd.impl.UpdateAllModulesCommand;
  *
  * @author D.A. Smedes
  *
- * @version $Id:
+ * @version $Id$
  */
 public class UpdateAllModulesImpl extends UpdateAllModulesCommand {
 
