@@ -1,6 +1,33 @@
 <?xml version="1.0"?>
 
+<!-- TODO description element should get childs for all languages iso attributes -->
+
 <commands>
+
+  	<command name="select-manifest" alias="slm">
+
+		<description lang="en">
+			The select-manifest command activates a manifest by reading it from disk and loading it into Karma.
+		</description>
+
+		<options>
+			<option opt="m" longOpt="manifest" required="true" description="The manifest name">
+				<arg name="manifest-name"/>
+			</option>
+		</options>
+
+		<classname>nl.toolforge.karma.cli.cmd.SelectManifestModuleImpl</classname>
+
+<!--		<dependencies>-->
+<!--			<dependency type="vc-support" name="cvs"/>-->
+<!--			<dependency type="vc-support" name="subversion"/>-->
+<!--			<dependency type="module-support" name="lib"/>-->
+<!--			<dependency type="module-support" name="source"/>-->
+<!--		</dependencies>-->
+
+		<help/>
+
+	</command>
 
 	<command name="update" alias="upd">
 
