@@ -44,6 +44,44 @@
 
   </target>
 
+  <!-- ************************ -->
+  <!-- test-module (tm)        -->
+  <!-- ************************ -->
+
+  <target name="test-module" depends="init-build-dir">
+
+    <!-- '${module-build-dir}' maps to ${development.home}/<manifest-name>/build/<module-name>-->
+    <!-- '${module-source-dir}' maps to ${development.home}/<manifest-name>/<module-name>/src/java-->
+    <!-- '${compile-classpath}' is determined by Module.getDependencies -->
+
+    <mkdir dir="${module-build-dir}/${module-compile-dir}/xml"/>
+
+    <javac destdir="${module-build-dir}/${module-compile-dir}" srcdir="${module-source-dir}" classpath="${module-classpath}"/>
+
+    <junit
+      printsummary="no"
+      showoutput="yes"
+      fork="no"
+      errorproperty="unittestsfailed"
+      failureproperty="unittestsfailed"
+      reloading="false">
+
+      <classpath>
+        <pathelement path="${module-classpath}"/>
+      </classpath>
+
+      <formatter type="xml"/>
+
+      <batchtest todir="${module-build-dir}/${module-compile-dir}/xml">
+        <fileset dir="${module-build-dir}/${module-compile-dir}">
+          <include name="**/Test*.class"/>
+    		  <exclude name=""/>
+        </fileset>
+      </batchtest>
+    </junit>
+
+  </target>
+
   <!-- *************************************** -->
   <!-- package-module (pa); resulting in a jar -->
   <!-- *************************************** -->
@@ -63,7 +101,7 @@
       destfile="${module-package-name}"
       basedir="${module-build-dir}"
       excludes="${module-excludes}"
-      />
+    />
 
   </target>
 
