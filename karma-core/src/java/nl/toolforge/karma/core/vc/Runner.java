@@ -42,8 +42,9 @@ public interface Runner {
 	 *
 	 * @param module
 	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>.
+	 * @throws VersionControlException When an error occurred executing the command on the repository.
 	 */
-	public CommandResponse update(Module module);
+	public CommandResponse update(Module module) throws VersionControlException;
 
 	/**
 	 * Commits a change to <code>file</code> to the version control system.
@@ -51,7 +52,7 @@ public interface Runner {
 	 * @param file The file that should be committed.
 	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>.
 	 */
-	public CommandResponse commit(ManagedFile file);
+	public CommandResponse commit(ManagedFile file) throws VersionControlException;
 
 	/**
 	 * Commits all changes on <code>ManagedFile</code> instances for this
@@ -60,7 +61,7 @@ public interface Runner {
 	 * @param module The module for which all changes should be committed.
 	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>.
 	 */
-	public CommandResponse commit(Module module);
+	public CommandResponse commit(Module module) throws VersionControlException;
 
 	/**
 	 * Creates a branch on the module.
@@ -70,7 +71,7 @@ public interface Runner {
 	 *
 	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>
 	 */
-	public CommandResponse branch(Module module, SymbolicName branch);
+	public CommandResponse branch(Module module, SymbolicName branch) throws VersionControlException;
 
 	/**
 	 * Tags a module with a symbolic name.
@@ -79,6 +80,6 @@ public interface Runner {
 	 * @param tag
 	 * @return
 	 */
-	public CommandResponse tag(Module module, SymbolicName tag);
+	public CommandResponse tag(Module module, SymbolicName tag) throws VersionControlException;
 
 }

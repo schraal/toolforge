@@ -15,8 +15,8 @@ public final class SubversionLocationImpl extends BaseLocation {
 	private String username = null;
 	private String password = null;
 
-	public SubversionLocationImpl(String id) throws KarmaException {
-         super(id, Location.Type.SUBVERSION_REPOSITORY);
+	public SubversionLocationImpl(String id) {
+		super(id, Location.Type.SUBVERSION_REPOSITORY);
 	}
 
 	public void setUsername(String username) {

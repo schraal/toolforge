@@ -38,13 +38,8 @@ public class KarmaException extends Exception {
   /** Manifest cannot only contain certain types of <code>Module</code>s. */
   public static final ErrorCode INVALID_MANIFEST_NAME = new ErrorCode("RT-00004");
 
-
-
-
-
   /** Can be used to identify something that is not implemented */
   public static final ErrorCode NOT_IMPLEMENTED = new ErrorCode("CORE-00000");
-
 
   /** The implementation class for the command as defined in the descriptor cannot be found */
   public static final ErrorCode COMMAND_IMPLEMENTATION_CLASS_NOT_FOUND = new ErrorCode("CORE-00002");
@@ -70,22 +65,13 @@ public class KarmaException extends Exception {
   /** Duplicate command descriptor alias in commands XML file */
   public static final ErrorCode DUPLICATE_COMMAND_ALIAS = new ErrorCode("CORE-00008");
 
-  /** No location files were found. A developer should have a directory configured in karma.properties. */
-  public static final ErrorCode NO_LOCATION_DATA_FOUND = new ErrorCode("CORE-00009");
-
-  /** Data format errors (errors during pattern matching, etc). */
+	/** Data format errors (errors during pattern matching, etc). */
   public static final ErrorCode DATAFORMAT_ERROR = new ErrorCode("CORE-00020");
 
-  /** A manifest file could not be found or loading errors occurred */
-  public static final ErrorCode MANIFEST_COULD_NOT_BE_LOADED = new ErrorCode("CORE-00030");
+//  /** A manifest file could not be found or loading errors occurred */
+//  public static final ErrorCode MANIFEST_COULD_NOT_BE_LOADED = new ErrorCode("CORE-00030");
 
-  /** No manifest has been assigned to the <code>CommandContext</code>  */
-  public static final ErrorCode NO_MANIFEST_SELECTED = new ErrorCode("CORE-00031");
-
-  /** IO Error when trying to flush the manifest file to disk */
-  public static final ErrorCode MANIFEST_FLUSH_ERROR = new ErrorCode("CORE-00032");
-
-  /** The console could not be initialized with user defined settings. Settings could not be available. */
+	/** The console could not be initialized with user defined settings. Settings could not be available. */
   public static final ErrorCode CONSOLE_INITIALIZATION_ERROR = new ErrorCode("CORE-00040");
 
   /** Command does not exist */
@@ -93,13 +79,6 @@ public class KarmaException extends Exception {
 
   /** Invalid option for this command */
   public static final ErrorCode INVALID_COMMAND_OPTION = new ErrorCode("CORE-00051");
-
-  /**
-   * Location descriptor does not exist. This happens when a module's 'location'-attribute cannot be found by the
-   * <code>LocationFactory</code>, which contains references to all <code>Location</code> objects mapped in
-   * <code>locations.xml</code>.
-   */
-  public static final ErrorCode LOCATION_NOT_FOUND = new ErrorCode("CORE-00060");
 
   /** No <code>module.info</code> file exists for the module. This file is mandatory for <code>SourceModule</code>s. */
   public static final ErrorCode NO_MODULE_INFO = new ErrorCode("CORE-00065");
@@ -109,7 +88,7 @@ public class KarmaException extends Exception {
   protected Object[] messageArguments = new Object[]{};
 
   //TODO: uitfaseren?
-  public KarmaException() {}
+//  public KarmaException() {}
 
   /**
    * Create a new KarmaException, with the specific errorCode.

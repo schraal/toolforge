@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.ManifestException;
+import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
@@ -29,7 +30,7 @@ public class SelectManifest extends DefaultCommand {
    *
    * @throws ManifestException When problems occurred while loading the new manifest.
    */
-  public CommandResponse execute() throws ManifestException {
+  public CommandResponse execute() throws ManifestException, LocationException {
 
     // Select a manifest and store it in the command context
     //

@@ -12,13 +12,18 @@ import nl.toolforge.karma.core.exception.ErrorCode;
  */
 public abstract class VersionControlException extends KarmaException {
 
-	public static final ErrorCode BLA = new ErrorCode("VC-00001");
+  /** A runner instance cannot be created to execute commands on a repository. */
+	public static final ErrorCode RUNNER_ERROR = new ErrorCode("VC-00001");
 
 	/** Generated when a branch was created on a module which already existed. */
 	public static final ErrorCode DUPLICATE_BRANCH = new ErrorCode("VC-00010");
 
 	public VersionControlException(ErrorCode errorCode) {
 		super(errorCode);
+	}
+
+	public VersionControlException(ErrorCode errorCode, Throwable t) {
+		super(errorCode, t);
 	}
 
 	public VersionControlException(ErrorCode errorCode, Object[] messageArguments) {

@@ -21,7 +21,7 @@ public class TestManifestLoader extends BaseTest {
 			assertEquals(2, m.countSourceModules());
 			assertEquals(2, m.countJarModules());
 
-		} catch (ManifestException k) {
+		} catch (KarmaException k) {
 			//k.printStackTrace();
 			fail(k.getMessage());
 		}

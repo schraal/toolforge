@@ -99,7 +99,7 @@ public interface Manifest {
    * @return A <code>Module</code> instance.
    *
    * @throws KarmaException When the new module manifest file could not be written
-   *   ({@link KarmaException#MANIFEST_FLUSH_ERROR}
+   *   ({@link nl.toolforge.karma.core.ManifestException#MANIFEST_FLUSH_ERROR}
    */
   public Module createModule(int typeIdentifier, String name, String locationAlias, boolean include) throws KarmaException;
 
@@ -133,9 +133,8 @@ public interface Manifest {
    * manifests' directory.
    *
    * @return A <code>File</code> reference to the manifests' local directory.
-   * @throws KarmaException When a <code>File</code> reference cannot be obtained. See
-   *         {@link KarmaException#NO_DEVELOPMENT_HOME}.
+   * @throws ManifestException When a <code>File</code> reference cannot be obtained. See {@link ManifestException#INVALID_LOCAL_PATH}.
    */
-  public File getLocalPath() throws KarmaException;
+  public File getLocalPath() throws ManifestException;
 
 }

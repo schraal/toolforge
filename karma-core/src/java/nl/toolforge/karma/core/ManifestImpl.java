@@ -87,11 +87,11 @@ public class ManifestImpl implements Manifest {
 
     if (include) {
 
-      try {
+//      try {
         flush(module);
-      } catch (IOException i) {
-        throw new KarmaException(KarmaException.MANIFEST_FLUSH_ERROR, i);
-      }
+//      } catch (IOException i) {
+//        throw new ManifestException(ManifestException.MANIFEST_FLUSH_ERROR, i);
+//      }
 			logger.info("Module " + module.getName() + " has been added to manifest " + getName());
     }
 
@@ -119,13 +119,17 @@ public class ManifestImpl implements Manifest {
     return manifestName;
   }
 
-  private void flush(Module module) throws IOException {
+  private void flush(Module module) throws ManifestException {
 
     if (module instanceof SourceModule) {
 			Element moduleElement = root.createElement(SourceModule.ELEMENT_NAME);
 			moduleElement.setAttribute(SourceModule.NAME_ATTRIBUTE, module.getName());
 			moduleElement.setAttribute(SourceModule.LOCATION_ATTRIBUTE, module.getLocation().getId());
 		}
+
+//		catch (IOException i) {
+//        throw new ManifestException(ManifestException.MANIFEST_FLUSH_ERROR, i);
+//      }
 
 		// Serialize DOM
 		//
@@ -148,7 +152,15 @@ public class ManifestImpl implements Manifest {
     return false;
   }
 
-  public File getLocalPath() throws KarmaException {
-    return new File(Preferences.getInstance().getDevelopmentHome(), getName());
+  public File getLocalPath() throws ManifestException {
+
+		File file = null;
+		try {
+			file = new File(Preferences.getInstance().getDevelopmentHome(), getName());
+		} catch (KarmaException e) {
+			throw new ManifestException(ManifestException.INVALID_LOCAL_PATH, new Object[]{getName()});
+		}
+
+		return file;
   }
 }

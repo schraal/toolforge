@@ -14,6 +14,7 @@ import nl.toolforge.karma.core.vc.SymbolicName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.Client;
+import org.netbeans.lib.cvsclient.CVSRoot;
 import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
 import org.netbeans.lib.cvsclient.command.CommandException;
 import org.netbeans.lib.cvsclient.command.GlobalOptions;
@@ -25,6 +26,7 @@ import org.netbeans.lib.cvsclient.command.log.LogCommand;
 import org.netbeans.lib.cvsclient.command.log.LogInformation;
 import org.netbeans.lib.cvsclient.command.update.UpdateCommand;
 import org.netbeans.lib.cvsclient.connection.AuthenticationException;
+import org.netbeans.lib.cvsclient.connection.Connection;
 
 import java.io.File;
 import java.io.IOException;
@@ -78,9 +80,10 @@ public final class CVSRunner implements Runner {
 		client = new Client( cvsLocation.getConnection(), new StandardAdminHandler());
 		client.setLocalPath(contextDirectory.getPath());
 
-
 		logger.debug("CVSRunner using CVSROOT : " + cvsLocation.toString());
+
 		globalOptions.setCVSRoot(cvsLocation.getCVSRootAsString());
+
 	}
 
 	/**
@@ -163,7 +166,7 @@ public final class CVSRunner implements Runner {
 	 * @param module
 	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
 	 */
-	public CommandResponse update(Module module) {
+	public CommandResponse update(Module module) throws CVSException {
 
 		UpdateCommand updateCommand = new UpdateCommand();
 		updateCommand.setRecursive(true);
@@ -180,7 +183,7 @@ public final class CVSRunner implements Runner {
 	 * @param file
 	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
 	 */
-	public CommandResponse commit(ManagedFile file) {
+	public CommandResponse commit(ManagedFile file) throws CVSException {
 		return null;
 	}
 
@@ -234,11 +237,11 @@ public final class CVSRunner implements Runner {
 	 * @param module
 	 * @return The CVS response wrapped in a <code>CommandResponse</code>. ** TODO extend comments **
 	 */
-	public CommandResponse commit(Module module) {
+	public CommandResponse commit(Module module) throws CVSException {
 		return null;
 	}
 
-	public CommandResponse branch(Module module, SymbolicName branch) {
+	public CommandResponse branch(Module module, SymbolicName branch) throws CVSException {
 		return null;
 	}
 
@@ -249,7 +252,7 @@ public final class CVSRunner implements Runner {
 	 * @param tag
 	 * @return
 	 */
-	public CommandResponse tag(Module module, SymbolicName tag) {
+	public CommandResponse tag(Module module, SymbolicName tag) throws CVSException {
 		return null;
 	}
 
@@ -273,7 +276,7 @@ public final class CVSRunner implements Runner {
 	 * @param command The Netbeans Command implementation.
 	 * @param contextDirectory The directory relative to Client.getLocalPath(), required by some commands.
 	 */
-	private CVSResponseAdapter executeOnCVS(org.netbeans.lib.cvsclient.command.Command command, String contextDirectory) {
+	private CVSResponseAdapter executeOnCVS(org.netbeans.lib.cvsclient.command.Command command, String contextDirectory) throws CVSException{
 
     try {
 
@@ -296,7 +299,7 @@ public final class CVSRunner implements Runner {
 		} catch (CommandException e) {
 			e.printStackTrace(); // todo throw exception
 		} catch (AuthenticationException e) {
-			e.printStackTrace(); // todo throw exception
+			throw new CVSException(CVSException.AUTHENTICATION_ERROR, new Object[]{client.getConnection()});
 		}
 
 		return null; // Either the adapter has been returned, or we got an exception.
@@ -307,7 +310,7 @@ public final class CVSRunner implements Runner {
 	 * location. If that succeeds, apparently the module exists in that location and we have a <code>true</code> to
 	 * return.
 	 */
-	private boolean existsInRepository(Module module) {
+	private boolean existsInRepository(Module module) throws CVSException {
 
 
 		if (module == null) {

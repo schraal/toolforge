@@ -2,6 +2,7 @@ package nl.toolforge.karma.cli.cmd;
 
 import nl.toolforge.karma.cli.ConsoleConfiguration;
 import nl.toolforge.karma.core.ManifestException;
+import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.prefs.Preferences;
 import nl.toolforge.karma.core.cmd.*;
 import nl.toolforge.karma.core.cmd.impl.SelectManifest;
@@ -25,7 +26,7 @@ public class SelectManifestImpl extends SelectManifest {
    * @throws ManifestException When the selection of the manifest failed.
    *   See {@link ManifestException#MANIFEST_LOAD_ERROR}.
    */
-  public CommandResponse execute() throws ManifestException {
+  public CommandResponse execute() throws ManifestException, LocationException {
 
     // Use stuff that's being done in the superclass.
     //

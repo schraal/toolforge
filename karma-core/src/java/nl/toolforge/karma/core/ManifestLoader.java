@@ -3,6 +3,7 @@ package nl.toolforge.karma.core;
 import nl.toolforge.core.util.file.XMLFilenameFilter;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationFactory;
+import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.prefs.Preferences;
 import nl.toolforge.karma.core.prefs.UnavailableValueException;
 import org.apache.commons.logging.Log;
@@ -76,7 +77,7 @@ public final class ManifestLoader {
 	 *
 	 * @throws ManifestException See {@link ManifestException#MANIFEST_LOAD_ERROR}
 	 */
-	public final Manifest loadFromHistory() throws ManifestException {
+	public final Manifest loadFromHistory() throws ManifestException, LocationException {
 
 		String historyId = null;
 
@@ -105,7 +106,7 @@ public final class ManifestLoader {
 	 *
 	 * @throws ManifestException See {@link ManifestException#MANIFEST_LOAD_ERROR}
 	 */
-	public final Manifest load(String id, ClassLoader loader, String dir) throws ManifestException {
+	public final Manifest load(String id, ClassLoader loader, String dir) throws ManifestException, LocationException {
 
 		classLoader = loader;
 		resourceDir = dir;
@@ -124,7 +125,7 @@ public final class ManifestLoader {
 	 *
 	 * @throws ManifestException See {@link ManifestException#MANIFEST_LOAD_ERROR}.
 	 */
-	public final Manifest load(String id) throws ManifestException {
+	public final Manifest load(String id) throws ManifestException, LocationException {
 
 		Manifest manifest = null;
 
@@ -166,7 +167,7 @@ public final class ManifestLoader {
 	/**
 	 * Recursively adds modules from manifests to a manifest.
 	 */
-	private synchronized void add(Set duplicates, Manifest manifest, String id) throws ManifestException {
+	private synchronized void add(Set duplicates, Manifest manifest, String id) throws ManifestException, LocationException {
 
 		// Check if included manifest has already been loaded, to prevent looping
 		//
@@ -203,7 +204,7 @@ public final class ManifestLoader {
 					// Mandatory fields
 					//
 
-          String nodeName = node.getNodeName();
+					String nodeName = node.getNodeName();
 
 					if (nodeName.equals(SourceModule.ELEMENT_NAME)) {
 
@@ -251,12 +252,8 @@ public final class ManifestLoader {
 					}
 				}
 			}
-        } catch (ManifestException me) {
-            me.printStackTrace();
-            throw me;
-        } catch (KarmaException ke) {
-            ke.printStackTrace();
-            throw new ManifestException(ManifestException.MANIFEST_LOAD_ERROR, new Object[]{id}, ke);
+		} catch (KarmaException me) {
+			throw new ManifestException(me.getErrorCode(), me.messageArguments);
 		} catch (ParserConfigurationException p) {
 			throw new ManifestException(ManifestException.MANIFEST_LOAD_ERROR, new Object[]{id}, p);
 		} catch (SAXException s) {

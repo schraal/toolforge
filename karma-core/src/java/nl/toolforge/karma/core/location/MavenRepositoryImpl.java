@@ -11,8 +11,8 @@ import nl.toolforge.karma.core.KarmaException;
  */
 public final class MavenRepositoryImpl extends BaseLocation {
 
-	public MavenRepositoryImpl(String id) throws KarmaException {
-         super(id, Location.Type.MAVEN_REPOSITORY);
+	public MavenRepositoryImpl(String id) {
+		super(id, Location.Type.MAVEN_REPOSITORY);
 	}
 
 }

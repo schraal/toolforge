@@ -1,6 +1,6 @@
 package nl.toolforge.karma.core.location;
 
-import nl.toolforge.karma.core.KarmaRuntimeException;
+
 
 /**
  * <code>BaseLocation</code> implements some generic <code>Location</code> functionality.
@@ -23,10 +23,10 @@ public abstract class BaseLocation implements Location {
 	public BaseLocation(String id, Location.Type type) {
 
 		if (id == null) {
-			throw new KarmaRuntimeException("Location id must be set.");
+			throw new IllegalArgumentException("Location id must be set.");
 		}
 		if (type == null) {
-			throw new KarmaRuntimeException("Location must be set.");
+			throw new IllegalArgumentException("Location must be set.");
 		}
 		this.id = id;
 		this.type = type;

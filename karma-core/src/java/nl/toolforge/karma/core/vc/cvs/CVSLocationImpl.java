@@ -4,6 +4,7 @@ import nl.toolforge.karma.core.location.BaseLocation;
 import nl.toolforge.karma.core.location.Location;
 import org.netbeans.lib.cvsclient.connection.Connection;
 import org.netbeans.lib.cvsclient.connection.ConnectionFactory;
+import org.netbeans.lib.cvsclient.connection.PServerConnection;
 
 import java.util.Locale;
 
@@ -60,7 +61,7 @@ public final class CVSLocationImpl extends BaseLocation {
 	public void setUsername(String username) {
 		this.username = username;
 	}
-	String getUsername() {
+	public String getUsername() {
 		return username;
 	}
 
@@ -81,6 +82,13 @@ public final class CVSLocationImpl extends BaseLocation {
 	}
 
 	/**
+	 * Checks if a password has been set.
+	 */
+	public boolean passwordSet() {
+		return password != null;
+	}
+
+	/**
 	 * The CVS repository protocol (<code>ext</code>, <code>pserver</code>, etc).
 	 *
 	 * @param protocol The CVS protocol (<code>:<b>pserver</b>:asmedes@localhost:2401/home/cvsroot</code>. Protocol
@@ -92,7 +100,7 @@ public final class CVSLocationImpl extends BaseLocation {
 		}
 		this.protocol = protocol.toLowerCase();
 	}
-	String getProtocol() {
+	public String getProtocol() {
 		return protocol;
 	}
 
@@ -157,7 +165,12 @@ public final class CVSLocationImpl extends BaseLocation {
 			createCVSRoot();
 		}
 
-		return ConnectionFactory.getConnection(getCVSRootAsString());
+		Connection connection = ConnectionFactory.getConnection(getCVSRootAsString());
+		if (connection instanceof PServerConnection) {
+			((PServerConnection) connection).setEncodedPassword(this.getPassword());
+		}
+
+		return connection;
 	}
 
 	private synchronized void createCVSRoot() throws CVSException {
@@ -176,11 +189,12 @@ public final class CVSLocationImpl extends BaseLocation {
 
 		} else {
 
-			if ((getUsername() == null) || (getHost() == null) || (getPort() == -1)){
+			if ((getUsername() == null) || (getHost() == null) || (getPort() == -1)) {
 				throw new CVSException(CVSException.INVALID_CVSROOT);
 			}
 
-			buffer.append(username).append(":").append(password).append("@");
+//			buffer.append(username).append(":").append(password).append("@");
+			buffer.append(username).append("@");
 			buffer.append(host).append(":");
 			buffer.append(port).append(repository.startsWith("/") ? "" : "/");
 			buffer.append(repository);

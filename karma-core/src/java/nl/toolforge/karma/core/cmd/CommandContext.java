@@ -3,6 +3,7 @@ package nl.toolforge.karma.core.cmd;
 import nl.toolforge.karma.core.*;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationFactory;
+import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
@@ -85,7 +86,7 @@ public final class CommandContext {
 	 * @param manifestName
 	 * @throws ManifestException When the manifest could not be changed. See {@link ManifestException#MANIFEST_LOAD_ERROR}.
 	 */
-	public void changeCurrent(String manifestName) throws ManifestException {
+	public void changeCurrent(String manifestName) throws ManifestException, LocationException {
 		currentManifest = manifestLoader.load(manifestName);
 	}
 
@@ -170,8 +171,9 @@ public final class CommandContext {
 			if (location instanceof CVSLocationImpl) {
 				logger.debug("Getting new CVSRunner instance.");
 				return new CVSRunner(location, getCurrent().getLocalPath());
-			} } catch (KarmaException k) {
-			throw new CVSException(CVSException.BLA); // todo better errorcode
+			}
+		} catch (ManifestException m) {
+			throw new CVSException(VersionControlException.RUNNER_ERROR);
 		}
 
 		try {
@@ -180,7 +182,7 @@ public final class CommandContext {
 				return new SubversionRunner(module.getLocation());
 			}
 		} catch (KarmaException k) {
-			throw new SVNException(SVNException.BLA); // todo better errorcode
+			throw new SVNException(VersionControlException.RUNNER_ERROR);
 		}
 		throw new KarmaRuntimeException("Location instance invalid.");
 	}

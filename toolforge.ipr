@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project version="3" relativePaths="false">
+<project version="3" relativePaths="true">
   <component name="ProjectRootManager" version="2">
     <jdk name="java version &quot;1.4.1_02&quot;" />
     <projectPath>
       <root type="composite">
         <root type="simple" url="file://$PROJECT_DIR$" />
-        <root type="simple" url="file:///home/asmedes/dev/netbeans-cvs-beta3.6/src" />
-        <root type="simple" url="file:///home/asmedes/dev/jakarta-commons/cli/src/java" />
+        <root type="simple" url="file://$PROJECT_DIR$/../netbeans-cvs-beta3.6/src" />
+        <root type="simple" url="file://$PROJECT_DIR$/../jakarta-commons/cli/src/java" />
       </root>
     </projectPath>
     <sourcePath>
@@ -16,22 +16,22 @@
         <root type="simple" url="file://$PROJECT_DIR$/toolforge-core/src/java" />
         <root type="simple" url="file://$PROJECT_DIR$/karma-core/src/java" />
         <root type="simple" url="file://$PROJECT_DIR$/karma-launcher/src/java" />
-        <root type="simple" url="file:///home/asmedes/dev/netbeans-cvs-beta3.6/src" />
-        <root type="simple" url="file:///home/asmedes/dev/jakarta-commons/cli/src/java" />
+        <root type="simple" url="file://$PROJECT_DIR$/../netbeans-cvs-beta3.6/src" />
+        <root type="simple" url="file://$PROJECT_DIR$/../jakarta-commons/cli/src/java" />
       </root>
     </sourcePath>
     <classPath>
       <root type="composite">
         <root type="jdk" rootType="classPath" name="java version &quot;1.4.1_02&quot;" />
+        <root type="simple" url="jar://$PROJECT_DIR$/../../.maven/repository/commons-cli/jars/commons-cli-1.0.jar!/" />
         <root type="output" />
-        <root type="simple" url="jar:///home/asmedes/.maven/repository/junit/jars/junit-3.8.1.jar!/" />
-        <root type="simple" url="jar:///home/asmedes/.maven/repository/regexp/jars/regexp-1.2.jar!/" />
-        <root type="simple" url="jar:///home/asmedes/.maven/repository/commons-lang/jars/commons-lang-1.0.1.jar!/" />
-        <root type="simple" url="jar:///home/asmedes/.maven/repository/commons-logging/jars/commons-logging-1.0.3.jar!/" />
-        <root type="simple" url="jar:///home/asmedes/.maven/repository/log4j/jars/log4j-1.2.8.jar!/" />
-        <root type="simple" url="jar:///home/asmedes/.maven/repository/netbeans/jars/netbeans-cvs-beta3.6.jar!/" />
+        <root type="simple" url="jar://$PROJECT_DIR$/../../.maven/repository/junit/jars/junit-3.8.1.jar!/" />
+        <root type="simple" url="jar://$PROJECT_DIR$/../../.maven/repository/regexp/jars/regexp-1.2.jar!/" />
+        <root type="simple" url="jar://$PROJECT_DIR$/../../.maven/repository/commons-lang/jars/commons-lang-1.0.1.jar!/" />
+        <root type="simple" url="jar://$PROJECT_DIR$/../../.maven/repository/commons-logging/jars/commons-logging-1.0.3.jar!/" />
+        <root type="simple" url="jar://$PROJECT_DIR$/../../.maven/repository/log4j/jars/log4j-1.2.8.jar!/" />
+        <root type="simple" url="jar://$PROJECT_DIR$/../../.maven/repository/netbeans/jars/netbeans-cvs-beta3.6.jar!/" />
         <root type="simple" url="file://$PROJECT_DIR$/karma-cli/resources" />
-        <root type="simple" url="jar:///home/asmedes/.maven/repository/commons-cli/jars/commons-cli-1.0.jar!/" />
         <root type="simple" url="file://$PROJECT_DIR$/karma-core/resources" />
       </root>
     </classPath>
@@ -75,7 +75,7 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="JavadocGenerationManager">
-    <option name="OUTPUT_DIRECTORY" value="/home/asmedes/doc/netbeans-cvs-api" />
+    <option name="OUTPUT_DIRECTORY" value="$PROJECT_DIR$/../../doc/netbeans-cvs-api" />
     <option name="OPTION_SCOPE" value="protected" />
     <option name="OPTION_HIERARCHY" value="true" />
     <option name="OPTION_NAVIGATOR" value="true" />

@@ -29,6 +29,9 @@ public final class ManifestException extends KarmaException {
 	/** Duplicate module name in manifest file. */
 	public static final ErrorCode DUPLICATE_MODULE_IN_MANIFEST = new ErrorCode("MFS-00003");
 
+	/** Duplicate module name in manifest file. */
+	public static final ErrorCode INVALID_LOCAL_PATH = new ErrorCode("MFS-00004");
+
 	/** No history item could be found for a manifest. */
 	public static final ErrorCode NO_HISTORY_AVAILABLE = new ErrorCode("MFS-00010");
 
@@ -41,7 +44,8 @@ public final class ManifestException extends KarmaException {
 	/** A module instance was requested from the manifest by its name, but the module did not exist. */
 	public static final ErrorCode NO_SUCH_MODULE = new ErrorCode("MFS-00010");
 
-	public ManifestException() {}
+	/** IO Error when trying to flush the manifest file to disk */
+  public static final ErrorCode MANIFEST_FLUSH_ERROR = new ErrorCode("MFS-00020");
 
 	public ManifestException(ErrorCode errorCode) {
 		super(errorCode);
