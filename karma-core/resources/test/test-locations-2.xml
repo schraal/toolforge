@@ -20,7 +20,7 @@
     <module-offset></module-offset>
 	</location>
 
-	<location type="subversion" id="test-id-3">
+	<location type="svn" id="test-id-3">
 		<host>localhost</host>
 		<port>9999</port>
 		<repository>/home/subversion</repository>
