@@ -1,6 +1,13 @@
 package nl.toolforge.karma.core.cmd;
 
-import nl.toolforge.karma.core.*;
+import java.util.Set;
+
+import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.Manifest;
+import nl.toolforge.karma.core.ManifestException;
+import nl.toolforge.karma.core.ManifestLoader;
+import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationFactory;
 import nl.toolforge.karma.core.vc.Runner;
@@ -8,12 +15,8 @@ import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
 import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
 import nl.toolforge.karma.core.vc.subversion.SubversionRunner;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.PosixParser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.util.*;
 
 /**
  * <p>The command context is the class that provides a runtime for commands to run in. The command context maintains
@@ -32,14 +35,6 @@ public final class CommandContext {
 	private static ManifestLoader manifestLoader = ManifestLoader.getInstance();
 
 	private Manifest currentManifest = null;
-
-	// Reference to all loaded commands
-	//
-	private Map commands = null;
-
-	// Reference ro all command names
-	//
-	private Set commandNames = null;
 
 	private boolean initialized = false;
 
@@ -62,25 +57,6 @@ public final class CommandContext {
 	public synchronized void init() throws KarmaException {
 
 		if (!initialized) {
-			Set descriptors = CommandLoader.getInstance().load();
-			commands = new Hashtable();
-
-			// Store all commands by name in a hash
-			//
-			for (Iterator i = descriptors.iterator(); i.hasNext();) {
-				CommandDescriptor descriptor = (CommandDescriptor) i.next();
-				commands.put(descriptor.getName(), descriptor);
-			}
-
-			// Create a set of all command names.
-			//
-			commandNames = new HashSet();
-			for (Iterator i = descriptors.iterator(); i.hasNext();) {
-				CommandDescriptor descriptor = (CommandDescriptor) i.next();
-				commandNames.add(descriptor.getName());
-				commandNames.add(descriptor.getAlias());
-			}
-
 			// Read in all location data
 			//
 			LocationFactory.getInstance().load();
@@ -130,33 +106,30 @@ public final class CommandContext {
 	 * <code>KarmaException</code> is thrown an interface applications should <b>*** NOT ***</b> quit program execution as
 	 * a result of this exception. It should be handled nicely.
 	 *
-	 * @param commandName
 	 * @param commandLine The command to execute. A full command line is passed as a parameter.
 	 * @return The result of the execution run of the command.
 	 * @throws KarmaException A whole lot. Interface applications should <b>*** NOT ***</b> quit program execution as a
 	 *                        result of this exception. It should be handled nicely.
 	 */
-	public CommandResponse execute(String commandName, String commandLine) throws KarmaException {
+	public CommandResponse execute(String commandLine) throws KarmaException {
 
 		if (!isInitialized()) {
 			throw new KarmaException(KarmaException.COMMAND_CONTEXT_NOT_INITIALIZED);
 		}
 
-		CommandLineParser parser = new PosixParser();
+        // A command is extracted from the commandLine
+        //
+        Command command = (Command) (CommandFactory.getInstance().getCommand(commandLine));
 
-		// A command is extracted from the commandLine
-		//
-		Command command = (Command) commands.get(commandName);
-
-		return execute(command);
+        return execute(command);
 	}
 
 	/**
-	 * See {@link #execute(java.lang.String, java.lang.String)}.
+	 * See {@link #execute(java.lang.String)}.
 	 *
 	 * @param command The command to execute.
-	 * @return See {@link #execute(java.lang.String, java.lang.String)}.
-	 * @throws KarmaException See {@link #execute(java.lang.String, java.lang.String)}.
+	 * @return See {@link #execute(java.lang.String)}.
+	 * @throws KarmaException See {@link #execute(java.lang.String)}.
 	 */
 	public CommandResponse execute(Command command) throws KarmaException {
 
@@ -173,21 +146,6 @@ public final class CommandContext {
 
 		return command.execute();
 	}
-
-	public Map getCommands() {
-		return commands;
-	}
-
-	/**
-	 * Checks if some string is a command within this context.
-	 *
-	 * @param name
-	 * @return
-	 */
-	public boolean isCommand(String name) {
-		return commandNames.contains(name);
-	}
-
 
 
 	/**
