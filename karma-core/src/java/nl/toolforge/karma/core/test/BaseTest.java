@@ -18,6 +18,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.test;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
+
 import junit.framework.TestCase;
 import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.boot.Karma;
@@ -26,10 +31,6 @@ import nl.toolforge.karma.core.boot.ManifestStore;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.boot.WorkingContextConfiguration;
 import nl.toolforge.karma.core.boot.WorkingContextException;
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  * This testclass is highly recommended when writing JUnit testclasses for Karma. It initializes some basic stuff. Just
@@ -128,9 +129,9 @@ public class BaseTest extends TestCase {
 
   public void tearDown() {
     try {
-      MyFileUtils.makeWriteable(wcBaseDir);
-      MyFileUtils.makeWriteable(projectBaseDir);
-      MyFileUtils.makeWriteable(localRepo);
+      MyFileUtils.makeWriteable(wcBaseDir, true);
+      MyFileUtils.makeWriteable(projectBaseDir, true);
+      MyFileUtils.makeWriteable(localRepo, true);
 
       FileUtils.deleteDirectory(wcBaseDir);
       FileUtils.deleteDirectory(projectBaseDir);
