@@ -128,7 +128,7 @@ public final class ManifestFactory {
 
     // All <include-manifest>-elements
     //
-    digester.addFactoryCreate("*/include-manifest", "nl.toolforge.karma.core.manifest.ManifestDescriptor");
+    digester.addObjectCreate("*/include-manifest", "nl.toolforge.karma.core.manifest.ManifestDescriptor");
     digester.addSetProperties("*/include-manifest");
     digester.addSetNext("*/include-manifest", "includeManifest");
 
