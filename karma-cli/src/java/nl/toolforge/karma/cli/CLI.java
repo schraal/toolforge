@@ -8,6 +8,9 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandFactory;
 import nl.toolforge.karma.core.cmd.CommandLoadException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.util.prefs.Preferences;
 
 /**
@@ -18,6 +21,9 @@ import java.util.prefs.Preferences;
  * @version $Id$
  */
 public final class CLI {
+
+  private static Log logger = LogFactory.getLog(CLI.class);
+  
 
   public static void main(String[] args) {
 
@@ -44,6 +50,7 @@ public final class CLI {
       }
       System.exit(0);
     } catch (Exception e) {
+      logger.error("Exception caught by CLI catch-all.", e);
       System.out.println("Exception caught by CLI catch-all. Message: " + e.getMessage() + "\n");
       System.exit(1);
     }
@@ -84,7 +91,7 @@ public final class CLI {
     WorkingContext workingContext =
         new WorkingContext(Preferences.userRoot().get(WorkingContext.WORKING_CONTEXT_PREFERENCE, WorkingContext.DEFAULT));
 
-		workingContext.init();
+    workingContext.init();
 
     System.out.println("[ karma ] Checking command ...");
 
