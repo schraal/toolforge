@@ -19,9 +19,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.boot.Karma;
+import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.location.PasswordScrambler;
 import org.apache.commons.digester.Digester;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xml.sax.SAXException;
 
 import java.io.File;
@@ -51,12 +53,13 @@ import java.util.Map;
  */
 public final class Authenticators {
 
+  private static Log logger = LogFactory.getLog(Authenticators.class);
+
   /**
    * Singleton, helper.
    */
   private Authenticators() {}
 
-//  public static synchronized void changePassword(VersionControlSystem location, String newPassword) throws AuthenticationException {
   public static synchronized void changePassword(AuthenticatorKey key, String newPassword) throws AuthenticationException {
 
     if (key == null) {
@@ -81,11 +84,16 @@ public final class Authenticators {
   }
 
   public static Authenticator getAuthenticator(Authenticator authenticator) throws AuthenticationException {
-
     return getAuthenticator(authenticator.getAuthenticatorKey());
   }
 
-
+  /**
+   * Retrieves an <code>Authenticator</code> entry from the <code>authenticators.xml</code> file.
+   *
+   * @param key                      The key by which the <code>Authenticator</code> will be located.
+   * @return                         The <code>Authenticator</code> with key <code>key</code>.
+   * @throws AuthenticationException When no <code>Authenticator</code> can be found with key <code>key</code>.
+   */
   public static Authenticator getAuthenticator(AuthenticatorKey key) throws AuthenticationException {
 
     if (key == null) {
@@ -101,14 +109,31 @@ public final class Authenticators {
     return authenticator;
   }
 
-  private static Map getAuthenticators() throws AuthenticationException {
+  private static Map authenticatorCache = null;
+  private static long lastModified = 0l;
 
-    Map authenticators = new Hashtable();
+  private synchronized static Map getAuthenticators() throws AuthenticationException {
 
-    File authenticatorsFile = new File(Karma.getConfigurationBaseDir(), "authenticators.xml");
+    File authenticatorsFile = new File(WorkingContext.getConfigurationBaseDir(), "authenticators.xml");
 
     if (!authenticatorsFile.exists()) {
       createNew();
+    }
+
+    if (authenticatorCache == null) {
+      authenticatorCache = new Hashtable();
+      logger.debug("Creating authenticator cache from `authenticators.xml`.");
+    } else {
+
+      // Check if the file has been changed outside the running Karma.
+      //
+      if (authenticatorsFile.lastModified() == lastModified) {
+        logger.debug("Using authenticator cache.");
+        return authenticatorCache;
+      } else {
+        authenticatorCache = new Hashtable();
+        logger.debug("Recreating authenticator cache from `authenticators.xml`.");
+      }
     }
 
     // Create a list of authenticators, anything you can find.
@@ -127,15 +152,20 @@ public final class Authenticators {
     for (Iterator j = subList.iterator(); j.hasNext();) {
       Authenticator authDescriptor = (Authenticator) j.next();
       AuthenticatorKey key = new AuthenticatorKey(authDescriptor.getWorkingContext(), authDescriptor.getId());
-      if (authenticators.containsKey(key)) {
+      if (authenticatorCache.containsKey(key)) {
         throw new AuthenticationException(
             AuthenticationException.DUPLICATE_AUTHENTICATOR_KEY,
-            new Object[] {key, Karma.getConfigurationBaseDir().getPath()}
+            new Object[] {key, WorkingContext.getConfigurationBaseDir().getPath()}
         );
       }
-      authenticators.put(key, authDescriptor);
+      authenticatorCache.put(key, authDescriptor);
     }
-    return authenticators;
+
+    // Maintain the lastModified time.
+    //
+    lastModified = authenticatorsFile.lastModified();
+
+    return authenticatorCache;
   }
 
   /**
@@ -149,23 +179,12 @@ public final class Authenticators {
       throw new IllegalArgumentException("Authenticator cannot be null.");
     }
 
-    Map authenticators = null;
-//    try {
-
-      // todo hmm, this bit of code COULD be used to detect duplicates as well .
-
-      authenticators = getAuthenticators();
-
-//    } catch (AuthenticationException e) {
-//      throw new KarmaRuntimeException(e);
-//    }
-
     // Add the authenticator.
     //
-    authenticators.put(authenticator.getAuthenticatorKey(), authenticator);
+    getAuthenticators().put(authenticator.getAuthenticatorKey(), authenticator);
 
     try {
-      flush(authenticators);
+      flush(getAuthenticators());
     } catch (IOException e) {
       throw new KarmaRuntimeException(e);
     }
@@ -178,23 +197,12 @@ public final class Authenticators {
    */
   public static synchronized void deleteAuthenticator(Authenticator authenticator) throws AuthenticationException {
 
-    Map authenticators = null;
-    try {
-
-      // todo hmm, this bit of code COULD be used to detect duplicates as well .
-
-      authenticators = getAuthenticators();
-
-    } catch (AuthenticationException e) {
-      throw new KarmaRuntimeException(e);
-    }
-
     // Add the authenticator.
     //
-    authenticators.remove(new AuthenticatorKey(authenticator.getWorkingContext(), authenticator.getWorkingContext()));
+    getAuthenticators().remove(new AuthenticatorKey(authenticator.getWorkingContext(), authenticator.getWorkingContext()));
 
     try {
-      flush(authenticators);
+      flush(getAuthenticators());
     } catch (IOException e) {
       throw new KarmaRuntimeException(e);
     }
@@ -243,7 +251,7 @@ public final class Authenticators {
     FileWriter writer = null;
     // Write the manifest to the manifest store.
     //
-    writer = new FileWriter(new File(Karma.getConfigurationBaseDir(), "authenticators.xml"));
+    writer = new FileWriter(new File(WorkingContext.getConfigurationBaseDir(), "authenticators.xml"));
     try {
 
       writer.write(buffer.toString());
