@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+
+<project>
+
+  <pomVersion>3</pomVersion>
+  <name>Toolforge Core Functionality</name>
+  <groupId>toolforge</groupId>
+  <id>netbeans-cvslib</id>
+  <currentVersion>3.6-patch</currentVersion>
+  <inceptionYear>2002</inceptionYear>
+  <package>nl.toolforge.core</package>
+  <siteAddress>ssh.sf.net</siteAddress>
+  <siteDirectory>/home/groups/t/to/toolforge/htdocs/toolforge-core</siteDirectory>
+  <organization>
+    <name>Toolforge</name>
+    <url>http://sourceforge.net/projects/toolforge</url>
+    <logo>http://sourceforge.net/sflogo.php?group_id=98766&amp;type=5</logo>
+  </organization>
+
+  <description>
+    This module contains the official `cvslib-3.6` sources as provided by
+    Netbeans (see http://javacvs.netbeans.org). Due to some bugs in the
+    library, we have included a copy of this library in the Toolforge project.
+  </description>
+
+  <build>
+
+    <sourceDirectory>src/java/</sourceDirectory>
+
+    <resources>
+      <resource>
+        <directory>src/java</directory>
+        <includes>
+          <include>**/*.properties</include>
+        </includes>
+      </resource>
+    </resources>
+
+  </build>
+
+</project>
+
+
+
+
+
+
+
