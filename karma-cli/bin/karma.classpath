@@ -16,7 +16,7 @@
 	id=commons-lang, version=1.0.1
 	id=xerces, version=2.4.0
 	id=xerces, jar=xercesImpl-2.4.0.jar
-	id=xerces, jar=xmlParserAPIs-2.2.1.jar
+#	id=xerces, jar=xmlParserAPIs-2.2.1.jar
         id=toolforge, jar=karma-core-2.0-dev.jar
         id=toolforge, jar=toolforge-core-1.0-dev.jar
 	id=commons-logging, jar=commons-logging-1.0.3.jar
