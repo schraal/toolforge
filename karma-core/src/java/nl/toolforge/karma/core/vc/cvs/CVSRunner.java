@@ -113,7 +113,7 @@ public final class CVSRunner implements Runner {
 
 		// Override localpath setting in the CVS client, as we are importing the thing from a temporary location.
 		//
-		client.setLocalPath(tmp.getPath());
+		client.setLocalPath(moduleDirectory.getParent());
 
 		CVSResponseAdapter adapter = executeOnCVS(importCommand, module.getName()); // Use module as context directory
 
@@ -134,11 +134,13 @@ public final class CVSRunner implements Runner {
 
 		client.setLocalPath(tmp.getPath()); // Point the CVS client to the temp directory.
 
+//		checkout(module);
+
     CheckoutCommand checkoutCommand = new CheckoutCommand();
 		checkoutCommand.setModule(module.getName());
 		checkoutCommand.setPruneDirectories(true);
 
-		adapter = executeOnCVS(checkoutCommand, module.getName()); // Use module as context directory
+		adapter = executeOnCVS(checkoutCommand, null); // Use module as context directory
 
 		// TODO do more on exception handling from CVS ... You can't be sure it worked
 		//
@@ -170,7 +172,7 @@ public final class CVSRunner implements Runner {
 
 		CheckoutCommand checkoutCommand = new CheckoutCommand();
 		checkoutCommand.setModule(module.getName());
-		checkoutCommand.setPruneDirectories(true);
+//		checkoutCommand.setPruneDirectories(true);
 
 		if (version != null) {
 			checkoutCommand.setCheckoutByRevision(Utils.createSymbolicName(module, version).getSymbolicName());
@@ -257,6 +259,7 @@ public final class CVSRunner implements Runner {
 			try {
 				fileToAdd.createNewFile();
 			} catch (IOException e) {
+				e.printStackTrace();
 				throw new KarmaRuntimeException("Could not create " + fileName + " in " + path);
 			}
 		}
@@ -383,21 +386,20 @@ public final class CVSRunner implements Runner {
 		CheckoutCommand checkoutCommand = new CheckoutCommand();
 		checkoutCommand.setModule(module.getName() + "/" + SourceModule.MODULE_INFO);
 
-
-		File temporaryCheckoutDirectory = null;
+		File tmp = null;
 		try {
-			temporaryCheckoutDirectory = FileUtils.createTempDirectory();
+			tmp = FileUtils.createTempDirectory();
 		} catch (IOException e) {
 			throw new KarmaRuntimeException("Panic! Failed to create temporary directory for module " + module.getName());
 		}
 
 		// Overrule client.setLocalPath() to a temporary location
 		//
-		client.setLocalPath(temporaryCheckoutDirectory.getPath());
+		client.setLocalPath(tmp.getPath());
 
 		executeOnCVS(checkoutCommand, null);
 
-		File moduleDirectory = new File(temporaryCheckoutDirectory.getPath(), module.getName());
+		File moduleDirectory = new File(tmp.getPath(), module.getName());
 		if (moduleDirectory.exists()) {
 			return true;
 		} else {
