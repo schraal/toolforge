@@ -354,7 +354,7 @@ public abstract class AbstractManifest implements Manifest {
     String extension;
     if (module.getDeploymentType().equals(Module.WEBAPP)) {
       extension = ".war";
-    } else if (module.getDeploymentType().equals(Module.WEBAPP)) {
+    } else if (module.getDeploymentType().equals(Module.EAPP)) {
       extension = ".ear";
     } else {
       extension = ".jar";
