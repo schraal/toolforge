@@ -45,7 +45,7 @@ public class KarmaLauncher {
         // Empty
     }
 
-    public void run(String className, String methodName, Object[] args,
+    public void invoke(String className, String methodName, Object[] args,
             String[] classPathEntries) throws ClassNotFoundException,
             NoSuchMethodException, IllegalAccessException,
             InvocationTargetException, IOException, FileNotFoundException {
@@ -58,10 +58,10 @@ public class KarmaLauncher {
                 entries[i] = new File(classPathEntries[i]);
             }
         }
-        run(className, methodName, args, entries);
+        invoke(className, methodName, args, entries);
     }
 
-    public void run(String className, String methodName, Object[] args,
+    public void invoke(String className, String methodName, Object[] args,
             File[] classPathEntries) throws ClassNotFoundException,
             NoSuchMethodException, IllegalAccessException,
             InvocationTargetException, IOException, FileNotFoundException {
@@ -116,7 +116,7 @@ public class KarmaLauncher {
 
         KarmaLauncher launcher = getInstance();
         try {
-            launcher.run(mainMethodClassName, "main",
+            launcher.invoke(mainMethodClassName, "main",
                     new Object[] { applicationArgs }, classPathEntries);
         } catch (Exception e) {
             e.printStackTrace();
