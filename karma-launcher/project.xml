@@ -6,39 +6,18 @@
 	<name>Karma Launcher Module</name>
         <groupId>toolforge</groupId>
       	<id>karma-launcher</id>
-	<currentVersion>1.1</currentVersion>
+	<currentVersion>1.2</currentVersion>
         <inceptionYear>2002</inceptionYear>
         <package>nl.toolforge.karma.launcher</package>
-        <siteAddress>ssh.sf.net</siteAddress>
-        <siteDirectory>/home/groups/t/to/toolforge/htdocs/karma-launcher</siteDirectory>
+        <siteAddress>toolforge.sourceforge.net</siteAddress>
+        <siteDirectory>/karma-launcher</siteDirectory>
 	<organization>
 		<name>Toolforge</name>
 		<url>http://sourceforge.net/projects/toolforge</url>
                 <logo>http://sourceforge.net/sflogo.php?group_id=98766&amp;type=5</logo>
 	</organization>
-
-  <dependencies>
-    <dependency>
-      <groupId>ant</groupId>
-      <artifactId>ant-launcher</artifactId>
-      <version>1.6.1</version>
-    </dependency>
-  </dependencies>
-
   <build>
-
     <sourceDirectory>src/java</sourceDirectory>
-
-    <resources>
-      <resource>
-        <directory>resources</directory>
-        <targetPath>resources</targetPath>
-        <includes>
-          <include>karma.repository.remote</include>
-        </includes>
-      </resource>
-    </resources>
-
   </build>
 
 </project>
