@@ -1,17 +1,12 @@
 package nl.toolforge.karma.cli.cmd;
 
-import nl.toolforge.karma.core.cmd.CommandDescriptor;
-import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.QueryCommandResponse;
-import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
-import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.*;
 import nl.toolforge.karma.core.cmd.impl.ListManifests;
 import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.Manifest;
 
-import java.util.Iterator;
-import java.util.Set;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Command line interface implementation of the {@link ListManifests} command.
@@ -32,11 +27,7 @@ public class ListManifestsImpl extends ListManifests {
     CommandResponse response = getCommandResponse();
 
     Collection manifests = null;
-//    try {
     manifests = getContext().getAllManifests();
-//    } catch (ManifestException e) {
-//      throw new CommandException(e.getErrorCode());
-//    }
 
     if (manifests.size() == 0) {
       response.addMessage(new SuccessMessage("No manifests found."));
@@ -45,10 +36,16 @@ public class ListManifestsImpl extends ListManifests {
       Iterator manifestsIterator = manifests.iterator();
       String manifest;
       int index;
+      Manifest currentManifest = getContext().getCurrentManifest();
       while (manifestsIterator.hasNext()) {
         manifest = (String) manifestsIterator.next();
         index = manifest.indexOf(".xml");
-        response.addMessage(new SimpleCommandMessage(" -  "+manifest.substring(0, index)));
+        String manifestName = manifest.substring(0, index);
+        if ((currentManifest != null) && manifestName.equals(currentManifest.getName())) {
+          response.addMessage(new SimpleCommandMessage(" -> "+manifestName+" (selected)"));
+        } else {
+          response.addMessage(new SimpleCommandMessage(" -  "+manifestName));
+        }
       }
     }
   }
