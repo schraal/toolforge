@@ -19,6 +19,30 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.cmd.impl;
 
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Target;
+import org.apache.tools.ant.taskdefs.Copy;
+import org.apache.tools.ant.taskdefs.Ear;
+import org.apache.tools.ant.taskdefs.Jar;
+import org.apache.tools.ant.taskdefs.Mkdir;
+import org.apache.tools.ant.taskdefs.War;
+import org.apache.tools.ant.taskdefs.Zip;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.FilterSet;
+import org.xml.sax.SAXException;
+
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
@@ -37,29 +61,6 @@ import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ModuleDigester;
 import nl.toolforge.karma.core.manifest.ModuleTypeException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Target;
-import org.apache.tools.ant.taskdefs.Copy;
-import org.apache.tools.ant.taskdefs.Ear;
-import org.apache.tools.ant.taskdefs.Jar;
-import org.apache.tools.ant.taskdefs.Mkdir;
-import org.apache.tools.ant.taskdefs.War;
-import org.apache.tools.ant.taskdefs.Zip;
-import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.FilterSet;
-import org.xml.sax.SAXException;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author D.A. Smedes
@@ -165,6 +166,7 @@ public class PackageModule extends AbstractBuildCommand {
             throw new CommandException(ce, CommandException.PACKAGE_FAILED, new Object[]{module.getName()});
           } else if (ce.getErrorCode().equals(CommandException.NO_TEST_DIR)) {
             //do not log. this has already been done.
+            commandResponse.addEvent(new ErrorEvent(this, ce.getErrorCode(), ce.getMessageArguments()));
           } else {
             commandResponse.addEvent(new ErrorEvent(this, ce.getErrorCode(), ce.getMessageArguments()));
           }
@@ -324,19 +326,22 @@ public class PackageModule extends AbstractBuildCommand {
 
       //copy META-INF
       commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Copying the META-INF...")));
-      copy = (Copy) project.createTask("copy");
-      copy.setProject(getProjectInstance());
-      copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
-      copy.setOverwrite(true);
-      copy.setIncludeEmptyDirs(false);
+      if (new File(getCurrentModule().getBaseDir(), "src/META-INF").exists()) {
+        copy = (Copy) project.createTask("copy");
+        copy.setProject(getProjectInstance());
+        copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
+        copy.setOverwrite(true);
+        copy.setIncludeEmptyDirs(false);
 
-      fileSet = new FileSet();
-      fileSet.setDir(new File(getCurrentModule().getBaseDir(), "src"));
-      fileSet.setIncludes("META-INF/**");
+        fileSet = new FileSet();
+        fileSet.setDir(new File(getCurrentModule().getBaseDir(), "src"));
+        fileSet.setIncludes("META-INF/**");
 
-      copy.addFileset(fileSet);
-      target.addTask(copy);
-
+        copy.addFileset(fileSet);
+        target.addTask(copy);
+      } else {
+        commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("No META-INF available.")));
+      }
       // Copy all class files to the package directory.
       //
       if (getCompileDirectory().exists()) {
@@ -353,16 +358,26 @@ public class PackageModule extends AbstractBuildCommand {
         copy.addFileset(fileSet);
         target.addTask(copy);
       }
-
-      Jar jar = (Jar) project.createTask("jar");
-      jar.setProject(getProjectInstance());
-      jar.setDestFile(packageName);
-      jar.setBasedir(getBuildEnvironment().getModulePackageDirectory());
-      jar.setExcludes("*.jar");
-      target.addTask(jar);
-
       project.executeTarget("run");
 
+      commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Packaging...")));
+      Target target2 = new Target();
+      target2.setName("jar");
+      target2.setProject(project);
+
+      project.addTarget(target2);
+      if (getBuildEnvironment().getModulePackageDirectory().exists()) {
+        Jar jar = (Jar) project.createTask("jar");
+        jar.setProject(getProjectInstance());
+        jar.setDestFile(packageName);
+        jar.setBasedir(getBuildEnvironment().getModulePackageDirectory());
+        jar.setExcludes("*.jar");
+        target2.addTask(jar);
+
+        project.executeTarget("jar");
+      } else {
+        throw new CommandException(CommandException.PACKAGE_FAILED, new Object[] {getCurrentModule().getName()});
+      }
     } catch (BuildException e) {
       e.printStackTrace();
       if (logger.isDebugEnabled()) {
