@@ -19,6 +19,7 @@ public class ManifestImpl implements Manifest {
 
 	private static Log logger = LogFactory.getLog(ManifestImpl.class);
 
+	private LocalEnvironment env = null;
 	private String manifestName = null;
 
 	private ModuleMap modules = null;
@@ -33,13 +34,14 @@ public class ManifestImpl implements Manifest {
 	 * @param manifestName The name of the manifest, which is the <code>name</code>-attribute from the
 	 *                     <code>manifest</code>-element, when parsed from a manifest XML file.
 	 */
-	public ManifestImpl(String manifestName) {
+	public ManifestImpl(LocalEnvironment env, String manifestName) {
 
 		if ((manifestName == null) || (manifestName.length() == 0)) {
 			// Most probably a programmers' mistake, so a runtime exception
 			//
 			throw new KarmaRuntimeException("Manifest name should not be null or an empty string.");
 		}
+		this.env = env;
 		this.manifestName = manifestName;
 		this.modules = new ModuleMap();
 	}
@@ -135,26 +137,16 @@ public class ManifestImpl implements Manifest {
 
 	public boolean isLocal(Module module) {
 
-		// TODO throw an exception if this manifest doesn't have this module in it.
-		//
-		try {
-			File manifestDirectory = new File(Preferences.getInstance().getDevelopmentHome(), getName());
-			File moduleDirectory = new File(manifestDirectory, module.getName());
-
-			return moduleDirectory.exists();
-
-		} catch (KarmaException e) {
-			e.printStackTrace();  //To change body of catch statement use Options | File Templates.
-		}
-		return false;
+		File moduleDirectory = new File(new File(env.getDevelopmentHome(), getName()), module.getName());
+		return moduleDirectory.exists();
 	}
 
 	public File getLocalPath() throws ManifestException {
 
 		File file = null;
 		try {
-			file = new File(Preferences.getInstance().getDevelopmentHome(), getName());
-		} catch (KarmaException e) {
+			file = new File(env.getDevelopmentHome(), getName());
+		} catch (Exception e) {
 			throw new ManifestException(ManifestException.INVALID_LOCAL_PATH, new Object[]{getName()});
 		}
 

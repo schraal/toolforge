@@ -15,12 +15,6 @@ import nl.toolforge.karma.core.exception.ErrorCode;
 public final class ManifestException extends KarmaException {
 
 	/**
-	 * No manifest store directory could be found. This directory contains all manifest XML files. This directory
-	 * is resolved through the {@link nl.toolforge.karma.core.prefs.Preferences#MANIFEST_STORE_DIRECTORY_PROPERTY} property.
-	 */
-	public static final ErrorCode NO_MANIFEST_STORE_DIRECTORY = new ErrorCode("MFS-00001");
-
-	/**
 	 * No manifest file could be found in the manifest store directory.
 	 */
 	public static final ErrorCode MANIFEST_FILE_NOT_FOUND = new ErrorCode("MFS-00002");
@@ -59,6 +53,11 @@ public final class ManifestException extends KarmaException {
 	 * IO Error when trying to flush the manifest file to disk
 	 */
 	public static final ErrorCode MANIFEST_FLUSH_ERROR = new ErrorCode("MFS-00020");
+	/**
+	 * No manifest store directory could be found. This directory contains all manifest XML files. This directory
+	 * is resolved through the {@link LocalEnvironment#MANIFEST_STORE_DIRECTORY} property.
+	 */
+	public static final ErrorCode NO_MANIFEST_STORE_DIRECTORY = new ErrorCode("CORE-00070");
 
 	public ManifestException(ErrorCode errorCode) {
 		super(errorCode);

@@ -4,6 +4,8 @@ import nl.toolforge.core.util.file.XMLFilenameFilter;
 import nl.toolforge.karma.core.prefs.Preferences;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
+import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.CVSRoot;
@@ -29,6 +31,7 @@ public final class LocationFactory {
 
 	private static Log logger = LogFactory.getLog(LocationFactory.class);
 
+	private static LocalEnvironment env = null;
 	private static LocationFactory instance = null;
 
 	private static Map locations = null;
@@ -42,16 +45,27 @@ public final class LocationFactory {
 	 *
 	 * @return A location factory.
 	 */
-	public static LocationFactory getInstance() {
+	public static LocationFactory getInstance(LocalEnvironment localEnvironment) {
 
 		if (instance == null) {
 			instance = new LocationFactory();
+			env = localEnvironment;
 		}
 		return instance;
 	}
 
 	/**
-	 * Loads all location xml files from the path specified by the {@link Preferences#LOCATION_STORE_DIRECTORY_PROPERTY)}
+	 * Gets the singleton instance of the location factory. An instance obtained through this method cannot load locations
+	 * from the file system. Use {@link #getInstance(nl.toolforge.karma.core.LocalEnvironment)} instead.
+	 *
+	 * @return A location factory.
+	 */
+	public static LocationFactory getInstance() {
+		return getInstance(null);
+	}
+
+	/**
+	 * Loads all location xml files from the path specified by the {@link LocalEnvironment#LOCATION_STORE_DIRECTORY)}
 	 * property. Location objects are matched against authenticator objects, which should be available in the Karma
 	 * configuration directory and should start with '<code>authentication</code>' and have an <code>xml</code>-extension.
 	 *
@@ -59,11 +73,15 @@ public final class LocationFactory {
 	 */
 	public synchronized void load() throws LocationException {
 
+    if (env == null) {
+			throw new KarmaRuntimeException("Local environment is not initialized. Use 'getInstance(LocalEnvironment)'.");
+		}
+
 		logger.debug("Loading locations directly from disk.");
 
-		Preferences prefs = Preferences.getInstance();
+//		Preferences prefs = Preferences.getInstance();
 
-		File base = new File(prefs.get(Preferences.LOCATION_STORE_DIRECTORY_PROPERTY));
+		File base = env.getLocationStore();
 		String[] files = base.list(new XMLFilenameFilter());
 
 		// TODO I can check for files == null, but this could be checked when setting up the user environment during startup.
@@ -92,7 +110,7 @@ public final class LocationFactory {
 			// Repeat this step for authenticator files.
 			//
 
-			files = prefs.getConfigurationDirectory().list(new AuthenticationFilenameFilter());
+			files = new File(env.getConfigurationDirectory()).list(new AuthenticationFilenameFilter());
 
 			Document authenticationRoot = null;
 
@@ -100,7 +118,7 @@ public final class LocationFactory {
 
 				// Load the first file. todo Later on, more than one file can be supported.
 				//
-				authenticationRoot = builder.parse(new File(prefs.getConfigurationDirectory().getPath() + File.separator + files[0]));
+				authenticationRoot = builder.parse(new File(env.getConfigurationDirectory(), files[0]));
 
 				// Load the rest of them
 				//
@@ -113,7 +131,7 @@ public final class LocationFactory {
 					authenticationRoot = (Document) authenticationRoot.importNode(document.getDocumentElement(), true);
 				}
 			} else {
-				logger.info("No authentication files found in " + prefs.getConfigurationDirectory().getPath() + ".");
+				logger.info("No authentication files found in " + env.getConfigurationDirectory() + ".");
 			}
 
 			load(locationRoot, authenticationRoot);

@@ -16,7 +16,7 @@ import java.text.MessageFormat;
 public class KarmaException extends Exception {
 
 	//private static Log logger = LogFactory.getLog(KarmaException.class);
-	private static Preferences prefs = Preferences.getInstance();
+//	private static Preferences prefs = Preferences.getInstance();
 
 	// TODO : Work trough all errorcodes and come up with a nice setup of codes.
 	//
@@ -78,50 +78,24 @@ public class KarmaException extends Exception {
 	 */
 	public static final ErrorCode NO_CONFIGURATION_DIRECTORY = new ErrorCode("CORE-00006");
 
-	/**
-	 * Duplicate command descriptor name in commands XML file
-	 */
+	/** Duplicate command descriptor name in commands XML file */
 	public static final ErrorCode DUPLICATE_COMMAND = new ErrorCode("CORE-00007");
-
-	/**
-	 * Duplicate command descriptor alias in commands XML file
-	 */
+	/** Duplicate command descriptor alias in commands XML file */
 	public static final ErrorCode DUPLICATE_COMMAND_ALIAS = new ErrorCode("CORE-00008");
-
-	/**
-	 * Data format errors (errors during pattern matching, etc).
-	 */
+	/** Data format errors (errors during pattern matching, etc). */
 	public static final ErrorCode DATAFORMAT_ERROR = new ErrorCode("CORE-00020");
-
-//  /** A manifest file could not be found or loading errors occurred */
-//  public static final ErrorCode MANIFEST_COULD_NOT_BE_LOADED = new ErrorCode("CORE-00030");
-
-	/**
-	 * The console could not be initialized with user defined settings. Settings could not be available.
-	 */
+	/** The console could not be initialized with user defined settings. Settings could not be available. */
 	public static final ErrorCode CONSOLE_INITIALIZATION_ERROR = new ErrorCode("CORE-00040");
-
-	/**
-	 * Command does not exist
-	 */
+	/** Command does not exist */
 	public static final ErrorCode INVALID_COMMAND = new ErrorCode("CORE-00050");
-
-	/**
-	 * Invalid option for this command
-	 */
+	/** Invalid option for this command */
 	public static final ErrorCode INVALID_COMMAND_OPTION = new ErrorCode("CORE-00051");
-
-	/**
-	 * No <code>module.info</code> file exists for the module. This file is mandatory for <code>SourceModule</code>s.
-	 */
+	/** No <code>module.info</code> file exists for the module. This file is mandatory for <code>SourceModule</code>s. */
 	public static final ErrorCode NO_MODULE_INFO = new ErrorCode("CORE-00065");
 
 	protected ErrorCode errorCode = null;
 
 	protected Object[] messageArguments = new Object[]{};
-
-	//TODO: uitfaseren?
-//  public KarmaException() {}
 
 	/**
 	 * Create a new KarmaException, with the specific errorCode.
@@ -189,10 +163,10 @@ public class KarmaException extends Exception {
 	public String getErrorMessage() {
 
 		if (errorCode == null) {
-			//TODO: deze call zorgt IMHO een eindeloze loop.
+			//TODO: deze call zorgt IMHO voor een eindeloze loop.
 			return getMessage();
 		} else {
-			String errorMessage = errorCode.getErrorMessage(prefs.getLocale());
+			String errorMessage = errorCode.getErrorMessage(LocalEnvironment.getLocale());
 			if (getMessageArguments().length != 0) {
 				MessageFormat messageFormat = new MessageFormat(errorMessage);
 				return messageFormat.format(getMessageArguments());

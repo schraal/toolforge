@@ -3,6 +3,7 @@ package nl.toolforge.karma.core.test;
 import junit.framework.TestCase;
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.location.LocationFactory;
 import nl.toolforge.karma.core.prefs.Preferences;
 
@@ -23,10 +24,11 @@ public class BaseTest extends TestCase {
 		// The following is required to allow the Preferences class to use the test-classpath
 		//
 		System.setProperty("TESTMODE", "true");
+		System.setProperty("locale", "en");
 
 		// Overrides karma.properties for Junit testing.
 		//
-		System.setProperty(Preferences.BOOTSTRAP_CONFIGURATION_FILE_PROPERTY, "test/test-karma.properties");
+		System.setProperty(LocalEnvironment.BOOTSTRAP_CONFIGURATION, "test/test-karma.properties");
 
 		// Initialize the LocationFactory
 		//

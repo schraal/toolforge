@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core.bundle;
 
 import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.prefs.Preferences;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,7 +32,7 @@ public class BundleCache {
 	 * <p>This bundle can also be obtained using <code>getBundle("ERROR_MESSAGES")</code>.
 	 */
 	private static final ResourceBundle ERROR_MESSAGES =
-			ResourceBundle.getBundle("error-messages", Preferences.getInstance().getLocale());
+			ResourceBundle.getBundle("error-messages", LocalEnvironment.getLocale());
 
 	public static final String ERROR_MESSAGES_KEY = "ERROR_MESSAGES";
 
@@ -44,7 +45,7 @@ public class BundleCache {
 	 * <p>This bundle can also be obtained using <code>getBundle("FRONTEND_MESSAGES")</code>
 	 */
 	private static final ResourceBundle FRONTEND_MESSAGES =
-			ResourceBundle.getBundle("frontend-messages", Preferences.getInstance().getLocale());
+			ResourceBundle.getBundle("frontend-messages", LocalEnvironment.getLocale());
 
 	public static final String FRONTEND_MESSAGES_KEY = "FRONTEND_MESSAGES";
 

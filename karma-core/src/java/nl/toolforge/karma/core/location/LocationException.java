@@ -35,6 +35,8 @@ public final class LocationException extends KarmaException {
 	 * The location was configured incorrectly
 	 */
 	public static final ErrorCode LOCATION_CONFIGURATION_ERROR = new ErrorCode("LOC-00007");
+	
+	public static final ErrorCode NO_LOCATION_STORE_DIRECTORY = new ErrorCode("LOC-00008");
 
 	public LocationException(ErrorCode errorCode) {
 		super(errorCode);

@@ -40,7 +40,7 @@ public final class ConsoleWriter {
 		if (defaultPrompt) {
 			prompt = ConsoleConfiguration.getDefaultPrompt();
 		} else {
-			prompt = Preferences.getInstance().get("", ConsoleConfiguration.getDefaultPrompt());
+//			prompt = Preferences.getInstance().get("", ConsoleConfiguration.getDefaultPrompt());
 			// TODO based on any logic like the PS stuff on Unix, do something with the prompt.
 		}
 		return prompt.trim().concat(" "); // Remove too many spaces, and add one for readability.

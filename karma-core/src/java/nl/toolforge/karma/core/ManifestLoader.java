@@ -4,7 +4,6 @@ import nl.toolforge.core.util.file.XMLFilenameFilter;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.LocationFactory;
-import nl.toolforge.karma.core.prefs.Preferences;
 import nl.toolforge.karma.core.prefs.UnavailableValueException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,7 +15,11 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,15 +36,18 @@ public final class ManifestLoader {
 
 	private static ManifestLoader instance = null;
 
+	private static LocalEnvironment env = null;
+
 	//private Manifest currentManifest = null;
 
-	private static Preferences prefs = Preferences.getInstance();
+//	private static Preferences prefs = Preferences.getInstance();
 	private static ClassLoader classLoader = null;
 	private static String resourceDir = null;
 
-	public synchronized static ManifestLoader getInstance() {
+	public synchronized static ManifestLoader getInstance(LocalEnvironment localEnvironment) {
 		if (instance == null) {
 			instance = new ManifestLoader();
+			env = localEnvironment;
 		}
 		return instance;
 	}
@@ -56,7 +62,7 @@ public final class ManifestLoader {
 
 		Set all = new HashSet();
 
-		String[] names = prefs.getManifestStore().list(new XMLFilenameFilter());
+		String[] names = env.getManifestStore().list(new XMLFilenameFilter());
 
 		for (int i = 0; i < names.length; i++) {
 			all.add(names[i]);
@@ -70,7 +76,7 @@ public final class ManifestLoader {
 	 * <code>manifest.saved.id</code> in the <code>karma.properties</code> is used as the identifier for the manifest
 	 * name.
 	 *
-	 * @return The <code>Manifest</code> that was restored based on the {@link Preferences#MANIFEST_HISTORY_PROPERTY} or
+	 * @return The <code>Manifest</code> that was restored based on the {@link LocalEnvironment#MANIFEST_HISTORY} or
 	 *         <code>null</code> when no history was defined.
 	 * @throws ManifestException See {@link ManifestException#MANIFEST_LOAD_ERROR}
 	 */
@@ -79,7 +85,7 @@ public final class ManifestLoader {
 		String historyId = null;
 
 		try {
-			historyId = prefs.get(Preferences.MANIFEST_HISTORY_PROPERTY);
+			historyId = env.getManifestHistory();
 		} catch (UnavailableValueException u) {
 			// TODO : logger.debug("No history available for manifest. Returning null.);
 			// No history property available. Fine, we'll just return nothing.
@@ -140,11 +146,11 @@ public final class ManifestLoader {
 			// Create the actual Manifest instance
 			//
 			String manifestName = manifestDocument.getDocumentElement().getAttribute(Manifest.NAME_ATTRIBUTE);
-			manifest = new ManifestImpl(manifestName);
+			manifest = new ManifestImpl(env, manifestName);
 
 			// (Recursively add manifests and included manifests
 			//
-			getInstance().add(duplicates, manifest, manifestName);
+			getInstance(env).add(duplicates, manifest, manifestName);
 
 		} catch (ParserConfigurationException p) {
 			throw new ManifestException(ManifestException.MANIFEST_LOAD_ERROR, new Object[]{id}, p);
@@ -160,7 +166,7 @@ public final class ManifestLoader {
 	/**
 	 * Recursively adds modules from manifests to a manifest.
 	 */
-	private synchronized void add(Set duplicates, Manifest manifest, String id) throws ManifestException, LocationException {
+	private synchronized void add(Set duplicates, Manifest manifest, String id) throws ManifestException {
 
 		// Check if included manifest has already been loaded, to prevent looping
 		//
@@ -278,7 +284,12 @@ public final class ManifestLoader {
 
 			if (classLoader == null) {
 				logger.debug("Loading manifest " + fileName + " from file-system ...");
-				return new FileInputStream(prefs.getManifestStore().getPath() + File.separator + fileName);
+				FileInputStream fis = null;
+				try {
+					return new FileInputStream(env.getManifestStore().getPath() + File.separator + fileName);
+				} catch (KarmaException k) {
+					throw (ManifestException) k; // Sorry.
+				}
 			} else {
 				logger.debug("Loading manifest " + fileName + " from classpath ...");
 
@@ -294,7 +305,8 @@ public final class ManifestLoader {
 			throw new ManifestException(ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[]{id}, f);
 		} catch (NullPointerException n) {
 			throw new ManifestException(ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[]{id}, n);
+		} catch (KarmaException k) {
+			throw (ManifestException) k;
 		}
 	}
-
 }

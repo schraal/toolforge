@@ -10,7 +10,9 @@ public class TestManifestLoader extends BaseTest {
 
 	public void testParse1() {
 
-		ManifestLoader ml = ManifestLoader.getInstance();
+		LocalEnvironment env = new LocalEnvironment();
+
+		ManifestLoader ml = ManifestLoader.getInstance(env);
 
 		try {
 			Manifest m =

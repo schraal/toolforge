@@ -30,9 +30,10 @@ public final class CommandContext {
 
 	private static Log logger = LogFactory.getLog(CommandContext.class);
 
-	private static ManifestLoader manifestLoader = ManifestLoader.getInstance();
+	private static ManifestLoader manifestLoader = null;
 
 	private Manifest currentManifest = null;
+  private LocalEnvironment env = null;
 
 	private boolean initialized = false;
 
@@ -50,17 +51,23 @@ public final class CommandContext {
 	/**
 	 * Initializes the context to run commands. This method can only be called once.
 	 *
+	 * @param env The users' {@link nl.toolforge.karma.core.LocalEnvironment}.
+	 *
 	 * @throws KarmaException
 	 */
-	public synchronized void init() throws KarmaException {
+	public synchronized void init(LocalEnvironment env) throws KarmaException {
 
 		if (!initialized) {
+
+			this.env = env;
+
 			// Read in all location data
 			//
 			LocationFactory.getInstance().load();
 
 			// Try reloading the last manifest that was used.
 			//
+			manifestLoader = ManifestLoader.getInstance(this.env);
 			currentManifest = manifestLoader.loadFromHistory();
 		}
 		initialized = true;
@@ -181,6 +188,10 @@ public final class CommandContext {
 	 */
 	public boolean isManifestLoaded() {
 		return (currentManifest != null);
+	}
+
+	public LocalEnvironment getLocalEnvironment() {
+		return this.env;
 	}
 
 }

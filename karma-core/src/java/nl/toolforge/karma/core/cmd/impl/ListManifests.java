@@ -19,7 +19,7 @@ public abstract class ListManifests extends DefaultCommand {
 	/**
 	 * This constructor performs all generic (enduser-independent functionality).
 	 *
-	 * @throws ManifestException See {@link ManifestException#NO_MANIFEST_STORE_DIRECTORY}.
+	 * @throws ManifestException See {@link nl.toolforge.karma.core.ManifestException#NO_MANIFEST_STORE_DIRECTORY}.
 	 */
 	public ListManifests(CommandDescriptor descriptor) throws ManifestException {
 		super(descriptor);

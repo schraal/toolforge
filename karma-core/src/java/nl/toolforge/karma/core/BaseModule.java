@@ -35,13 +35,14 @@ public abstract class BaseModule implements Module {
 			throw new IllegalArgumentException("Location cannot be null.");
 		}
 
-		Pattern pattern = Pattern.compile(new ModuleNameExpression().getPatternString());
-
-		if (pattern.matcher(moduleName).matches()) {
-			this.name = moduleName;
-		} else {
-			throw new KarmaException(KarmaException.DATAFORMAT_ERROR);
-		}
+		// TODO to be checked.
+//		Pattern pattern = Pattern.compile(new ModuleNameExpression().getPatternString());
+//
+//		if (pattern.matcher(moduleName).matches()) {
+//			this.name = moduleName;
+//		} else {
+//			throw new KarmaException(KarmaException.DATAFORMAT_ERROR);
+//		}
 
 		this.location = location;
 	}

@@ -32,7 +32,6 @@ public class ModuleFactory {
 
 	/**
 	 * <p>Creates a new module; (the module is not physically created in the version control system).
-	 * <p/>
 	 * <p>This method is to be used when a module should be created irrespective of a manifest.
 	 *
 	 * @param type          See {@link Module}. A specific type identifier has to be provided. <b>NOTE:</b> unused at this moment.

@@ -21,7 +21,7 @@ import java.util.regex.Matcher;
  */
 public class SourceModule extends BaseModule {
 
-	private static Preferences prefs = Preferences.getInstance();
+//	private static Preferences prefs = Preferences.getInstance();
 
 	/**
 	 * Element name for a source module in a manifest XML file
@@ -136,37 +136,37 @@ public class SourceModule extends BaseModule {
 		return (version == null ? "N/A" : version.getVersionNumber());
 	}
 
-	/**
-	 * Returns the full path, based on {@link Preferences#getDevelopmentHome} and the modules' name {@link #getName}.
-	 */
-	public File getLocalPath() {
-
-		String localPath = null;
-		try {
-			localPath = prefs.getDevelopmentHome().getPath().concat(File.separator).concat(this.getName());
-			logger.debug("getLocalPath() = " + localPath);
-		} catch (KarmaException e) {
-			e.printStackTrace();
-		}
-
-		return new File(localPath);
-	}
-
-	/**
-	 * Checks if this module has a <code>module.info</code> file (to be more exact, a file by the name identified by
-	 * {@link #MODULE_INFO}.
-	 *
-	 * @return <code>true</code> if that file is present, false if it isn't.
-	 */
-	public boolean hasModuleInfo() {
-
-		try {
-			new File(getLocalPath(), MODULE_INFO);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
+//	/**
+//	 * Returns the full path, based on {@link LocalEnvironment#getDevelopmentHome} and the modules' name {@link #getName}.
+//	 */
+//	public static File getLocalPath() {
+//
+//		String localPath = null;
+//		try {
+//			localPath = prefs.getDevelopmentHome().getPath().concat(File.separator).concat(this.getName());
+//			logger.debug("getLocalPath() = " + localPath);
+//		} catch (KarmaException e) {
+//			e.printStackTrace();
+//		}
+//
+//		return new File(localPath);
+//	}
+//
+//	/**
+//	 * Checks if this module has a <code>module.info</code> file (to be more exact, a file by the name identified by
+//	 * {@link #MODULE_INFO}.
+//	 *
+//	 * @return <code>true</code> if that file is present, false if it isn't.
+//	 */
+//	public boolean hasModuleInfo() {
+//
+//		try {
+//			new File(getLocalPath(), MODULE_INFO);
+//			return true;
+//		} catch (Exception e) {
+//			return false;
+//		}
+//	}
 
 //  /**
 //   * Gets a file reference to the <code>module.info</code> file for this module.

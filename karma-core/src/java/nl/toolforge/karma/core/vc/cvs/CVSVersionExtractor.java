@@ -56,8 +56,6 @@ public final class CVSVersionExtractor implements VersionExtractor {
 	}
 
 	/**
-	 * <p>See {@link VersionExtractor#getLastVersion}.
-	 * <p/>
 	 * <p>Connects to the correct CVS repository and determines the last version in the branch (if applicable, otherwise
 	 * it is the trunk) for the module. This is done by quering <code>module.info</code>.
 	 *
@@ -81,11 +79,11 @@ public final class CVSVersionExtractor implements VersionExtractor {
 
 	private static List collectVersions(Module module) throws KarmaException {
 
-		if (module instanceof SourceModule) {
-			if (!((SourceModule) module).hasModuleInfo()) {
-				throw new KarmaException(KarmaException.NO_MODULE_INFO, new Object[]{module.getName()});
-			}
-		}
+//		if (module instanceof SourceModule) {
+//			if (!((SourceModule) module).hasModuleInfo()) {
+//				throw new KarmaException(KarmaException.NO_MODULE_INFO, new Object[]{module.getName()});
+//			}
+//		}
 
 		// Step 1 : get all symbolicnames that apply to the correct pattern
 		//

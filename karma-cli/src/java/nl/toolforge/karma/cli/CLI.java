@@ -2,6 +2,7 @@ package nl.toolforge.karma.cli;
 
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.Manifest;
+import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.prefs.Preferences;
 import nl.toolforge.karma.core.bundle.BundleCache;
 import nl.toolforge.karma.core.cmd.CommandContext;
@@ -43,13 +44,15 @@ public class CLI {
 	 */
 	public static void main(String[] args) {
 
+		LocalEnvironment env = new LocalEnvironment();
+
 		ConsoleWriter writer = new ConsoleWriter(true);
 
 		// Initialize the command context
 		//
 		CommandContext ctx = new CommandContext();
 		try {
-			ctx.init();
+			ctx.init(env);
 
 			Manifest currentManifest = ctx.getCurrent();
 			if (currentManifest != null) {
@@ -140,7 +143,7 @@ public class CLI {
 
 			// Flush the preferences.
 			//
-			Preferences.getInstance().flush();
+			env.flushPreferences();
 
 			System.exit(0);
 		}
