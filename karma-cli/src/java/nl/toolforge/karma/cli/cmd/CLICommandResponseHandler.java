@@ -9,7 +9,7 @@ import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
  *
  * @author W.H. Schraal
  */
-public class CLICommandResponseHandler implements CommandResponseHandler{
+public class CLICommandResponseHandler implements CommandResponseHandler {
 
   public void commandResponseChanged(CommandResponseEvent event) {
   }
