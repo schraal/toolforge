@@ -6,9 +6,10 @@
 	<name>Karma Core Module</name>
 	<groupId>toolforge</groupId>
 	<id>karma-core</id>
+  <inceptionYear>2003</inceptionYear>
 	<currentVersion>2.0-dev</currentVersion>
 	<package>nl.toolforge</package>
-
+  <url>http://www.sourceforge.net/projects/toolforge</url>
 	<organization>
 		<name>Toolforge</name>
 		<url>http://www.sourceforge.net/projects/toolforge</url>
