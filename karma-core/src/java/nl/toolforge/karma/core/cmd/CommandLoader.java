@@ -132,8 +132,7 @@ public final class CommandLoader {
   private Set loadDefaultCommands() throws CommandLoadException {
 
     try {
-      File defaultCommands = new File(DEFAULT_COMMANDS_BASEDIR, DEFAULT_COMMAND_FILE);
-      return (Set) getCommandDigester().parse(this.getClass().getClassLoader().getResourceAsStream(defaultCommands.getPath()));
+      return (Set) getCommandDigester().parse(this.getClass().getClassLoader().getResourceAsStream(DEFAULT_COMMANDS_BASEDIR + "/" + DEFAULT_COMMAND_FILE));
     } catch (IOException e) {
       logger.error(e);
       throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_DEFAULT_COMMANDS);
