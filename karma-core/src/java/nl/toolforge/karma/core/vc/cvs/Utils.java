@@ -160,41 +160,42 @@ public final class Utils {
     // todo UNFINISHED.
     //
 
-    StandardAdminHandler handler = new StandardAdminHandler();
 
     // Define a file filter for everything except:
     // 1. .cvsignore
     // 2. CVS-directories.
     //
 
-    String[] allEntries = (String[]) module.getBaseDir().list(filter);
-
-    Set e = new HashSet();
-
-    for (int i = 0; i < allEntries.length; i++) {
-
-      File file = new File(module.getBaseDir(), allEntries[i]);
-      if (file.isDirectory()) {
-        addEntries(file, e);
-      } else {
-       e.add(file);
-      }
-
-    }
-
     Set newEntries = new HashSet();
 
-    Set cvsFiles = handler.getAllFiles(module.getBaseDir());
+    if (module.getBaseDir().exists()) {
+      String[] allEntries = (String[]) module.getBaseDir().list(filter);
 
-    for (Iterator i = e.iterator(); i.hasNext();) {
+      Set e = new HashSet();
 
-      File f = (File) i.next();
+      for (int i = 0; i < allEntries.length; i++) {
 
-      if (!cvsFiles.contains(f)) {
-        newEntries.add(f);
+        File file = new File(module.getBaseDir(), allEntries[i]);
+        if (file.isDirectory()) {
+          addEntries(file, e);
+        } else {
+         e.add(file);
+        }
+
+      }
+
+      StandardAdminHandler handler = new StandardAdminHandler();
+      Set cvsFiles = handler.getAllFiles(module.getBaseDir());
+
+      for (Iterator i = e.iterator(); i.hasNext();) {
+
+        File f = (File) i.next();
+
+        if (!cvsFiles.contains(f)) {
+          newEntries.add(f);
+        }
       }
     }
-
     return newEntries;
   }
 
