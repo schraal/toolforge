@@ -18,6 +18,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Target;
+import org.apache.tools.ant.taskdefs.Javac;
+import org.apache.tools.ant.types.Path;
+
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
@@ -32,11 +41,6 @@ import nl.toolforge.karma.core.cmd.util.DependencyHelper;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.module.ModuleTypeException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.DirectoryScanner;
-import org.apache.tools.ant.Project;
 
 /**
  * Builds a module in a manifest. Building a module means that all java sources will be compiled into the
@@ -92,17 +96,16 @@ public class BuildModule extends AbstractBuildCommand {
 
     DependencyHelper helper = new DependencyHelper(getCurrentManifest());
 
-    Project project = getAntProject("build-module.xml");
-
+    String classpath = null;
     try {
       boolean dependenciesChecked = false;
       while (!dependenciesChecked) {
         try {
-          project.setProperty("classpath", helper.getClassPath(getCurrentModule()));
+          classpath = helper.getClassPath(getCurrentModule());
           dependenciesChecked = true;
         } catch (DependencyException de) {
           if ( !getCommandLine().hasOption("n") ||
-               de.getErrorCode().equals(DependencyException.DEPENDENCY_NOT_FOUND)) {
+                  de.getErrorCode().equals(DependencyException.DEPENDENCY_NOT_FOUND)) {
             //a dependency was not found. Let's build it.
             //if it's a module, build it.
             //else, rethrow the exception, since we can do nothing about it.
@@ -138,19 +141,46 @@ public class BuildModule extends AbstractBuildCommand {
           }
         }
       }
-      project.setProperty("module-build-dir", getBuildEnvironment().getModuleBuildDirectory().getPath());
-      project.setProperty("module-source-dir", getBuildEnvironment().getModuleSourceDirectory().getPath());
-      project.setProperty("java.compiler", getWorkingContext().getProperties().getProperty("java.compiler", "modern"));
-      project.setProperty("java.source", getWorkingContext().getProperties().getProperty("java.source", "1.4"));
-      project.setProperty("java.target", getWorkingContext().getProperties().getProperty("java.target", "1.4"));
-      project.setProperty("java.debug", getWorkingContext().getProperties().getProperty("java.debug", "off"));
-      project.setProperty("java.debuglevel", getWorkingContext().getProperties().getProperty("java.debuglevel", "none"));
-      project.setProperty("javac.nowarn", getWorkingContext().getProperties().getProperty("javac.nowarn", "off"));
-      project.setProperty("javac.optimize", getWorkingContext().getProperties().getProperty("javac.optimize", "off"));
-      project.setProperty("javac.deprecation", getWorkingContext().getProperties().getProperty("javac.deprecation", "off"));
-      project.setProperty("javac.verbose", getWorkingContext().getProperties().getProperty("javac.verbose", "no"));
-      project.setProperty("javac.depend", getWorkingContext().getProperties().getProperty("javac.depend", "off"));
 
+      //create module build dir
+      getBuildEnvironment().getModuleBuildDirectory().mkdirs();
+
+      //remove old jar file
+      executeDelete(getBuildEnvironment().getModuleBuildDirectory(), "*.jar");
+
+      Project project = getProjectInstance();
+
+      Target target = new Target();
+      target.setName("run");
+      target.setProject(project);
+
+      project.addTarget(target);
+
+      Javac javac = (Javac) project.createTask("javac");
+      javac.setProject(project);
+      javac.setDestdir(getBuildEnvironment().getModuleBuildDirectory());
+
+      Path path = new Path(project);
+      path.setPath(getBuildEnvironment().getModuleSourceDirectory().getPath());
+      javac.setSrcdir(path);
+
+      javac.setIncludes("**/*.java");
+      javac.setCompiler(getWorkingContext().getProperties().getProperty("java.compiler", "modern"));
+      javac.setClasspath(new Path(project, classpath));
+      javac.setSource(getWorkingContext().getProperties().getProperty("java.source", "1.4"));
+      javac.setTarget(getWorkingContext().getProperties().getProperty("java.target", "1.4"));
+      javac.setDebug(toBoolean(getWorkingContext().getProperties().getProperty("java.debug", "off")));
+      javac.setDebugLevel(getWorkingContext().getProperties().getProperty("java.debuglevel", "none"));
+      javac.setNowarn(toBoolean(getWorkingContext().getProperties().getProperty("javac.nowarn", "off")));
+      javac.setOptimize(toBoolean(getWorkingContext().getProperties().getProperty("javac.optimize", "off")));
+      javac.setDeprecation(toBoolean(getWorkingContext().getProperties().getProperty("javac.deprecation", "off")));
+      javac.setVerbose(toBoolean(getWorkingContext().getProperties().getProperty("javac.verbose", "no")));
+      javac.setDepend(toBoolean(getWorkingContext().getProperties().getProperty("javac.depend", "off")));
+
+      SimpleMessage message = new SimpleMessage("Building module {0}.", new Object[] {getCurrentModule().getName()});
+      commandResponse.addEvent(new MessageEvent(this, message));
+
+      target.addTask(javac);
       project.executeTarget("run");
 
     } catch (DependencyException e) {
@@ -173,6 +203,14 @@ public class BuildModule extends AbstractBuildCommand {
     return this.commandResponse;
   }
 
-
+  private boolean toBoolean(String s) {
+    s = s.toLowerCase();
+    if (s.equals("off") || s.equals("false") || s.equals("no")) {
+      return false;
+    } else if (s.equals("on") || s.equals("true") || s.equals("yes")) {
+      return true;
+    }
+    throw new IllegalArgumentException("Invalid String: "+s);
+  }
 
 }

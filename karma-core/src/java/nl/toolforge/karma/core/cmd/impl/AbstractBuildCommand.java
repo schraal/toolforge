@@ -26,16 +26,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import org.apache.commons.io.FileUtils;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.helper.ProjectHelperImpl;
 import org.apache.tools.ant.taskdefs.Delete;
 import org.apache.tools.ant.taskdefs.Mkdir;
 import org.apache.tools.ant.types.FileSet;
+
 import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
@@ -46,7 +46,6 @@ import nl.toolforge.karma.core.cmd.util.BuildEnvironment;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.module.Module;
-import nl.toolforge.karma.core.module.ModuleTypeException;
 
 /**
  * Superclass for all commands dealing with building modules. This class provides all basic property mappers and methods
@@ -142,7 +141,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
    *
    * @return
    */
-  protected final File getCompileDirectory() throws ModuleTypeException {
+  protected final File getCompileDirectory() {
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
     }
@@ -182,8 +181,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
     if (project == null) {
 
-      //DefaultLogger logger = new DefaultLogger();
-      AntLogger logger = new AntLogger(this);
+      DefaultLogger logger = getAntLogger();
 
       // todo hmm, this mechanism doesn't integrate with the commandresponse mechanism
       //
@@ -191,7 +189,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
       logger.setErrorPrintStream(System.err);
 
       //todo: this has to be configurable
-      String logLevel = System.getProperty("antloglevel");
+      String logLevel = System.getProperty("antloglevel", "");
       int antLogLevel = Project.MSG_WARN;
       if (logLevel.equalsIgnoreCase("debug")) {
         antLogLevel = Project.MSG_DEBUG;
@@ -208,6 +206,17 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
     }
 
     return project;
+  }
+
+  /**
+   * Get the DefaultLogger instance to be used for the current command. Commands
+   * that want to have their own AntLogger can override this method to supply
+   * the messagePrefixes and taskNames they need.
+   *
+   * @return DefaultLogger.
+   */
+  protected DefaultLogger getAntLogger() {
+    return new AntLogger(this);
   }
 
   /**
@@ -279,7 +288,8 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
     File tmp = null;
 
     tmp = MyFileUtils.createTempDirectory();
-
+    tmp.deleteOnExit();
+    
     ClassLoader loader = this.getClass().getClassLoader();
 
     BufferedReader in =

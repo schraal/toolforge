@@ -149,6 +149,9 @@ public class TestModule extends AbstractBuildCommand {
     }
 
     try {
+      SimpleMessage message = new SimpleMessage("Testing module {0}.", new Object[] {getCurrentModule().getName()});
+      commandResponse.addEvent(new MessageEvent(this, message));
+
       project.executeTarget("run");
     } catch (BuildException e) {
       logger.info(e.getMessage(), e);

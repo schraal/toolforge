@@ -550,7 +550,10 @@ public abstract class AbstractManifest implements Manifest {
 
     FilenameFilter filter = new FilenameFilter() {
       public boolean accept(File dir, String name) {
-        if ((name != null) && name.matches(".WORKING|.STATIC|.DYNAMIC")) {
+        if ((name != null) &&
+                (name.equals(".WORKING") ||
+                name.equals(".STATIC") ||
+                name.equals(".DYNAMIC"))) {
           return true;
         } else {
           return false;

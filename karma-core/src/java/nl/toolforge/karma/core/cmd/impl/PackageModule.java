@@ -19,6 +19,30 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.cmd.impl;
 
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Target;
+import org.apache.tools.ant.taskdefs.Copy;
+import org.apache.tools.ant.taskdefs.Ear;
+import org.apache.tools.ant.taskdefs.Jar;
+import org.apache.tools.ant.taskdefs.War;
+import org.apache.tools.ant.taskdefs.Zip;
+import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.FilterSet;
+import org.apache.tools.ant.types.ZipFileSet;
+import org.xml.sax.SAXException;
+
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
@@ -37,29 +61,6 @@ import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.module.Module;
 import nl.toolforge.karma.core.module.ModuleDigester;
 import nl.toolforge.karma.core.module.ModuleTypeException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Target;
-import org.apache.tools.ant.taskdefs.Copy;
-import org.apache.tools.ant.taskdefs.Ear;
-import org.apache.tools.ant.taskdefs.Jar;
-import org.apache.tools.ant.taskdefs.Mkdir;
-import org.apache.tools.ant.taskdefs.War;
-import org.apache.tools.ant.taskdefs.Zip;
-import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.FilterSet;
-import org.xml.sax.SAXException;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author D.A. Smedes
@@ -101,9 +102,7 @@ public class PackageModule extends AbstractBuildCommand {
               Module module = getCurrentManifest().getModule(dep);
               Command command = null;
               try {
-                // todo message implies an error, should be errorcode
-                getCommandResponse().addEvent(
-                    new MessageEvent(this, new SimpleMessage("Module `{0}` is needed, but is not packaged yet. Doing that now.", new Object[]{module.getName()})));
+                logger.info("Module "+module.getName()+" is needed, but is not packaged yet. Doing that now.");
 
                 String commandLineString;
                 if (!getCommandLine().hasOption("n")) {
@@ -210,7 +209,9 @@ public class PackageModule extends AbstractBuildCommand {
 
       //do the actual packaging
       String archiveName = helper.resolveArchiveName(getCurrentModule());
-      File packageName = new File(getBuildEnvironment().getModuleBuildRootDirectory(), archiveName);
+      File moduleBuildRoot = getBuildEnvironment().getModuleBuildRootDirectory();
+      moduleBuildRoot.mkdirs();
+      File packageName = new File(moduleBuildRoot, archiveName);
 
       if (getCurrentModule().getType().equals(Module.JAVA_WEB_APPLICATION)) {
         packageWar(packageName);
@@ -292,98 +293,48 @@ public class PackageModule extends AbstractBuildCommand {
     try {
       Project project = getProjectInstance();
 
+      commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Packaging...")));
       Target target = new Target();
-      target.setName("run");
+      target.setName("jar");
       target.setProject(project);
 
       project.addTarget(target);
+      Jar jar = (Jar) project.createTask("jar");
+      jar.setProject(getProjectInstance());
+      jar.setDestFile(packageName);
 
-      executeDelete(getBuildEnvironment().getModuleBuildDirectory(), "*.jar");
-
-      Copy copy = null;
-      FileSet fileSet = null;
-
-      //copy resources
-      commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Copying the resources...")));
+      //resources
       if (new File(getCurrentModule().getBaseDir(), "src/resources").exists()) {
-        copy = (Copy) project.createTask("copy");
-        copy.setProject(getProjectInstance());
-        copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
-        copy.setOverwrite(true);
-        copy.setIncludeEmptyDirs(false);
-
-        fileSet = new FileSet();
-        fileSet.setDir(new File(getCurrentModule().getBaseDir(), "src/resources"));
-        fileSet.setIncludes("**/*");
-
-        copy.addFileset(fileSet);
-        target.addTask(copy);
-      } else {
-        commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("No resources available.")));
+        FileSet resources = new FileSet();
+        resources.setDir(new File(getCurrentModule().getBaseDir(), "src/resources"));
+        resources.setIncludes("**/*");
+        jar.addFileset(resources);
       }
-
-      //copy META-INF
-      commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Copying the META-INF...")));
-      if (new File(getCurrentModule().getBaseDir(), "src/META-INF").exists()) {
-        copy = (Copy) project.createTask("copy");
-        copy.setProject(getProjectInstance());
-        copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
-        copy.setOverwrite(true);
-        copy.setIncludeEmptyDirs(false);
-
-        fileSet = new FileSet();
-        fileSet.setDir(new File(getCurrentModule().getBaseDir(), "src"));
-        fileSet.setIncludes("META-INF/**");
-
-        copy.addFileset(fileSet);
-        target.addTask(copy);
-      } else {
-        commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("No META-INF available.")));
+      //META-INF
+      if (new File(getCurrentModule().getBaseDir(), "src").exists()) {
+        FileSet metainf = new FileSet();
+        metainf.setDir(new File(getCurrentModule().getBaseDir(), "src"));
+        metainf.setIncludes("META-INF/**");
+        jar.addFileset(metainf);
       }
-      // Copy all class files to the package directory.
-      //
+      //.class files
       if (getCompileDirectory().exists()) {
-        copy = (Copy) project.createTask("copy");
-        copy.setProject(getProjectInstance());
-        copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
-        copy.setOverwrite(true);
-        copy.setIncludeEmptyDirs(false);
-
-        fileSet = new FileSet();
-        fileSet.setDir(getCompileDirectory());
-        fileSet.setIncludes("**/*.class");
-
-        copy.addFileset(fileSet);
-        target.addTask(copy);
+        FileSet classes = new FileSet();
+        classes.setDir(getCompileDirectory());
+        classes.setIncludes("**/*.class");
+        jar.addFileset(classes);
       }
-      project.executeTarget("run");
 
-      commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Packaging...")));
-      Target target2 = new Target();
-      target2.setName("jar");
-      target2.setProject(project);
+      jar.setExcludes("*.jar");
+      target.addTask(jar);
 
-      project.addTarget(target2);
-      if (getBuildEnvironment().getModulePackageDirectory().exists()) {
-        Jar jar = (Jar) project.createTask("jar");
-        jar.setProject(getProjectInstance());
-        jar.setDestFile(packageName);
-        jar.setBasedir(getBuildEnvironment().getModulePackageDirectory());
-        jar.setExcludes("*.jar");
-        target2.addTask(jar);
-
-        project.executeTarget("jar");
-      } else {
-        throw new CommandException(CommandException.PACKAGE_FAILED, new Object[] {getCurrentModule().getName()});
-      }
+      project.executeTarget("jar");
     } catch (BuildException e) {
       e.printStackTrace();
       if (logger.isDebugEnabled()) {
         commandResponse.addEvent(new ExceptionEvent(this, e));
       }
       throw new CommandException(e, CommandException.PACKAGE_FAILED, new Object[] {getCurrentModule().getName()});
-    } catch (ModuleTypeException e) {
-      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
 
   }
@@ -403,81 +354,40 @@ public class PackageModule extends AbstractBuildCommand {
     try {
       executeDelete(getBuildEnvironment().getModuleBuildDirectory(), "*.war");
 
-      // Fileset that copies contents of 'WEB-INF' to the package directory.
-      //
-      Copy copy;
-      File webdir = new File(new File(getCurrentModule().getBaseDir(), "src"), "web");
-      FileSet fileSet;
-
-      //create the package dir.
-      Mkdir mkdir = (Mkdir) project.createTask("mkdir");
-      mkdir.setDir(getBuildEnvironment().getModulePackageDirectory());
-      target.addTask(mkdir);
-
-      // Copy the contents of 'web' to the package directory.
-      if (webdir.exists()) {
-        copy = (Copy) project.createTask("copy");
-        copy.setProject(getProjectInstance());
-        copy.setTodir(getBuildEnvironment().getModulePackageDirectory());
-        copy.setOverwrite(true);
-        copy.setIncludeEmptyDirs(false);
-
-        fileSet = new FileSet();
-        fileSet.setDir(webdir);
-        fileSet.setIncludes("**");
-        fileSet.setExcludes("WEB-INF/web.xml");
-
-        copy.addFileset(fileSet);
-        target.addTask(copy);
-      }
-
-      // Copy all class files to the WEB-INF/classes directory.
-      if (getCompileDirectory().exists()) {
-        copy = (Copy) project.createTask("copy");
-        copy.setProject(getProjectInstance());
-        copy.setTodir(new File(getBuildEnvironment().getModulePackageDirectory(), "WEB-INF/classes"));
-        copy.setOverwrite(true);
-        copy.setIncludeEmptyDirs(false);
-
-        fileSet = new FileSet();
-        fileSet.setDir(getCompileDirectory());
-        fileSet.setIncludes("**/*.class");
-
-        copy.addFileset(fileSet);
-        target.addTask(copy);
-      }
-      
-      // Copy dependencies, but only those that need to be packaged
-      //
-      Set deps = helper.getAllDependencies(getCurrentModule(),false, true);
-      if (!deps.isEmpty()) {
-
-        copy = (Copy) project.createTask("copy");
-        copy.setProject(getProjectInstance());
-        copy.setTodir(new File(getBuildEnvironment().getModulePackageDirectory(), "WEB-INF/lib"));
-        copy.setFlatten(true);
-        copy.setIncludeEmptyDirs(false);
-
-        // dependencies
-        //
-        Iterator it = deps.iterator();
-        while (it.hasNext()) {
-          DependencyPath path = (DependencyPath) it.next();
-          fileSet = new FileSet();
-          fileSet.setFile(path.getFullPath());
-          copy.addFileset(fileSet);
-        }
-
-        target.addTask(copy);
-      }
-
       // Create a war file.
       //
       War war = (War) project.createTask("war");
       war.setProject(getProjectInstance());
       war.setDestFile(packageName);
-      war.setBasedir(getBuildEnvironment().getModulePackageDirectory());
       war.setWebxml(new File(getCurrentModule().getBaseDir(), "src/web/WEB-INF/web.xml".replace('/', File.separatorChar)));
+
+      ///src/web
+      File webdir = new File(new File(getCurrentModule().getBaseDir(), "src"), "web");
+      if (webdir.exists()) {
+        FileSet srcWeb = new FileSet();
+        srcWeb.setDir(webdir);
+        srcWeb.setIncludes("**");
+        srcWeb.setExcludes("WEB-INF/web.xml");
+        war.addFileset(srcWeb);
+      }
+      //classes
+      if (getCompileDirectory().exists()) {
+        ZipFileSet classes = new ZipFileSet();
+        classes.setDir(getCompileDirectory());
+        war.addClasses(classes);
+      }
+      //dependencies
+      Set deps = helper.getAllDependencies(getCurrentModule(), false, true);
+      if (!deps.isEmpty()) {
+        ZipFileSet libs;
+        Iterator it = deps.iterator();
+        while (it.hasNext()) {
+          DependencyPath path = (DependencyPath) it.next();
+          libs = new ZipFileSet();
+          libs.setFile(path.getFullPath());
+          war.addLib(libs);
+        }
+      }
 
       target.addTask(war);
       project.executeTarget("run");

@@ -236,11 +236,11 @@ public final class KarmaConsole {
       BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
 
+      String line = null;
       while (true) {
 
         prompt();
 
-        String line = null;
         if (reader != null || reader.readLine() != null) {
           line = reader.readLine().trim();
         }

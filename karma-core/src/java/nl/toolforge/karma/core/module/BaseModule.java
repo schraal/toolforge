@@ -67,6 +67,10 @@ public abstract class BaseModule implements Module {
   private File baseDir = null;
 
   private Version version = null;
+  private Type moduleType = Module.UNKNOWN;
+  private Set dependencies = new HashSet();
+  private long dependencyXmlTimestamp = 0L;
+
   private boolean patchLine = false;
   private boolean developmentLine = false;
 
@@ -278,8 +282,9 @@ public abstract class BaseModule implements Module {
   }
 
   /**
-   * Reads <code>module-descriptor.xml</code>-file from the module base directory. If the base directory does not exist,
-   * <code>Module.UNKNOWN</code> is returned.
+   * Reads <code>module-descriptor.xml</code>-file from the module base directory. Once read,
+   * the module type is cached.
+   * <p>If the base directory does not exist, <code>Module.UNKNOWN</code> is returned.
    *
    * @return The module type.
    * @throws nl.toolforge.karma.core.module.ModuleTypeException When <code>module-descriptor</code> is non-existing. This is possible when the
@@ -293,52 +298,63 @@ public abstract class BaseModule implements Module {
       return Module.UNKNOWN;
     }
 
-    if (!new File(getBaseDir(), Module.MODULE_DESCRIPTOR).exists()) {
+    File moduleDescriptor = new File(getBaseDir(), Module.MODULE_DESCRIPTOR);
+    if (!moduleDescriptor.exists()) {
       throw new ModuleTypeException(ModuleTypeException.MISSING_MODULE_DESCRIPTOR);
     }
 
-    Digester digester = new Digester();
+    if (moduleType.equals(Module.UNKNOWN)) {
+      Digester digester = new Digester();
 
-    digester.addObjectCreate("module-descriptor", Module.Type.class);
-    digester.addCallMethod("module-descriptor/type", "setType", 0);
+      digester.addObjectCreate("module-descriptor", Module.Type.class);
+      digester.addCallMethod("module-descriptor/type", "setType", 0);
 
-    try {
-      return (Type) digester.parse(new File(getBaseDir(), Module.MODULE_DESCRIPTOR).getPath());
-    } catch (IOException e) {
-      throw new ModuleTypeException(ModuleTypeException.INVALID_MODULE_DESCRIPTOR);
-    } catch (SAXException e) {
-      throw new ModuleTypeException(ModuleTypeException.INVALID_MODULE_DESCRIPTOR);
+      try {
+        moduleType = (Type) digester.parse(moduleDescriptor.getPath());
+      } catch (IOException e) {
+        throw new ModuleTypeException(ModuleTypeException.INVALID_MODULE_DESCRIPTOR);
+      } catch (SAXException e) {
+        throw new ModuleTypeException(ModuleTypeException.INVALID_MODULE_DESCRIPTOR);
+      }
     }
+    return moduleType;
   }
 
   /**
    * See {@link Module#getDependencies}. This implementation throws a <code>KarmaRuntimeException</code> when the
    *  modules' <code>dependencies.xml</code> could not be parsed properly. When no dependencies have been specified, or
    * when the file does not exist, the method returns an empty <code>Set</code>.
+   * <p>
+   * The method only rereads the dependencies when the dependencies.xml has been changed.
    *
    * @return A <code>Set</code> containing {@link nl.toolforge.karma.core.scm.ModuleDependency} instances.
    */
   public final Set getDependencies() {
 
-    Set dependencies = new HashSet();
+    File dependencyXml = new File(getBaseDir(), "dependencies.xml");
 
-    // Read in the base dependency structure of a Maven project.xml file
-    //
-    Digester digester = new Digester();
+    if (!dependencyXml.exists()) {
+      dependencies = new HashSet();
+    } else if (dependencyXml.lastModified() > dependencyXmlTimestamp) {
+      // Read in the base dependency structure of a Maven project.xml file
+      //
+      Digester digester = new Digester();
 
-    digester.addObjectCreate("*/dependencies", HashSet.class);
-    digester.addFactoryCreate("*/dependency", ModuleDependencyCreationFactory.class);
-    digester.addSetNext("*/dependency", "add");
+      digester.addObjectCreate("*/dependencies", HashSet.class);
+      digester.addFactoryCreate("*/dependency", ModuleDependencyCreationFactory.class);
+      digester.addSetNext("*/dependency", "add");
 
-    try {
+      try {
 
-      dependencies = (Set) digester.parse(new File(getBaseDir(), "dependencies.xml"));
-
-    } catch (IOException e) {
-      return new HashSet();
-    } catch (SAXException e) {
-      throw new KarmaRuntimeException(ManifestException.DEPENDENCY_FILE_LOAD_ERROR, new Object[]{getName()});
+        dependencyXmlTimestamp = dependencyXml.lastModified();
+        dependencies = (Set) digester.parse(dependencyXml);
+      } catch (IOException e) {
+        dependencies = new HashSet();
+      } catch (SAXException e) {
+        throw new KarmaRuntimeException(ManifestException.DEPENDENCY_FILE_LOAD_ERROR, new Object[]{getName()});
+      }
     }
+
     return dependencies;
   }
 

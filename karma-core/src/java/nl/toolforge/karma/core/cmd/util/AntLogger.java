@@ -38,30 +38,29 @@ public class AntLogger extends DefaultLogger {
 
   // Specific messages we want to capture
   //
-  private static Set messagePrefixes = null;
+  private Set messagePrefixes = new HashSet();
 
   // Specific tasks we want to capture
   //
-  private static Set taskNames = null;
+  private Set taskNames = new HashSet();
 
   private Command command = null;
 
-  static {
-
-    messagePrefixes = new HashSet();
-
-    // "<javac> Compiling ..."
-    //
+  public AntLogger(Command command) {
+    //todo: find out which command(s) use these settings and refactor them.
     messagePrefixes.add("Compiling");
     messagePrefixes.add("TEST");
-
-    taskNames = new HashSet();
     taskNames.add("javadoc"); // <javadoc>
     taskNames.add("javac"); // <javac>
+
+    this.command = command;
   }
 
-  public AntLogger(Command command) {
-    this.command = command;
+  public AntLogger(Command command, Set prefixes, Set names) {
+    this(command);
+
+    this.messagePrefixes.addAll(prefixes);
+    this.taskNames.addAll(names);
   }
 
   private boolean map(BuildEvent event) {

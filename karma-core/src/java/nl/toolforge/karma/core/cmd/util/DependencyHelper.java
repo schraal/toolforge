@@ -21,14 +21,12 @@ package nl.toolforge.karma.core.cmd.util;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.netbeans.lib.cvsclient.commandLine.command.log;
-
 import net.sf.sillyexceptions.OutOfTheBlueException;
+
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.manifest.Manifest;
@@ -413,9 +411,10 @@ public final class DependencyHelper {
 
     String version = "";
     try {
-      if (manifest.getState(module).equals(Module.WORKING)) {
+      Module.State state = manifest.getState(module);
+      if (state.equals(Module.WORKING)) {
         version = Module.WORKING.toString();
-      } else if (manifest.getState(module).equals(Module.DYNAMIC)) {
+      } else if (state.equals(Module.DYNAMIC)) {
         version = Utils.getLocalVersion(module).toString();
       } else { // STATIC module
         version = ((Module) module).getVersionAsString();
