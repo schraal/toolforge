@@ -41,7 +41,7 @@ import java.util.Set;
  */
 public class SourceModule extends BaseModule {
 
-  private State state = null;
+//  private State state = null;
   private Version version = null;
   private boolean patchLine = false;
   private boolean developmentLine = false;
@@ -144,7 +144,7 @@ public class SourceModule extends BaseModule {
   /**
    * Converts a modules dependencies XML-tree to a <code>Set</code> of
    * {@link nl.toolforge.karma.core.scm.ModuleDependency} instances. This method merely transforms the deps for a
-   * module. It doesn't do any validation (like, does the dep actually exists locally).
+   * module. It doesn't do any validation (like, does the dep actually exist locally).
    *
    * @return A <code>Set</code> containing {@link nl.toolforge.karma.core.scm.ModuleDependency} instances.
    */
