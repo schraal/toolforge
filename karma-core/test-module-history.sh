@@ -1,1 +1,0 @@
-java -cp ../karma-cli/lib/commons-digester-1.5.jar:../karma-cli/lib/commons-logging-1.0.3.jar:../karma-cli/lib/commons-beanutils-1.6.1.jar:../karma-cli/lib/commons-collections-2.1.jar:target/classes nl.toolforge.karma.core.history.ModuleHistory
