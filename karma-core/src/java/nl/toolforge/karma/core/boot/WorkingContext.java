@@ -383,7 +383,10 @@ public final class WorkingContext {
 
     try {
       location.setRepository(configuration.getProperty(MANIFEST_STORE_REPOSITORY));
-
+    } catch (Exception e) {
+      throw new LocationException(LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_REPOSITORY+"'"});
+    }
+    try {
       String module = configuration.getProperty(MANIFEST_STORE_MODULE);
 
       if (module.lastIndexOf("/") > 0) {
@@ -395,7 +398,7 @@ public final class WorkingContext {
       }
 
     } catch (Exception e) {
-      throw new LocationException(LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_REPOSITORY+"'"});
+      throw new LocationException(LocationException.INVALID_MANIFEST_STORE_LOCATION, new Object[]{"'"+MANIFEST_STORE_MODULE+"'"});
     }
     try {
       location.setProtocol(configuration.getProperty(MANIFEST_STORE_PROTOCOL));
