@@ -20,7 +20,7 @@
   </p>
 
   <p>
-    The manifest and location configuration are is in a
+    The manifest and location configuration is stored in a
     version control repository as well. The so-called `manifest-store` and
     `location-store`. Both of these will have to be present for Karma to
     actually do something usefull.
@@ -39,9 +39,9 @@
 
     <source>
 CVSROOT/
-   manifests
-   locations
-   modules
+manifests/
+locations/
+modules/
     </source>
 
     <p>
@@ -50,16 +50,16 @@ CVSROOT/
 
     <source>
 CVSROOT/
-   karma/
-      manifests
-      locations
-      modules
+karma/
+    manifests/
+    locations/
+    modules/
     </source>
 
   <subsection name="The manifest store">
 
   <p>
-    Software modules are grouped in a so-called manifests. These manifests are
+    Software modules are grouped in a so-called manifest. These manifests are
     xml files, following the
     `http://www.toolforge.org/specifications/karma/manifest.dtd`
     definition. Karma is capable of checking out these manifest files from a
@@ -67,7 +67,6 @@ CVSROOT/
     manifests) is called the 'manifest-store'. During startup of Karma, the
     manifest-store configuration will be checked and asked for if missing (see
     <a href="getting-started.html">getting started</a>).
-    A local CVS repository works as well.
   </p>
 
   <p>
@@ -107,8 +106,7 @@ CVSROOT/
      location-store configuration will be checked and asked for if
      missing. You have to provide these properties to Karma which will be
      written in
-     <code>$USER_HOME/.karma/&lt;working-context&gt;/workingcontext.properties</code>. A
-     local CVS repository works as well.
+     <code>$USER_HOME/.karma/&lt;working-context&gt;/workingcontext.properties</code>.
   </p>
 
   <p>

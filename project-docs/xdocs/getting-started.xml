@@ -127,7 +127,7 @@ console                      Start the Karma console.
   </source>
 
   <p>
-    We'll choose for the option of starting the console, which also start the
+    We'll choose for the option of starting the console, which also starts the
     configuration process.
   </p>
   <source>karma [-u] [-w &lt;working-context&gt;] console</source>
