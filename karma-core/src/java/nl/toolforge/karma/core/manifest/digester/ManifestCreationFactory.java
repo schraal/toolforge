@@ -25,12 +25,12 @@ public class ManifestCreationFactory extends AbstractObjectCreationFactory {
     String name = attributes.getValue("name");
     String type = attributes.getValue("type");
 
-    if (type.equals(Manifest.DEVELOPMENT_MANIFEST)) {
+    if (Manifest.DEVELOPMENT_MANIFEST.equals(type)) {
       return new DevelopmentManifest(name);
     }
-    if (type.equals(Manifest.RELEASE_MANIFEST)) {
+    if (Manifest.RELEASE_MANIFEST.equals(type)) {
       return new ReleaseManifest(name);
     }
-    throw new KarmaRuntimeException("A manifest should be type 'development' or type 'release'.");
+    throw new KarmaRuntimeException("A manifest should be of type 'development' or of type 'release'.");
   }
 }
