@@ -20,6 +20,9 @@ package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
+import nl.toolforge.karma.core.cmd.event.CommandStartedEvent;
+import nl.toolforge.karma.core.cmd.event.CommandFinishedEvent;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -58,7 +61,14 @@ public class CommandResponse {
       for (Iterator it = listeners.iterator(); it.hasNext(); ) {
         CommandResponseListener listener = (CommandResponseListener) it.next();
 
-        listener.messageLogged(event);
+        if (event instanceof CommandStartedEvent) {
+          listener.commandStarted(event);
+        } else if (event instanceof CommandFinishedEvent) {
+          listener.commandFinished(event);
+        } else {
+          listener.messageLogged(event);
+        }
+        
       }
     } else {
       logger.warn("No listener registered for command response (messages sent to /dev/null ...)");

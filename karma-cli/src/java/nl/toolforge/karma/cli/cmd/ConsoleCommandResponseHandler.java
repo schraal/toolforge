@@ -57,6 +57,7 @@ public class ConsoleCommandResponseHandler implements CommandResponseHandler {
    */
   public void commandFinished(CommandResponseEvent event) {
     this.messageLogged(event);
+    karmaConsole.prompt();
   }
 
   /**

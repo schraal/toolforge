@@ -236,9 +236,8 @@ public final class KarmaConsole {
       //
       BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
+      prompt();
       while (true) {
-
-        prompt(commandContext);
 
         String line = null;
         if (reader != null || reader.readLine() != null) {
@@ -246,6 +245,7 @@ public final class KarmaConsole {
         }
 
         if ((line == null) || ("".equals(line.trim()))) {
+          prompt();
           continue;
         }
 
@@ -345,12 +345,12 @@ public final class KarmaConsole {
   /**
    * Gets the default prompt, constructed as follows : <code>HH:MM:SS [ Karma ]</code>
    */
-  public String getPrompt(CommandContext context) {
+  public String getPrompt() {
 
     Calendar now = Calendar.getInstance();
 
-    String end = (context.getCurrentManifest() == null ? "Karma" : context.getCurrentManifest().getName());
-    end = context.getWorkingContext().getName() + "::" + end;
+    String end = (commandContext.getCurrentManifest() == null ? "Karma" : commandContext.getCurrentManifest().getName());
+    end = commandContext.getWorkingContext().getName() + "::" + end;
     return
         StringUtils.leftPad("" + now.get(Calendar.HOUR_OF_DAY) , 2, "0") + ":" +
         StringUtils.leftPad("" + now.get(Calendar.MINUTE) , 2, "0") + ":" +
@@ -365,7 +365,7 @@ public final class KarmaConsole {
     System.out.print(text);
   }
 
-  public void prompt(CommandContext context) {
-    System.out.print(getPrompt(context));
+  public void prompt() {
+    System.out.print(getPrompt());
   }
 }
