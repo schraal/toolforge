@@ -48,12 +48,17 @@ import java.io.File;
 public final class ModuleDependency {
 
   private String id = null;
+  private String jar = null;
+
   private String groupId = null;
+  private String libModule = null;
   private String artifactId = null;
   private String version = null;
+
   private String module = null;
-  private String jar = null;
+
   private boolean doPackage = false;
+
 
   public String getId() {
     return id;
@@ -95,6 +100,14 @@ public final class ModuleDependency {
     this.module = module;
   }
 
+  public String getLibModule() {
+    return libModule;
+  }
+
+  public void setLibModule(String libModule) {
+    this.libModule = libModule;
+  }
+
   public String getJar() {
     return jar;
   }
@@ -115,16 +128,19 @@ public final class ModuleDependency {
 
     String dep = null;
 
-    // <dependency groupId="" artifactId="" version=""/>
-    //
     if (groupId != null) {
-      dep =  groupId + File.separator + "jars" + File.separator + artifactId + "-" + version;
+      // <dependency groupId="" artifactId="" version=""/>
+      //
+      dep = groupId + File.separator + "jars" + File.separator + artifactId + "-" + version;
       dep += ".jar";
-    }
-
-    // <dependency id="" jar=""/>
-    //
-    if (id != null) {
+    } else if (libModule != null) {
+      // <dependency libModule="" artifactId="" version=""/>
+      //
+      dep = artifactId + "-" + version;
+      dep += ".jar";
+    } else if (id != null) {
+      // <dependency id="" jar=""/>
+      //
       dep = id + File.separator + "jars" + File.separator + jar;
     }
 
@@ -132,13 +148,25 @@ public final class ModuleDependency {
   }
 
   /**
-   * <code>true</code> if the dependency identifies a module in the same manifest, otherwise false.
+   * <code>true</code> if the dependency identifies a module in the same
+   * manifest, otherwise false.
    */
   public boolean isModuleDependency() {
 
     // <dependency module=""/>
     //
     return module != null;
+  }
+
+  /**
+   * <code>true</code> if the dependency identifies a jar in a module in the
+   * same manifest, otherwise false.
+   */
+  public boolean isLibModuleDependency() {
+
+    // <dependency module=""/>
+    //
+    return libModule != null;
   }
 
   /**
@@ -189,13 +217,13 @@ public final class ModuleDependency {
     String result = "<dependency ";
 
     if (module != null) {
-      result += "module=\"\" ";
+      result += "module=\""+module+"\" ";
     } else if (groupId != null) {
-      result += "groupId=\"\" ";
+      result += "groupId=\""+groupId+"\" artifactId=\""+artifactId+"\" version=\""+version+"\" ";
     } else if (id != null) {
-      result += "id=\"\" ";
+      result += "id=\""+id+"\" jar=\""+jar+"\" ";
     } else {
-      result += "libmodule=\"\" ";
+      result += "libModule=\""+libModule+"\" artifactId=\""+artifactId+"\" version=\""+version+"\" ";
     }
     if (doPackage) {
       result += "package=\"true\" ";
