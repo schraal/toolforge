@@ -116,7 +116,7 @@
 			<resources>
 				<resource>
 					<directory>resources/test</directory>
-					<targetPath>resources/test</targetPath>
+<!--					<targetPath>/</targetPath>-->
 					<includes>
 						<include>**/*.xml</include>
 						<include>**/*.dtd</include>

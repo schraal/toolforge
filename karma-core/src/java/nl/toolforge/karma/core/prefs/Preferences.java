@@ -186,6 +186,9 @@ public final class Preferences {
 		//
 		try {
 
+			System.out.println("BOOTSTRAP_CONFIGURATION_FILE_PROPERTY = " + System.getProperty(BOOTSTRAP_CONFIGURATION_FILE_PROPERTY));
+
+
 			String bootstrapConfigurationFile = System.getProperty(BOOTSTRAP_CONFIGURATION_FILE_PROPERTY);
       bootstrapConfigurationFile = (bootstrapConfigurationFile == null ? null : bootstrapConfigurationFile.trim());
 
@@ -204,12 +207,16 @@ public final class Preferences {
 				// Load from classpath
 				//
 //				System.out.println("222 " + bootstrapConfigurationFile);
-				f = getClass().getClassLoader().getSystemResourceAsStream(bootstrapConfigurationFile);
+//				f = getClass().getClassLoader().getSystemResourceAsStream(bootstrapConfigurationFile);
+				f = getClass().getClassLoader().getResourceAsStream(bootstrapConfigurationFile);
 			}
+
+//			System.out.println("FileInputStream = " + f);
 
 			bootstrapConfiguration.load(f);
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new KarmaRuntimeException(
 				"Bootstrap PANIC. Karma could not be started, bootstrap configuration could not be found.");
 		}
