@@ -18,23 +18,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd;
 
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import org.apache.commons.cli.Option;
+import nl.toolforge.core.util.file.XMLFilenameFilter;
+import nl.toolforge.karma.core.cmd.digester.CommandDescriptorCreationFactory;
+import nl.toolforge.karma.core.cmd.digester.OptionDescriptorCreationFactory;
+import nl.toolforge.karma.core.boot.WorkingContext;
 import org.apache.commons.cli.Options;
+import org.apache.commons.digester.Digester;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.InputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 /**
  * <p>Loads command-descriptors from an <code>XML</code>-file. The default filename
@@ -51,196 +48,122 @@ public final class CommandLoader {
   //TODO the xml instance should be checked by a DTD or XML Schema document.
 
   private static Log logger = LogFactory.getLog(CommandLoader.class);
+  /**
+   * Default filename for the command descriptor file
+   */
+  public static final String DEFAULT_COMMANDS_BASEDIR = "commands";
+  public static final String DEFAULT_COMMAND_FILE = "commands.xml";
+  public static final String COMMAND_PLUGINS_DIR = "plugins";
 
-	private CommandLoader() {
-	}
+  private CommandLoader() {
+  }
 
-	private static CommandLoader instance = null;
+  private static CommandLoader instance = null;
 
-	public synchronized static CommandLoader getInstance() {
-		if (instance == null) {
-			instance = new CommandLoader();
-		}
-		return instance;
-	}
+  public synchronized static CommandLoader getInstance() {
+    if (instance == null) {
+      instance = new CommandLoader();
+    }
+    return instance;
+  }
 
-	/**
-	 * <p>Loads the default <code>XML</code> file containing command descriptors. The default command descriptor file is
-	 * located in <code>${user.home}/.karma</code>.
-	 *
-	 * @return A <code>Set</code> of {@link nl.toolforge.karma.core.cmd.CommandDescriptor} instances.
-	 */
-	Set load() {
-		return load(Command.DEFAULT_COMMAND_FILE);
-	}
+  /**
+   * Loads command xml files from a certain <code>baseDir</code>. All xml files in <code>baseDir</code> are parsed and
+   * their commands are added to the default command set provided by Karma (as located in
+   *
+   * @return The default commands plus any
+   */
+  Set load() throws CommandLoadException {
 
+    //
+    //
+    Set commandSet = loadDefaultCommands();
 
-	private static boolean loaded = false;
-	private static Document descriptorDocument = null;
+    File pluginBaseDir =
+        new File(WorkingContext.getKarmaHome(), "resources" + File.separator + "commands" + File.separator + "plugins");
 
-	/**
-	 * <p>Loads the <code>XML</code> file containing command descriptors.
-	 *
-	 * @param resource The resource filename (relative to the classpath) to the <code>XML</code> file. Use
-	 *                 {@link #load} to use the default settings.
-	 * @return A <code>Set</code> of {@link nl.toolforge.karma.core.cmd.DefaultCommand} instances.
-	 */
+    if (pluginBaseDir.exists()) {
 
+      String[] files = pluginBaseDir.list(new XMLFilenameFilter());
+      for (int i = 0; i < files.length; i++) {
 
-	Set load(String resource) {
-
-		Set descriptors = new HashSet();
-		Set uniqueAliasses = new HashSet();
-
-
-		try {
-
-			Element commandsElement = null;
-
-			// We need to load the configuration file from the classpath.
-			//
-      InputStream in = null;
-      try {
-        in = this.getClass().getClassLoader().getResourceAsStream(resource);
-      } catch (Exception e) {
-        e.printStackTrace();
+        try {
+          commandSet.addAll((Set) getCommandDigester().parse(new File(pluginBaseDir, files[i])));
+        } catch (IOException e) {
+          logger.error(e);
+          throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_COMMAND_FILE, new Object[]{files[i]});
+        } catch (SAXException e) {
+          logger.error(e);
+          throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_COMMAND_FILE, new Object[]{files[i]});
+        }
       }
-      // Now some xml parsing stuff needs to be done
-			//
-			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+    }
+    return commandSet;
+  }
 
-			if (!loaded) {
-				descriptorDocument = documentBuilder.parse(in);
-				loaded = true;
-			}
-			commandsElement = descriptorDocument.getDocumentElement();
+  /**
+   * <p>Loads the <code>xml</code> file containing command descriptors.
+   *
+   * @param resource The resource filename (relative to the classpath) to the <code>xml</code> file. Use
+   *   {@link #load} to use the default settings.
+   * @return A <code>Set</code> of {@link CommandDescriptor} instances.
+   * 
+   * @throws CommandLoadException
+   */
+  Set load(String resource) throws CommandLoadException {
 
-			// Always reload commands into memory, due to something I don't understand in the cli stuff.
-			//
-			NodeList commands = commandsElement.getElementsByTagName("command");
+    try {
+      return (Set) getCommandDigester().parse(this.getClass().getClassLoader().getResourceAsStream(resource));
+    } catch (IOException e) {
+      logger.error(e);
+      throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_COMMAND_FILE);
+    } catch (SAXException e) {
+      logger.error(e);
+      e.printStackTrace();
+      throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_COMMAND_FILE);
+    }
+  }
 
-			for (int i = 0; i < commands.getLength(); i++) {
+  /**
+   * Loads commands from the Karma default <code>commands.xml</code> file.
+   *
+   * @throws CommandLoadException
+   */
+  private Set loadDefaultCommands() throws CommandLoadException {
 
-				Element commandElement = (Element) commands.item(i);
+    try {
+      File defaultCommands = new File(DEFAULT_COMMANDS_BASEDIR, DEFAULT_COMMAND_FILE);
+      return (Set) getCommandDigester().parse(this.getClass().getClassLoader().getResourceAsStream(defaultCommands.getPath()));
+    } catch (IOException e) {
+      logger.error(e);
+      throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_DEFAULT_COMMANDS);
+    } catch (SAXException e) {
+      logger.error(e);
+      throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_DEFAULT_COMMANDS);
+    }
+  }
 
-				// First we get the basic things to create a descriptor
-				//
-				//boolean internalCommand = (new Boolean(command.getAttribute("internal"))).booleanValue();
-				//boolean manifestSpecific = (new Boolean(command.getAttribute("needsManifest"))).booleanValue();
-				//boolean extraArgumentsAllowed = (new Boolean(command.getAttribute("extraArgumentsAllowed"))).booleanValue();
+  private Digester getCommandDigester() {
 
-				if (commandElement.getElementsByTagName("options").getLength() > 0) {
+    Digester digester = new Digester();
 
-					NodeList optionsElement = ((Element) commandElement.getElementsByTagName("options").item(0)).getElementsByTagName("option");
+    digester.addObjectCreate("commands", HashSet.class);
 
-					Options options = null;
+    digester.addFactoryCreate("*/command", CommandDescriptorCreationFactory.class);
+    digester.addCallMethod("*/command/description", "setDescription", 0);
+    digester.addCallMethod("*/command/classname", "setClassName", 0);
+    digester.addCallMethod("*/command/help", "setHelp", 0);
 
-					if (optionsElement.getLength() > 0) {
+    digester.addObjectCreate("*/command/options", Options.class);
 
-						options = new Options();
-						Option option = null;
+    digester.addFactoryCreate("*/command/options/option", OptionDescriptorCreationFactory.class);
+    digester.addCallMethod("*/command/options/option/arg", "setArgName", 0);
+    digester.addSetNext("*/command/options/option", "addOption");
 
-						for (int j = 0; j < optionsElement.getLength(); j++) {
+    digester.addSetNext("*/command/options", "addOptions"); // Adds an Option to the command.
 
-							Element optionElement = (Element) optionsElement.item(j);
+    digester.addSetNext("*/command", "add"); // Adds a CommandDescriptor instance to the set.
 
-							String opt = optionElement.getAttribute("opt");
-							String longOpt = optionElement.getAttribute("longOpt");
-
-							// Add an options' arguments
-							//
-							boolean hasArgs = optionElement.getElementsByTagName("arg").getLength() > 0;
-							boolean required = optionElement.getAttribute("required").equals("true");
-
-							NodeList argElements = optionElement.getElementsByTagName("arg");
-
-							option = new Option(opt, longOpt, hasArgs, optionElement.getAttribute("description"));
-							option.setRequired(required);
-
-							if (hasArgs) {
-
-								for (int k = 0; k < argElements.getLength(); k++) {
-
-									Element argElement = (Element) argElements.item(k);
-									option.setArgName(argElement.getAttribute("name"));
-								}
-							}
-
-							// We have an option for this command and add it to the Options container
-							//
-							options.addOption(option);
-						}
-					}
-
-					String commandName = commandElement.getAttribute("name");
-					String alias = commandElement.getAttribute("alias");
-
-					// if we're dealing with an alias list, split it up and check whether all parts are unique.
-					if( alias.indexOf(" ") != -1) {
-						StringTokenizer tokenizer = new StringTokenizer(alias," ");
-						while( tokenizer.hasMoreTokens()) {
-							if (!uniqueAliasses.add(tokenizer.nextToken())) {
-								throw new KarmaRuntimeException("Duplicate command alias.");
-							}
-						}
-					}
-
-          Node child = commandElement.getElementsByTagName("classname").item(0).getFirstChild();
-          String clazzName;
-          if (child != null) {
-  					clazzName = child.getNodeValue();
-          } else {
-            throw new KarmaRuntimeException("No classname defined for command '"+commandName+"' in the commands.xml.");
-          }
-					String explanation = commandElement.getElementsByTagName("description").item(0).getFirstChild().getNodeValue();
-
-          CommandDescriptor descriptor = null;
-          try {
-            descriptor = new CommandDescriptor(commandName, alias, clazzName);
-          } catch (KarmaException e) {
-            throw new KarmaRuntimeException(e.getMessage());
-          }
-          if (options != null) {
-						descriptor.setOptions(options);
-					} else {
-						descriptor.setOptions(new Options());
-					}
-					descriptor.setDescription(explanation);
-
-					// TODO : dependencies should be added. Might not be required for version 2.0 (CVS support only)
-					// descriptor.setDependencies(null);
-
-					// If there is a help element for the command ...
-					//
-					if (commandElement.getElementsByTagName("help").getLength() > 0) {
-
-						Element helpElement = (Element) commandElement.getElementsByTagName("help").item(0);
-
-						if (helpElement.getFirstChild() != null) {
-							descriptor.setHelp(helpElement.getFirstChild().getNodeValue());
-						}
-					}
-
-					// Assign the Options object to the command descriptor. At this point, the command
-					// can use the Options object.
-					//
-
-					// Check if the command has not yet been added.
-					if (!descriptors.contains(descriptor)) {
-						descriptors.add(descriptor);
-					} else {
-						throw new KarmaRuntimeException("Duplicate command definition.");
-					}
-				}
-			}
-		} catch (Exception e) {
-      // If something goes wrong here, throw a runtime; this is too serious to ignore.
-      //
-      logger.error(e.getMessage(), e);
-			throw new KarmaRuntimeException(e.getMessage());
-		}
-
-		return descriptors;
-	}
+    return digester;
+  }
 }

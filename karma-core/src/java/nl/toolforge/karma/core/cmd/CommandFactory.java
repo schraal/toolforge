@@ -35,8 +35,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.TreeMap;
+import java.io.File;
+
+import nl.toolforge.karma.core.boot.WorkingContext;
 
 /**
  * This factory is the single resource of Command objects. <code>KarmaRuntimeException</code>s are thrown when
@@ -61,13 +63,16 @@ public final class CommandFactory {
   /**
    * Only static methods
    */
-  private CommandFactory() {
+  private CommandFactory() throws CommandLoadException {
     init();
   }
 
-  private synchronized void init() {
+  private synchronized void init() throws CommandLoadException {
+
+//    Set descriptors = CommandLoader.getInstance().load();
 
     Set descriptors = CommandLoader.getInstance().load();
+
     commandsByName = new TreeMap();
     commandsByAlias = new TreeMap();
     commandNames = new HashSet();
@@ -79,31 +84,20 @@ public final class CommandFactory {
       CommandDescriptor descriptor = (CommandDescriptor) i.next();
 
       commandsByName.put(descriptor.getName(), descriptor);
-			commandNames.add(descriptor.getName());
+      commandNames.add(descriptor.getName());
 
-			// An alias may consist of several aliases. When we encounter a space character, split the alias
-			// up into several parts, otherwise simply add the descriptor as such.
-			if( descriptor.getAlias().indexOf(" ") != -1) {
-
-				StringTokenizer tokenizer = new StringTokenizer(descriptor.getAlias(), " ");
-				String alias = "";
-				while( tokenizer.hasMoreTokens()) {
-					alias = tokenizer.nextToken();
-					commandsByAlias.put(alias, descriptor);
-      		commandNames.add(alias);
-				}
-			} else {
-				commandsByAlias.put(descriptor.getAlias(), descriptor);
-				commandNames.add(descriptor.getAlias());
-			}
-
+      for (Iterator j = descriptor.getAliasList().iterator(); j.hasNext();) {
+        String alias = (String) j.next();
+        commandsByAlias.put(alias, descriptor);
+        commandNames.add(alias);
+      }
     }
   }
 
   /**
    * Gets the singleton <code>CommandFactory</code>.
    */
-  public static CommandFactory getInstance() {
+  public static CommandFactory getInstance() throws CommandLoadException {
     if (factory == null) {
       factory = new CommandFactory();
     }
@@ -126,10 +120,12 @@ public final class CommandFactory {
 
     String commandName = null;
 
+    commandLineString = commandLineString.trim();
+
     if (commandLineString.indexOf(' ') > 0) {
       commandName = commandLineString.substring(0, commandLineString.indexOf(' '));
     } else {
-      commandName = commandLineString.trim();
+      commandName = commandLineString;
     }
 
     // todo wordt dit niet gesupport door commons-cli ?
@@ -210,8 +206,16 @@ public final class CommandFactory {
 
         // Construct the command implementation, with the default constructor
         //
-        Constructor defaultConstructor =
-            descriptor.getImplementation().getConstructor(new Class[]{CommandDescriptor.class});
+        Class implementingClass = null;
+        try {
+          implementingClass = Class.forName(descriptor.getClassName());
+        } catch (ClassNotFoundException c) {
+          throw new CommandException(CommandException.NO_IMPLEMENTING_CLASS, new Object[]{descriptor.getClassName()});
+        }
+
+        Constructor defaultConstructor = implementingClass.getConstructor(new Class[]{CommandDescriptor.class});
+//        Constructor defaultConstructor =
+//            descriptor.getImplementation().getConstructor(new Class[]{CommandDescriptor.class});
 
         cmd = (Command) defaultConstructor.newInstance(new Object[]{descriptor});
 
@@ -271,8 +275,6 @@ public final class CommandFactory {
    * parameter).
    */
   private CommandDescriptor getCommandDescriptor(String commandId) {
-
-    init(); //
 
     if (commandsByName.containsKey(commandId)) {
       return (CommandDescriptor) commandsByName.get(commandId);

@@ -33,6 +33,9 @@ public class CommandException extends Exception {
 
   public static final String EXCEPTION_PREFIX = "CMD-";
 
+
+  public static final ErrorCode NO_IMPLEMENTING_CLASS = new ErrorCode(EXCEPTION_PREFIX + "00001");
+
   /**
    * The command that is requested from <code>CommandFactory.getCommand()</code> is invalid. The command could
    * not be created.
@@ -136,6 +139,7 @@ public class CommandException extends Exception {
   public static final ErrorCode MODULE_VERSION_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00064");
 
   public static final ErrorCode TEST_WARNING = new ErrorCode(EXCEPTION_PREFIX + "00100");
+
   public static final ErrorCode BUILD_WARNING = new ErrorCode(EXCEPTION_PREFIX + "00101");
 
   public CommandException(ErrorCode errorCode) {

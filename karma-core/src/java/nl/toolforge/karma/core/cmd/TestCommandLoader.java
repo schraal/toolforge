@@ -39,15 +39,14 @@ public class TestCommandLoader extends BaseTest {
 
 		CommandLoader cl = CommandLoader.getInstance();
 
-		try {
-			Set l = cl.load("test-commands.xml");
+    try {
+      Set l = cl.load("test/test-commands.xml");
 
-			assertEquals("There should be two commands loaded from the descriptor file", 2, l.size());
+      assertEquals("There should be two commands loaded from the descriptor file", 2, l.size());
 
-		} catch (KarmaRuntimeException k) {
-			k.printStackTrace();
-			fail(k.getMessage());
-		}
+    } catch (CommandLoadException e) {
+      fail(e.getErrorMessage());
+    }
 	}
 
 	/**
@@ -63,10 +62,8 @@ public class TestCommandLoader extends BaseTest {
 
 		CommandLineParser parser = new PosixParser();
 		try {
-			CommandLine commandLine = parser.parse(options, new String[]{"-m", "AAA"});
-
+			parser.parse(options, new String[]{"-m", "AAA"});
 			assertEquals("AAA", options.getOption("m").getValue());
-
 		} catch (ParseException e) {
 			fail(e.getMessage());
 		}
@@ -80,7 +77,7 @@ public class TestCommandLoader extends BaseTest {
 		CommandLoader cl = CommandLoader.getInstance();
 
 		try {
-			Set l = cl.load("test/commands-example.xml");
+			Set l = cl.load("test/test-commands.xml");
 
 			CommandDescriptor descriptor = null;
 			if (l.iterator().hasNext()) {
