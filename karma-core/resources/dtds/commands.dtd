@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE commands [
+  <!ELEMENT commands (command+)>
+  <!ELEMENT command (description,options,classname, help)>
+  <!ELEMENT description (#PCDATA)>
+  <!ELEMENT help (#PCDATA)>
+  <!ELEMENT classname (#PCDATA)>
+  <!ELEMENT options (option+)>
+  <!ELEMENT option (arg)>
+
+<!ATTLIST command name CDATA #REQUIRED>
+<!ATTLIST command alias CDATA #REQUIRED>
+
+<!ATTLIST option opt CDATA #REQUIRED>
+<!ATTLIST option longOpt CDATA #REQUIRED>
+<!ATTLIST option required CDATA #REQUIRED>
+<!--<!ATTLIST option required CDATA #IMPLIED "true"|"false">-->
+<!ATTLIST option description CDATA #REQUIRED>
+
+]>
+
+<commands>
+
+  <command name="" alias="">
+
+    <description></description>
+    <classname></classname>
+    <help></help>
+    <options>
+
+      <option opt="" longOpt="" required="true" description="">
+        <arg></arg>
+      </option>
+    </options>
+
+  </command>
+
+</commands>
+
+
+
