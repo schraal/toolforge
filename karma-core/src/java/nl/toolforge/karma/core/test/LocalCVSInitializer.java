@@ -8,6 +8,8 @@ import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
+import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.Version;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,7 +49,6 @@ public class LocalCVSInitializer extends BaseTest {
   protected static final String DEFAULT_MODULE_1 = "CORE-test-module-1";
 
   private static CVSLocationImpl location = null;
-  private File tempDevelopmentHome = null;
   private File localCVSRepository = null;
 
   /**
@@ -95,8 +96,6 @@ public class LocalCVSInitializer extends BaseTest {
       location.setProtocol(CVSLocationImpl.LOCAL);
       location.setRepository(localCVSRepository.getPath());
 
-      tempDevelopmentHome = MyFileUtils.createTempDirectory();
-
     } catch (Exception e) {
       e.printStackTrace();
       throw new InitializationException("Local CVS repository could not be initialized. Trying to initialize repository at : ".concat(localPath));
@@ -112,7 +111,6 @@ public class LocalCVSInitializer extends BaseTest {
     super.tearDown();
 
     try {
-      FileUtils.deleteDirectory(getDevelopmentHome());
       FileUtils.deleteDirectory(localCVSRepository);
     } catch (IOException e) {
       e.printStackTrace();
@@ -139,32 +137,44 @@ public class LocalCVSInitializer extends BaseTest {
   }
 
   /**
-   * Gets the temporary development home for the testrun. In a normal runtime environment, this would be equivalent
-   * with <code>new File({@link nl.toolforge.karma.core.LocalEnvironment#getDevelopmentHome})</code>.
-   */
-  protected File getDevelopmentHome() {
-    return tempDevelopmentHome;
-  }
-
-  protected File getModuleHome(String moduleName) {
-    return new File(tempDevelopmentHome.getPath() + File.separator + moduleName);
-  }
-
-  /**
    * <p>Checks out {@link #DEFAULT_MODULE_1}, which can then be used to test against.
    */
-  public final void checkoutDefaultModule1() {
+  public final Module checkoutDefaultModule1() {
 
     try {
       Runner runner = getTestRunner();
 
       Module module = new SourceModule(DEFAULT_MODULE_1, location);
+      module.setBaseDir(new File(LocalEnvironment.getDevelopmentHome(), module.getName()));
+
       runner.checkout(module);
+
+      return module;
 
     } catch (Exception e) {
       e.printStackTrace();
       fail(e.getMessage());
     }
+    return null;
+  }
+
+  public final Module checkoutDefaultModuleWithVersion() {
+
+    try {
+      Runner runner = getTestRunner();
+
+      Module module = new SourceModule(DEFAULT_MODULE_1, location, new Version("0-0"));
+      module.setBaseDir(new File(LocalEnvironment.getDevelopmentHome(), module.getName()));
+
+      runner.checkout(module);
+
+      return module;
+
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail(e.getMessage());
+    }
+    return null;
   }
 
   /**
@@ -187,12 +197,19 @@ public class LocalCVSInitializer extends BaseTest {
    */
   protected final Runner getTestRunner(CommandResponse response) throws CVSException {
 
-    CVSRunner runner = new CVSRunner(getTestLocation(), getDevelopmentHome());
+    CVSRunner runner = new CVSRunner(getTestLocation());
 
     if (response != null) {
       runner.setCommandResponse(response);
     }
 
     return runner;
+  }
+
+  /**
+   * When this class is run (it is a test class), it won't bother you with 'no tests found'.
+   */
+  public void testNothing() {
+    assertTrue(true);
   }
 }

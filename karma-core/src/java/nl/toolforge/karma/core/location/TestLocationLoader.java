@@ -1,18 +1,7 @@
 package nl.toolforge.karma.core.location;
 
-import junit.framework.TestCase;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-
-import nl.toolforge.core.util.file.MyFileUtils;
-import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.test.BaseTest;
-import org.apache.commons.io.FileUtils;
+import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 
 /**
  * @author D.A. Smedes

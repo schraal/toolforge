@@ -6,9 +6,9 @@ import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandFactory;
+import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.CompositeCommand;
-import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.manifest.Manifest;
@@ -16,7 +16,7 @@ import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.ManifestFactory;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
+import nl.toolforge.karma.core.vc.cvs.Utils;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -164,7 +164,7 @@ public class CreateRelease extends CompositeCommand {
     } else {
 
       try {
-        v = CVSVersionExtractor.getInstance().getLastVersion(module).getVersionNumber();
+        v = Utils.getLastVersion(module).getVersionNumber();
       } catch (VersionControlException e) {
         throw new CommandException(e.getErrorCode(), e.getMessageArguments());
       }

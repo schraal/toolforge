@@ -2,11 +2,10 @@ package nl.toolforge.karma.core.test;
 
 import junit.framework.TestCase;
 import nl.toolforge.core.util.file.MyFileUtils;
-import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.LocationLoader;
-import org.apache.commons.io.FileUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -15,6 +14,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Properties;
+
+import org.apache.commons.io.FileUtils;
 
 /**
  * This testclass is highly recommended when writing JUnit testclasses for Karma. It initializes some basic stuff. Just
@@ -28,10 +29,6 @@ public class BaseTest extends TestCase {
   private Properties p = null;
 
   private File workingContext = null;
-//  private File f2 = null;
-//  private File f3 = null;
-
-  private File tmp = null;
 
   public void setUp() {
 
@@ -102,7 +99,7 @@ public class BaseTest extends TestCase {
 
   public void tearDown() {
     try {
-      org.apache.commons.io.FileUtils.deleteDirectory(workingContext);
+     FileUtils.deleteDirectory(workingContext);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -132,5 +129,12 @@ public class BaseTest extends TestCase {
     }
     out.close();
     in.close();
+  }
+
+  /**
+   * When this class is run (it is a test class), it won't bother you with 'no tests found'.
+   */
+  public void testNothing() {
+    assertTrue(true);
   }
 }

@@ -20,11 +20,9 @@ public class TestVersion extends TestCase {
       v = new Version("0-1");
       v = new Version("0000-1");
       v = new Version("0000-1111");
-      v = new Version("0000-1111-1");
-      v = new Version("0000-1111-1222");
 
       v = new Version("1-0");
-      v = new Version("0-1-4");
+      v = new Version("0-1");
 
       assertTrue(true);
 
@@ -73,9 +71,9 @@ public class TestVersion extends TestCase {
 
   public void testCompare() {
 
-    Version v1 = new Version("0-2-6");
-    Version v2 = new Version("1-1-1");
-    Version v3 = new Version("0-2-8");
+    Version v1 = new Version("0-2");
+    Version v2 = new Version("1-1");
+    Version v3 = new Version("0-2");
 
     List s = new ArrayList();
     s.add(v1);
@@ -87,6 +85,28 @@ public class TestVersion extends TestCase {
     assertEquals(v1, (Version) s.get(0));
     assertEquals(v2, (Version) s.get(2));
     assertEquals(v3, (Version) s.get(1));
+  }
+
+  public void testPatch() {
+
+    Version v = null;
+
+    try {
+      v = new Patch("0-0-1");
+      v = new Patch("0000-1-9");
+      v = new Patch("0000-1111-9999");
+
+      assertTrue(true);
+
+    } catch (PatternSyntaxException i) {
+      fail(i.getMessage());
+    }
+  }
+
+  public void testCreatePatch() {
+
+    Version v1 = new Version("0-2");
+    assertEquals(v1.createPatch("1"), new Patch("0-2-1"));
   }
 
 }

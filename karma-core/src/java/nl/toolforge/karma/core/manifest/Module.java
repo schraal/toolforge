@@ -103,6 +103,13 @@ public interface Module {
   public File getBaseDir();
 
   /**
+   * Returns a modules' state.
+   *
+   * @return
+   */
+  public State getState();
+
+  /**
    * <p>Sets a modules' state.</p>
    *
    * <p>This method currently only applies to SourceModule implementations, but has been included here to allow for
@@ -120,7 +127,38 @@ public interface Module {
    */
   public String getStateAsString();
 
+  /**
+   * Returns the <code>PatchLine</code> for this module, if the module matches the correct criteria as specified in
+   * {@link #markPatchLine(boolean)}.
+   *
+   * @return <code>null</code> if a PatchLine does not exist for this module, otherwise the <code>PatchLine</code>
+   *   instance for this module.
+   * @see #markPatchLine(boolean)
+   */
   public DevelopmentLine getPatchLine();
+
+  /**
+   * Marks this module as being developed in a <code>PatchLine</code>. This can only happen when the manifest in which
+   * the module is used is a <code>ReleaseManifest</code> and the module has a <code>STATIC</code> state. When the
+   * manifest is loaded, this method will be called when the module matches the criteria.
+   */
+  public void markPatchLine(boolean mark);
+
+  public boolean hasPatchLine();
+
+  /**
+   * Checks if the module - within the current manifest - has development line configuration. When the manifest is
+   * a <code>ReleaseManifest</code>, this is true when a <code>PatchLine</code> exists. When the manifest is a
+   * <code>DevelopmentManifest</code>, this method returns false, as this feature is not supported.
+   *
+   * @return
+   */
+  public boolean hasDevelopmentLine();
+
+  /**
+   * Marks this modules as being developed in a <code>DevelopmentLine</code>. This feature is NOT supported as yet.
+   */
+  public void markDevelopmentLine(boolean mark);
 
   /**
    * If a module has a &lt;version&gt;-attribute, this method returns a Version instance representing the version

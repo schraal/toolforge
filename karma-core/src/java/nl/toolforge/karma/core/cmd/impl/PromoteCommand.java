@@ -4,18 +4,19 @@ import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.VersionExtractor;
-import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
+import nl.toolforge.karma.core.vc.cvs.CVSModuleStatus;
+import nl.toolforge.karma.core.vc.cvs.CVSRunner;
 
 import java.util.regex.PatternSyntaxException;
 
@@ -75,15 +76,18 @@ public class PromoteCommand extends DefaultCommand {
 
       } else {
 
-        // TODO extractor impl should be obtained from karma.properties or Preferences to enable configurable stuff.
-        //
-        VersionExtractor extractor = CVSVersionExtractor.getInstance();
-        nextVersion = extractor.getNextVersion(module);
+        Runner runner = RunnerFactory.getRunner(module.getLocation());
+
+        ModuleStatus status = new CVSModuleStatus(module, ((CVSRunner) runner).log(module));
+        nextVersion = status.getNextVersion();
       }
 
       this.newVersion = nextVersion;
 
-      Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getCurrentManifest().getDirectory());
+      CommandMessage message = new SuccessMessage(getFrontendMessages().getString("message.PROMOTE_MODULE_STARTED"), new Object[]{moduleName, nextVersion});
+      commandResponse.addMessage(message);
+
+      Runner runner = RunnerFactory.getRunner(module.getLocation());
 
       // TODO check whether files exist that have not yet been committed.
       runner.promote(module, comment, nextVersion);

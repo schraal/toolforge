@@ -3,8 +3,9 @@ package nl.toolforge.karma.core.manifest;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -56,12 +57,23 @@ public final class ReleaseManifest extends AbstractManifest {
 
     Module module = moduleFactory.create(descriptor);
 
+    module.markDevelopmentLine(false);
+
     if (((SourceModule)module).hasVersion()) {
       module.setState(Module.STATIC);
+
+      // Determine if a (physical (branch)) patch line has already been created for the module.
+      //
+      try {
+        // todo performance impact analysis
+        Runner runner = RunnerFactory.getRunner(module.getLocation());
+        if (runner.hasPatchLine(module)) {
+          module.markPatchLine(true);
+        }
+      } catch (VersionControlException v) {
+        throw new KarmaRuntimeException("hmm, hier iets beters voor verzinnen.");
+      }
     } else {
-
-      // if (!isLocal(module)
-
 
       if (!isLocal(module)) {
         module.setState(Module.DYNAMIC);
@@ -71,10 +83,8 @@ public final class ReleaseManifest extends AbstractManifest {
     }
 
     try {
-        if (module instanceof SourceModule) {
-          File manifestDirectory = new File(LocalEnvironment.getDevelopmentHome(), getName());
-          module.setBaseDir(new File(manifestDirectory, module.getName()));
-        }
+      File manifestDirectory = new File(LocalEnvironment.getDevelopmentHome(), getName());
+      module.setBaseDir(new File(manifestDirectory, module.getName()));
     } catch(Exception e) {
       // Basically, if we can't do this, we have nothing ... really a RuntimeException
       //
@@ -88,7 +98,7 @@ public final class ReleaseManifest extends AbstractManifest {
 
     // As a last check, determine if an 'old' local version is available.
     //
-    removeLocal((SourceModule) module);
+    removeLocal(module);
   }
 
   /**
@@ -108,12 +118,12 @@ public final class ReleaseManifest extends AbstractManifest {
       throw new ManifestException(ManifestException.MODULE_NOT_FOUND, new Object[] { module.getName() });
     }
 
-    // The following blocks form a 'transaction'.
-    //
+// The following blocks form a 'transaction'.
+//
     try {
 
-      // Remove old state files ...
-      //
+// Remove old state files ...
+//
 
       FilenameFilter filter = new FilenameFilter() {
         public boolean accept(File dir, String name) {
@@ -140,27 +150,29 @@ public final class ReleaseManifest extends AbstractManifest {
       throw new ManifestException(ManifestException.STATE_UPDATE_FAILURE, new Object[] { module.getName(), state.toString()});
     }
 
-    // If we were able to create that hidden file, the we'll update the modules' state.
-    //
+// If we were able to create that hidden file, the we'll update the modules' state.
+//
     module.setState(state);
   }
 
   public final Module.State getLocalState(Module module) {
 
-    if (!isLocal(module)) {
-      return Module.STATIC;
-    } else {
-      try {
-        if (CVSVersionExtractor.getInstance().isOnPatchLine(this, module)) {
-          return Module.WORKING;
-        }
-      } catch (VersionControlException v) {
-        // todo should we throw this exception ????
-        return Module.STATIC;
-      }
+    throw new RuntimeException("uitzoeken ....");
 
-      return Module.STATIC;
-    }
+//    if (!isLocal(module)) {
+//      return Module.STATIC;
+//    } else {
+//      try {
+//        if (CVSVersionExtractor.getInstance().isOnPatchLine(this, module)) {
+//          return Module.WORKING;
+//        }
+//      } catch (VersionControlException v) {
+//// todo should we throw this exception ????
+//        return Module.STATIC;
+//      }
+//
+//      return Module.STATIC;
+//    }
   }
 
 

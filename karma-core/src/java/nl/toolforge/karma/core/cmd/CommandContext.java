@@ -75,7 +75,7 @@ public final class CommandContext implements ChangeListener {
     Module manifestModule = new SourceModule("manifests", LocalEnvironment.getManifestStoreLocation());
     manifestModule.setBaseDir(LocalEnvironment.getManifestStore());
 
-    handler.commandResponseChanged(new CommandResponseEvent(new SuccessMessage("Updating manifests using " + manifestModule.getLocation().toString())));
+    handler.commandResponseChanged(new CommandResponseEvent(new SuccessMessage("Updating manifests from CVS location `" + manifestModule.getLocation().toString() + "`")));
 
     if (LocalEnvironment.getWorkingContext().exists()) {
 
@@ -88,7 +88,7 @@ public final class CommandContext implements ChangeListener {
       }
 
       try {
-        Runner runner = RunnerFactory.getRunner(manifestModule.getLocation(), LocalEnvironment.getWorkingContext());
+        Runner runner = RunnerFactory.getRunner(manifestModule.getLocation());
         runner.checkout(manifestModule);
       } catch (VersionControlException e) {
         // todo some sort of notification would be nice ...
@@ -107,7 +107,7 @@ public final class CommandContext implements ChangeListener {
     Module locationModule = new SourceModule("locations", LocalEnvironment.getLocationStoreLocation());
     locationModule.setBaseDir(LocalEnvironment.getLocationStore());
 
-    handler.commandResponseChanged(new CommandResponseEvent(new SuccessMessage("Updating locations using " + locationModule.getLocation().toString())));
+    handler.commandResponseChanged(new CommandResponseEvent(new SuccessMessage("Updating locations from CVS location `" + locationModule.getLocation().toString() + "`")));
 
     if (LocalEnvironment.getWorkingContext().exists()) {
 
@@ -117,7 +117,7 @@ public final class CommandContext implements ChangeListener {
       }
 
       try {
-        Runner runner = RunnerFactory.getRunner(locationModule.getLocation(), LocalEnvironment.getWorkingContext());
+        Runner runner = RunnerFactory.getRunner(locationModule.getLocation());
         runner.checkout(locationModule);
       } catch (VersionControlException e) {
         // todo some sort of notification would be nice ...

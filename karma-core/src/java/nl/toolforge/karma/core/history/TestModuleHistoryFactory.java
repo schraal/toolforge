@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core.history;
 
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.test.LocalCVSInitializer;
 
 import java.io.File;
@@ -15,7 +16,7 @@ public class TestModuleHistoryFactory extends LocalCVSInitializer {
       try {
           checkoutDefaultModule1();
 
-          File projectRoot = getDevelopmentHome();
+          File projectRoot = LocalEnvironment.getDevelopmentHome();
           ModuleHistoryFactory factory = ModuleHistoryFactory.getInstance(projectRoot);
           assertNotNull(factory);
 

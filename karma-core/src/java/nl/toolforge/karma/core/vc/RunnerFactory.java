@@ -8,8 +8,6 @@ import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.File;
-
 /**
  * Factory producing {@link Runner} instances.
  *
@@ -30,15 +28,12 @@ public final class RunnerFactory {
    * @param location The location for which a runner is required.
    * @return A version control system specific <code>Runner</code>.
    */
-  public static Runner getRunner(Location location, File basePoint) throws VersionControlException {
-//  public static Runner getRunner(Module module, File basePoint) throws VersionControlException {
-
-//    Location location = module.getLocation();
+  public static Runner getRunner(Location location) throws VersionControlException {
 
     if (location instanceof CVSLocationImpl) {
       logger.debug("Getting new CVSRunner instance.");
 
-      CVSRunner runner = new CVSRunner(location, basePoint);
+      CVSRunner runner = new CVSRunner(location);
 
       return runner;
     }

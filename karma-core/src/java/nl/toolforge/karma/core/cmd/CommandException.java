@@ -60,7 +60,7 @@ public class CommandException extends Exception {
   public static final ErrorCode CLEAN_ALL_FAILED = new ErrorCode(EXCEPTION_PREFIX + "00063");
 
   /**
-   * When the module has a version-attribute and is therefor STATIC. Not allowed to start work on this module.
+   * When the manifest is a development manifest and the module is STATIC. Not allowed to start work on this module.
    */
   public static final ErrorCode START_WORK_NOT_ALLOWED_ON_STATIC_MODULE = new ErrorCode(EXCEPTION_PREFIX + "00041");
 

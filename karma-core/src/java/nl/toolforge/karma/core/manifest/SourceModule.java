@@ -27,6 +27,7 @@ public class SourceModule extends BaseModule {
   private State state = null;
   private Version version = null;
   private boolean patchLine = false;
+  private boolean developmentLine = false;
   private File baseDir = null;
   protected static List dependencies = null; // Lazy loading, the first time it is initialized and cached.
 
@@ -51,26 +52,35 @@ public class SourceModule extends BaseModule {
   }
 
   /**
-   * @return <code>null</code> if a PatchLine does not exist for this module, otherwise the <code>PatchLine</code>
-   *   instance for this module.
+   * Future functionality. Not yet supported. Returns <code>false</code>.
+   *
+   * @return <code>false</code>.
    */
-  public final DevelopmentLine getPatchLine() {
-    if (patchLine) {
-      return new PatchLine(PatchLine.NAME_PREFIX + "_" + getVersionAsString());
-    }
-    return null;
+  public boolean hasDevelopmentLine() {
+    return false;
   }
 
-  public final void setPatchLine() {
+  //
+  //
+  public final void markDevelopmentLine(boolean mark) {
+    developmentLine = mark;
+  }
+
+  //
+  //
+  public final DevelopmentLine getPatchLine() {
+      return new PatchLine(getVersion());
+//    throw new KarmaRuntimeException("Patchline is set when the manifest is loaded. If false, this method cannot be used.");
+  }
+
+  //
+  //
+  public final void markPatchLine(boolean mark) {
     patchLine = true;
   }
 
-  /**
-   * If the module element in the manifest contains a <code>version</code> attribute, this method will return the
-   * value of that attribute.
-   *
-   * @return The module version, or N/A, when no version number exists.
-   */
+  //
+  //
   public final Version getVersion() {
     return version;
   }
@@ -97,14 +107,11 @@ public class SourceModule extends BaseModule {
   /**
    * Checks if this module has been patched (and is thus part of a <code>ReleaseManifest</code>).
    *
-   * @return <code>true</code> when this module has a patch-line attached to it, <code>false</code> if it isn't.
+   * @return <code>true</code> when this module has a <code>PatchLine</code> attached to it, <code>false</code> if it
+   *         hasn't.
    */
   public boolean hasPatchLine() {
-    if (hasVersion()) {
-      // todo check in cvs (or rather, has to be done upon loading the manifest).
-      return patchLine;
-    }
-    return false;
+    return patchLine;
   }
 
   /**

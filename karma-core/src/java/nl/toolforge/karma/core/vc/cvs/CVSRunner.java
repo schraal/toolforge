@@ -13,7 +13,8 @@ import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
-import nl.toolforge.karma.core.vc.ManagedFile;
+import nl.toolforge.karma.core.vc.DevelopmentLine;
+import nl.toolforge.karma.core.vc.PatchLine;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.SymbolicName;
 import nl.toolforge.karma.core.vc.VersionControlException;
@@ -41,6 +42,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -67,8 +69,6 @@ public final class CVSRunner implements Runner {
   private static Log logger = LogFactory.getLog(CVSRunner.class);
 
   private GlobalOptions globalOptions = new GlobalOptions();
-
-  private File basePoint = null;
   private Connection connection = null;
 
   /**
@@ -81,10 +81,8 @@ public final class CVSRunner implements Runner {
    *
    * @param location  A <code>Location</code> instance (typically a <code>CVSLocationImpl</code> instance), containing
    *                  the location and connection details of the CVS repository.
-   * @param basePoint The basePoint determines the base point where cvs commands should be run. If not used by commands and extended,
-   *                  this <code>basePoint.getPath()</code> will be used by the CVS client as the
    */
-  public CVSRunner(Location location, File basePoint) throws CVSException {
+  public CVSRunner(Location location) throws CVSException {
 
     CVSLocationImpl cvsLocation = null;
     try {
@@ -94,11 +92,7 @@ public final class CVSRunner implements Runner {
       throw new KarmaRuntimeException("Wrong type for location. Should be CVSLocationImpl.", e);
     }
 
-    if (basePoint == null) {
-      throw new IllegalArgumentException("basePoint cannot be null.");
-    }
     this.connection = cvsLocation.getConnection();
-    this.basePoint = basePoint;
 
     // The default ...
     //
@@ -106,10 +100,6 @@ public final class CVSRunner implements Runner {
 
     logger.debug("CVSRunner using CVSROOT : " + cvsLocation.toString());
     globalOptions.setCVSRoot(cvsLocation.getCVSRootAsString());
-  }
-
-  private File getBasePoint() {
-    return basePoint;
   }
 
   private Connection getConnection() {
@@ -184,31 +174,15 @@ public final class CVSRunner implements Runner {
     // Step 2 : checkout the module to be able to create module.info
     //
 
-    // Create another (...) temporary structure
-    //
-    try {
-      tmp = MyFileUtils.createTempDirectory();
-    } catch (IOException e) {
-      throw new KarmaRuntimeException("Panic! Failed to create temporary directory.");
-    }
+    checkout(module);
 
-    checkout(module, tmp);
-
-    add(module, template.getFileElements(), template.getDirectoryElements(), tmp);
+    add(module, template.getFileElements(), template.getDirectoryElements());
 
     //module has been created. Now, create the module history.
     String author = ((CVSLocationImpl) module.getLocation()).getUsername();
     addModuleHistoryEvent(tmp, module, ModuleHistoryEvent.CREATE_MODULE_EVENT, Version.INITIAL_VERSION, new Date(), author, comment);
 
-    tag(module, Version.INITIAL_VERSION, new File(tmp, module.getName()));
-
-    // Remove the temporary structure.
-    //
-    try {
-      FileUtils.deleteDirectory(tmp);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    tag(module, Version.INITIAL_VERSION);
   }
 
   /**
@@ -222,7 +196,7 @@ public final class CVSRunner implements Runner {
    */
   public void checkout(Module module, Version version) throws CVSException {
 
-    checkout(module, version, getBasePoint());
+    checkout(module, null, version);
   }
 
   /**
@@ -233,17 +207,10 @@ public final class CVSRunner implements Runner {
    *                      in the repository and <code>INVALID_SYMBOLIC_NAME</code>, when the version does not exists for the module.
    */
   public void checkout(Module module) throws CVSException {
-    checkout(module, null, getBasePoint());
+    checkout(module, null, null);
   }
 
-  public void checkout(Module module, File basePoint) throws CVSException {
-    checkout(module, null, basePoint);
-  }
-
-  //
-  // For the time being, private
-  //
-  private void checkout(Module module, Version version, File basePoint) throws CVSException {
+  public void checkout(Module module, DevelopmentLine developmentLine, Version version) throws CVSException {
 
     Map arguments = new Hashtable();
     arguments.put("MODULE", module.getName());
@@ -252,8 +219,8 @@ public final class CVSRunner implements Runner {
     CheckoutCommand checkoutCommand = new CheckoutCommand();
     checkoutCommand.setModule(module.getName());
 
-    if (version != null || ((SourceModule) module).hasPatchLine()) {
-      checkoutCommand.setCheckoutByRevision(Utils.createSymbolicName(module, version).getSymbolicName());
+    if ((version != null) || (developmentLine != null)) {
+      checkoutCommand.setCheckoutByRevision(Utils.createSymbolicName(module, developmentLine, version).getSymbolicName());
       if (version != null) {
         arguments.put("VERSION", version.toString());
       }
@@ -264,9 +231,14 @@ public final class CVSRunner implements Runner {
     // todo to be investigated further.
     //    checkoutCommand.setPruneDirectories(true);
 
-    executeOnCVS(checkoutCommand, basePoint, arguments);
+    executeOnCVS(checkoutCommand, module.getBaseDir().getParentFile(), arguments);
   }
 
+  public void update(Module module) throws CVSException {
+    update(module, null);
+  }
+
+//  private void update(Module module, Version version, File basePoint) throws CVSException {
   /**
    * For a module, the <code>cvs -q update -Pd -r &lt;symbolic-name&gt;</code> command is executed.
    *
@@ -274,14 +246,6 @@ public final class CVSRunner implements Runner {
    * @param version The version of the module or <code>null</code> when no specific version applies.
    */
   public void update(Module module, Version version) throws CVSException {
-    update(module, version, basePoint);
-  }
-
-  public void update(Module module) throws CVSException {
-    update(module, null, basePoint);
-  }
-
-  private void update(Module module, Version version, File basePoint) throws CVSException {
 
     Map arguments = new Hashtable();
     arguments.put("MODULE", module.getName());
@@ -302,19 +266,7 @@ public final class CVSRunner implements Runner {
 
     // todo add data to the exception. this sort of business logic should be here, not in CVSResponseAdapter.
     //
-    executeOnCVS(updateCommand, new File(basePoint, module.getName()), arguments);
-  }
-
-  /**
-   * For a module, the <code>cvs commit -m &lt;commitMessage&gt;</code>command is executed.
-   *
-   */
-  public void commit(ManagedFile file, String message) throws CVSException {
-//		null;
-  }
-
-  public void add(Module module, String[] files, String[] dirs) throws CVSException {
-    add(module, files, dirs, getBasePoint());
+    executeOnCVS(updateCommand, module.getBaseDir(), arguments);
   }
 
   public void add(Module module, File[] files, File[] dirs) throws CVSException {
@@ -329,11 +281,10 @@ public final class CVSRunner implements Runner {
       d[i] = dirs[i].getPath();
     }
 
-    add(module, f, d, getBasePoint());
+    add(module, f, d);
   }
 
-  // todo should possibly be moved to the interface (check the rest as well).
-  public synchronized void add(Module module, String[] files, String[] dirs, File basePoint) throws CVSException {
+  public void add(Module module, String[] files, String[] dirs) throws CVSException {
 
     files = (files == null ? new String[] {} : files);
     dirs = (dirs == null ? new String[] {} : dirs);
@@ -346,12 +297,12 @@ public final class CVSRunner implements Runner {
     AddCommand addCommand = new AddCommand();
     addCommand.setMessage("Initial checkin in repository.");
 
-    File modulePath = new File(basePoint, module.getName());
+    File modulePath = module.getBaseDir();
 
     // Create temp files
     //
     Collection cvsFilesCollection = new ArrayList();
-    int i,j = 0;
+    int i = 0;
     for (i=0; i < files.length; i++) {
       File fileToAdd = new File(modulePath, files[i]);
 
@@ -361,7 +312,7 @@ public final class CVSRunner implements Runner {
 
           if (dir.mkdirs()) {
             cvsFilesCollection.add(dir);
-            j++;
+//            j++;
           }
 
           fileToAdd.createNewFile();
@@ -372,7 +323,7 @@ public final class CVSRunner implements Runner {
       }
 
       cvsFilesCollection.add(fileToAdd);
-      j++;
+//      j++;
     }
 
     // Create temp directories
@@ -394,7 +345,7 @@ public final class CVSRunner implements Runner {
         base += subDir;
         cvsFilesCollection.add(new File(modulePath, base));
         base += "/";
-        j++;
+//        j++;
       }
     }
 
@@ -404,7 +355,7 @@ public final class CVSRunner implements Runner {
     // A file is added against a module, thus the contextDirectory is constructed based on the basePoint and the
     // modules' name.
     //
-    executeOnCVS(addCommand, new File(basePoint, module.getName()), arguments);
+    executeOnCVS(addCommand, module.getBaseDir(), arguments);
 
     // Step 2 : Commit the file to the CVS repository
     //
@@ -412,8 +363,7 @@ public final class CVSRunner implements Runner {
     commitCommand.setFiles(cvsFiles);
     commitCommand.setMessage("File added automatically by Karma.");
 
-    executeOnCVS(commitCommand, new File(basePoint, module.getName()));
-
+    executeOnCVS(commitCommand, new File(module.getName()));
   }
 
   /**
@@ -422,53 +372,44 @@ public final class CVSRunner implements Runner {
    * @param module  The module. Will be committed recursively.
    * @param message A commit message.
    */
-  public void commit(Module module, String message) throws CVSException {
-
-    commit(module, message, getBasePoint());
-  }
-
-  private void commit(Module module, String message, File basePoint) throws CVSException {
+  private void commit(Module module, String message) throws CVSException {
 
     CommitCommand commitCommand = new CommitCommand();
 
-    commitCommand.setFiles(new File[]{new File(basePoint, module.getName())});
+    commitCommand.setFiles(new File[]{module.getBaseDir()});
     commitCommand.setRecursive(true);
     commitCommand.setMessage(message);
 
-    executeOnCVS(commitCommand, basePoint);
-  }
-
-
-  public void branch(Module module, SymbolicName branch) throws CVSException {
+    executeOnCVS(commitCommand, module.getBaseDir());
   }
 
   public void promote(Module module, String comment, Version version) throws CVSException {
 
     //Add an event to the module history.
     String author = ((CVSLocationImpl) module.getLocation()).getUsername();
-    addModuleHistoryEvent(getBasePoint(), module, ModuleHistoryEvent.PROMOTE_MODULE_EVENT, version, new Date(), author, comment);
+    addModuleHistoryEvent(module.getBaseDir(), module, ModuleHistoryEvent.PROMOTE_MODULE_EVENT, version, new Date(), author, comment);
 
-    File moduleLocation = new File(getBasePoint(), module.getName());
-    tag(module, version, moduleLocation);
+    tag(module, version);
   }
 
-  private void tag(Module module, Version version, File basePoint) throws CVSException {
+  private void tag(Module module, Version version) throws CVSException {
     if (hasVersion(module, version)) {
       throw new CVSException(VersionControlException.DUPLICATE_VERSION, new Object[]{module.getName(), version.getVersionNumber()});
     }
-    tag(Utils.createSymbolicName(module, version), basePoint);
+    tag(module, Utils.createSymbolicName(module, version), false);
   }
 
   //
   // Private for the time being
   //
-  private void tag(SymbolicName symbolicName, File basePoint) throws CVSException {
+  private void tag(Module module, SymbolicName symbolicName, boolean branch) throws CVSException {
 
     TagCommand tagCommand = new TagCommand();
     tagCommand.setRecursive(true);
     tagCommand.setTag(symbolicName.getSymbolicName());
+    tagCommand.setMakeBranchTag(branch);
 
-    executeOnCVS(tagCommand, basePoint);
+    executeOnCVS(tagCommand, module.getBaseDir());
   }
 
   /**
@@ -493,38 +434,59 @@ public final class CVSRunner implements Runner {
     // Logs are run on a temporary checkout of the module.info of a module.
     //
     File tmp = null;
+
     try {
       tmp = MyFileUtils.createTempDirectory();
+
+      Map arguments = new Hashtable();
+      arguments.put("MODULE", module.getName());
+      arguments.put("REPOSITORY", module.getLocation().getId());
+
+      CheckoutCommand checkoutCommand = new CheckoutCommand();
+      checkoutCommand.setModule(module.getName() + "/" + Module.MODULE_INFO);
+
+      executeOnCVS(checkoutCommand, tmp, arguments);
+
+      LogCommand logCommand = new LogCommand();
+
+      // Determine the location of module.info, relative to where we are.
+      //
+      // Todo a reference to SourceModule is used here. Verify ...
+      File moduleInfo = new File(new File(tmp, module.getName()), Module.MODULE_INFO);
+      logCommand.setFiles(new File[]{moduleInfo});
+
+      executeOnCVS(logCommand, new File(tmp, module.getName()));
+
     } catch (IOException e) {
       throw new KarmaRuntimeException("Panic! Failed to create temporary directory for module " + module.getName());
-    }
-
-    Map arguments = new Hashtable();
-    arguments.put("MODULE", module.getName());
-    arguments.put("REPOSITORY", module.getLocation().getId());
-
-    CheckoutCommand checkoutCommand = new CheckoutCommand();
-    checkoutCommand.setModule(module.getName() + "/" + Module.MODULE_INFO);
-
-    executeOnCVS(checkoutCommand, tmp, arguments);
-
-    LogCommand logCommand = new LogCommand();
-
-    // Determine the location of module.info, relative to where we are.
-    //
-    // Todo a reference to SourceModule is used here. Verify ...
-    File moduleInfo = new File(new File(tmp, module.getName()), Module.MODULE_INFO);
-    logCommand.setFiles(new File[]{moduleInfo});
-
-    executeOnCVS(logCommand, new File(tmp, module.getName()));
-
-    try {
-      FileUtils.deleteDirectory(tmp);
-    } catch (IOException e) {
-      e.printStackTrace();
+    } finally {
+      try {
+        FileUtils.deleteDirectory(tmp);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
 
     return ((CVSResponseAdapter) this.listener).getLogInformation();
+  }
+
+  /**
+   * Checks if the module has a CVS branch tag <code>module.getPatchLine().getName()</code> attached.
+   *
+   * @param module The module for which the patch line should be checked.
+   * @return <code>true</code> of the module has a patch line attached in the CVS repository, <code>false</code>
+   *         otherwise.
+   */
+  public boolean hasPatchLine(Module module) {
+    try {
+      return hasSymbolicName(module, new CVSTag(new PatchLine(module.getVersion()).getName()));
+    } catch (CVSException c) {
+      return false;
+    }
+  }
+
+  public void createPatchLine(Module module) throws CVSException {
+    tag(module, new CVSTag(module.getPatchLine().getName()), true);
   }
 
   /**
@@ -601,7 +563,11 @@ public final class CVSRunner implements Runner {
     }
 
     LogInformation logInfo = log(module);
-    List symbolicNames = logInfo.getAllSymbolicNames();
+    List symbolicNames = new ArrayList();
+
+    for (Iterator i = logInfo.getAllSymbolicNames().iterator(); i.hasNext();) {
+      symbolicNames.add(((LogInformation.SymName) i.next()).getName());
+    }
 
     return symbolicNames.contains(symbolicName.getSymbolicName());
   }
@@ -706,7 +672,7 @@ public final class CVSRunner implements Runner {
         //history did not exist yet. add to CVS and commit it.
         //todo: add comment
         history.save();
-        add(module, new String[]{history.getHistoryLocation().getName()}, null, moduleCheckoutLocation);
+        add(module, new String[]{history.getHistoryLocation().getName()}, null);
       }
     }
   }

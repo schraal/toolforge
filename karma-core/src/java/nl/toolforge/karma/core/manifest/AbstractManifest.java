@@ -5,20 +5,11 @@ import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.AdminHandler;
-import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
-import org.apache.commons.digester.Digester;
-import org.apache.commons.digester.xmlrules.DigesterLoader;
+import nl.toolforge.karma.core.vc.cvs.Utils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.xml.sax.SAXException;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,11 +18,9 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.List;
 
 /**
- * <p>
- * </p>
+ * <p>General stuff for a manifest.</p>
  *
  * <p>Check the <a href="package-summary.html">package documentation</a> for more information on the concepts behind
  * Karma.</p>
@@ -41,14 +30,13 @@ import java.util.List;
  */
 public abstract class AbstractManifest implements Manifest {
 
-  private static Log logger = LogFactory.getLog(AbstractManifest.class);
   protected ModuleFactory moduleFactory = ModuleFactory.getInstance();
 
   private static Collection duplicates = null; // To detect duplicate included manifests.
 
   private Collection childManifests = new ArrayList();
 
-  private Map moduleCache = new HashMap(); // See #getAllModules()
+  private Map moduleCache = new HashMap();
 
   private String name = null;
   private String version = null;
@@ -389,7 +377,7 @@ public abstract class AbstractManifest implements Manifest {
       if (((SourceModule) module).getState().equals(Module.WORKING)) {
         jar += Module.WORKING.toString();
       } else if (((SourceModule) module).getState().equals(Module.DYNAMIC)) {
-        jar += (CVSVersionExtractor.getInstance().getLocalVersion(this, module));
+        jar += (Utils.getLocalVersion(module));
       } else { // STATIC module
         jar += ((SourceModule) module).getVersionAsString();
       }
@@ -487,7 +475,7 @@ public abstract class AbstractManifest implements Manifest {
    * @param module
    * @return <code>true</code> if a local version has been removed or <code>false</code> if nothing has been removed.
    */
-  protected boolean removeLocal(SourceModule module) {
+  protected boolean removeLocal(Module module) {
 
     // todo this method is not abstract ! handles CVS only.
 
@@ -501,46 +489,6 @@ public abstract class AbstractManifest implements Manifest {
     }
 
     return true;
-    
-//    if (isLocal(module))  {
-//
-//      File rootFile = new File(module.getBaseDir(), "CVS/Root");
-//
-//      String cvsRootString = null;
-//      try {
-//        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(rootFile)));
-//
-//        cvsRootString = in.readLine();
-//        in.close();
-//
-//      } catch (FileNotFoundException e) {
-//        // We guess the user has created a module and not stored in a version control repository.
-//        //
-//        return false;
-//      } catch (IOException e) {
-//        throw new KarmaRuntimeException(e.getMessage());
-//      }
-//
-//      CVSRoot cvsRoot = CVSRoot.parse(cvsRootString);
-//
-//      Location loc = module.getLocation();
-//      try {
-//        if (loc instanceof CVSLocationImpl) {
-//          if (!cvsRoot.toString().equals(((CVSLocationImpl) loc).getCVSRootAsString())) {
-//            FileUtils.deleteDirectory(module.getBaseDir());
-//            logger.info("Mismatch between local module and definition in manifest solved (manifest:" + this.getName() + ", module:" + module.getName() + ")");
-//          }
-//
-//          return true;
-//        }
-//      } catch (CVSException e) {
-//        e.printStackTrace();
-//        // todo exception handling
-//      } catch (IOException e) {
-//        throw new KarmaRuntimeException(e.getMessage());
-//      }
-//    }
-//    return false;
   }
 
 }

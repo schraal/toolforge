@@ -10,20 +10,18 @@ import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ModuleComparator;
-import nl.toolforge.karma.core.manifest.SourceModule;
-import nl.toolforge.karma.core.vc.Runner;
-import nl.toolforge.karma.core.vc.RunnerFactory;
+import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
+import nl.toolforge.karma.core.vc.threads.ParallelRunner;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This command gets the active manifest and presents it in the UI. UI implementations are responsible for the rendering
@@ -66,35 +64,44 @@ public class ViewManifest extends DefaultCommand {
 
     Collections.sort(sourceModules, new ModuleComparator());
 
+    ParallelRunner runner = new ParallelRunner(manifest);
+    runner.execute();
+
+    // todo timing issue ... COULD last forever.
+    //
+    while (!runner.finished()) {
+
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
+
+    Map statusOverview = runner.retrieveStatus();
 
     for (Iterator i = sourceModules.iterator(); i.hasNext();) {
 
-      SourceModule module = (SourceModule) i.next();
+      Module module = (Module) i.next();
+
+      ModuleStatus moduleStatus = (ModuleStatus) statusOverview.get(module);
 
       String[] moduleData = new String[7];
       moduleData[0] = module.getName();
 
-      boolean existsInRepository = false;
-      try {
-        Runner runner = RunnerFactory.getRunner(module.getLocation(), new File(""));
-        existsInRepository = runner.existsInRepository(module);
-      } catch (VersionControlException v) {
-        // Version for the module is non-existing in the repository.
-        //
-        throw new CommandException(v.getErrorCode(), v.getMessageArguments());
-      }
+      boolean existsInRepository = moduleStatus.existsInRepository();
 
       try {
 
         if (module.getState().equals(Module.WORKING)) {
           moduleData[1] = "   ";
         } else {
-          Version localVersion = (CVSVersionExtractor.getInstance().getLocalVersion(manifest, module));
+          Version localVersion = moduleStatus.getLocalVersion();
           moduleData[1] = (localVersion == null ? "   " : localVersion.getVersionNumber());
         }
 
         if (existsInRepository) {
-          moduleData[2] = "(" + (CVSVersionExtractor.getInstance().getLastVersion(module)).getVersionNumber() + ")";
+          moduleData[2] = "(" + moduleStatus.getLastVersion() + ")";
         } else {
           moduleData[2] = "";
         }
@@ -106,7 +113,7 @@ public class ViewManifest extends DefaultCommand {
       }
 
       if (module.getState().equals(Module.STATIC)) {
-        moduleData[3] = "(" + module.getVersionAsString() + ")";
+        moduleData[3] = "(" + module.getVersion().getVersionNumber() + ")";
       } else {
         moduleData[3] = "";
       }
@@ -137,5 +144,4 @@ public class ViewManifest extends DefaultCommand {
   protected List getData() {
     return renderedList;
   }
-
 }

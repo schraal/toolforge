@@ -76,7 +76,7 @@ public class CreateModuleCommand extends DefaultCommand {
     try {
       // Part 2 of the transaction is the creation in a version control system.
       //
-      Runner runner = RunnerFactory.getRunner(module.getLocation(), LocalEnvironment.getDevelopmentHome());
+      Runner runner = RunnerFactory.getRunner(module.getLocation());
       runner.setCommandResponse(getCommandResponse());
 
       if (module.getDeploymentType().equals(Module.WEBAPP)) {

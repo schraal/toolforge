@@ -1,23 +1,59 @@
 package nl.toolforge.karma.core.vc;
 
+import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.Patch;
+
 /**
  * A <code>PatchLine</code> is a special type of <code>DevelopmentLine</code>, used when a module has been released to
- * (for example) the test department
+ * (for example) the test department. Blaat.
  *
- * @author D.A. Smedes, Doubleforge
+ * @author D.A. Smedes
  * @version $Id$
  */
 public class PatchLine extends DevelopmentLine {
 
   /**
    * Name prefix for the symbolic name that is applied to the module when a patchline is created. A symbolic name
-   * would look like this : <code>PATCHLINE-core-karma_0-2</code>, indicating that a patchline is created for the
-   * <code>core-karma</code> module, version <code>0-2</code>.
+   * would look like this : <code>PATCHLINE|v_0-2</code>, indicating that a patchline is created for
+   * version <code>0-2</code>.
    */
   public static final String NAME_PREFIX = "PATCHLINE";
 
-  public PatchLine(String lineName) {
-    super(lineName);
+  public static final String VERSION_SEPARATOR_PATTERN = "\\|v_";
+  public static final String VERSION_SEPARATOR = "|v_";
+
+  public static final String PATCH_SEPARATOR_PATTERN = "\\|p_";
+  public static final String PATCH_SEPARATOR = "|p_";
+
+  private Version version = null;
+
+  /**
+   * Creates a PatchLine for version <code>version</code>.
+   *
+   * @param version The version for which a PatchLine must be created.
+   */
+  public PatchLine(Version version) {
+    super(NAME_PREFIX + VERSION_SEPARATOR + version.getVersionNumber());
+
+    this.version = version;
   }
 
+  public String getPatternString() {
+
+//    String p = "PATCHLINE\\|v_\\d{1,4}-\\d{1,4}";
+    String p = NAME_PREFIX + VERSION_SEPARATOR_PATTERN + Version.VERSION_PATTERN_STRING;
+    return p;
+  }
+
+  /**
+   * Given the patch line for a module, a matching pattern is required to select the corresponding patch versions. A
+   * patch line <code>PATCHLINE|v_0-0</code> will generate patch versions like <code>PATCHLINE|p_0-0-0</code>,
+   * <code>PATCHLINE|p_0-0-1</code> etc. This method will then return the following pattern string :
+   * <code>PATCHLINE|p_0-0-\d{1,4}</code>
+   *
+   * @return See the method description.
+   */
+  public String getMatchingPattern() {
+    return NAME_PREFIX + PATCH_SEPARATOR_PATTERN + version.getVersionNumber() + Patch.PATCH_POSTFIX;
+  }
 }

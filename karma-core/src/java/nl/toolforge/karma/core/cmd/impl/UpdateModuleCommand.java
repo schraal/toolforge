@@ -14,7 +14,7 @@ import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
+import nl.toolforge.karma.core.vc.cvs.Utils;
 
 /**
  * <p>This command updates a module on a developers' local system. When the module has not been updated before, the
@@ -84,14 +84,14 @@ public class UpdateModuleCommand extends DefaultCommand {
       // todo CVSVersionExtractor should be retrieved through a Factory.
       //
       try {
-        version = CVSVersionExtractor.getInstance().getLastVersion(module);
+        version = Utils.getLastVersion(module);
       } catch (VersionControlException e) {
         throw new CommandException(e.getErrorCode(), e.getMessageArguments());
       }
     }
 
     try {
-      if (version != null && version.equals(CVSVersionExtractor.getInstance().getLocalVersion(getContext().getCurrentManifest(), module))) {
+      if (version != null && version.equals(Utils.getLocalVersion(module))) {
         // todo message to be internationalized.
         //
 
@@ -102,10 +102,10 @@ public class UpdateModuleCommand extends DefaultCommand {
 
       } else {
 
-        Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getCurrentManifest().getDirectory());
+        Runner runner = RunnerFactory.getRunner(module.getLocation());
         runner.setCommandResponse(response);
 
-        if (!runner.existsInRepository(module)) {
+        if (!Utils.existsInRepository(module)) {
           throw new CommandException(VersionControlException.MODULE_NOT_IN_REPOSITORY, new Object[]{module.getName(), module.getLocation().getId()});
         }
 
@@ -122,8 +122,6 @@ public class UpdateModuleCommand extends DefaultCommand {
         response.addMessage(message);
       }
     } catch (VersionControlException e) {
-      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
-    } catch (ManifestException e) {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
   }

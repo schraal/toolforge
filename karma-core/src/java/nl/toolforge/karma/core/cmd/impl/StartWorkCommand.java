@@ -15,6 +15,7 @@ import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.cvs.CVSRunner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -73,10 +74,13 @@ public class StartWorkCommand extends DefaultCommand {
     if (!(module instanceof SourceModule)) {
       throw new CommandException(CommandException.MODULE_TYPE_MUST_BE_SOURCEMODULE, new Object[] {module.getName()});
     }
-    if (((SourceModule) module).getState().equals(Module.STATIC)) {
+
+    Manifest currentManifest = getContext().getCurrentManifest();
+
+    if (module.getState().equals(Module.STATIC) && currentManifest.getType().equals(Manifest.DEVELOPMENT_MANIFEST)) {
       throw new CommandException(CommandException.START_WORK_NOT_ALLOWED_ON_STATIC_MODULE, new Object[] {module.getName()});
     }
-    if (Module.WORKING.equals(((SourceModule)module).getState())) {
+    if (Module.WORKING.equals(module.getState())) {
 
       // todo message to be internationalized.
       //
@@ -85,8 +89,6 @@ public class StartWorkCommand extends DefaultCommand {
       response.addMessage(new SuccessMessage("Module " + module.getName() + " is already WORKING."));
 
     } else {
-
-      Manifest currentManifest = getContext().getCurrentManifest();
 
       if (!currentManifest.isLocal(module)) {
         // todo Hmm, mixing functionality of two exceptions.
@@ -99,13 +101,25 @@ public class StartWorkCommand extends DefaultCommand {
         // Step 1 : make the module WORKING
         //
 
+        response.addMessage(
+              new SuccessMessage("Updating module to its working version."));
+
         // A developer always works on the HEAD of a DevelopmentLine.
         //
-        Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getCurrentManifest().getDirectory());
-        runner.checkout(module);
+        Runner runner = RunnerFactory.getRunner(module.getLocation());
 
-//        Command command = CommandFactory.getInstance().getCommand(CommandDescriptor.UPDATE_MODULE_COMMAND + " -m ".concat(module.getName()));
-//        getContext().execute(command);
+        if (currentManifest.getType().equals(Manifest.RELEASE_MANIFEST)) {
+
+          // The manifest is a release manifest and since all modules are static in a release manifest, we need to
+          // get the PatchLine for the module or create it when it doesn't exist.
+
+          if (!runner.hasPatchLine(module)) {
+            runner.createPatchLine(module);
+          }
+          runner.checkout(module, module.getPatchLine(), null);
+        } else {
+          runner.checkout(module);
+        }
 
         // todo development-line should be taken into account
         //

@@ -295,7 +295,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
         if (relative) {
           jar = dep.getJarDependency();
         } else {
-          jar = LocalEnvironment.getLocalRepository(false).getPath() + File.separator + dep.getJarDependency();
+          jar = LocalEnvironment.getLocalRepository().getPath() + File.separator + dep.getJarDependency();
         }
 
         buffer.append(jar);

@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
+
 /**
  * @version $Id$
  */
@@ -17,16 +19,11 @@ public final class TestLocalEnvironment extends TestCase {
   private static LocalEnvironment localEnvironment;
 
   public void setUp() {
-//  static {
     try {
       workingContext = MyFileUtils.createTempDirectory();
-//			f2 = MyFileUtils.createTempDirectory();
-//			f3 = MyFileUtils.createTempDirectory();
 
       p = new Properties();
       p.put(LocalEnvironment.WORKING_CONTEXT_DIRECTORY, workingContext.getPath());
-//			p.put(LocalEnvironment.MANIFEST_STORE_DIRECTORY, f2.getPath());
-//			p.put(LocalEnvironment.LOCATION_STORE_DIRECTORY, f3.getPath());
       p.put(LocalEnvironment.MANIFEST_STORE_HOST, "one");
       p.put(LocalEnvironment.MANIFEST_STORE_REPOSITORY, "two");
       p.put(LocalEnvironment.MANIFEST_STORE_PROTOCOL, "three");
@@ -46,40 +43,19 @@ public final class TestLocalEnvironment extends TestCase {
   }
 
   public void testGetWorkingContext() {
-//    try {
-      assertEquals(workingContext, LocalEnvironment.getWorkingContext());
-//
-//    } catch (KarmaException e) {
-//      fail(e.getMessage());
-//    }
+    assertEquals(workingContext, LocalEnvironment.getWorkingContext());
   }
 
   public void testGetDevelopmentHome() {
-//    try {
-      assertEquals(new File(workingContext, "projects"), LocalEnvironment.getDevelopmentHome());
-//    } catch (KarmaException e) {
-//      fail(e.getMessage());
-//    }
-
+    assertEquals(new File(workingContext, "projects"), LocalEnvironment.getDevelopmentHome());
   }
-
+  
   public void testGetManifestStore() {
-//    try {
-      assertEquals(new File(workingContext, "manifests"), LocalEnvironment.getManifestStore());
-
-//    } catch (KarmaException e) {
-//      fail(e.getMessage());
-//    }
-
+    assertEquals(new File(workingContext, "manifests"), LocalEnvironment.getManifestStore());
   }
 
   public void testGetLocationStore() {
-//    try {
-      assertEquals(new File(workingContext, "locations"), LocalEnvironment.getLocationStore());
-//
-//    } catch (KarmaException e) {
-//      fail(e.getMessage());
-//    }
+    assertEquals(new File(workingContext, "locations"), LocalEnvironment.getLocationStore());
   }
 
   /**
@@ -87,6 +63,10 @@ public final class TestLocalEnvironment extends TestCase {
    */
 
   public void tearDown() {
-    boolean b = workingContext.delete();
+    try {
+      FileUtils.deleteDirectory(workingContext);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 }

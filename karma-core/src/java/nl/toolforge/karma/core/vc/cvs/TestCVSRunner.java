@@ -1,18 +1,16 @@
 package nl.toolforge.karma.core.vc.cvs;
 
+import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
-import nl.toolforge.karma.core.manifest.util.SourceModuleLayoutTemplate;
 import nl.toolforge.karma.core.test.LocalCVSInitializer;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.core.util.file.MyFileUtils;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * <p>This class tests all stuff in the <code>cvs</code> package. For this to work properly, you should unpack the
@@ -50,9 +48,7 @@ public class TestCVSRunner extends LocalCVSInitializer {
 
     try {
 
-      checkoutDefaultModule1();
-
-      Module module = new SourceModule(DEFAULT_MODULE_1, getTestLocation());
+      Module module = checkoutDefaultModule1();
 
       runner.add(module, new String[]{getTestFileName()}, new String[]{"src/java/nl/test", "resources"});
 
@@ -69,7 +65,6 @@ public class TestCVSRunner extends LocalCVSInitializer {
   public void testAddAndExistsInRepository() {
 
     Runner runner = null;
-    ResponseFaker response = new ResponseFaker();
     try {
       runner = getTestRunner();
     } catch (CVSException e) {
@@ -78,9 +73,7 @@ public class TestCVSRunner extends LocalCVSInitializer {
 
     try {
 
-      checkoutDefaultModule1();
-
-      Module module = new SourceModule(DEFAULT_MODULE_1, getTestLocation());
+      Module module = checkoutDefaultModule1();
 
       runner.add(module, new String[]{getTestFileName()}, new String[]{});
 
@@ -94,7 +87,6 @@ public class TestCVSRunner extends LocalCVSInitializer {
   public void testCheckoutAndAdd() {
 
     Runner runner = null;
-    ResponseFaker response = new ResponseFaker();
     try {
       runner = getTestRunner();
     } catch (CVSException e) {
@@ -103,22 +95,16 @@ public class TestCVSRunner extends LocalCVSInitializer {
 
     try {
 
-      File tmp = MyFileUtils.createTempDirectory();
+      Module module = checkoutDefaultModule1();
 
-      Module module = new SourceModule(DEFAULT_MODULE_1, getTestLocation());
+      assertTrue(new File(LocalEnvironment.getDevelopmentHome(), module.getName()).exists());
 
-      ((CVSRunner) runner).checkout(module, tmp);
-
-      assertTrue(new File(tmp, module.getName()).exists());
-
-      ((CVSRunner) runner).add(module, new String[]{"blaat-file"}, new String[]{"blaat-dir"}, tmp);
+      ((CVSRunner) runner).add(module, new String[]{"blaat-file"}, new String[]{"blaat-dir"});
 
       assertTrue(true);
 
     } catch (VersionControlException c) {
       fail(c.getMessage());
-    } catch (IOException e) {
-      fail(e.getMessage());
     }
   }
 
@@ -136,9 +122,7 @@ public class TestCVSRunner extends LocalCVSInitializer {
 
     try {
 
-      checkoutDefaultModule1();
-
-      Module module = new SourceModule(DEFAULT_MODULE_1, getTestLocation());
+      Module module = checkoutDefaultModule1();
 
       runner.update(module, new Version("99-99"));
 
@@ -164,13 +148,35 @@ public class TestCVSRunner extends LocalCVSInitializer {
 
     try {
 
-      checkoutDefaultModule1();
-
-      Module module = new SourceModule(DEFAULT_MODULE_1, getTestLocation());
+      Module module = checkoutDefaultModule1();
 
       runner.update(module, new Version("0-1")); // On the mainline (HEAD)
 
       assertTrue(response.isOK());
+
+    } catch (VersionControlException c) {
+      fail(c.getMessage());
+    }
+  }
+
+  public void testPatchLine() {
+
+    Runner runner = null;
+    ResponseFaker response = new ResponseFaker();
+    try {
+      runner = getTestRunner(response);
+    } catch (CVSException e) {
+      fail(e.getMessage());
+    }
+
+    try {
+
+      Module module = checkoutDefaultModuleWithVersion();
+      module.setBaseDir(new File(LocalEnvironment.getDevelopmentHome(), module.getName()));
+      module.markPatchLine(true);
+
+      runner.createPatchLine(module);
+      assertTrue(runner.hasPatchLine(module));
 
     } catch (VersionControlException c) {
       fail(c.getMessage());

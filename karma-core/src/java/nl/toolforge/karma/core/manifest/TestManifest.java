@@ -77,8 +77,6 @@ public class TestManifest extends BaseTest {
     } catch (Exception r) {
       assertTrue(true);
     }
-
-
   }
 
 }

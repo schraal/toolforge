@@ -10,10 +10,13 @@ import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
+import nl.toolforge.karma.core.vc.cvs.CVSModuleStatus;
+import nl.toolforge.karma.core.vc.cvs.CVSRunner;
+import nl.toolforge.karma.core.vc.cvs.Utils;
 
 /**
  *
@@ -57,9 +60,9 @@ public class StopWorkCommand extends DefaultCommand {
     if (!(module instanceof SourceModule)) {
       throw new CommandException(CommandException.MODULE_TYPE_MUST_BE_SOURCEMODULE, new Object[] {module.getName()});
     }
-    if (((SourceModule) module).hasVersion()) {
-      throw new CommandException(CommandException.START_WORK_NOT_ALLOWED_ON_STATIC_MODULE, new Object[] {module.getName()});
-    }
+//    if (((SourceModule) module).hasVersion()) {
+//      throw new CommandException(CommandException.START_WORK_NOT_ALLOWED_ON_STATIC_MODULE, new Object[] {module.getName()});
+//    }
 
 
     if (!Module.WORKING.equals(((SourceModule)module).getState())) {
@@ -71,13 +74,13 @@ public class StopWorkCommand extends DefaultCommand {
 
       try {
 
-        Version version = CVSVersionExtractor.getInstance().getLastVersion(module);
+        Version version = Utils.getLastVersion(module);
 
         // todo what if user has made changes to files, even if not allowed by the common process ?
 
         // Update to the latest available version (in a DevelopmentLine).
         //
-        Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getCurrentManifest().getDirectory());
+        Runner runner = RunnerFactory.getRunner(module.getLocation());
         runner.checkout(module, version);
 
         getContext().getCurrentManifest().setState(module, Module.DYNAMIC);

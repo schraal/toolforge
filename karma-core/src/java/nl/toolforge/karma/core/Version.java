@@ -10,9 +10,12 @@ import java.util.regex.PatternSyntaxException;
  * @author D.A. Smedes
  * @version $Id$ 
  */
-public final class Version implements Comparable {
+public class Version implements Comparable {
 
-  public static final String VERSION_PATTERN_STRING = "\\d{1,4}(?:-{1}\\d{1,4}){1,2}";
+  public static final String VERSION_PATTERN_STRING = "\\d{1,4}-\\d{1,4}";
+
+  /** Separator for version digits. */
+  public static final String VERSION_SEPARATOR_CHAR = "-";
 
   /** The initial version for a module. */
   public static final Version INITIAL_VERSION = new Version("0-0");
@@ -32,9 +35,9 @@ public final class Version implements Comparable {
 	 */
 	public Version(String versionIdentifier) {
 
-    if (!versionIdentifier.matches(VERSION_PATTERN_STRING)) {
+    if (!versionIdentifier.matches(getPatternString())) {
       throw new PatternSyntaxException(
-          "Pattern mismatch for version. Should match " + VERSION_PATTERN_STRING, versionIdentifier, -1);
+          "Pattern mismatch for version. Should match " + getPatternString(), versionIdentifier, -1);
     }
 
 		this.versionNumber = versionIdentifier;
@@ -49,6 +52,30 @@ public final class Version implements Comparable {
 		}
 	}
 
+
+  public String getPatternString() {
+    return "\\d{1,4}-{1}\\d{1,4}";
+  }
+
+  /**
+   * Returns the initial version for a module. Right now, this is implemented as <code>new Version("0-0")</code>.
+   *
+   * @return
+   */
+  protected static Version getInitialVersion() {
+    return new Version("0-0");
+  }
+
+  /**
+   * Creates a <code>Patch</code> based on this version.
+   *
+   * @param patchNumber
+   * @return
+   */
+  public Patch createPatch(String patchNumber) {
+    return new Patch(getVersionNumber() + VERSION_SEPARATOR_CHAR + patchNumber);
+  }
+
 	/**
 	 * Constructs a version number concatenating each item in <code>versionDigits</code>, using the <code>'-'</code>
 	 * separator. <code>{1, 0, 9}</code> translates into a version number <code>1-0-9</code>.
@@ -59,7 +86,7 @@ public final class Version implements Comparable {
 
     if (versionDigits.length < 2) {
       throw new IllegalArgumentException(
-          "Pattern mismatch for version. Should match " + VERSION_PATTERN_STRING +
+          "Pattern mismatch for version. Should match " + getPatternString() +
           "; provide 'int'-array");
     }
 

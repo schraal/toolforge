@@ -108,6 +108,13 @@ public final class LocalEnvironment {
    */
   public static final String WORKING_CONTEXT_DIRECTORY = "working-context";
 
+  /**
+   * The property that identifies the local directory where jar dependencies can be found. Dependencies are
+   * resolved Maven style, but to support environments where Maven is not available, the directory is configurable.
+   * The default Maven repository is used when this property is not set in <code>karma.properties</code>.
+   */
+  public static final String JAR_REPOSITORY = "jar.repository";
+
   public static final String MANIFEST_STORE_HOST = "manifest-store.cvs.host";
   public static final String MANIFEST_STORE_PORT = "manifest-store.cvs.port";
   public static final String MANIFEST_STORE_REPOSITORY = "manifest-store.cvs.repository";
@@ -187,8 +194,7 @@ public final class LocalEnvironment {
 
       // Create the directories, if they don't yet exist.
       //
-      String workingContext;
-      workingContext = (String) configuration.get(WORKING_CONTEXT_DIRECTORY);
+      String workingContext = (String) configuration.get(WORKING_CONTEXT_DIRECTORY);
       if (workingContext == null || workingContext.equals("") || workingContext.equals(PLACEHOLDER)) {
         logger.error("Working context is missing; property " + WORKING_CONTEXT_DIRECTORY + " has invalid value.");
         throw new KarmaException(KarmaException.MISSING_CONFIGURATION, new Object[]{WORKING_CONTEXT_DIRECTORY});
@@ -196,6 +202,11 @@ public final class LocalEnvironment {
         if (new File(workingContext).mkdirs()) {
           logger.info("New working context created at : " + workingContext);
         }
+      }
+
+      String jarRepository = (String) configuration.get(JAR_REPOSITORY);
+      if (jarRepository == null || jarRepository.equals("") || jarRepository.equals(PLACEHOLDER)) {
+        logger.warn("Jar repository location is missing; property " + JAR_REPOSITORY);
       }
 
       // Check other 'essential' configuration.
@@ -285,6 +296,7 @@ public final class LocalEnvironment {
   private void logConfiguration() {
 
     logger.info("Working context home directory : " + (String) configuration.get(WORKING_CONTEXT_DIRECTORY));
+    logger.info("Jar repository : " + (String) configuration.get(JAR_REPOSITORY));
 
     logger.debug("Manifest store host : " + (String) configuration.get(MANIFEST_STORE_HOST));
     logger.debug("Manifest store port : " + (String) configuration.get(MANIFEST_STORE_PORT));
@@ -310,15 +322,7 @@ public final class LocalEnvironment {
   }
 
   /**
-   * Create the karma.properties file with default values:
-   *
-   * <p/>
-   * <ul>
-   * <li/><code>development-store.local                    = $USER_HOME/karma/projects</code>
-   * <li/><code>manifest-store.local.checkout-directory    = $USER_HOME/karma/manifests</code>
-   * <li/><code>location-store.local.checkout-directory    = $USER_HOME/karma/locations</code>
-   * <li/><code>manifest-store.cvs.host                    = &lt;&gt;</code>
-   * </ul>
+   * Create the <code>karma.properties</code> configuration file.
    *
    * @param configFile The config file to write the default properties to.
    * @throws IOException When the config file could not be created.
@@ -328,6 +332,10 @@ public final class LocalEnvironment {
     String karmaBase = System.getProperty("user.home") + File.separator + "karma" + File.separator;
 
     configuration.put(WORKING_CONTEXT_DIRECTORY, karmaBase);
+    configuration.put(
+        JAR_REPOSITORY,
+        System.getProperty("user.home") + File.separator + ".maven" + File.separator + "repository"
+    );
 
     configuration.put(MANIFEST_STORE_HOST, PLACEHOLDER);
     configuration.put(MANIFEST_STORE_PORT, PLACEHOLDER);
@@ -500,23 +508,23 @@ public final class LocalEnvironment {
   }
 
   /**
-   * Defaults to <code>${user.home}/.maven/repository</code> at the moment.
+   * Returns the <code>File</code> location for the repository where <code>jar</code>-dependencies can be found. The
+   * system property <code>JAR_REPOSITORY</code> is used to determine the location. If not set, the default jar
+   * repository ($HOME/.karma/repository) is returned (and created if it doesn't exist).
+   *
+   * @return See method description.
    */
   public static File getLocalRepository() {
-    return getLocalRepository(false);
-  }
 
-  /**
-   * Relative to <code>${user.home}
-   * @param relative
-   * @return
-   */
-  public static File getLocalRepository(boolean relative) {
+    File defaultJarRepository = new File(System.getProperty("user.home"), ".karma" + File.separator + "repository");
+    File configuredJarRepository = new File((String)configuration.get(JAR_REPOSITORY));
 
-    if (relative) {
-      return new File(".maven" + File.separator + "repository");
+    if (configuration.get(JAR_REPOSITORY) == null) {
+      defaultJarRepository.mkdirs();
     } else {
-      return new File(System.getProperty("user.home"), ".maven" + File.separator + "repository");
+      configuredJarRepository.mkdirs();
     }
+
+    return ((String)configuration.get(JAR_REPOSITORY) == null ? defaultJarRepository : configuredJarRepository);
   }
 }
