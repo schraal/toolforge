@@ -20,13 +20,15 @@ import nl.toolforge.karma.core.cmd.impl.ListManifests;
  */
 public class ListManifestsImpl extends ListManifests {
 
+  CommandResponse commandResponse = new QueryCommandResponse();
+
 	public ListManifestsImpl(CommandDescriptor descriptor) throws ManifestException {
 		super(descriptor);
 	}
 
 	public void execute() {
     try {
-      CommandResponse response = new QueryCommandResponse();
+      CommandResponse response = getCommandResponse();
 
       Set manifests = getContext().getAllManifests();
 
@@ -40,4 +42,9 @@ public class ListManifestsImpl extends ListManifests {
       e.printStackTrace();
     }
 	}
+
+  public CommandResponse getCommandResponse() {
+    return this.commandResponse;
+  }
+
 }
