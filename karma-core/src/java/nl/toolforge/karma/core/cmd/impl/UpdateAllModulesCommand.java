@@ -58,7 +58,7 @@ public class UpdateAllModulesCommand extends DefaultCommand {
 
         // todo hmm, the commandname is hardcoded whilst we have it dynamically in a file ...
         //
-        getContext().execute("update-module -m ".concat(module.getName()));
+        getContext().execute(CommandDescriptor.UPDATE_MODULE_COMMAND + " -m ".concat(module.getName()));
       }
     } catch (CommandException ce) {
       commandResponse.addMessage(new ErrorMessage(ce));

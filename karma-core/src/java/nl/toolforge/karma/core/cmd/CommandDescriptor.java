@@ -12,6 +12,14 @@ import java.util.Map;
  */
 public final class CommandDescriptor {
 
+  // todo ideally we want an approach like Options in here; each method we call delivers an even better Command.
+  // call it a CommandBuilder.
+  //
+
+
+  /** Maps to the &lt;command name="update-module"&gt; */
+  public static final String UPDATE_MODULE_COMMAND = "update-module";
+
 	private String name = null;
 	private String alias = null;
 	private String description = null;
@@ -22,6 +30,16 @@ public final class CommandDescriptor {
 	private Class commandImpl = null;
 
 	private Map deps = new Hashtable();
+
+//  private CommandDescriptor(String name, String alias) {
+//
+//  }
+//
+//  public CommandDescriptor setOption(String shortOpt) {
+//
+//  }
+//
+//  public
 
 	/**
 	 * Creates a command using its mandatory fields.
