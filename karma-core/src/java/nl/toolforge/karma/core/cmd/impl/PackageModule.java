@@ -18,20 +18,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.cmd.ActionCommandResponse;
-import nl.toolforge.karma.core.cmd.AntErrorMessage;
-import nl.toolforge.karma.core.cmd.Command;
-import nl.toolforge.karma.core.cmd.CommandDescriptor;
-import nl.toolforge.karma.core.cmd.CommandException;
-import nl.toolforge.karma.core.cmd.CommandFactory;
-import nl.toolforge.karma.core.cmd.CommandMessage;
-import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.ErrorMessage;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
-import nl.toolforge.karma.core.cmd.util.DescriptorReader;
-import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.ModuleDescriptor;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.tools.ant.BuildException;
@@ -45,14 +40,21 @@ import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.FilterSet;
 import org.xml.sax.SAXException;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import nl.toolforge.karma.core.cmd.ActionCommandResponse;
+import nl.toolforge.karma.core.cmd.AntErrorMessage;
+import nl.toolforge.karma.core.cmd.Command;
+import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.cmd.CommandFactory;
+import nl.toolforge.karma.core.cmd.CommandMessage;
+import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.ErrorMessage;
+import nl.toolforge.karma.core.cmd.StatusMessage;
+import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.util.DescriptorReader;
+import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.ModuleDescriptor;
 
 
 /**
@@ -81,7 +83,7 @@ public class PackageModule extends AbstractBuildCommand {
         Command command = null;
         try {
           String commandLineString = "tm -m " + module.getName();
-System.out.println("Going to: "+commandLineString);
+//System.out.println("Going to: "+commandLineString);
           command = CommandFactory.getInstance().getCommand(commandLineString);
           command.setContext(getContext());
           command.registerCommandResponseListener(getResponseListener());
@@ -106,6 +108,13 @@ System.out.println("Going to: "+commandLineString);
         logger.info("User has explicitly disabled running the unit tests.");
       }
 
+      //check whether the dependencies are present
+      try {
+        //todo: this is not really okidoki. A dependency checker method should be used.
+        getDependencies(getCurrentModule().getDependencies(), false, CLASSPATH_SEPARATOR_CHAR);
+      } catch (ManifestException me) {
+        throw new CommandException(CommandException.DEPENDENCY_FILE_INVALID, me.getMessageArguments());
+      }
 
       File packageName = new File(getModuleBuildDirectory(), getCurrentManifest().resolveArchiveName(getCurrentModule()));
 
@@ -195,7 +204,7 @@ System.out.println("Going to: "+commandLineString);
       project.executeTarget("project");
 
     } catch (BuildException e) {
-      e.printStackTrace();
+//      e.printStackTrace();
       if (logger.isDebugEnabled()) {
         commandResponse.addMessage(new AntErrorMessage(e));
       }
@@ -207,13 +216,10 @@ System.out.println("Going to: "+commandLineString);
   private void packageWar(File packageName) throws CommandException {
 
     try {
+      //start with a clean situation.
       executeDelete(getModuleBuildDirectory(), "*.war");
-      executeDelete(getPackageDirectory());
-      executeMkdir(getPackageDirectory());
 
-      Copy copy = null;
-
-      copy = new Copy();
+      Copy copy = new Copy();
       copy.setProject(getProjectInstance());
       copy.setTodir(getPackageDirectory());
       copy.setOverwrite(true);
@@ -297,13 +303,14 @@ System.out.println("Going to: "+commandLineString);
 
   private void packageEar(File packageName) throws CommandException {
 
+    final String ARCHIVES_PROPERTIES = "archives.properties";
+    final String ARCHIVES_INCLUDES   = "archives.includes";
+
     try {
-
-
       // Create an ear-file
       //
+      //reading the application.xml
       DescriptorReader reader = new DescriptorReader(DescriptorReader.APPLICATION_XML);
-
       try {
         reader.parse(new File(getCurrentModule().getBaseDir(), "META-INF"));
       } catch (IOException e) {
@@ -312,27 +319,35 @@ System.out.println("Going to: "+commandLineString);
         throw new CommandException(CommandException.PACKAGE_FAILED_INVALID_APPLICATION_XML, new Object[]{module.getName()});
       }
 
+      //the application.xml is parsed for included modules.
+      //modules are included as follows: @<module_name>@
+      //these inclusions are replaced with the name of the packaged module.
       Map map = new Hashtable();
       for (Iterator it = reader.getModuleNames().iterator(); it.hasNext(); ) {
         String moduleName = ((StringBuffer) it.next()).toString();
-
+//System.out.println("FOund module name: "+moduleName);
         Pattern p = Pattern.compile("@("+ModuleDescriptor.NAME_PATTERN_STRING+")@");
         Matcher m = p.matcher(moduleName);
 
         if (m.matches()) {
           moduleName = m.group(1);
           Module module = getCurrentManifest().getModule(moduleName);
+//todo: check that the archive exists. if not, give a dependency error.
           map.put(moduleName, getCurrentManifest().resolveArchiveName(module));
         } else {
+//System.out.println("Module "+moduleName+" is not a source module. No special handling necessary.");
           //todo: throw new Exception();
         }
       }
 
+      //create a archive.properties and a archives.includes.
+      //the first one is used for replacing the special tokens in the application.xml
+      //the second one is used for packaging purposes.
       try {
         File moduleBuildDir = getModuleBuildDirectory();
         moduleBuildDir.mkdirs();
-        File archivesProperties = new File(moduleBuildDir, "archives.properties");
-        File archivesIncludes = new File(moduleBuildDir, "archives.includes");
+        File archivesProperties = new File(moduleBuildDir, ARCHIVES_PROPERTIES);
+        File archivesIncludes = new File(moduleBuildDir, ARCHIVES_INCLUDES);
         archivesProperties.createNewFile();
         archivesIncludes.createNewFile();
         FileWriter write1 = new FileWriter(archivesProperties);
@@ -348,16 +363,15 @@ System.out.println("Going to: "+commandLineString);
 
         write1.close();
         write2.close();
-
       } catch (IOException e) {
         e.printStackTrace();
       }
 
-      executeDelete(getModuleBuildDirectory(), "*.ear;archives.*");
+      commandResponse.addMessage(new StatusMessage("Deleting previous ear file."));
+      executeDelete(getModuleBuildDirectory(), "*.ear");
 
-      Copy copy = null;
-
-      copy = new Copy();
+      commandResponse.addMessage(new StatusMessage("Copying META-INF dir."));
+      Copy copy = new Copy();
       copy.setProject(getProjectInstance());
       copy.setTodir(getPackageDirectory());
       copy.setOverwrite(true);
@@ -369,37 +383,52 @@ System.out.println("Going to: "+commandLineString);
       // Filtering
       //
       FilterSet filterSet = copy.createFilterSet();
-      filterSet.setFiltersfile(new File(getModuleBuildDirectory(), "archives.properties"));
+      filterSet.setFiltersfile(new File(getModuleBuildDirectory(), ARCHIVES_PROPERTIES));
 
       copy.addFileset(fileSet);
       copy.execute();
 
-
+      commandResponse.addMessage(new StatusMessage("Copying module dependencies"));
       copy = new Copy();
       copy.setProject(getProjectInstance());
       copy.setTodir(getPackageDirectory());
       copy.setFlatten(true);
 
+      //copy the module dependencies from the application.xml
       fileSet = new FileSet();
-      fileSet.setDir(getModuleBuildDirectory());
-      fileSet.setIncludesfile(new File(getModuleBuildDirectory(), "arvices.includes"));
-
+      fileSet.setDir(getBuildDirectory());
+      fileSet.setIncludesfile(new File(getModuleBuildDirectory(), ARCHIVES_INCLUDES));
       copy.addFileset(fileSet);
       copy.execute();
 
+      //copy the non-module dependencies to /lib
+      copy = new Copy();
+      copy.setProject(getProjectInstance());
+      copy.setTodir(new File(getPackageDirectory(), "lib"));
+      copy.setFlatten(true);
 
+      fileSet = new FileSet();
+      String jarDependencies = getJarDependencies(getCurrentModule().getDependencies(), true, ' ');
+System.out.println("repo root: "+getWorkingContext().getLocalRepository());
+      fileSet.setDir(getWorkingContext().getLocalRepository());
+      fileSet.setIncludes(jarDependencies);
+      copy.addFileset(fileSet);
+      copy.execute();
+
+      commandResponse.addMessage(new StatusMessage("Creating ear"));
       Ear ear = new Ear();
       ear.setProject(getProjectInstance());
       ear.setDestFile(packageName);
       ear.setBasedir(getPackageDirectory());
-      ear.setAppxml(new File(getModuleBuildDirectory(), "META-INF/application.xml".replace('/', File.separatorChar)));
+      ear.setAppxml(new File(getPackageDirectory(), "META-INF/application.xml".replace('/', File.separatorChar)));
 
       ear.execute();
 
     } catch (ManifestException m) {
+m.printStackTrace();
       throw new CommandException(m.getErrorCode(), m.getMessageArguments());
     } catch (BuildException e) {
-//      e.printStackTrace();
+e.printStackTrace();
       if (logger.isDebugEnabled()) {
         commandResponse.addMessage(new AntErrorMessage(e));
       }
