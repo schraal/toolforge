@@ -1,33 +1,31 @@
 package nl.toolforge.karma.core.cmd.impl;
 
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Target;
-import org.apache.tools.ant.taskdefs.Javac;
-import org.apache.tools.ant.types.Path;
-
-import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.Manifest;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.CommandResponseHandler;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
-import nl.toolforge.karma.core.cmd.CommandResponseHandler;
-import nl.toolforge.karma.core.process.common.DependencyBuilder;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Target;
+import org.apache.tools.ant.taskdefs.Javac;
+import org.apache.tools.ant.types.FileList;
+import org.apache.tools.ant.types.Path;
 
 /**
  * Builds a module in a manifest.
  */
 public class BuildModule extends DefaultCommand {
 
-	public BuildModule(CommandDescriptor descriptor) {
-		super(descriptor);
-	}
+  public BuildModule(CommandDescriptor descriptor) {
+    super(descriptor);
+  }
 
-	public void execute(CommandResponseHandler handler) {
+  public void execute(CommandResponseHandler handler) {
     try {
       String moduleName = getCommandLine().getOptionValue("m");
 
@@ -68,12 +66,10 @@ public class BuildModule extends DefaultCommand {
       // </classpath>
 
       Path classPath = new Path(project);
-
-      DependencyBuilder builder = new DependencyBuilder(module, currentManifest.getDirectory());
-      classPath.addFilelist(builder.getDependencies());
-
-  //    task.setClasspath();
-
+      
+      FileList deps = new FileList();
+      deps.setFiles(module.getDependencies());
+      classPath.addFilelist(deps);
 
 
       //
@@ -87,6 +83,7 @@ public class BuildModule extends DefaultCommand {
 
       task.setSrcdir(path);
       task.setDestdir(getContext().getBuildTarget(module)); // Path settings determined by CommandContext
+      task.setClasspath(classPath);
 
       Target target = new Target();
       target.setName("compile");
@@ -108,6 +105,6 @@ public class BuildModule extends DefaultCommand {
     } catch (Exception e) {
       e.printStackTrace();
     }
-	}
+  }
 
 }
