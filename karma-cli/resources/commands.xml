@@ -88,6 +88,24 @@
 
   </command>
 
+  <command name="test-module" alias="tm">
+
+    <description lang="en">
+			Runs the unit tests that are available in the given module.
+    </description>
+
+    <options>
+      <option opt="m" longOpt="module" required="true" description="The module name">
+        <arg name="module-name"/>
+      </option>
+    </options>
+
+    <classname>nl.toolforge.karma.core.cmd.impl.TestModule</classname>
+
+    <help/>
+
+  </command>
+
   <command name="update-all" alias="ua">
 
     <description lang="en">
