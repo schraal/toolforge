@@ -35,12 +35,6 @@ public final class LocationFactory {
 
 	private LocationFactory() {}
 
-	/**
-	 * Gets the singleton instance of the location factory. This instance can be used to get access to all location
-	 * objects.
-	 *
-	 * @return A location factory.
-	 */
 	public static LocationFactory getInstance() {
 
 		if (instance == null) {
@@ -85,15 +79,14 @@ public final class LocationFactory {
 	}
 
 	/**
-	 * See {@link #load()}
+	 * Loads all authenticator <code>xml</code> files in the directory identified by the
+	 * {@link nl.toolforge.karma.core.prefs.Preferences#LOCATION_STORE_DIRECTORY_PROPERTY} property.
 	 *
 	 * @param locationFilesPath
 	 *        The path where all location XML files can be found.
 	 * @param authenticationFilePath
 	 *        The path to the location where <code>location-authentication.xml</code> can be found. The final "/" is not
 	 *        required.
-	 *
-	 * @throws KarmaException See {@link #load()}
 	 *
 	 * TODO make sure that all xml files are validated before being used.
 	 */
