@@ -3,11 +3,7 @@ package nl.toolforge.karma.console;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.PasswordScrambler;
-import nl.toolforge.karma.core.vc.AuthenticationException;
-import nl.toolforge.karma.core.vc.Authenticator;
-import nl.toolforge.karma.core.vc.AuthenticatorKey;
-import nl.toolforge.karma.core.vc.Authenticators;
-import nl.toolforge.karma.core.vc.VersionControlSystem;
+import nl.toolforge.karma.core.vc.*;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSException;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSRepository;
 
@@ -40,6 +36,9 @@ final class Configurator {
 
     } catch (IOException e) {
       writeln("[ console ] Error reading configuration. Please inform the Karma support desk.");
+      System.exit(1);
+    } catch (ConfigurationException e) {
+      writeln("[ console ] Error reading configuration: " + e.getMessage());
       System.exit(1);
     }
 
@@ -75,7 +74,7 @@ final class Configurator {
 
       projectBaseDir = (projectBaseDir == null ? DEFAULT_PROJECT_BASE_DIR : projectBaseDir);
 
-      write("[ console ] What is your project base directory ("+projectBaseDir+") : ");
+      write("[ console ] What is your project base directory (" + projectBaseDir + ") : ");
       newValue = reader.readLine().trim();
       if (!"".equals(newValue)) {
         projectBaseDir = newValue;
@@ -87,7 +86,7 @@ final class Configurator {
   }
 
 
-  private void checkManifestStoreConfiguration(WorkingContext ctx) throws IOException {
+  private void checkManifestStoreConfiguration(WorkingContext ctx) throws IOException, ConfigurationException {
 
     BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -185,7 +184,7 @@ final class Configurator {
       String protocol = cvs.getProtocol();
       protocol = (protocol == null ? "pserver" : protocol);
 
-      write("[ console ] What is your server protocol ? [ local | pserver ] ("+protocol+") : ");
+      write("[ console ] What is your server protocol ? [ local | pserver ] (" + protocol + ") : ");
       newValue = reader.readLine().trim();
       if (!"".equals(newValue)) {
         protocol = newValue;
@@ -199,7 +198,7 @@ final class Configurator {
         String hostName = cvs.getHost();
         hostName = (hostName == null ? "127.0.0.1" : hostName);
 
-        write("[ console ] What is your server's hostname or ip-adres ? ("+hostName+") : ");
+        write("[ console ] What is your server's hostname or ip-adres ? (" + hostName + ") : ");
         newValue = reader.readLine().trim();
         if (!"".equals(newValue)) {
           hostName = newValue;
@@ -210,7 +209,7 @@ final class Configurator {
         //
         String port = (cvs.getPort() == -1 ? "2401" : "" + cvs.getPort());
 
-        write("[ console ] What is your server port ? ("+port+") : ");
+        write("[ console ] What is your server port ? (" + port + ") : ");
         newValue = reader.readLine().trim();
         if (!"".equals(newValue)) {
           port = newValue;
@@ -223,7 +222,7 @@ final class Configurator {
       String repository = cvs.getRepository();
       repository = (repository == null ? "/home/cvs" : repository);
 
-      write("[ console ] What is your server repository ? ("+repository+") : ");
+      write("[ console ] What is your server repository ? (" + repository + ") : ");
       newValue = reader.readLine().trim();
       if (!"".equals(newValue)) {
         repository = newValue;
@@ -235,7 +234,7 @@ final class Configurator {
       String manifestStoreModule = ctx.getManifestStoreModule();
       manifestStoreModule = (manifestStoreModule == null ? "manifests" : manifestStoreModule);
 
-      write("[ console ] What is the cvs module for the manifest store ? ("+manifestStoreModule+") ");
+      write("[ console ] What is the cvs module for the manifest store ? (" + manifestStoreModule + ") ");
       newValue = reader.readLine().trim();
       if (!"".equals(newValue)) {
         manifestStoreModule = newValue;
@@ -247,7 +246,7 @@ final class Configurator {
     }
   }
 
-  private void checkLocationStoreConfiguration(WorkingContext ctx) throws IOException {
+  private void checkLocationStoreConfiguration(WorkingContext ctx) throws IOException, ConfigurationException {
 
     BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -326,7 +325,7 @@ final class Configurator {
       String protocol = cvs.getProtocol();
       protocol = (protocol == null ? "pserver" : protocol);
 
-      write("[ console ] What is your server protocol ? [ local | pserver ] ("+protocol+") : ");
+      write("[ console ] What is your server protocol ? [ local | pserver ] (" + protocol + ") : ");
       newValue = reader.readLine().trim();
       if (!"".equals(newValue)) {
         protocol = newValue;
@@ -340,7 +339,7 @@ final class Configurator {
         String hostName = cvs.getHost();
         hostName = (hostName == null ? "127.0.0.1" : hostName);
 
-        write("[ console ] What is your server's hostname or ip-adres ? ("+hostName+") : ");
+        write("[ console ] What is your server's hostname or ip-adres ? (" + hostName + ") : ");
         newValue = reader.readLine().trim();
         if (!"".equals(newValue)) {
           hostName = newValue;
@@ -351,7 +350,7 @@ final class Configurator {
         //
         String port = (cvs.getPort() == -1 ? "2401" : "" + cvs.getPort());
 
-        write("[ console ] What is your server port ? ("+port+") : ");
+        write("[ console ] What is your server port ? (" + port + ") : ");
         newValue = reader.readLine().trim();
         if (!"".equals(newValue)) {
           port = newValue;
@@ -364,19 +363,19 @@ final class Configurator {
       String repository = cvs.getRepository();
       repository = (repository == null ? "/home/cvs" : repository);
 
-      write("[ console ] What is your server repository ? ("+repository+") : ");
+      write("[ console ] What is your server repository ? (" + repository + ") : ");
       newValue = reader.readLine().trim();
       if (!"".equals(newValue)) {
         repository = newValue;
       }
       cvs.setRepository(repository);
 
-      // manifest-store.module
+      // location-store.module
       //
       String locationStoreModule = ctx.getLocationStoreModule();
       locationStoreModule = (locationStoreModule == null ? "locations" : locationStoreModule);
 
-      write("[ console ] What is the cvs module for the manifest store ? ("+locationStoreModule+") ");
+      write("[ console ] What is the cvs module for the location store ? (" + locationStoreModule + ") ");
       newValue = reader.readLine().trim();
       if (!"".equals(newValue)) {
         locationStoreModule = newValue;
@@ -387,13 +386,15 @@ final class Configurator {
     }
   }
 
-  private void checkAuthentication(WorkingContext ctx, VersionControlSystem cvs) throws IOException {
+  private void checkAuthentication(WorkingContext ctx, VersionControlSystem cvs) throws IOException, ConfigurationException {
 
     BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
     Authenticator authenticator = null;
     try {
       authenticator = Authenticators.getAuthenticator(new AuthenticatorKey(ctx.getName(), cvs.getId()));
+    } catch (IllegalArgumentException e) {
+      throw new ConfigurationException("The file $HOME/.karma/authenticators.xml seems to be corrupt. Please remove it and try again, karma will generate it for you.", e);
     } catch (AuthenticationException e) {
       authenticator = new Authenticator();
     }

@@ -27,6 +27,12 @@ public final class AuthenticatorKey {
   private String workingContext = null;
   private String locationId = null;
 
+  /**
+   * Creates a new authenticator key. References to <code>locations.xml</code>.
+   * @param workingContext The name of the working context.
+   * @param locationId The id of the location.
+   * @throws IllegalArgumentException When the parameters are empty or null. 
+   */
   public AuthenticatorKey(String workingContext, String locationId) {
 
     if ("".equals(workingContext) || "".equals(locationId) || workingContext == null || locationId == null) {
