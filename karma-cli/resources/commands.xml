@@ -307,5 +307,21 @@
     </help>
   </command>
 
+  <command name="quit" alias="q exit bye later">
+    <description>Exit the almighty Karma platform</description>
+    <options/>
+    <classname>nl.toolforge.karma.cli.cmd.ExitCleanImpl</classname>
+    <dependencies/>
+    <help/>
+  </command>
+
+  <command name="help" alias="?">
+    <description>Karma Guru</description>
+    <options/>
+    <classname>nl.toolforge.karma.cli.cmd.HelpImpl</classname>
+    <dependencies/>
+    <help/>
+  </command>
+
 </commands>
 

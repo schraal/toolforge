@@ -38,13 +38,6 @@ public final class ConsoleConfiguration {
  	public static Set exitCommands = new HashSet();
   private static Manifest manifest = null;
 
-	static {
-
-		exitCommands.add("QUIT");
-		exitCommands.add("BYE");
-		exitCommands.add("EXIT");
-	}
-
 	/**
 	 * <p>Returns the prompt which is defined by the <code>console.prompt</code> property. The following syntax is
 	 * supported : <font color="red">to be implemented.</font>.
@@ -80,14 +73,4 @@ public final class ConsoleConfiguration {
 			StringUtils.leftPad("" + now.get(Calendar.MINUTE) , 2, "0") + ":" +
 			StringUtils.leftPad("" + now.get(Calendar.SECOND) , 2, "0") + " [ " + end + " ] > ";
 	}
-
-	/**
-	 * Gets a list of exit commands (<code>Strings</code>) that can be used to exit the command line interface.
-	 *
-	 * @return A set of exit commands as strings.
-	 */
-	public static Set getExitCommands() {
-		return exitCommands;
-	}
-
 }

@@ -164,32 +164,14 @@ public class CLI {
           lastLine = line;
         }
 
-        // Check if the user wants to exit
-        //
-        if (ConsoleConfiguration.getExitCommands().contains(line.trim().toUpperCase())) {
-          break;
-        }
-
         try {
-
-          // Filter out the HELP command
-          //
-          if (line.trim().toLowerCase().startsWith("help") || line.trim().startsWith("?")) {
-
-            writer.writeln("\n\n" + FRONTEND_MESSAGES.getString("message.VALID_COMMANDS"));
-            writer.writeln(CommandRenderer.renderedCommands(CommandFactory.getInstance().getCommands()));
-
-          } else {
-            ctx.execute(line);
-          }
+					ctx.execute(line);
         } catch (CommandException e) {
           writer.writeln("");
           writer.writeln(e.getErrorMessage());
           logger.error(e.getMessage(), e);
         }
       }
-
-      System.exit(0);
     }
     catch (IOException e) {
       logger.error(e.getMessage(), e);
