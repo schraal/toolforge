@@ -3,6 +3,7 @@
 @REM Windows batch file, so we support Windows as well
 @REM
 @REM Thanks to Age Mooy (amooy@wisdom.nl)
+@REM Fixed by Chris Spelberg (c.spelberg@toolforge.nl)
 @REM
 @REM $Id$
 @REM =================================================
@@ -59,9 +60,9 @@ goto end
 SET KARMA_JAVACMD="%JAVA_HOME%\bin\java.exe"
 SET KARMA_LOGLEVEL=INFO
 SET KARMA_CLASSPATH="%KARMA_HOME%\resources;%KARMA_HOME%\lib\;%KARMA_HOME%\lib\plugins\;%JAVA_HOME%\lib\tools.jar"
-SET KARMA_LAUNCHER_JAR=%KARMA_HOME%\lib\karma-launcher*.jar
+SET KARMA_LAUNCHER_JAR=%KARMA_HOME%\lib\karma-launcher.jar
 
-%KARMA_JAVACMD% -cp %KARMA_LAUNCHER_JAR% -DKARMA_CLASSPATH=%KARMA_CLASSPATH% -Dkarma.home=%KARMA_HOME% -Dloglevel=%KARMA_LOGLEVEL% nl.toolforge.karma.launcher.KarmaLauncher nl.toolforge.karma.cli.FireAway %*
+%KARMA_JAVACMD% -cp "%KARMA_LAUNCHER_JAR%" -DKARMA_CLASSPATH=%KARMA_CLASSPATH% -Dkarma.home="%KARMA_HOME%" -Dloglevel=%KARMA_LOGLEVEL% nl.toolforge.karma.launcher.KarmaLauncher nl.toolforge.karma.cli.FireAway %*
 goto end
 
 :end
