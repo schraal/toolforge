@@ -294,7 +294,7 @@ public abstract class BaseModule implements Module {
     try {
       FileUtils.deleteDirectory(tmpDir);
     } catch (IOException e) {
-      logger.error("Could not remove temporary directory.", e);
+      logger.warn("Could not remove temporary directory. It is probably still locked by the OS.");
     }
   }
 
