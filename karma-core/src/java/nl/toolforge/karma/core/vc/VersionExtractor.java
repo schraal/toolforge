@@ -12,8 +12,7 @@ import nl.toolforge.karma.core.vc.cvs.CVSException;
  * write his own extractor based on the naming scheme applicable for the organization.
  *
  * @author D.A. Smedes
- * @version $Id:
- * @since 2.0
+ * @version $Id$
  */
 public interface VersionExtractor {
 

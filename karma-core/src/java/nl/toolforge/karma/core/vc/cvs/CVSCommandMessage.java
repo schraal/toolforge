@@ -7,7 +7,7 @@ import nl.toolforge.karma.core.cmd.AbstractCommandMessage;
  *
  *
  * @author D.A. Smedes
- * @version $Id:
+ * @version $Id$
  *
  * @deprecated Use direct subclasses of <code>AbstractCommandMessage</code> instead.
  */

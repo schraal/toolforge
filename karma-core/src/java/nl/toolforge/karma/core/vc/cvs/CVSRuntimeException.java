@@ -14,8 +14,7 @@ import nl.toolforge.karma.core.exception.ErrorCode;
  * to determine if we threw a <code>CVSRuntimeException</code>. Works fine ...
  *
  * @author D.A. Smedes
- *
- * @version $Id:
+ * @version $Id$
  */
 final class CVSRuntimeException extends RuntimeException {
 

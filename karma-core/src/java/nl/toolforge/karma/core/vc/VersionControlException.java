@@ -7,7 +7,7 @@ import nl.toolforge.karma.core.exception.ErrorCode;
  * Root exception for stuff relating to version control system functionality.
  *
  * @author D.A. Smedes
- * @version $Id:
+ * @version $Id$
  */
 public abstract class VersionControlException extends KarmaException {
 

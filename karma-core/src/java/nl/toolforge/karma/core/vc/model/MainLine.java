@@ -5,7 +5,7 @@ package nl.toolforge.karma.core.vc.model;
  * principles, a <code>MainLine</code> is the home branch for development.
  *
  * @author D.A. Smedes
- * @version $Id:
+ * @version $Id$
  */
 public interface MainLine {
 

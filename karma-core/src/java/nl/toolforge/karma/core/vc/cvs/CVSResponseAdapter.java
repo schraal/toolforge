@@ -21,10 +21,8 @@ import org.netbeans.lib.cvsclient.event.TerminationEvent;
  * Success messages are sent to the <code>CommandResponse</code> instance (which can optionally be registered with this
  * instance). Errors are thrown as CVSRuntimeExceptions
  *
-// * @see #getErrorResponse
- *
  * @author D.A. Smedes
- * @version $Id:
+ * @version $Id$
  */
 public final class CVSResponseAdapter implements CVSListener {
 

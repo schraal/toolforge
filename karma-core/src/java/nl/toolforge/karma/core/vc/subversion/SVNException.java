@@ -7,7 +7,7 @@ import nl.toolforge.karma.core.vc.VersionControlException;
  * Exceptions related to CVS stuff.
  *
  * @author D.A. Smedes
- * @version $Id:
+ * @version $Id$
  */
 public class SVNException extends VersionControlException {
 

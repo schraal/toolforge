@@ -7,7 +7,7 @@ import nl.toolforge.karma.core.vc.Revision;
  * a revision between Subversion and CVS. See {@link nl.toolforge.karma.core.vc.cvs.CVSRevision}.
  *
  * @author D.A. Smedes
- * @version $Id:
+ * @version $Id$
  */
 public class SubversionRevision implements Revision {
 }

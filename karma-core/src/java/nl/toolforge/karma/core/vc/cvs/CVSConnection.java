@@ -10,7 +10,7 @@ import org.apache.commons.logging.LogFactory;
  * <code>org.netbeans.lib.cvsclient.connection.PServerConnection</code>s.
  *
  * @author D.A. Smedes
- * @version $Id:
+ * @version $Id$
  */
 public final class CVSConnection {
 

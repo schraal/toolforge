@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 
 /**
  * @author D.A. Smedes
- * @version $Id:
+ * @version $Id$
  */
 public final class CVSVersionExtractor implements VersionExtractor {
 
