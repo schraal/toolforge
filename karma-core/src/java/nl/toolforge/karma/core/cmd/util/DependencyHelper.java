@@ -18,7 +18,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.util;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import net.sf.sillyexceptions.OutOfTheBlueException;
+
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.manifest.Manifest;
@@ -28,14 +37,6 @@ import nl.toolforge.karma.core.module.ModuleTypeException;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvsimpl.Utils;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 /**
  * Dependency management is heavily used by Karma. This helper class provides methods to resolve dependencies, check
@@ -67,24 +68,32 @@ public final class DependencyHelper {
    */
   public String getClassPath(Module module) throws ModuleTypeException, DependencyException {
 
-    Set deps = getAllDependencies(module, false);
+    Set deps = getAllDependencies(module, false, false);
     return DependencyPath.concat(deps, false, ';');
-
   }
 
   /**
-   * classpath required for testing.
-   *
-   * @param module
-   * @return
+   * Returns the classpath for <code>module</code>, or an empty <code>String</code> if no dependencies exist.
+   * <p>
+   * The classpath consists of:
+   * <ul>
+   *   <li>The classes of the module's dependencies.
+   *   <li>The resources of the module's dependencies.
+   *   <li>The test classes of the module's dependencies.
+   *   <li>The test resources of the module's dependencies.
+   * </ul>
+   * @param module The module for which the test classpath should be determined.
+   * @return See method description.
    */
-  public String getTestClassPath(Module module) {
-    return null;
+  public String getTestClassPath(Module module) throws ModuleTypeException, DependencyException {
+
+    Set deps = getAllDependencies(module, true, false);
+    return DependencyPath.concat(deps, false, ';');
   }
 
-  public Set getAllDependencies(Module module, boolean doPackage) throws ModuleTypeException, DependencyException {
+  public Set getAllDependencies(Module module, boolean doTest, boolean doPackage) throws ModuleTypeException, DependencyException {
     Set all = new LinkedHashSet();
-    all.addAll(getModuleDependencies(module, doPackage));
+    all.addAll(getModuleDependencies(module, doTest, doPackage));
     all.addAll(getJarDependencies(module, doPackage));
     return all;
   }
@@ -94,13 +103,14 @@ public final class DependencyHelper {
    * dependency of <code>module</code> to another <code>Module</code>).
    *
    * @param module      The module for which a dependency-path should be determined.
+   * @param doTest      Whether to include test resources for all deps.
    * @param doPackage   Whether to include only the deps that are to be packaged or all deps.
    * @param moduleType  Only return modules of the specified type. Return all types when null.
    *
    * @return See method description.
    * @throws DependencyException  When a dependency for a module is not available.
    */
-  public Set getModuleDependencies(Module module, boolean doPackage, Module.Type moduleType) throws ModuleTypeException, DependencyException {
+  public Set getModuleDependencies(Module module, boolean doTest, boolean doPackage, Module.Type moduleType) throws ModuleTypeException, DependencyException {
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
     }
@@ -117,20 +127,48 @@ public final class DependencyHelper {
 
           //when packaging we want to have the archive
           //when we are not packaging, i.e. building or testing, then we want the classes.
+          //todo: refactor the code below to minimize duplicate code.
           if (doPackage) {
             path = new DependencyPath(manifest.getBuildBaseDirectory(), new File(dep.getModule(), resolveArchiveName(depModule)));
+            if (!path.exists()) {
+              throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getModule()});
+            }
+            if ((!doPackage || dep.doPackage()) &&
+                (moduleType == null || moduleType.equals(depModule.getType())) ) {
+              s.add(path);
+            }
           } else {
-//todo: in case of tests we need the resources as well.
+            Set subSet = getModuleDependencies(depModule, doTest, doPackage, moduleType);
             path = new DependencyPath(manifest.getBuildBaseDirectory(), new File(dep.getModule(), "build"));
-          }
-          System.out.println(path);
-          System.out.println(path.exists());
-          if (!path.exists()) {
-            throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getModule()});
-          }
-          if ((!doPackage || dep.doPackage()) &&
-              (moduleType == null || moduleType.equals(depModule.getType())) ) {
-            s.add(path);
+            if (!path.exists()) {
+              throw new DependencyException(DependencyException.DEPENDENCY_NOT_FOUND, new Object[]{dep.getModule()});
+            }
+            if ((!doPackage || dep.doPackage()) &&
+                (moduleType == null || moduleType.equals(depModule.getType())) ) {
+              subSet.add(path);
+            }
+            if (doTest) {
+              //todo: in case of tests we need the resources as well.
+              //In case of a test dependency the test classes are needed, as well as
+              //the resources for running the tests.
+              //for the time being only do this for the java source modules.
+              path = new DependencyPath(manifest.getBuildBaseDirectory(), new File(dep.getModule(), "test/classes"));
+              if (moduleType == null || moduleType.equals(depModule.getType()) ) {
+                subSet.add(path);
+              }
+              if (moduleType != null && moduleType.equals(depModule.getType()) &&
+                      moduleType.equals(Module.JAVA_SOURCE_MODULE)) {
+                path = new DependencyPath(manifest.getBaseDirectory(), new File(module.getBaseDir().getPath(), "src/resources"));
+                if (path.exists()) {
+                  subSet.add(path);
+                }
+                path = new DependencyPath(manifest.getBaseDirectory(), new File(module.getBaseDir().getPath(), "test/resources"));
+                if (path.exists()) {
+                  subSet.add(path);
+                }
+              }
+            }
+            s.addAll(subSet);
           }
         } catch (ManifestException me) {
           if (me.getErrorCode().equals(ManifestException.MODULE_NOT_FOUND)) {
@@ -149,13 +187,14 @@ public final class DependencyHelper {
    * dependency of <code>module</code> to another <code>Module</code>).
    *
    * @param module     The module for which a dependency-path should be determined.
+   * @param doTest     Whether to include test resources for all deps.
    * @param doPackage  Whether to include only the deps that are to be packaged or all deps.
    *
    * @return See method description.
    * @throws DependencyException  When a dependency for a module is not available.
    */
-  public Set getModuleDependencies(Module module, boolean doPackage) throws ModuleTypeException, DependencyException {
-    return getModuleDependencies(module, doPackage, null);
+  public Set getModuleDependencies(Module module, boolean doTest, boolean doPackage) throws ModuleTypeException, DependencyException {
+    return getModuleDependencies(module, doTest, doPackage, null);
   }
 
   /**

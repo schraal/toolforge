@@ -89,7 +89,7 @@ public class PackageModule extends AbstractBuildCommand {
       boolean dependenciesChecked = false;
       while (!dependenciesChecked) {
         try {
-          helper.getModuleDependencies(getCurrentModule(), true);
+          helper.getModuleDependencies(getCurrentModule(), false, true);
           dependenciesChecked = true;
         } catch (DependencyException de) {
           if (de.getErrorCode().equals(DependencyException.DEPENDENCY_NOT_FOUND)) {
@@ -436,7 +436,7 @@ public class PackageModule extends AbstractBuildCommand {
       // Copy dependencies, but only those that need to be packaged
       //
 
-      Set deps = helper.getAllDependencies(getCurrentModule(), true);
+      Set deps = helper.getAllDependencies(getCurrentModule(),false, true);
       if (!deps.isEmpty()) {
 
         copy = (Copy) project.createTask("copy");
@@ -564,7 +564,7 @@ public class PackageModule extends AbstractBuildCommand {
 
       //copy the module dependencies from the application.xml
       commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Copying module dependencies")));
-      Set moduleDeps = helper.getModuleDependencies(getCurrentModule(), true);
+      Set moduleDeps = helper.getModuleDependencies(getCurrentModule(), false, true);
       if (!moduleDeps.isEmpty()) {
         Copy copy = (Copy) project.createTask("copy");
         copy.setProject(getProjectInstance());

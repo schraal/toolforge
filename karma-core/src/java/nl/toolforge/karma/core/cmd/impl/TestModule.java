@@ -18,6 +18,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
+import java.io.File;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.Project;
+
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
@@ -30,13 +38,6 @@ import nl.toolforge.karma.core.cmd.event.SimpleMessage;
 import nl.toolforge.karma.core.cmd.util.DependencyException;
 import nl.toolforge.karma.core.cmd.util.DependencyHelper;
 import nl.toolforge.karma.core.module.ModuleTypeException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.DirectoryScanner;
-import org.apache.tools.ant.Project;
-
-import java.io.File;
 
 /**
  * Run the unit tests of a given module.
@@ -126,14 +127,12 @@ public class TestModule extends AbstractBuildCommand {
       logger.debug("Setting 'module-compile-dir' to: "+getCompileDirectory().getPath());
       project.setProperty("module-compile-dir", getCompileDirectory().getPath());
 
-      // todo should be replaced by call to DependencyHelper.getTestClassPath()
-
       String deps = "";
 
       DependencyHelper helper = new DependencyHelper(getCurrentManifest());
 
       if (getCurrentModule().getDependencies().size() > 0) {
-        deps = helper.getClassPath(getCurrentModule()) + ";";
+        deps = helper.getTestClassPath(getCurrentModule()) + ";";
       }
 
       File f = getCurrentManifest().getBuildBaseDirectory();
@@ -141,10 +140,8 @@ public class TestModule extends AbstractBuildCommand {
       f = new File(f, "build");
 
       deps += f.getPath();
-
       logger.debug("Setting 'module-classpath' to: "+deps);
       project.setProperty("module-classpath", deps);
-
     } catch (DependencyException d) {
       throw new CommandException(d.getErrorCode(), d.getMessageArguments());
     } catch (ModuleTypeException d) {
