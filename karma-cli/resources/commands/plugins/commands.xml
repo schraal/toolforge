@@ -4,6 +4,19 @@
 
 <commands>
 
+
+  <command name="view-working-contexts" alias="vwc">
+    <description lang="en">Shows all working contexts.</description>
+
+    <classname>nl.toolforge.karma.cli.cmd.ViewWorkingContextsImpl</classname>
+
+    <help lang="en">
+      Shows all working contexts.
+    </help>
+
+  </command>
+
+
   <command name="set-working-context" alias="sw">
 
     <description lang="en">Sets or changes the current working context.</description>

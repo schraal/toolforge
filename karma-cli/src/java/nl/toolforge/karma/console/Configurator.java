@@ -121,37 +121,51 @@ final class Configurator {
         return;
       }
 
-      try {
-
-        if (CVSRepository.PSERVER.equals(cvs.getProtocol())) {
+      if (CVSRepository.PSERVER.equals(cvs.getProtocol())) {
+        try {
           cvs.connect();
 
           ctx.getConfiguration().setManifestStore(cvs);
 
           ok = true;
           break;
-        } else {
-          try {
-            cvs.getCVSRoot();
 
-            // Connection data seems to be ok, nevertheless, we'll ask the user to accept it.
-            //
+        } catch (LocationException e) {
+
+          String cvsRoot = null;
+          try {
+            cvsRoot = cvs.getCVSRoot();
+          } catch (CVSException e1) {
+            cvsRoot = "invalid CVSROOT";
+          }
+
+          writeln("[ console ] Could not connect to manifest store (`" + cvsRoot + "`).");
+//          writeln("[ console ] Manifest store configuration invalid. " + e.getMessage());
+          retries++;
+        }
+      } else {
+        try {
+          String cvsRoot = cvs.getCVSRoot();
+
+          // Connection data seems to be ok, nevertheless, we'll ask the user to accept it.
+          //
 //            write("[ console ] CVSROOT for the manifest store is : '" + cvsRoot + "'. Accept ? [Y|N] (Y) : ");
 //            String check = reader.readLine().toUpperCase();
 //            if ("Y".equals(check)) {
-              // If the above succeeds we are through, otherwise, we ask the user for configuration.
-              //
-              ctx.getConfiguration().setManifestStore(cvs);
+          // If the above succeeds we are through, otherwise, we ask the user for configuration.
+          //
+          ctx.getConfiguration().setManifestStore(cvs);
 
-              ok = true;
-              break;
+          ok = true;
+          break;
 //            }
-          } catch (CVSException e) {}
+        } catch (CVSException e) {
+          writeln("[ console ] Invalid CVSROOT.");
+//          writeln("[ console ] Manifest store configuration invalid. " + e.getMessage());
+          retries++;
         }
-      } catch (LocationException e) {
-        writeln("[ console ] Manifest store configuration invalid. " + e.getMessage());
-        retries++;
       }
+
 
       if (retries != 0) {
         writeln("\n[ console ] Try again ...");

@@ -138,10 +138,15 @@ public class CVSModuleStatus implements ModuleStatus {
       Entry[] entries = handler.getEntriesAsArray(module.getBaseDir());
 
       Entry moduleDescriptor = null;
-      for (int i = 0; i < entries.length; i++) {
+
+      int i = 0;
+      while (i < entries.length) {
+//      for (int i = 0; i < entries.length; i++) {
         if (entries[i].getName().equals(Module.MODULE_DESCRIPTOR)) {
           moduleDescriptor = entries[i];
+          break;
         }
+        i++;
       }
       try {
 

@@ -21,7 +21,6 @@
 
   </command>
 
-
   <command name="authenticate" alias="auth passwd">
     <description lang="en">Create or changes an authenticator entry in `authenticators.xml` for a location.</description>
 

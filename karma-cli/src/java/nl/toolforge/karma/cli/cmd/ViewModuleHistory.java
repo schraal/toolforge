@@ -72,6 +72,9 @@ public class ViewModuleHistory extends DefaultCommand {
       throw new CommandException(e.getErrorCode(),e.getMessageArguments());
     }
 
+    if (!getContext().getCurrentManifest().isLocal(module)) {
+      throw new CommandException(CommandException.MODULE_NOT_LOCAL, new Object[]{module.getName()});      
+    }
 
     ModuleHistoryFactory factory =
         ModuleHistoryFactory.getInstance(getContext().getCurrentManifest().getBaseDirectory());

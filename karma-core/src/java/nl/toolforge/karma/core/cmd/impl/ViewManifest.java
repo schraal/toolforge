@@ -105,6 +105,7 @@ public class ViewManifest extends DefaultCommand {
           try {
             moduleData[1] = module.getType().getShortType();
           } catch (ModuleTypeException e) {
+            logger.error(e);
             moduleData[1] = Module.UNKNOWN.getType();
           } 
         }

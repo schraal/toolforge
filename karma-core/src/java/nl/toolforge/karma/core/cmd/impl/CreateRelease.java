@@ -117,7 +117,7 @@ public class CreateRelease extends CompositeCommand {
     //
 
     ParallelRunner runner = new ParallelRunner(releaseManifest, CVSLogThread.class);
-    runner.execute(25); // Blocks ...
+    runner.execute(100); // Blocks ...
 
     Map statusOverview = runner.retrieveResults();
 

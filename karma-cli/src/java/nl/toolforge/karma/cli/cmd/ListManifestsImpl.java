@@ -44,8 +44,7 @@ import java.util.Set;
  */
 public class ListManifestsImpl extends ListManifests {
 
-//  CommandResponse commandResponse = new QueryCommandResponse();
-  private CommandResponse commandResponse = new CommandResponse();
+  private CommandResponse response = new CommandResponse();
 
   public ListManifestsImpl(CommandDescriptor descriptor) throws ManifestException {
     super(descriptor);
@@ -54,8 +53,6 @@ public class ListManifestsImpl extends ListManifests {
   public void execute() throws CommandException {
 
     super.execute();
-
-    CommandResponse response = getCommandResponse();
 
     Set headers = getHeaders();
 
@@ -103,10 +100,7 @@ public class ListManifestsImpl extends ListManifests {
 
       manifestsIterator = manifestList.iterator();
       while (manifestsIterator.hasNext()) {
-
         buffer.append((String) manifestsIterator.next());
-
-//        response.addMessage(new SuccessMessage((String) manifestsIterator.next()));
       }
       response.addEvent(new MessageEvent(this, new SimpleMessage(buffer.toString())));
     }
@@ -114,7 +108,7 @@ public class ListManifestsImpl extends ListManifests {
   }
 
   public CommandResponse getCommandResponse() {
-    return this.commandResponse;
+    return this.response;
   }
 
 }
