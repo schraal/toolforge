@@ -28,6 +28,8 @@ import nl.toolforge.karma.core.test.LocalCVSInitializer;
 import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.AuthenticatorKey;
+import nl.toolforge.karma.core.vc.Authenticators;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,8 +48,10 @@ public class TestModuleCreation extends LocalCVSInitializer {
     File tmp = null;
     try {
 
+      AuthenticatorKey key = getTestLocation().getAuthenticatorKey();
+
       module = new SourceModule("A", getTestLocation());
-      module.createRemote("Unit testing ...");
+      module.createRemote(Authenticators.getAuthenticator(key), "Unit testing ...");
       assertTrue(RunnerFactory.getRunner(getTestLocation()).existsInRepository(module));
 
       RunnerFactory.getRunner(getTestLocation()).checkout(module);
@@ -60,7 +64,7 @@ public class TestModuleCreation extends LocalCVSInitializer {
       }
 
       module = new JavaEnterpriseApplicationModule("B", getTestLocation());
-      module.createRemote("Unit testing ...");
+      module.createRemote(Authenticators.getAuthenticator(key), "Unit testing ...");
       assertTrue(RunnerFactory.getRunner(getTestLocation()).existsInRepository(module));
 
       RunnerFactory.getRunner(getTestLocation()).checkout(module);
@@ -73,7 +77,7 @@ public class TestModuleCreation extends LocalCVSInitializer {
       }
 
       module = new JavaWebApplicationModule("C", getTestLocation());
-      module.createRemote("Unit testing ...");
+      module.createRemote(Authenticators.getAuthenticator(key), "Unit testing ...");
       assertTrue(RunnerFactory.getRunner(getTestLocation()).existsInRepository(module));
 
       RunnerFactory.getRunner(getTestLocation()).checkout(module);
@@ -86,7 +90,7 @@ public class TestModuleCreation extends LocalCVSInitializer {
       }
 
       module = new LibModule("D", getTestLocation());
-      module.createRemote("Unit testing ...");
+      module.createRemote(Authenticators.getAuthenticator(key), "Unit testing ...");
       assertTrue(RunnerFactory.getRunner(getTestLocation()).existsInRepository(module));
 
       RunnerFactory.getRunner(getTestLocation()).checkout(module);
@@ -95,15 +99,16 @@ public class TestModuleCreation extends LocalCVSInitializer {
       try {
         FileUtils.deleteDirectory(module.getCheckoutDir());
       } catch (IOException e) {
-        fail();
+        fail(e.getMessage());
       }
 
     } catch (VersionControlException e) {
-      fail();
+      fail(e.getMessage());
     } catch (ModuleTypeException e) {
-      fail();
+      fail(e.getMessage());
     } catch (AuthenticationException e) {
-      fail();
+      e.printStackTrace();
+      fail(e.getMessage());
     }
   }
 

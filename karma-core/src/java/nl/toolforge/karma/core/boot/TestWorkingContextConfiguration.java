@@ -27,7 +27,7 @@ public class TestWorkingContextConfiguration extends TestCase {
       fail(e.getMessage());
     }
 
-    WorkingContext ctx = new WorkingContext("arjen", tmp);
+    WorkingContext ctx = new WorkingContext("test", tmp);
     WorkingContextConfiguration config = new WorkingContextConfiguration(ctx);
 
     try {

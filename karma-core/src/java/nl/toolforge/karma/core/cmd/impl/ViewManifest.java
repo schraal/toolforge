@@ -82,7 +82,7 @@ public class ViewManifest extends DefaultCommand {
     Collections.sort(sourceModules, new ModuleComparator());
 
     ParallelRunner runner = new ParallelRunner(manifest, CVSLogThread.class);
-    runner.execute(); // Blocks ...
+    runner.execute(100); // Blocks ...
 
     Map statusOverview = runner.retrieveResults();
 

@@ -118,7 +118,7 @@ public final class CVSRunner implements Runner {
 
     //
     //
-    Authenticator a = Authenticators.getAuthenticator(cvsLocation);
+    Authenticator a = Authenticators.getAuthenticator(cvsLocation.getAuthenticatorKey());
     cvsLocation.setUsername(a.getUsername());
 
     connection = ConnectionFactory.getConnection(cvsLocation.getCVSRoot());
@@ -563,7 +563,7 @@ public final class CVSRunner implements Runner {
       client.executeCommand(command, globalOptions);
 
     } catch (CommandException e) {
-      logger.debug(e);
+      logger.error(e.getMessage());
       if (e.getUnderlyingException() instanceof CVSRuntimeException) {
         ErrorCode code = ((CVSRuntimeException) e.getUnderlyingException()).getErrorCode();
         Object[] messageArgs = ((CVSRuntimeException) e.getUnderlyingException()).getMessageArguments();
@@ -572,6 +572,7 @@ public final class CVSRunner implements Runner {
         throw new CVSException(CVSException.INTERNAL_ERROR, new Object[]{globalOptions.getCVSRoot()});
       }
     } catch (AuthenticationException e) {
+      logger.error(e.getMessage());
       throw new CVSException(CVSException.AUTHENTICATION_ERROR, new Object[]{client.getGlobalOptions().getCVSRoot()});
     } finally {
       // See the static block in this class and corresponding documentation.

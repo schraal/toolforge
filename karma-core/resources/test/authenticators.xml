@@ -2,14 +2,14 @@
 
 <authenticators>
 
-  <authenticator id="test-id-1" username="asmedes"/>
-  <authenticator id="test-id-2" username="asmedes"/>
-  <authenticator id="test-id-3" username="asmedes"/>
-  <authenticator id="test-id-4" username="asmedes"/>
-  <authenticator id="test-id-5" username="asmedes"/>
-  <authenticator id="test-id-6" username="asmedes"/>
+  <authenticator working-context="test" id="test-id-1" username="asmedes"/>
+  <authenticator working-context="test" id="test-id-2" username="asmedes"/>
+  <authenticator working-context="test" id="test-id-3" username="asmedes"/>
+  <authenticator working-context="test" id="test-id-4" username="asmedes"/>
+  <authenticator working-context="test" id="test-id-5" username="asmedes"/>
+  <authenticator working-context="test" id="test-id-6" username="asmedes"/>
 
-  <authenticator id="manifest-store" username="asmedes" password="brabble"/>
-  <authenticator id="location-store" username="asmedes" password="brabble"/>
+  <authenticator working-context="test" id="manifest-store" username="asmedes" password="brabble"/>
+  <authenticator working-context="test" id="location-store" username="asmedes" password="brabble"/>
 
 </authenticators>

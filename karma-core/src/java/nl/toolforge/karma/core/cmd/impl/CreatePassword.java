@@ -27,15 +27,11 @@ import nl.toolforge.karma.core.cmd.event.MessageEvent;
 import nl.toolforge.karma.core.cmd.event.SimpleMessage;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.PasswordScrambler;
-import nl.toolforge.karma.core.location.LocationLoader;
-import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.location.LocationFactory;
 import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.Authenticator;
+import nl.toolforge.karma.core.vc.AuthenticatorKey;
 import nl.toolforge.karma.core.vc.Authenticators;
 import nl.toolforge.karma.core.vc.VersionControlSystem;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Creates or changes authentication information for a location.
@@ -44,8 +40,6 @@ import org.apache.commons.logging.LogFactory;
  * @version $Id$
  */
 public class CreatePassword extends DefaultCommand {
-
-  private static Log logger = LogFactory.getLog(CreatePassword.class);
 
   protected CommandResponse response = new CommandResponse();
 
@@ -79,7 +73,7 @@ public class CreatePassword extends DefaultCommand {
     boolean changed = false;
     Authenticator authenticator = null;
     try {
-      authenticator = Authenticators.getAuthenticator(location);
+      authenticator = Authenticators.getAuthenticator(new AuthenticatorKey(getWorkingContext().getName(), location.getId()));
       changed = true;
     } catch (AuthenticationException e) {
 
@@ -93,7 +87,7 @@ public class CreatePassword extends DefaultCommand {
       // Only password change.
       //
       try {
-        Authenticators.changePassword(location, password);
+        Authenticators.changePassword(new AuthenticatorKey(getWorkingContext().getName(), location.getId()), password);
       } catch (AuthenticationException e) {
         throw new OutOfTheBlueException("Impossible, we have just checked the location. It should be there.");
       }
@@ -109,6 +103,7 @@ public class CreatePassword extends DefaultCommand {
       }
 
       authenticator = new Authenticator(locationAlias);
+      authenticator.setWorkingContext(getWorkingContext().getName());
       authenticator.setUsername(username);
       authenticator.setPassword(PasswordScrambler.scramble(password));
 

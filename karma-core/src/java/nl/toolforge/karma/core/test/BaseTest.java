@@ -124,10 +124,10 @@ public class BaseTest extends TestCase {
     return this.getClass().getClassLoader();
   }
 
-  /**
-   * When this class is run (it is a test class), it won't bother you with 'no tests found'.
-   */
-  public void testNothing() {
-    assertTrue(true);
-  }
+//  /**
+//   * When this class is run (it is a test class), it won't bother you with 'no tests found'.
+//   */
+//  public void testNothing() {
+//    assertTrue(true);
+//  }
 }

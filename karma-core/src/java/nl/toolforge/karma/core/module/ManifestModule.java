@@ -5,6 +5,9 @@ import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
+import nl.toolforge.karma.core.vc.Authenticator;
+import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.AuthenticationException;
 
 import java.util.Set;
 
@@ -25,7 +28,9 @@ public class ManifestModule extends AdminModule {
     throw new KarmaRuntimeException("To be implemented ...");
   }
 
+  public void createRemote(Authenticator authenticator, String createComment) throws VersionControlException, AuthenticationException {
 
+  }
 
 
 

@@ -114,6 +114,8 @@ public class LocalCVSInitializer extends BaseTest {
       location.setProtocol(CVSRepository.LOCAL);
       location.setRepository(localCVSRepository.getPath());
 
+      location.setWorkingContext(getWorkingContext());
+
     } catch (Exception e) {
       throw new InitializationException("Local CVS repository could not be initialized. Trying to initialize repository at : ".concat(localPath));
     }

@@ -95,6 +95,10 @@ public class UpdateAllModulesCommand extends CompositeCommand {
       clone.setContext(getContext());
 
       threads[j] = new ParallelCommandWrapper(clone, getResponseListener());
+      try {
+        Thread.currentThread().sleep(25);
+      } catch (InterruptedException iex) {
+      }
       threads[j].start();
       j++;
     }

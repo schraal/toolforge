@@ -20,6 +20,8 @@ package nl.toolforge.karma.core.location;
 
 import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.AuthenticatorKey;
+import nl.toolforge.karma.core.boot.WorkingContext;
 
 import java.text.MessageFormat;
 
@@ -68,5 +70,9 @@ public interface Location {
    *
    * @throws LocationException When connection failed. The ErrorCode will tell the reason.
    */
-  void connect() throws LocationException;
+  public void connect() throws LocationException;
+
+  public void setWorkingContext(WorkingContext workingContext);
+
+  public AuthenticatorKey getAuthenticatorKey();
 }

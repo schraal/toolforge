@@ -161,6 +161,7 @@ public final class WorkingContextConfiguration {
 
       if ("manifest-store".equals(location.getId())) {
         manifestStore = location;
+        manifestStore.setWorkingContext(workingContext);
 
         try {
           manifestStore.connect();
@@ -170,6 +171,7 @@ public final class WorkingContextConfiguration {
 
       } else if ("location-store".equals(location.getId())) {
         locationStore = location;
+        locationStore.setWorkingContext(workingContext);
 
         try {
           locationStore.connect();

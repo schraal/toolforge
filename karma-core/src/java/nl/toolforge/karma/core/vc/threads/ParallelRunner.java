@@ -45,10 +45,11 @@ public class ParallelRunner {
   private Class impl = null;
 
   /**
-   * Initializes this <code>ParallelRunner</code> with the correct <code>Manifest</code>.
+   * Initializes this <code>ParallelRunner</code> with the correct <code>Manifest</code>. Call {@link #execute()} or
+   * {@link #execute(int, long)} to start all threads.
    *
-   * @param manifest The manifest.
-   * @param threadClass 
+   * @param manifest    The manifest.
+   * @param threadClass A Class instance, extending {@link Thread}.
    */
   public ParallelRunner(Manifest manifest, Class threadClass) {
     this.manifest = manifest;
@@ -56,11 +57,43 @@ public class ParallelRunner {
   }
 
   /**
+   * Starts all threads, and processes the results. Results can be retrieved by calling {@link #retrieveResults}.
    *
+   * @param delayInMilliseconds  The delay in milliseconds between the start of each thread.
+   */
+  public void execute(long delayInMilliseconds) {
+    execute(0, delayInMilliseconds);
+  }
+
+
+  /**
+   * Starts all threads, and processes the results. Results can be retrieved by calling {@link #retrieveResults}. Note
+   * that no restriction is imposed on the amount of threads, and they are started as soon as possible.
+   *
+   * @see #execute(long)
+   * @see #execute(int, long)
    */
   public void execute() {
+    execute(0,0);
+  }
+
+
+  /**
+   * Starts all threads, and processes the results. Results can be retrieved by calling {@link #retrieveResults}.
+   *
+   * @param blockSize            Determines the amount of threads that will be started in one block, with a delay of
+   *                             <code>delayInMilliseconds</code>. If all threads should be started as one block, a
+   *                             negative <code>blockSize</code> should be provided. When a positive blocksize is
+   *                             provided, a default delay of 1000 milliseconds is used between blocks. <b>Note</b>
+   *                             this feature is currently ignored.
+   * @param delayInMilliseconds  The delay in milliseconds between threads in a block (or all threads if
+   *                             <code>blockSize</code> is negative.
+   */
+  public void execute(int blockSize, long delayInMilliseconds) {
 
     // todo abstract should work for all subtypes...
+
+    // todo implement blockSize mechanism
 
     Map modules = manifest.getAllModules();
 
@@ -74,6 +107,7 @@ public class ParallelRunner {
 
     int index = 0;
 
+
     // Start each task in parallel ...
     //
     for (Iterator i = modules.values().iterator(); i.hasNext();) {
@@ -86,11 +120,11 @@ public class ParallelRunner {
       }
 
       threads[index].start();
-//      try {
-//        Thread.sleep(50);
-//      } catch (InterruptedException e) {
-//        //
-//      }
+      try {
+        Thread.sleep(delayInMilliseconds);
+      } catch (InterruptedException e) {
+        //
+      }
       index++;
     }
 
@@ -105,15 +139,17 @@ public class ParallelRunner {
     }
   }
 
+
   private void addResult(Module module, RunnerResult result) {
     results.put(module, result);
   }
+
 
   /**
    * Returns a map of {@link nl.toolforge.karma.core.vc.ModuleStatus} objects, each accessible by the the corresponding
    * {@link nl.toolforge.karma.core.manifest.Module} instance.
    *
-   * @return
+   * @return A map, containing {@link nl.toolforge.karma.core.vc.ModuleStatus} objects.
    */
   public Map retrieveResults() {
     return results;

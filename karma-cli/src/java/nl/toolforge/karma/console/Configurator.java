@@ -3,21 +3,18 @@ package nl.toolforge.karma.console;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.PasswordScrambler;
-import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.Authenticator;
+import nl.toolforge.karma.core.vc.AuthenticatorKey;
 import nl.toolforge.karma.core.vc.Authenticators;
 import nl.toolforge.karma.core.vc.VersionControlSystem;
-import nl.toolforge.karma.core.vc.cvsimpl.CVSRepository;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSException;
-import org.apache.commons.lang.StringUtils;
+import nl.toolforge.karma.core.vc.cvsimpl.CVSRepository;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Configures a WorkingContext and writes the configuration to <code>working-context.xml</code>.
@@ -111,6 +108,8 @@ final class Configurator {
       cvs = new CVSRepository("manifest-store");
     }
 
+    cvs.setWorkingContext(ctx);
+
     // todo to be extended. CVS only for now.
 
     int retries = 0;
@@ -135,13 +134,18 @@ final class Configurator {
           try {
             cvs.getCVSRoot();
 
-            // If the above succeeds ...
+            // Connection data seems to be ok, nevertheless, we'll ask the user to accept it.
             //
-            ctx.getConfiguration().setManifestStore(cvs);
+//            write("[ console ] CVSROOT for the manifest store is : '" + cvsRoot + "'. Accept ? [Y|N] (Y) : ");
+//            String check = reader.readLine().toUpperCase();
+//            if ("Y".equals(check)) {
+              // If the above succeeds we are through, otherwise, we ask the user for configuration.
+              //
+              ctx.getConfiguration().setManifestStore(cvs);
 
-            ok = true;
-            break;
-
+              ok = true;
+              break;
+//            }
           } catch (CVSException e) {}
         }
       } catch (LocationException e) {
@@ -224,7 +228,7 @@ final class Configurator {
       }
       ctx.getConfiguration().setProperty(WorkingContext.MANIFEST_STORE_MODULE, manifestStoreModule);
 
-      checkAuthentication(cvs);
+      checkAuthentication(ctx, cvs);
 
     }
   }
@@ -249,6 +253,8 @@ final class Configurator {
       write("[ console ] Sorry, only CVS is supported in this release.");
       cvs = new CVSRepository("location-store");
     }
+
+    cvs.setWorkingContext(ctx);
 
     // todo to be extended. CVS only for now.
 
@@ -363,21 +369,22 @@ final class Configurator {
       }
       ctx.getConfiguration().setProperty(WorkingContext.LOCATION_STORE_MODULE, locationStoreModule);
 
-      checkAuthentication(cvs);
+      checkAuthentication(ctx, cvs);
     }
   }
 
-  private void checkAuthentication(VersionControlSystem cvs) throws IOException {
+  private void checkAuthentication(WorkingContext ctx, VersionControlSystem cvs) throws IOException {
 
     BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
     Authenticator authenticator = null;
     try {
-      authenticator = Authenticators.getAuthenticator(cvs);
+      authenticator = Authenticators.getAuthenticator(new AuthenticatorKey(ctx.getName(), cvs.getId()));
     } catch (AuthenticationException e) {
       authenticator = new Authenticator();
     }
 
+    authenticator.setWorkingContext(ctx.getName());
     authenticator.setId(cvs.getId());
 
     String userNameString = (authenticator.getUsername() == null ? "" : "(" + authenticator.getUsername() + ")");

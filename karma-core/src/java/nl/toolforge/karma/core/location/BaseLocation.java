@@ -18,6 +18,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.location;
 
+import nl.toolforge.karma.core.boot.WorkingContext;
+import nl.toolforge.karma.core.vc.AuthenticatorKey;
+
 /**
  * <code>BaseLocation</code> implements some generic <code>Location</code> functionality.
  *
@@ -28,6 +31,7 @@ public abstract class BaseLocation implements Location {
 
   private String id = null;
   private LocationType type = null;
+  private WorkingContext workingContext = null;
 
   /**
    * Constructs a <code>Location</code> skeleton.
@@ -67,5 +71,13 @@ public abstract class BaseLocation implements Location {
 
   public int hashCode() {
     return getId().hashCode();
+  }
+
+  public final void setWorkingContext(WorkingContext workingContext) {
+    this.workingContext = workingContext;
+  }
+
+  public AuthenticatorKey getAuthenticatorKey() {
+    return new AuthenticatorKey(workingContext.getName(), getId());
   }
 }

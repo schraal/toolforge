@@ -30,6 +30,8 @@ import nl.toolforge.karma.core.manifest.ModuleDigester;
 import nl.toolforge.karma.core.manifest.ModuleFactory;
 import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.AuthenticatorKey;
+import nl.toolforge.karma.core.vc.Authenticators;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -95,7 +97,8 @@ public class CreateModuleCommand extends DefaultCommand {
 
     try {
 
-      module.createRemote(comment);
+      AuthenticatorKey key = new AuthenticatorKey(getWorkingContext().getName(), module.getLocation().getId());
+      module.createRemote(Authenticators.getAuthenticator(key), comment);
 
       // Ensure that only this message is passed back to the client
       //
@@ -106,9 +109,8 @@ public class CreateModuleCommand extends DefaultCommand {
       logger.error(e);
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     } catch (AuthenticationException e) {
-      // todo moet anders.
-      logger.error(e.getMessage());
-      // throw new CommandException();
+      logger.error(e);
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
   }
 

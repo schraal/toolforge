@@ -18,6 +18,7 @@ import java.util.*;
  */
 public final class Authenticator {
 
+  private String workingContext = null;
   private String id = null;
   private String username = null;
   private String password = null;
@@ -33,11 +34,30 @@ public final class Authenticator {
     // Empty
   }
 
+  public String getWorkingContext() {
+    return workingContext;
+  }
+
+  public void setWorkingContext(String workingContext) {
+
+    if ("".equals(workingContext) || workingContext == null) {
+      throw new IllegalArgumentException(
+          "The `working-context`-attribute for an authenticator cannot be null or an empty string.");
+    }
+    this.workingContext = workingContext;
+  }
+
   public String getId() {
+
     return id;
   }
 
   public void setId(String id) {
+
+    if ("".equals(id) || id == null) {
+      throw new IllegalArgumentException(
+          "The `id`-attribute for an authenticator cannot be null or an empty string.");
+    }
     this.id = id;
   }
 
@@ -60,5 +80,9 @@ public final class Authenticator {
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  public AuthenticatorKey getAuthenticatorKey() {
+    return new AuthenticatorKey(workingContext, id);
   }
 }

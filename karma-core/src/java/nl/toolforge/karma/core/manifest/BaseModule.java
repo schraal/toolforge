@@ -38,6 +38,7 @@ import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.VersionControlSystem;
 import nl.toolforge.karma.core.vc.Authenticator;
 import nl.toolforge.karma.core.vc.Authenticators;
+import nl.toolforge.karma.core.vc.AuthenticatorKey;
 import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.io.FileUtils;
@@ -226,7 +227,7 @@ public abstract class BaseModule implements Module {
    * @throws VersionControlException
    * @throws AuthenticationException
    */
-  public final void createRemote(String createComment) throws AuthenticationException, VersionControlException {
+  public final void createRemote(Authenticator authenticator, String createComment) throws AuthenticationException, VersionControlException {
 
     // Create the layout and return its location.
     //
@@ -280,7 +281,7 @@ public abstract class BaseModule implements Module {
 
     // Is a requirement.
     //
-    Authenticator a = Authenticators.getAuthenticator((VersionControlSystem)getLocation());
+    Authenticator a = Authenticators.getAuthenticator(authenticator);
 
     event.setAuthor(a.getUsername());
     event.setComment(createComment);

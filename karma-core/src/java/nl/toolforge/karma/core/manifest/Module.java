@@ -28,6 +28,7 @@ import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
 import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.Authenticator;
 
 
 /**
@@ -189,7 +190,7 @@ public interface Module {
    */
   public ModuleLayoutTemplate getLayoutTemplate();
 
-  public void createRemote(String createComment) throws VersionControlException, AuthenticationException ;
+  public void createRemote(Authenticator authenticator, String createComment) throws VersionControlException, AuthenticationException ;
 
   /**
    * Inner class representing the type of the module, which is determined at runtime by reading the

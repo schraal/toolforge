@@ -166,5 +166,9 @@ public final class ErrorCode {
     return (errorCode != null ? errorCode.hashCode() : 0);
   }
 
+  public String toString() {
+    return errorCode;
+  }
+
 }
 

@@ -56,7 +56,7 @@ public class ManifestException extends Exception {
    */
   public static final ErrorCode MANIFEST_LOAD_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00006");
   /**
-   * When the manifest could not be loaded from disk.
+   * If there is no active manifest (none loaded).
    */
   public static final ErrorCode NO_ACTIVE_MANIFEST = new ErrorCode(EXCEPTION_PREFIX + "00007");
   /**

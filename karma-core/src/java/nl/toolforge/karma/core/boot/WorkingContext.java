@@ -148,7 +148,8 @@ public final class WorkingContext {
    * Constructs a <code>WorkingContext</code> in the default configuration base directory. The {@link #init()}-method
    * should be called to configure this working context.
    *
-   * @param workingContext A working context name.
+   * @param workingContext A working context name. If <code>workingContext</code> doesn't match the <code>\w+</code>
+   *                       pattern, {@link DEFAULT} is assumed.
    */
   public WorkingContext(String workingContext) {
     this(workingContext, new File(CONFIGURATION_BASE_DIRECTORY));
@@ -158,13 +159,13 @@ public final class WorkingContext {
    * Constructs a <code>WorkingContext</code> with <code>configBaseDir</code> as the configuration base directory. The
    * {@link #init()}-method should be called to configure this working context.
    *
-   * @param workingContext A working context name. If <code>workingContext</code> is null or an empty String,
-   *                       {@link DEFAULT} is assumed.
+   * @param workingContext A working context name. If <code>workingContext</code> doesn't match the <code>\w+</code>
+   *                       pattern, {@link DEFAULT} is assumed.
    * @param configBaseDir  The configuration base directory. If the directory does not exist, it will be created.
    */
   public WorkingContext(String workingContext, File configBaseDir) {
 
-    if (workingContext == null || "".equals(workingContext)) {
+    if (!workingContext.matches("[\\w\\-]+")) {
       workingContext = DEFAULT;
     }
     this.workingContext = workingContext;

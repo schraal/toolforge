@@ -93,6 +93,8 @@ public final class KarmaConsole {
           String text = FRONTEND_MESSAGES.getString("message.THANK_YOU");
           int length = text.length();
 
+          writeln("\n");
+          
           writeln(FRONTEND_MESSAGES.getString("message.EXIT"));
 
           StringBuffer g = new StringBuffer();
@@ -132,31 +134,40 @@ public final class KarmaConsole {
 
     writeln("[ console ] Loading working context `" + workingContext.getName() + "` ...");
 
-    while (!workingContext.init()) {
+    try {
 
-      BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+      while (!workingContext.init()) {
 
-      String start = "";
-      try {
-        while (!start.matches("n|y")) {
-          write("[ console ] Working context not initialized property, start configurator ? [Y|N] (Y) :");
-          start = (reader.readLine().trim()).toLowerCase();
-          start = ("".equals(start) ? "y" : start);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+        String start = "";
+        try {
+          while (!start.matches("n|y")) {
+            write("[ console ] Working context not initialized property, start configurator ? [Y|N] (Y) :");
+            start = (reader.readLine().trim()).toLowerCase();
+            start = ("".equals(start) ? "y" : start);
+          }
+        } catch (IOException e) {
+          start = "n";
         }
-      } catch (IOException e) {
-        start = "n";
+
+        if ("n".equals(start)) {
+          writeln("[ console ] Configuration incomplete. Cannot start Karma.");
+          writeln("[ console ] Check configuration manually.");
+
+          System.exit(1);
+
+        } else {
+          Configurator configurator = new Configurator();
+          configurator.checkConfiguration(workingContext);
+        }
       }
-
-      if ("n".equals(start)) {
-        writeln("[ console ] Configuration incomplete. Cannot start Karma.");
-        writeln("[ console ] Check configuration manually.");
-
-        System.exit(1);
-
-      } else {
-        Configurator configurator = new Configurator();
-        configurator.checkConfiguration(workingContext);
+    } catch (RuntimeException r) {
+      writeln("\n");
+      if (logger.isDebugEnabled()) {
+        r.printStackTrace();
       }
+      System.exit(1);
     }
 
     writeln("[ console ] Complete ...");
@@ -172,8 +183,7 @@ public final class KarmaConsole {
       commandContext.init(new ConsoleCommandResponseHandler(this), true);
 //      System.out.println("TOTAL STARTUP-TIME: " + (System.currentTimeMillis() - start));
     } catch (CommandException e) {
-//      writeln(e.getMessage());
-      logger.warn(e.getMessage(), e);
+      logger.warn(e.getMessage());
     }
 
     try {
@@ -205,17 +215,17 @@ public final class KarmaConsole {
         try {
           commandContext.execute(line);
         } catch (CommandException e) {
-          logger.error(e.getMessage(), e);
+          logger.error(e.getMessage());
         }
       }
-    }
-    catch (RuntimeException r) {
+    } catch (RuntimeException r) {
+      writeln("\n");
       if (logger.isDebugEnabled()) {
         r.printStackTrace();
       }
       System.exit(1);
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
+      writeln("\n");
       logger.error(e.getMessage(), e);
       System.exit(1);
     }

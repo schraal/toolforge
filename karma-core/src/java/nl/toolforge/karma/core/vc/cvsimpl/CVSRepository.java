@@ -25,6 +25,7 @@ import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.Authenticator;
 import nl.toolforge.karma.core.vc.Authenticators;
 import nl.toolforge.karma.core.vc.VersionControlSystem;
+import nl.toolforge.karma.core.vc.AuthenticatorKey;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.command.CommandAbortedException;
@@ -79,7 +80,7 @@ public class CVSRepository extends VersionControlSystem {
 
     Authenticator authenticator = null;
     try {
-      authenticator = Authenticators.getAuthenticator(this);
+      authenticator = Authenticators.getAuthenticator(this.getAuthenticatorKey());
     } catch (AuthenticationException e) {
       throw new LocationException(e.getErrorCode());
     }
@@ -259,7 +260,7 @@ public class CVSRepository extends VersionControlSystem {
   public String toString() {
 
     try {
-      return getCVSRoot(Authenticators.getAuthenticator(this).getUsername());
+      return getCVSRoot(Authenticators.getAuthenticator(getAuthenticatorKey()).getUsername());
     } catch (CVSException e) {
       return "<invalid-cvsroot>";
     } catch (AuthenticationException e) {

@@ -117,6 +117,8 @@ public final class LocationLoader {
           }
 
           Location location = LocationFactory.getInstance().createLocation(d);
+          location.setWorkingContext(workingContext);
+          
           locations.put(location.getId(), location);
         }
       }

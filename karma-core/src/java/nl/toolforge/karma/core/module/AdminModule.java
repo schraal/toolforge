@@ -2,6 +2,9 @@ package nl.toolforge.karma.core.module;
 
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.vc.VersionControlSystem;
+import nl.toolforge.karma.core.vc.Authenticator;
+import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.manifest.Module;
 
 import java.io.File;
@@ -77,4 +80,6 @@ public abstract class AdminModule implements Module {
   public Location getLocation() {
     return location;
   }
+
+  public abstract void createRemote(Authenticator authenticator, String createComment) throws VersionControlException, AuthenticationException;
 }

@@ -41,9 +41,19 @@ public final class TestWorkingContext extends TestCase {
   }
 
   public void testConstructor() {
-
     WorkingContext ctx = new WorkingContext("blaat", dotKarma);
     assertNotNull(ctx);
+  }
+
+  public void testConstructor2() {
+    WorkingContext ctx = new WorkingContext("bb00*", dotKarma);
+    assertTrue(WorkingContext.DEFAULT.equals(ctx.getName()));
+
+    ctx = new WorkingContext("b", dotKarma);
+    assertFalse(WorkingContext.DEFAULT.equals(ctx.getName()));
+
+    ctx = new WorkingContext("", dotKarma);
+    assertTrue(WorkingContext.DEFAULT.equals(ctx.getName()));
   }
 
   public void testDirectories() {

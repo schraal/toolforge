@@ -38,18 +38,19 @@ public final class Authenticators {
    */
   private Authenticators() {}
 
-  public static synchronized void changePassword(VersionControlSystem location, String newPassword) throws AuthenticationException {
+//  public static synchronized void changePassword(VersionControlSystem location, String newPassword) throws AuthenticationException {
+  public static synchronized void changePassword(AuthenticatorKey key, String newPassword) throws AuthenticationException {
 
-    if (location == null) {
-      throw new IllegalArgumentException("Location cannot be null.");
+    if (key == null) {
+      throw new IllegalArgumentException("Authenticator key cannot be null.");
     }
 
     Map authenticators = getAuthenticators();
 
-    Authenticator authenticator = ((Authenticator) authenticators.get(location.getId()));
+    Authenticator authenticator = ((Authenticator) authenticators.get(key));
 
     if (authenticator == null) {
-      throw new AuthenticationException(AuthenticationException.AUTHENTICATOR_NOT_FOUND, new Object[]{location.getId()});
+      throw new AuthenticationException(AuthenticationException.AUTHENTICATOR_NOT_FOUND, new Object[]{key});
     }
 
     authenticator.setPassword(PasswordScrambler.scramble(newPassword));
@@ -61,30 +62,22 @@ public final class Authenticators {
     }
   }
 
-  /**
-   * <p>Authenticates <code>location</code> against <code>authenticators.xml</code> by updating the location with the
-   * corresponding username.
-   *
-   * @param location A <code>VersionControlSystem</code> instance, that requires authentication.
-   */
-  public static Authenticator getAuthenticator(VersionControlSystem location) throws AuthenticationException {
+  public static Authenticator getAuthenticator(Authenticator authenticator) throws AuthenticationException {
 
-    if (location == null) {
-      throw new IllegalArgumentException("Location cannot be null.");
-    }
-    return getAuthenticator(location.getId());
+    return getAuthenticator(authenticator.getAuthenticatorKey());
   }
 
-  public static Authenticator getAuthenticator(String locationId) throws AuthenticationException {
 
-    if (locationId == null) {
-      throw new IllegalArgumentException("Location id cannot be null.");
+  public static Authenticator getAuthenticator(AuthenticatorKey key) throws AuthenticationException {
+
+    if (key == null) {
+      throw new IllegalArgumentException("Authenticator key cannot be null.");
     }
 
-    Authenticator authenticator = ((Authenticator) getAuthenticators().get(locationId));
+    Authenticator authenticator = ((Authenticator) getAuthenticators().get(key));
 
     if (authenticator == null) {
-      throw new AuthenticationException(AuthenticationException.AUTHENTICATOR_NOT_FOUND, new Object[]{locationId});
+      throw new AuthenticationException(AuthenticationException.AUTHENTICATOR_NOT_FOUND, new Object[]{key});
     }
 
     return authenticator;
@@ -115,13 +108,14 @@ public final class Authenticators {
 
     for (Iterator j = subList.iterator(); j.hasNext();) {
       Authenticator authDescriptor = (Authenticator) j.next();
-      if (authenticators.containsKey(authDescriptor.getId())) {
+      AuthenticatorKey key = new AuthenticatorKey(authDescriptor.getWorkingContext(), authDescriptor.getId());
+      if (authenticators.containsKey(key)) {
         throw new AuthenticationException(
             AuthenticationException.DUPLICATE_AUTHENTICATOR_KEY,
-            new Object[] {authDescriptor.getId(), WorkingContext.getConfigurationBaseDir().getPath()}
+            new Object[] {key, WorkingContext.getConfigurationBaseDir().getPath()}
         );
       }
-      authenticators.put(authDescriptor.getId(), authDescriptor);
+      authenticators.put(key, authDescriptor);
     }
     return authenticators;
   }
@@ -150,7 +144,7 @@ public final class Authenticators {
 
     // Add the authenticator.
     //
-    authenticators.put(authenticator.getId(), authenticator);
+    authenticators.put(authenticator.getAuthenticatorKey(), authenticator);
 
     try {
       flush(authenticators);
@@ -179,7 +173,7 @@ public final class Authenticators {
 
     // Add the authenticator.
     //
-    authenticators.remove(authenticator.getId());
+    authenticators.remove(new AuthenticatorKey(authenticator.getWorkingContext(), authenticator.getWorkingContext()));
 
     try {
       flush(authenticators);
@@ -208,7 +202,7 @@ public final class Authenticators {
 
       Authenticator a = (Authenticator) i.next();
       if (a.getPassword() != null) {
-        formatter = new MessageFormat("  <authenticator id=\"{0}\" username=\"{1}\" password=\"{2}\"/>\n");
+        formatter = new MessageFormat("  <authenticator working-context=\"{0}\" id=\"{1}\" username=\"{2}\" password=\"{3}\"/>\n");
 
         // todo I guess there is some default toolie available for this (XML escaper).
 
@@ -219,10 +213,10 @@ public final class Authenticators {
         password = password.replaceAll("\"", "&quot;");
         password = password.replaceAll("'", "&apos;");
 
-        buffer.append(formatter.format(new String[]{a.getId(), a.getUsername(), password}));
+        buffer.append(formatter.format(new String[]{a.getWorkingContext(), a.getId(), a.getUsername(), password}));
       } else {
-        formatter = new MessageFormat("  <authenticator id=\"{0}\" username=\"{1}\"/>\n");
-        buffer.append(formatter.format(new String[]{a.getId(), a.getUsername()}));
+        formatter = new MessageFormat("  <authenticator working-context=\"{0}\" id=\"{1}\" username=\"{2}\"/>\n");
+        buffer.append(formatter.format(new String[]{a.getWorkingContext(), a.getId(), a.getUsername()}));
       }
     }
 
@@ -245,9 +239,11 @@ public final class Authenticators {
   private static Digester getDigester() {
 
     Digester digester = new Digester();
+
     digester.addObjectCreate("authenticators", ArrayList.class);
     digester.addObjectCreate("authenticators/authenticator", Authenticator.class);
     digester.addSetProperties("authenticators/authenticator");
+    digester.addSetProperties("authenticators/authenticator", new String[]{"working-context"}, new String[]{"workingContext"});
     digester.addSetNext("authenticators/authenticator", "add");
     return digester;
   }

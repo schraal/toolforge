@@ -49,7 +49,9 @@ public final class ReleaseManifest extends AbstractManifest {
    */
   private void checkForPatchLines() {
     ParallelRunner runner = new ParallelRunner(this, PatchLineThread.class);
-    runner.execute();
+
+    long delay = 100;
+    runner.execute(delay);
   }
 
   public String getType() {
