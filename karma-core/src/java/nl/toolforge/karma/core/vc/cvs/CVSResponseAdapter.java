@@ -172,6 +172,9 @@ public final class CVSResponseAdapter implements CVSListener {
 
     } else if (message.indexOf("permission denied") >= 0) {
 
+      // todo does this work ??
+      // should be tested properly ...
+
       throw new CVSRuntimeException(CVSException.SECURITY_VIOLATION);
 
     }

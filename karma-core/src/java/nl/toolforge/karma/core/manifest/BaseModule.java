@@ -1,13 +1,10 @@
 package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.KarmaRuntimeException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.regex.PatternSyntaxException;
-import java.util.Set;
-import java.io.File;
 
 /**
  * The name says it all. This class is the base (template) for a module.
@@ -55,7 +52,7 @@ public abstract class BaseModule implements Module {
   }
 
 
-  public abstract String getDependencyName();
+//  public abstract String getDependencyName();
 
   public boolean equals(Object obj) {
 

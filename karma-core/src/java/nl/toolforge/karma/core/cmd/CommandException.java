@@ -77,6 +77,21 @@ public class CommandException extends Exception {
    */
   public static final ErrorCode PROMOTE_ONLY_ALLOWED_ON_WORKING_MODULE = new ErrorCode(EXCEPTION_PREFIX + "00043");
 
+  /**
+   * <p>The dependency that is referenced does not exists. This could happen when:
+   *
+   * <ul>
+   *   <li/>the dependency is a sourcemodule dependency and the jar it refers to has not been built.
+   *   <li/>the dependency is a jar dependency and the artifact is not available in the Maven repository locally.
+   * </ul>
+   */
+  public static final ErrorCode DEPENDENCY_DOES_NOT_EXIST = new ErrorCode(EXCEPTION_PREFIX + "00044");
+
+  /**
+   * <code>src/java</code> (the default directory for a module where java sources are located) is missing.
+   */
+  public static final ErrorCode NO_SRC_DIR = new ErrorCode(EXCEPTION_PREFIX + "00045");
+
   public CommandException(ErrorCode errorCode) {
     this(errorCode, null);
   }

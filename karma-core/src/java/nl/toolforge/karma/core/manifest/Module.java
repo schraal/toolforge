@@ -53,11 +53,11 @@ public interface Module {
    */
   public String getStateAsString();
 
-  /**
-   * Iets met artifact-name.
-   * @return
-   */
-  public String getDependencyName();
+//  /**
+//   * Iets met artifact-name.
+//   * @return
+//   */
+//  public String getDependencyName();
 
   /**
    * <p>Inner class representing the 'state' of a module. Three states exist at the moment : <code>WORKING</code>,

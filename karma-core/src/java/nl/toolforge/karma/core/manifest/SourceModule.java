@@ -27,7 +27,6 @@ import java.util.Set;
  * @see Module
  */
 public class SourceModule extends BaseModule {
-
   /**
    * The name of the mandatory file in a source module. A file with this name is created by Karma or should be created
    * manually and contain all data (symbolic names) that should be available for existing manifests.
@@ -113,13 +112,17 @@ public class SourceModule extends BaseModule {
     return developmentLine != null;
   }
 
-  public String getDependencyName() {
+  // has to leave !!!! dit zootje gaat naar dependencyutil enzo.
 
-    if (getVersion() != null) {
-      return getName() + "_" + getVersionAsString() + ".jar";
-    } else
-      return getName() + "_" + WORKING + ".jar";
-  }
+//  public String getDependencyName() {
+//
+//    // todo is dit wel zo ? de check op getVersion == null ??
+//
+//    if (getVersion() != null) {
+//      return getName() + "_" + getVersionAsString() + ".jar";
+//    } else
+//      return getName() + "_" + WORKING + ".jar";
+//  }
 
   /**
    * When initialized by <code>Manifest</code>, a module is assigned its base directory, relative to the manifest. The
@@ -140,9 +143,13 @@ public class SourceModule extends BaseModule {
   }
 
   /**
-   * Constructs
+   * Converts a modules dependencies XML-tree to a <code>Set</code> of
+   * {@link nl.toolforge.karma.core.scm.ModuleDependency} instances. This method merely transforms the deps for a
+   * module. It doesn't do any validation (like, does the dep actually exists locally).
+   *
+   * @return A <code>Set</code> containing {@link nl.toolforge.karma.core.scm.ModuleDependency} instances.
    */
-  public String getDependencies() throws ManifestException {
+  public Set getDependencies() throws ManifestException {
 
     // For now, we assume each module has a project.xml, modelled as per the Maven definition.
     //
@@ -170,31 +177,12 @@ public class SourceModule extends BaseModule {
       if (e.getException() instanceof ManifestException) {
         // It was already a ManifestException
         //
-//        throw new ManifestException(((ManifestException) e.getException()).getErrorCode());
         throw (ManifestException) e.getException();
       }
       throw new ManifestException(e, ManifestException.DEPENDENCY_FILE_NOT_FOUND, new Object[]{getName()});
     }
 
-    StringBuffer buffer = new StringBuffer();
-    String userHome = System.getProperty("user.home");
-
-    for (Iterator iterator = deps.iterator(); iterator.hasNext();) {
-      ModuleDependency dep = (ModuleDependency) iterator.next();
-
-      if (!dep.isModuleDependency()) {
-        String jar = userHome + File.separator + ".maven" + File.separator + "repository" + File.separator;
-        jar += dep.getJarDependency();
-
-        buffer.append(jar);
-        if (iterator.hasNext()) {
-          buffer.append(";");
-        }
-      }
-      // todo support module deps as well ...
-    }
-
-    return buffer.toString();
+    return deps;
   }
 
   public void setState(State state) {

@@ -1,41 +1,31 @@
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.core.util.file.MyFileUtils;
+import nl.toolforge.karma.core.build.BuildUtil;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
-import nl.toolforge.karma.core.cmd.ErrorMessage;
 import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
-import nl.toolforge.core.util.file.MyFileUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.helper.ProjectHelperImpl;
-import org.apache.crimson.parser.XMLReaderImpl;
-import org.apache.commons.io.FileUtils;
-import org.xml.sax.XMLReader;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.Writer;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.InputStream;
-import java.io.FileWriter;
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /**
  * Builds a module in a manifest.
@@ -47,11 +37,12 @@ public class BuildModule extends DefaultCommand {
 
   private static final String DEFAULT_SRC_PATH = "src/java";
 
-  private static final String JAVAC_SRC_DIR_PROPERTY = "source-dir";
-  private static final String JAVAC_DEST_DIR_PROPERTY = "destination-dir";
-  private static final String JAVAC_CLASSPATH_PROPERTY = "classpath";
+  private static final String JAVAC___SRC_DIR_PROPERTY = "javac-source-dir";
+  private static final String JAVAC___DEST_DIR_PROPERTY = "javac-destination-dir";
+  private static final String JAVAC___CLASSPATH_PROPERTY = "javac-classpath";
 
-  private static final String JAR_JAR_FILE_PROPERTY = "jar-file";
+  private static final String JAR___FILE_NAME_PROPERTY = "jar-file-name";
+  private static final String JAR___BASE_DIR_PROPERTY = "jar-base-dir";
 
   private CommandResponse commandResponse = new ActionCommandResponse();
 
@@ -104,19 +95,42 @@ public class BuildModule extends DefaultCommand {
     }
 
     try {
-      // Where the src-files can be found
+      // Define the location where java source files are store for a module (the default location in the context of
+      // a manifest).
       //
       File srcBase = new File(new File(currentManifest.getDirectory(), moduleName), DEFAULT_SRC_PATH);
+      if (!srcBase.exists()) {
+        // No point in building a module, if no src/java is available.
+        //
+        throw new CommandException(CommandException.NO_SRC_DIR, new Object[] {module.getName()});
+      }
 
-      // Where compiled classes will be stored.
+      // Define the location compiled classes and jar-files will be stored --> the build-directory.
       //
       File buildDir = new File(new File(getContext().getCurrentManifest().getDirectory(), "build"), moduleName);
 
-      project.setProperty(JAVAC_SRC_DIR_PROPERTY, srcBase.getPath());
-      project.setProperty(JAVAC_DEST_DIR_PROPERTY, buildDir.getPath());
-      project.setProperty(JAVAC_CLASSPATH_PROPERTY, ((SourceModule) module).getDependencies());
+      // Instantiate a BuildUtil class to have access to helper methods for the build process.
+      //
+      BuildUtil util = new BuildUtil(currentManifest);
 
-      project.setProperty(JAR_JAR_FILE_PROPERTY, module.getDependencyName());
+//<<<<<<< BuildModule.java
+      // Configure the Ant project
+      //
+
+      // <javac> 'srcdir'-attribute
+      project.setProperty(JAVAC___SRC_DIR_PROPERTY, srcBase.getPath());
+      // <javac> 'destdir'-attribute
+      project.setProperty(JAVAC___DEST_DIR_PROPERTY, buildDir.getPath());
+      // <javac> 'classpath'-attribute
+      project.setProperty(JAVAC___CLASSPATH_PROPERTY, util.getDependencies(((SourceModule) module).getDependencies()));
+      // <jar> 'destfile'-attribute
+      project.setProperty(JAR___FILE_NAME_PROPERTY, new File(buildDir, currentManifest.resolveJarName(module)).getPath());
+      // <jar> 'basedir'-attribute
+      project.setProperty(JAR___BASE_DIR_PROPERTY, buildDir.getPath());
+
+//=======
+//      project.setProperty(JAR_JAR_FILE_PROPERTY, module.getDependencyName());
+//>>>>>>> 1.20
     } catch (ManifestException e) {
       e.printStackTrace();
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
@@ -124,6 +138,7 @@ public class BuildModule extends DefaultCommand {
 
     try {
 //      project.executeTarget("compile");
+
       project.executeTarget("jar");
     } catch (BuildException e) {
       e.printStackTrace();

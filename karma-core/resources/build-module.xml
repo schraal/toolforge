@@ -10,15 +10,15 @@
 
   <target name="jar" depends="compile" >
 
-    <jar jarfile="${jar-file}" basedir="${destination-dir}"/>
+    <jar destfile="${jar-file-name}" basedir="${jar-base-dir}"/>
 
   </target>
 
   <target name="compile">
 
-    <mkdir dir="${destination-dir}"/>
+    <mkdir dir="${javac-destination-dir}"/>
 
-    <javac destdir="${destination-dir}" srcdir="${source-dir}"/>
+    <javac destdir="${javac-destination-dir}" srcdir="${javac-source-dir}" classpath="${javac-classpath}"/>
 
   </target>
 

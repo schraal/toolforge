@@ -1,9 +1,9 @@
 package nl.toolforge.karma.core.location;
 
 import nl.toolforge.core.util.file.XMLFilenameFilter;
+import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
-import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
 import org.apache.commons.logging.Log;

@@ -3,6 +3,9 @@ package nl.toolforge.karma.core.manifest;
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
+import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.location.LocationException;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.xmlrules.DigesterLoader;
@@ -564,4 +567,42 @@ public final class Manifest {
       throw new ManifestException(e.getErrorCode(), e.getMessageArguments());
     }
   }
+
+  /**
+   * <p>Determines the correct artifact name for <code>module</code>. The artifact-name is determined as follows:
+   *
+   * <ul>
+   *   <li/>If the state of the module is <code>WORKING</code>, the artifact-name is
+   *        <code>&lt;module-name&gt;_WORKING.jar</code>.
+   *   <li/>If the state of the module is <code>DYNAMIC</code>, the artifact-name is
+   *        <code>&lt;module-name&gt;_&lt;latest-versions&gt;.jar</code>.
+   *   <li/>If the state of the module is <code>STATIC</code>, the artifact-name is
+   *        <code>&lt;module-name&gt;_&lt;version&gt;.jar</code>.
+   * </ul>
+   *
+   * @param module A <code>SourceModule</code> instance.
+   * @return The artifact-name as determined the way as described above.
+   * @throws ManifestException
+   */
+  public String resolveJarName(Module module) throws ManifestException {
+
+    String jar = module.getName() + "_";
+
+    try {
+      if (((SourceModule) module).getState().equals(Module.WORKING)) {
+        jar += Module.WORKING.toString();
+      } else if (((SourceModule) module).getState().equals(Module.DYNAMIC)) {
+        jar += (CVSVersionExtractor.getInstance().getLocalVersion(this, module));
+      } else { // STATIC module
+        jar += ((SourceModule) module).getVersionAsString();
+      }
+      jar += ".jar";
+    } catch (VersionControlException v) {
+      throw new ManifestException(v.getErrorCode(), v.getMessageArguments());
+    }
+
+    return jar;
+  }
+
+
 }
