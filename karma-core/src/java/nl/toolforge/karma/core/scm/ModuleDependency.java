@@ -136,7 +136,7 @@ public final class ModuleDependency {
     } else if (libModule != null) {
       // <dependency libModule="" artifactId="" version=""/>
       //
-      dep = artifactId + "-" + version;
+      dep = libModule + File.separator + artifactId + "-" + version;
       dep += ".jar";
     } else if (id != null) {
       // <dependency id="" jar=""/>
