@@ -15,6 +15,9 @@ import nl.toolforge.karma.core.expr.VersionExpression;
  */
 public class JarModule extends DefaultModule {
 
+	/** Element name for a source module in a manifest XML file */
+	public static final String ELEMENT_NAME = "jarmodule";
+
 	/** The <code>version</code>-attribute for a module. */
 	public static final String VERSION_ATTRIBUTE = "version";
 

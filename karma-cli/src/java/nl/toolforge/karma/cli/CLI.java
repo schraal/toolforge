@@ -1,19 +1,17 @@
 package nl.toolforge.karma.cli;
 
 //import nl.toolforge.karma.core.KarmaException;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.PosixParser;
-
-import java.util.*;
-import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
+import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.cmd.CommandContext;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
-import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.prefs.Preferences;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Iterator;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * <p>The <code>CLI</code> is the command-line interface for Karma. The class presents a simple-to-use command-line
@@ -24,26 +22,7 @@ import nl.toolforge.karma.core.KarmaException;
  */
 public class CLI {
 
-	public static final String PROMPT = "[ Karma ] > ";
-
-	public static List quitCmd = new ArrayList();
-
-	static {
-
-		quitCmd.add("QUIT");
-		quitCmd.add("BYE");
-		quitCmd.add("EXIT");
-	}
-
-	private static String getPrompt() {
-
-		Calendar now = Calendar.getInstance();
-
-		return
-			StringUtils.leftPad("" + now.get(Calendar.HOUR_OF_DAY) , 2, "0") + ":" +
-			StringUtils.leftPad("" + now.get(Calendar.MINUTE) , 2, "0") + ":" +
-			StringUtils.leftPad("" + now.get(Calendar.SECOND) , 2, "0") + PROMPT;
-	}
+//	private static Preferences prefs = Preferences.getInstance();
 
 	public static void main(String[] args) {
 
@@ -52,7 +31,7 @@ public class CLI {
 		// Initialize the command context
 		//
 		CommandContext ctx = new CommandContext();
-        try {
+		try {
 			ctx.init();
 		} catch (KarmaException k) {
 			//log.error(k.getMessage());
@@ -60,12 +39,13 @@ public class CLI {
 			System.exit(1);
 		}
 
+		ConsoleWriter writer = new ConsoleWriter(true);
+
 		try {
 
 			while (true) {
 
-				// TODO replace System.out
-				System.out.print(getPrompt());
+				writer.prompt();
 
 				String line = reader.readLine().trim();
 
@@ -73,83 +53,65 @@ public class CLI {
 					continue;
 				}
 
-				// Step : we need to load a manifest. We assume that the last time we used a manifest,
-				// it was written as a property to ${user.home}/${karma.home}
-				//
-				//
+				String commandName = null;
+				String options = "";
 
-				// Step : we need to have a CommandContext, which is our focal point when executing commands
+				// Check if the user wants to exit
 				//
+				if (ConsoleConfiguration.getExitCommands().contains(line.trim().toUpperCase())) {
 
-				try {
+					String text = "Thank you for using this great product.";
+					int length = text.length();
 
-                    // Parse the command line
+					StringBuffer g = new StringBuffer();
+					g.append("\n\n").append(StringUtils.repeat("*", text.length()));
+					g.append("\n").append(text).append("\n");
+					g.append(StringUtils.repeat("*", text.length())).append("\n");
+
+					writer.writeln(g.toString());
+
+					break;
+				}
+
+				// Filter out the HELP command
+				//
+				if (line.trim().toLowerCase().startsWith("help") || line.trim().startsWith("?")) {
+
+					writer.writeln("The following commands are valid:");
+
+					for (Iterator i = ctx.getCommands().iterator(); i.hasNext();) {
+						CommandDescriptor descriptor = (CommandDescriptor) i.next();
+						writer.writeln(descriptor.getName());
+					}
+
+				} else {
+
+					// Other commands ...
 					//
+					if (line.indexOf(" ") > 0) {
+						commandName = line.substring(0, line.indexOf(" "));
+					} else {
+						commandName = line.substring(0);
+					}
 
-					// The first word (until a space is reached)
-
-//					System.out.println(getPrompt() + " >> " + line);
-
-					String commandName = null;
-					String options = "";
-
-					// Filter out the HELP command
+					// Check if the command is a valid command
 					//
-					if (line.trim().toLowerCase().startsWith("help") || line.trim().startsWith("?")) {
+					if (ctx.isCommand(commandName)) {
 
-						// Replace by the logging mechanism
-						//
-
-						// TODO replace System.out
-						System.out.println(getPrompt() + " The following commands are valid:");
-
-						for (Iterator i = ctx.getCommands().iterator(); i.hasNext();) {
-
-							CommandDescriptor descriptor = (CommandDescriptor) i.next();
-							// TODO replace System.out
-							System.out.println(getPrompt() + " " + descriptor.getName());
+						if (line.indexOf(" ") > 0) {
+							options = line.substring(line.indexOf(" ") + 1);
 						}
 
+						try {
+							ctx.execute(commandName, options);
+						} catch (KarmaException a) {
+							writer.writeln("Non-fatal error : ".concat(a.getErrorMessage()));
+						}
 
 					} else {
-
-						// Other commands ...
-						//
-						if (line.indexOf(" ") > 0) {
-							commandName = line.substring(0, line.indexOf(" "));
-						} else {
-							commandName = line.substring(0);
-						}
-
-						if (ctx.isCommand(commandName)) {
-
-							if (line.indexOf(" ") > 0) {
-								options = line.substring(line.indexOf(" ") + 1);
-							}
-
-//						System.out.println(
-//							">> DEBUG : context will execute command '" + commandName +
-//							"' with options '" + options);
-
-						} else {
-							// TODO replace System.out
-							System.out.println(getPrompt() + " --> Invalid command ...");
-						}
-
-						// Check if the command is a valid command
-						//
-
-						if (quitCmd.contains(line.trim().toUpperCase())) {
-							break;
-						}
-
-						ctx.execute(commandName, options);
-
+						writer.writeln(commandName.trim().concat(" is an invalid command"));
 					}
-				}
-				catch (KarmaException k) {
-					k.printStackTrace();
-					//log.error(k.getMessage());
+
 				}
 			}
 			//log.info("Bye!");
@@ -160,5 +122,4 @@ public class CLI {
 			System.exit(1);
 		}
 	}
-
 }

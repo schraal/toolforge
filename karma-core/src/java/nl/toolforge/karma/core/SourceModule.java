@@ -8,12 +8,16 @@ import nl.toolforge.karma.core.expr.VersionExpression;
  * <p>A <code>SourceModule</code> represents a module for which the developer wants to have the sources available to
  * on the local harddisk.
  *
+ * <p>TODO Validation checks on setVersion and setBranch
  *
  * @see nl.toolforge.karma.core.Module
  *
  * @author D.A. Smedes
  */
 public class SourceModule extends DefaultModule {
+
+	/** Element name for a source module in a manifest XML file */
+	public static final String ELEMENT_NAME = "sourcemodule";
 
 	/** The <code>version</code>-attribute for a module. */
 	public static final String VERSION_ATTRIBUTE = "version";

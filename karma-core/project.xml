@@ -98,8 +98,8 @@
 				<directory>resources</directory>
 				<targetPath>resources</targetPath>
 				<includes>
-					<include>*.xml</include>
-					<include>*.dtd</include>
+					<include>**/*.xml</include>
+					<include>**/*.dtd</include>
 				</includes>
 			</resource>
 		</resources>

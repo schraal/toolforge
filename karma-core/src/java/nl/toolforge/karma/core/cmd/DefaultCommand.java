@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import org.apache.commons.cli.Options;
 
 import java.util.Map;
@@ -12,8 +13,18 @@ import java.util.Map;
 public abstract class DefaultCommand implements Command {
 
 	private CommandDescriptor descriptor = null;
+	private CommandContext ctx = null;
 
-	public DefaultCommand() {
+	public DefaultCommand() {}
+
+	/**
+	 * Sets the command context for this command. The command needs the command context during
+	 * the executing phase.
+	 *
+	 * @param context The <code>CommandContext</code> for this command.
+	 */
+	public final void setContext(CommandContext context) {
+		this.ctx = context;
 	}
 
 	/**
@@ -21,23 +32,23 @@ public abstract class DefaultCommand implements Command {
 	 *
 	 * @param descriptor The command descriptor instance containing the basic information on this command
 	 */
-	public DefaultCommand(CommandDescriptor descriptor) throws KarmaException {
-		this.descriptor = descriptor;
-	}
+//	public DefaultCommand(CommandDescriptor descriptor) throws KarmaException {
+//		this.descriptor = descriptor;
+//	}
 
-	public String getName() {
+	public final String getName() {
 		return descriptor.getName();
 	}
 
-	public String getAlias() {
+	public final String getAlias() {
 		return descriptor.getAlias();
 	}
 
-	public String getDescription() {
+	public final String getDescription() {
 		return descriptor.getDescription();
 	}
 
-	public Options getOptions() {
+	public final Options getOptions() {
 		return descriptor.getOptions();
 	}
 
@@ -51,21 +62,34 @@ public abstract class DefaultCommand implements Command {
 	 *
 	 * @return A <code>Map</code> containing all dependencies as name-value pairs (both are <code>String</code>s).
 	 */
-	public Map getDependencies() {
+	public final Map getDependencies() {
 		return descriptor.getDependencies();
 	}
 
+	/**
+	 * Accessor method for the commands' {@link CommandContext}.
+	 *
+	 * @return The commands' command context.
+	 */
+	public final CommandContext getContext() {
+		return ctx;
+	}
+
+	/**
+	 * A commands help text. Can be overridden for commands that have not provided xml data for the
+	 * <code>&lt;help&gt;</code>-element.
+	 *
+	 * @return
+	 */
 	public String getHelp() {
 		return descriptor.getHelp();
 	}
 
 	public void validate() throws KarmaException {
-        throw new KarmaException(KarmaException.NOT_IMPLEMENTED);
+		throw new KarmaException(KarmaException.NOT_IMPLEMENTED);
 	}
 
-	public final CommandResponse execute() throws KarmaException {
-		return executeCommand();
-	}
+	public abstract CommandResponse execute() throws KarmaException;
 
 	/**
 	 * See {@link #execute}. Implementations must implement this method to get something out of the command.
@@ -74,5 +98,5 @@ public abstract class DefaultCommand implements Command {
 	 *
 	 * @throws KarmaException
 	 */
-	public abstract CommandResponse executeCommand() throws KarmaException;
+	//public abstract CommandResponse executeCommand() throws KarmaException;
 }

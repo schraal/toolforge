@@ -32,6 +32,9 @@ public final class ManifestException extends KarmaException {
 	/** No history item could be found for a manifest. */
 	public static final ErrorCode NO_HISTORY_AVAILABLE = new ErrorCode("MNFS-00010");
 
+	/** Container for 'general' errors during a manifest load */
+	public static final ErrorCode MANIFEST_LOAD_ERROR = new ErrorCode("MNFS-00004");
+
  	public ManifestException() {}
 
 	public ManifestException(ErrorCode errorCode) {

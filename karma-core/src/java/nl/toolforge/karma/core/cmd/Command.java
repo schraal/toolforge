@@ -65,7 +65,7 @@ public interface Command {
 	 *
 	 * @return The Java class implementing the commands' behavior.
 	 * @throws KarmaException If the implementation class is not found, the error code will be set to :
-	 *                        {@link nl.toolforge.karma.core.exception.ErrorCode#CORE_COMMAND_IMPLEMENTATION_CLASS_NOT_FOUND}
+	 *                        {@link KarmaException#COMMAND_IMPLEMENTATION_CLASS_NOT_FOUND}
 	 */
 	public Class getImplementation() throws KarmaException;
 
@@ -96,7 +96,6 @@ public interface Command {
 	 * Executes the command and captures its results in a <code>CommandResponse</code> object for further reference.
 	 *
 	 * @return The command's output, captured in an object structure.
-	 *
 	 * @throws KarmaException To be documented.
 	 */
 	public CommandResponse execute() throws KarmaException;

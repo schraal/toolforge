@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+
+<manifest name="included-test-manifest-1" version="2.0">
+
+	<description>This manifest is an example of an included manifest definition.</description>
+
+	<!-- The following element defines a source module for this project. -->
+
+	<sourcemodule name="CORE-arjen" version="0-1" branch="DEV_01" location="local"/>
+
+</manifest>

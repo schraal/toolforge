@@ -44,7 +44,7 @@
     <option name="DEFAULT_OUTPUT_PATH" value="$PROJECT_DIR$/build" />
     <option name="OUTPUT_MODE" value="single" />
     <resourceExtensions>
-      <entry name=".+\.(properties|xml|html)" />
+      <entry name=".+\.(properties)" />
       <entry name=".+\.(gif|png|jpeg|jpg)" />
     </resourceExtensions>
   </component>

@@ -2,11 +2,11 @@ package nl.toolforge.karma.core;
 
 import junit.framework.TestCase;
 import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.test.BaseTest;
-import nl.toolforge.karma.core.prefs.Preferences;
 import nl.toolforge.karma.core.cmd.CommandLoader;
+import nl.toolforge.karma.core.test.BaseTest;
 
-import java.util.List;
+import java.util.Set;
+import java.io.File;
 
 /**
  *
@@ -14,18 +14,35 @@ import java.util.List;
  */
 public class TestManifestLoader extends BaseTest {
 
-	public void testLoad1() {
+	public void testParse1() {
 
 		ManifestLoader ml = ManifestLoader.getInstance();
 
 		try {
-			Manifest m = ml.load("manifest-example.xml");
+			Manifest m =
+				ml.load("test-manifest-1.xml", this.getClass().getClassLoader(), "test");
 
-			assertEquals("There should be one source module in the manifest", 1, m.countSourceModules());
+			assertEquals(2, m.countSourceModules());
+			assertEquals(2, m.countJarModules());
 
-		} catch (KarmaException k) {
-			k.printStackTrace();
+		} catch (ManifestException k) {
+			//k.printStackTrace();
 			fail(k.getMessage());
 		}
 	}
+
+//	public void testParse2() {
+//
+//		ManifestLoader ml = ManifestLoader.getInstance();
+//
+//		try {
+//			Manifest m =
+//				ml.load("test-manifest-1.xml", this.getClass().getClassLoader(), "/test");
+//
+//			fail("A ManifestException should be thrown, because the \"/\" is not allowed prefixing the relative path.");
+//
+//		} catch (ManifestException k) {
+//			assertTrue(true);
+//		}
+//	}
 }
