@@ -45,10 +45,10 @@ public final class CLI {
         //
         String message;
         if (e.getMessageArguments() != null && e.getMessageArguments().length != 0) {
-          MessageFormat messageFormat = new MessageFormat(e.getErrorMessage());
+          MessageFormat messageFormat = new MessageFormat(e.getMessage());
           message = messageFormat.format(e.getMessageArguments());
         } else {
-          message = e.getErrorMessage();
+          message = e.getMessage();
         }
         System.out.println("\n" + message);
 
@@ -93,23 +93,23 @@ public final class CLI {
     try {
       commandContext.init(new CLICommandResponseHandler());
     } catch (LocationException e) {
-      String message;
-      if (e.getMessageArguments() != null && e.getMessageArguments().length != 0) {
-        MessageFormat messageFormat = new MessageFormat(e.getErrorMessage());
-        message = messageFormat.format(e.getMessageArguments());
-      } else {
-        message = e.getErrorMessage();
-      }
-      System.out.println("\n" + message);
+//      String message;
+//      if (e.getMessageArguments() != null && e.getMessageArguments().length != 0) {
+//        MessageFormat messageFormat = new MessageFormat(e.getMessage());
+//        message = messageFormat.format(e.getMessageArguments());
+//      } else {
+//        message = e.getMessage();
+//      }
+      System.out.println("\n" + e.getMessage());
     } catch (ManifestException e) {
-      String message;
-      if (e.getMessageArguments() != null && e.getMessageArguments().length != 0) {
-        MessageFormat messageFormat = new MessageFormat(e.getErrorMessage());
-        message = messageFormat.format(e.getMessageArguments());
-      } else {
-        message = e.getErrorMessage();
-      }
-      System.out.println("\n" + message);
+//      String message;
+//      if (e.getMessageArguments() != null && e.getMessageArguments().length != 0) {
+//        MessageFormat messageFormat = new MessageFormat(e.getMessage());
+//        message = messageFormat.format(e.getMessageArguments());
+//      } else {
+//        message = e.getMessage();
+//      }
+      System.out.println("\n" + e.getMessage());
     }
 
     commandContext.execute(commandLine);

@@ -151,10 +151,10 @@ public final class KarmaConsole {
     try {
       commandContext.init(new ConsoleCommandResponseHandler(this));
     } catch (LocationException e) {
-      writeln(e.getErrorMessage());
+      writeln(e.getMessage());
       logger.error(e.getMessage(), e);
     } catch (ManifestException e) {
-      writeln(e.getErrorMessage());
+      writeln(e.getMessage());
       logger.warn(e.getMessage(), e);
     }
 
@@ -207,10 +207,10 @@ public final class KarmaConsole {
           //solution for this.
           String message;
           if (e.getMessageArguments() != null && e.getMessageArguments().length != 0) {
-            MessageFormat messageFormat = new MessageFormat(e.getErrorMessage());
+            MessageFormat messageFormat = new MessageFormat(e.getMessage());
             message = messageFormat.format(e.getMessageArguments());
           } else {
-            message = e.getErrorMessage();
+            message = e.getMessage();
           }
           writeln(message);
           logger.error(e.getMessage(), e);
@@ -252,9 +252,7 @@ public final class KarmaConsole {
         try {
           value = reader.readLine().trim();
         } catch (IOException e) {
-// todo moet anders ........
-//
-          e.printStackTrace();
+          logger.error(e.getMessage(), e);
         }
 
         if (value == null || "".equals(value)) {
