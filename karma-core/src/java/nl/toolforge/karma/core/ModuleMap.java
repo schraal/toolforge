@@ -1,6 +1,6 @@
 package nl.toolforge.karma.core;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 /**
@@ -10,7 +10,7 @@ import java.util.Iterator;
  *
  * @version $Id$
  */
-public final class ModuleList extends ArrayList
+public final class ModuleMap extends HashMap
 {
 	/**
 	 * Javadoc inherited.
@@ -19,7 +19,7 @@ public final class ModuleList extends ArrayList
 
 		if ((module instanceof SourceModule) || (module instanceof JarModule)) {
 
-			super.add(module);
+			super.put(module.getName(), module);
 
 			return;
 		}
@@ -30,37 +30,16 @@ public final class ModuleList extends ArrayList
 	/**
 	 * Javadoc inherited.
 	 */
-	public final void add(int index, Module module) {
-		super.add(index, module);
+	public final void put (Module module) {
+		super.put(module.getName(), module);
 	}
 
-	/**
-	 * Javadoc inherited.
-	 */
-	public final boolean addAll(ModuleList moduleList) {
-		return super.addAll(moduleList);
-	}
-
-	/**
-	 * Javadoc inherited.
-	 */
-	public final boolean addAll(int index, ModuleList moduleList) {
-		return super.addAll(index, moduleList);
-	}
-
-	/**
-	 * Javadoc inherited.
-	 */
-	public final void set (int index, Module module) {
-		super.set(index, module);
-	}
-
-	/**
-	 * Javadoc inherited.
-	 */
-	public final Iterator iterator() {
-		return super.iterator();
-	}
+//	/**
+//	 * Retrieves an iterator over
+//	 */
+//	public final Iterator iterator() {
+//		return super.valuesiterator();
+//	}
 
 	/**
 	 * Javadoc inherited.
@@ -74,14 +53,14 @@ public final class ModuleList extends ArrayList
 	 *
 	 * @return All <code>SourceModule</code> instances in this list or an empty list if none exists.
 	 */
-	public final ModuleList getSourceModules() {
+	public final ModuleMap getSourceModules() {
 
-		ModuleList list = new ModuleList();
+		ModuleMap list = new ModuleMap();
 
-		for (Iterator i= super.iterator(); i.hasNext();) {
+		for (Iterator i= super.values().iterator(); i.hasNext();) {
 			Object o = i.next();
 			if (o instanceof SourceModule) {
-				list.add(o);
+				list.put(((Module) o).getName(), o);
 			}
 		}
 		return list;
@@ -92,14 +71,14 @@ public final class ModuleList extends ArrayList
 	 *
 	 * @return All <code>JarModule</code> instances in this list or an empty list if none exists.
 	 */
-	public final ModuleList getJarModules() {
+	public final ModuleMap getJarModules() {
 
-		ModuleList list = new ModuleList();
+		ModuleMap list = new ModuleMap();
 
-		for (Iterator i= super.iterator(); i.hasNext();) {
+		for (Iterator i= super.values().iterator(); i.hasNext();) {
 			Object o = i.next();
 			if (o instanceof JarModule) {
-				list.add(o);
+				list.put(((Module) o).getName(), o);
 			}
 		}
 		return list;

@@ -13,92 +13,115 @@ import java.util.Map;
  */
 public abstract class DefaultCommand implements Command {
 
-	private CommandDescriptor descriptor = null;
-	private CommandContext contextRef = null;
+  private CommandDescriptor descriptor = null;
+  private CommandContext contextRef = null;
 
-	public DefaultCommand() {}
+  public final CommandDescriptor getDescriptor() {
+    return this.descriptor;
+  }
 
-	/**
-	 * Sets the command context for this command. The command needs the command context during
-	 * the executing phase.
-	 *
-	 * @param contextRef The <code>CommandContext</code> for this command.
-	 */
-	public final void setContext(CommandContext contextRef) {
-		this.contextRef = contextRef;
-	}
+  /**
+   * Creates a command by initializing the command through its <code>CommandDescriptor</code>.
+   *
+   * @param descriptor The command descriptor instance containing the basic information for this command
+   */
+  public DefaultCommand(CommandDescriptor descriptor) {
 
-	/**
-	 * Creates a command using its mandatory fields.
-	 *
-	 * @param descriptor The command descriptor instance containing the basic information on this command
-	 */
-//	public DefaultCommand(CommandDescriptor descriptor) throws KarmaException {
-//		this.descriptor = descriptor;
-//	}
+    if (descriptor == null) {
+      throw new IllegalArgumentException("Command descriptor cannot be null.");
+    }
+    this.descriptor = descriptor;
+  }
 
-	public final String getName() {
-		return descriptor.getName();
-	}
+  /**
+   * Sets the command context for this command. The command needs the command context during
+   * the executing phase.
+   *
+   * @param contextRef The <code>CommandContext</code> for this command.
+   */
+  public final void setContext(CommandContext contextRef) {
+    this.contextRef = contextRef;
+  }
 
-	public final String getAlias() {
-		return descriptor.getAlias();
-	}
 
-	public final String getDescription() {
-		return descriptor.getDescription();
-	}
 
-	public final Options getOptions() {
-		return descriptor.getOptions();
-	}
+  /**
+   * Gets a command's name.
+   *
+   * @return A command's name as a <code>String</code>.
+   */
+  public final String getName() {
+    return descriptor.getName();
+  }
 
-	public Class getImplementation() {
-		return descriptor.getImplementation();
-	}
+  /**
+   * Gets a command's alias; the shortcut name for the command.
+   *
+   * @return A command's alias as a <code>String</code>.
+   */
+  public final String getAlias() {
+    return descriptor.getAlias();
+  }
 
-	/**
-	 * Gets all dependencies for this command. This implementation calls its internal <code>CommandDescriptor</code>s'
-	 * {@link CommandDescriptor#getDependencies} method.
-	 *
-	 * @return A <code>Map</code> containing all dependencies as name-value pairs (both are <code>String</code>s).
-	 */
-	public final Map getDependencies() {
-		return descriptor.getDependencies();
-	}
+  /**
+   * Gets a localized version of a command's description.
+   *
+   * @return A command's description as a <code>String</code>.
+   */
+  public final String getDescription() {
+    return descriptor.getDescription();
+  }
 
-	/**
-	 * Accessor method for the commands' {@link CommandContext}.
-	 *
-	 * @return The commands' command context.
-	 */
-	public final CommandContext getContext() {
-		return contextRef;
-	}
+  public final Options getOptions() {
+    return descriptor.getOptions();
+  }
 
-	/**
-	 * A commands help text. Can be overridden for commands that have not provided xml data for the
-	 * <code>&lt;help&gt;</code>-element.
-	 *
-	 * @return
-	 */
-	public String getHelp() {
-		return descriptor.getHelp();
-	}
+  public Class getImplementation() {
+    return descriptor.getImplementation();
+  }
 
-	public void validate() throws KarmaException {
-		throw new KarmaException(KarmaException.NOT_IMPLEMENTED);
-	}
+  /**
+   * Gets all dependencies for this command. This implementation calls its internal <code>CommandDescriptor</code>s'
+   * {@link CommandDescriptor#getDependencies} method.
+   *
+   * @return A <code>Map</code> containing all dependencies as name-value pairs (both are <code>String</code>s).
+   */
+  public final Map getDependencies() {
+    return descriptor.getDependencies();
+  }
 
-	public abstract CommandResponse execute() throws KarmaException;
+  /**
+   * Accessor method for the commands' {@link CommandContext}.
+   *
+   * @return The commands' command context.
+   */
+  public final CommandContext getContext() {
+    return contextRef;
+  }
 
-	/**
-	 * See {@link #execute}. Implementations must implement this method to get something out of the command.
-	 *
-	 * @return Command response object, containing whatever happened during execution of the command.
-	 *
-	 * @throws KarmaException
-	 */
-	//public abstract CommandResponse executeCommand() throws KarmaException;
+  /**
+   * A commands help text. Can be overridden for commands that have not provided xml data for the
+   * <code>&lt;help&gt;</code>-element.
+   *
+   * @return
+   */
+  public String getHelp() {
+    return descriptor.getHelp();
+  }
+
+  public void validate() throws KarmaException {
+    throw new KarmaException(KarmaException.NOT_IMPLEMENTED);
+  }
+
+  public abstract CommandResponse execute() throws KarmaException;
+
+  /**
+   * See {@link #execute}. Implementations must implement this method to get something out of the command.
+   *
+   * @return Command response object, containing whatever happened during execution of the command.
+   *
+   * @throws KarmaException
+   */
+  //public abstract CommandResponse executeCommand() throws KarmaException;
 
 }

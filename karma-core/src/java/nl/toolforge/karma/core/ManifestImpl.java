@@ -18,7 +18,7 @@ public class ManifestImpl implements Manifest {
 
   private String manifestName = null;
 
-  private ModuleList modules = null;
+  private ModuleMap modules = null;
 
   /**
    * Constructs a manifest instance with name <code>manifestName</code>.
@@ -34,10 +34,10 @@ public class ManifestImpl implements Manifest {
       throw new KarmaRuntimeException("Manifest name should not be null or an empty string.");
     }
     this.manifestName = manifestName;
-    this.modules = new ModuleList();
+    this.modules = new ModuleMap();
   }
 
-  public final ModuleList getModules() {
+  public final ModuleMap getModules() {
     return modules;
   }
 
@@ -46,6 +46,15 @@ public class ManifestImpl implements Manifest {
    */
   public final void addModule(Module module) {
     modules.add(module);
+  }
+
+  public Module getModule(String moduleName) throws ManifestException {
+
+    if (modules.containsKey(moduleName)) {
+      return (Module) modules.get(moduleName);
+    } else {
+      throw new ManifestException(ManifestException.NO_SUCH_MODULE);
+        }
   }
 
   public final Module createModule(int typeIdentifier, String name, String locationAlias) throws KarmaException {

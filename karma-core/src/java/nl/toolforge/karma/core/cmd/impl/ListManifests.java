@@ -3,6 +3,7 @@ package nl.toolforge.karma.core.cmd.impl;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.ManifestException;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
+import nl.toolforge.karma.core.cmd.CommandDescriptor;
 
 import java.util.Set;
 
@@ -22,9 +23,10 @@ public abstract class ListManifests extends DefaultCommand {
 	 *
 	 * @throws ManifestException See {@link ManifestException#NO_MANIFEST_STORE_DIRECTORY}.
 	 */
-	public ListManifests() throws ManifestException {
-     manifests = getContext().getAll();
-	}
+  public ListManifests(CommandDescriptor descriptor) throws ManifestException {
+    super(descriptor);
+    manifests = getContext().getAll();
+  }
 
 	/**
 	 * Gets the list of manifests.

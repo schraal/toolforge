@@ -5,6 +5,7 @@ import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
+import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.vc.Runner;
 
 /**
@@ -19,15 +20,14 @@ public class UpdateModuleCommand extends DefaultCommand {
   private Module module = null;
 
   /**
-   * Creates a <code>UpdateModuleCommand</code> for module <code>module</code> that should be updated.
+   * Creates a <code>UpdateModuleCommand</code> for module <code>module</code> that should be updated. This module
+   * requires an <code>Option</code>
    *
-   * @param module A module from the manifest.
+   * @param descriptor The command descriptor for this command.
    */
-  public UpdateModuleCommand(Module module) throws CommandException {
+  public UpdateModuleCommand(CommandDescriptor descriptor) throws CommandException {
 
-    // TODO validation on this command ?
-
-    this.module = module;
+    super(descriptor);
   }
 
   /**
@@ -40,6 +40,15 @@ public class UpdateModuleCommand extends DefaultCommand {
 //	}
 
   public CommandResponse execute() throws KarmaException {
+
+    String moduleName = getOptions().getOption("m").getValue();
+
+    try {
+      this.module = getContext().getCurrent().getModule(moduleName);
+    } catch (KarmaException e) {
+      throw (CommandException) e;
+    }
+
 
     Runner runner = getContext().getRunner(module);
 

@@ -108,4 +108,11 @@ public interface Command {
 	 * @param context An initialized command context.
 	 */
 	public void setContext(CommandContext context);
+
+  /**
+   * Gets this command's descriptor instance, which was passed during instantiation.
+   *
+   * @return The command's descriptor instance.
+   */
+  CommandDescriptor getDescriptor();
 }

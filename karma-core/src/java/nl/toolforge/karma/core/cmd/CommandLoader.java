@@ -28,69 +28,69 @@ import java.util.Set;
  */
 public final class CommandLoader {
 
-	private CommandLoader() {}
+  private CommandLoader() {}
 
-	private static CommandLoader instance = null;
+  private static CommandLoader instance = null;
 
-	public synchronized static CommandLoader getInstance() {
-		if (instance == null) {
-			instance = new CommandLoader();
-		}
-		return instance;
-	}
+  public synchronized static CommandLoader getInstance() {
+    if (instance == null) {
+      instance = new CommandLoader();
+    }
+    return instance;
+  }
 
-	/**
-	 * <p>Loads the default <code>XML</code> file containing command descriptors. The default command descriptor file is
-	 * located in the directory that is set with the {@link nl.toolforge.karma.core.prefs.Preferences#CONFIGURATION_DIRECTORY_PROPERTY}. The
-	 * default command descriptor <code>XML</code> file is designated with {@link Command#DEFAULT_COMMAND_FILE}.
-	 *
-	 * @return A <code>Set</code> of {@link nl.toolforge.karma.core.cmd.DefaultCommand} instances.
-	 */
-	Set load() throws KarmaException {
+  /**
+   * <p>Loads the default <code>XML</code> file containing command descriptors. The default command descriptor file is
+   * located in the directory that is set with the {@link nl.toolforge.karma.core.prefs.Preferences#CONFIGURATION_DIRECTORY_PROPERTY}. The
+   * default command descriptor <code>XML</code> file is designated with {@link Command#DEFAULT_COMMAND_FILE}.
+   *
+   * @return A <code>Set</code> of {@link nl.toolforge.karma.core.cmd.DefaultCommand} instances.
+   */
+  Set load() throws KarmaException {
 
-		return load(Command.DEFAULT_COMMAND_FILE);
-	}
+    return load(Command.DEFAULT_COMMAND_FILE);
+  }
 
-	/**
-	 * <p>Loads the <code>XML</code> file containing command descriptors.
-	 *
-	 * @param resource The resource filename (relative to the classpath) to the <code>XML</code> file. Use
-	 *                 {@link #load} to use the default settings.
-	 *
-	 * @return A <code>Set</code> of {@link nl.toolforge.karma.core.cmd.DefaultCommand} instances.
-	 */
-	Set load(String resource) throws KarmaException {
+  /**
+   * <p>Loads the <code>XML</code> file containing command descriptors.
+   *
+   * @param resource The resource filename (relative to the classpath) to the <code>XML</code> file. Use
+   *                 {@link #load} to use the default settings.
+   *
+   * @return A <code>Set</code> of {@link nl.toolforge.karma.core.cmd.DefaultCommand} instances.
+   */
+  Set load(String resource) throws KarmaException {
 
-		Set descriptors = new HashSet();
-		Set uniqueAliasses = new HashSet();
+    Set descriptors = new HashSet();
+    Set uniqueAliasses = new HashSet();
 
-		try {
-			// We do need to load the configuration file from the classpath.
-			//
-			InputStream in = this.getClass().getClassLoader().getResourceAsStream(resource);
+    try {
+      // We do need to load the configuration file from the classpath.
+      //
+      InputStream in = this.getClass().getClassLoader().getResourceAsStream(resource);
 
-			// Now some xml parsing stuff needs to be done
-			//
-			DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-			Document descriptorDocument = documentBuilder.parse(in);
-			Element commandsElement = descriptorDocument.getDocumentElement();
+      // Now some xml parsing stuff needs to be done
+      //
+      DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+      DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+      Document descriptorDocument = documentBuilder.parse(in);
+      Element commandsElement = descriptorDocument.getDocumentElement();
 
-			NodeList commands = commandsElement.getElementsByTagName("command");
+      NodeList commands = commandsElement.getElementsByTagName("command");
 
-			for (int i = 0; i < commands.getLength(); i++) {
+      for (int i = 0; i < commands.getLength(); i++) {
 
-				Element commandElement = (Element) commands.item(i);
+        Element commandElement = (Element) commands.item(i);
 
-				// First we get the basic things to create a descriptor
-				//
-				//boolean internalCommand = (new Boolean(command.getAttribute("internal"))).booleanValue();
-				//boolean manifestSpecific = (new Boolean(command.getAttribute("needsManifest"))).booleanValue();
-				//boolean extraArgumentsAllowed = (new Boolean(command.getAttribute("extraArgumentsAllowed"))).booleanValue();
+        // First we get the basic things to create a descriptor
+        //
+        //boolean internalCommand = (new Boolean(command.getAttribute("internal"))).booleanValue();
+        //boolean manifestSpecific = (new Boolean(command.getAttribute("needsManifest"))).booleanValue();
+        //boolean extraArgumentsAllowed = (new Boolean(command.getAttribute("extraArgumentsAllowed"))).booleanValue();
 
-				if (commandElement.getElementsByTagName("options").getLength() > 0) {
+        if (commandElement.getElementsByTagName("options").getLength() > 0) {
 
-					NodeList optionsElement = ((Element) commandElement.getElementsByTagName("options").item(0)).getElementsByTagName("option");
+          NodeList optionsElement = ((Element) commandElement.getElementsByTagName("options").item(0)).getElementsByTagName("option");
 
           Options options = null;
 
@@ -105,11 +105,11 @@ public final class CommandLoader {
 
               String opt = optionElement.getAttribute("opt");
               String longOpt = optionElement.getAttribute("longOpts");
-              boolean required = optionElement.getAttribute("required").equals("true");
 
               // Add an options' arguments
               //
               boolean hasArgs = optionElement.getElementsByTagName("arg").getLength() > 0;
+              boolean required = optionElement.getAttribute("required").equals("true");
 
               NodeList argElements = optionElement.getElementsByTagName("arg");
 
@@ -119,16 +119,27 @@ public final class CommandLoader {
 
                   Element argElement = (Element) argElements.item(k);
 
-                  option =
-                    OptionBuilder.withArgName(argElement.getAttribute("module-name"))
-                    .hasArg()
-                    .withDescription(optionElement.getAttribute("description"))
-                    .create(opt);
+                  option = new Option(opt, longOpt, required, optionElement.getAttribute("description"));
+                  option.setArgName(argElement.getAttribute("name"));
+                  option.setArgs(1);
+
+
+//                  option =
+//                    OptionBuilder.withArgName(argElement.getAttribute("name"))
+//                    .hasArg()
+//                    .isRequired(required)
+//                    .withDescription(optionElement.getAttribute("description"))
+//                    .create(opt);
                 }
               } else {
                 // Simple boolean option
                 //
-                option = new Option(opt, longOpt, false, optionElement.getAttribute("description"));
+                option = new Option(
+                  opt,
+                  longOpt,
+                  required,
+                  optionElement.getAttribute("description")
+                );
               }
 
               // We have an option for this command and add it to the Options container
@@ -138,52 +149,52 @@ public final class CommandLoader {
           }
 
           String commandName = commandElement.getAttribute("name");
-					String alias = commandElement.getAttribute("alias");
+          String alias = commandElement.getAttribute("alias");
 
-					if (!uniqueAliasses.add(alias)) {
-						throw new KarmaException(KarmaException.DUPLICATE_COMMAND_ALIAS);
-					}
+          if (!uniqueAliasses.add(alias)) {
+            throw new KarmaException(KarmaException.DUPLICATE_COMMAND_ALIAS);
+          }
 
-					String clazzName = commandElement.getElementsByTagName("classname").item(0).getFirstChild().getNodeValue();
-					String explanation = commandElement.getElementsByTagName("description").item(0).getFirstChild().getNodeValue();
+          String clazzName = commandElement.getElementsByTagName("classname").item(0).getFirstChild().getNodeValue();
+          String explanation = commandElement.getElementsByTagName("description").item(0).getFirstChild().getNodeValue();
 
-					CommandDescriptor descriptor = new CommandDescriptor(commandName, alias, clazzName);
+          CommandDescriptor descriptor = new CommandDescriptor(commandName, alias, clazzName);
           if (options != null) { descriptor.setOptions(options); }
           descriptor.setDescription(explanation);
 
-					// TODO : dependencies should be added. Might not be required for version 2.0 (CVS support only)
-					// descriptor.setDependencies(null);
+          // TODO : dependencies should be added. Might not be required for version 2.0 (CVS support only)
+          // descriptor.setDependencies(null);
 
-					// If there is a help element for the command ...
-					//
-					if (commandElement.getElementsByTagName("help").getLength() > 0) {
+          // If there is a help element for the command ...
+          //
+          if (commandElement.getElementsByTagName("help").getLength() > 0) {
 
-						Element helpElement = (Element) commandElement.getElementsByTagName("help").item(0);
+            Element helpElement = (Element) commandElement.getElementsByTagName("help").item(0);
 
-						if (helpElement.getFirstChild() != null) {
-							descriptor.setHelp(helpElement.getFirstChild().getNodeValue());
-						}
-					}
+            if (helpElement.getFirstChild() != null) {
+              descriptor.setHelp(helpElement.getFirstChild().getNodeValue());
+            }
+          }
 
-					// Assign the Options object to the command descriptor. At this point, the command
-					// can use the Options object.
-					//
+          // Assign the Options object to the command descriptor. At this point, the command
+          // can use the Options object.
+          //
 
-					// Check if the command has not yet been added.
-					//
-					// TODO : Check if the alias has not been used before either.
-					if (!descriptors.contains(descriptor)) {
-						descriptors.add(descriptor);
-					} else {
-						throw new KarmaException(KarmaException.DUPLICATE_COMMAND);
-					}
-				}
-			}
-		} catch (Exception e) {
-			// TODO Important NOT to catch KarmaException at this place
-			e.printStackTrace();
-			throw new KarmaException(KarmaException.COMMAND_DESCRIPTOR_XML_ERROR, e);
-		}
-		return descriptors;
-	}
+          // Check if the command has not yet been added.
+          //
+          // TODO : Check if the alias has not been used before either.
+          if (!descriptors.contains(descriptor)) {
+            descriptors.add(descriptor);
+          } else {
+            throw new KarmaException(KarmaException.DUPLICATE_COMMAND);
+          }
+        }
+      }
+    } catch (Exception e) {
+      // TODO Important NOT to catch KarmaException at this place
+      e.printStackTrace();
+      throw new KarmaException(KarmaException.COMMAND_DESCRIPTOR_XML_ERROR, e);
+    }
+    return descriptors;
+  }
 }

@@ -50,10 +50,6 @@ public class ModuleFactory {
 
     Location location = LocationFactory.getInstance().get(locationAlias);
 
-
-
-
-
 		return new SourceModule(moduleName, location);
 	}
 }

@@ -25,12 +25,22 @@ public interface Manifest {
   /**
    * Retrieves all modules from the manifest.
    *
-   * @return All modules in this manifest as a <code>ModuleList</code>. When no modules
+   * @return All modules in this manifest as a <code>ModuleMap</code>. When no modules
    *         are present, this method will return an empty list.
    */
-  public ModuleList getModules();
+  public ModuleMap getModules();
 
   public void addModule(Module module);
+
+  /**
+   * Retrieves a module instance from this manifest.
+   *
+   * @param moduleName The name of the module contained in this manifest.
+   *
+   * @return The correct module instance as found in the manifest.
+   * @throws ManifestException See {@link ManifestException#NO_SUCH_MODULE}.
+   */
+  public Module getModule(String moduleName) throws ManifestException;
 
   /**
    * <p>Creates a module and includes the module in the manifest instance. If the module
@@ -48,7 +58,7 @@ public interface Manifest {
    *
    * @return A <code>Module</code> instance.
    *
-   * @throws KarmaException TODO to be documented.
+   * @throws KarmaException TODO to be documented; should be manifest exception ??
    */
   public Module createModule(int typeIdentifier, String name, String locationAlias) throws KarmaException;
 

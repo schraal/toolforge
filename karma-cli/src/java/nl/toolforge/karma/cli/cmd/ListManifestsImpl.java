@@ -3,6 +3,7 @@ package nl.toolforge.karma.cli.cmd;
 import nl.toolforge.karma.core.cmd.impl.ListManifests;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SimpleCommandResponse;
+import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.ManifestException;
 
 /**
@@ -13,8 +14,8 @@ import nl.toolforge.karma.core.ManifestException;
  */
 public class ListManifestsImpl extends ListManifests {
 
-	public ListManifestsImpl() throws ManifestException {
-		super();
+	public ListManifestsImpl(CommandDescriptor descriptor) throws ManifestException {
+		super(descriptor);
 	}
 
 	public CommandResponse execute() {
