@@ -60,77 +60,82 @@ public class ViewManifestImpl extends ViewManifest {
     StringBuffer buffer = new StringBuffer();
     buffer.append("\n");
 
-    if (getContext().getCurrentManifest() instanceof ReleaseManifest) {
-      buffer.append("RELEASE MANIFEST\n\n");
+    try {
+      if (getContext().getCurrentManifest() instanceof ReleaseManifest) {
+        buffer.append("RELEASE MANIFEST\n\n");
 
-      String h1 = "MODULE-NAME";
-      String h2 = "TYPE";
-      String h3 = "LOCAL";
-      String h4 = "REMOTE";
-      String h5 = "STATIC";
-      String h6 = "PATCHLINE";
-      String h7 = "STATE";
-      String h8 = "LOCATION";
+        String h1 = "MODULE-NAME";
+        String h2 = "TYPE";
+        String h3 = "LOCAL";
+        String h4 = "REMOTE";
+        String h5 = "STATIC";
+        String h6 = "PATCHLINE";
+        String h7 = "STATE";
+        String h8 = "LOCATION";
 
-      buffer.append(h1 + StringUtils.repeat(" ", 45 - h1.length()) + "| ");
-      buffer.append(h2 + StringUtils.repeat(" ",  8 - h2.length()) + "| ");
-      buffer.append(h3 + StringUtils.repeat(" ",  7 - h3.length()) + "| ");
-      buffer.append(h4 + StringUtils.repeat(" ",  9 - h4.length()) + "| ");
-      buffer.append(h5 + StringUtils.repeat(" ",  7 - h5.length()) + "| ");
-      buffer.append(h6 + StringUtils.repeat(" ", 15 - h6.length()) + "| ");
-      buffer.append(h7 + StringUtils.repeat(" ", 10 - h7.length()) + "| ");
-      buffer.append(h8 + "\n");
-      buffer.append(StringUtils.repeat("_", 135));
-      buffer.append("\n");
+        buffer.append(h1 + StringUtils.repeat(" ", 45 - h1.length()) + "| ");
+        buffer.append(h2 + StringUtils.repeat(" ",  8 - h2.length()) + "| ");
+        buffer.append(h3 + StringUtils.repeat(" ",  7 - h3.length()) + "| ");
+        buffer.append(h4 + StringUtils.repeat(" ",  9 - h4.length()) + "| ");
+        buffer.append(h5 + StringUtils.repeat(" ",  7 - h5.length()) + "| ");
+        buffer.append(h6 + StringUtils.repeat(" ", 15 - h6.length()) + "| ");
+        buffer.append(h7 + StringUtils.repeat(" ", 10 - h7.length()) + "| ");
+        buffer.append(h8 + "\n");
+        buffer.append(StringUtils.repeat("_", 155));
+        buffer.append("\n");
 
-      for (Iterator i = renderedData.iterator(); i.hasNext();) {
+        for (Iterator i = renderedData.iterator(); i.hasNext();) {
 
-        String[] data = (String[]) i.next();
+          String[] data = (String[]) i.next();
 
-        buffer.append(data[0] + StringUtils.repeat(" ", 45 - data[0].length()) + "| ");
-        buffer.append(data[1] + StringUtils.repeat(" ",  8 - data[1].length()) + "| ");
-        buffer.append(data[2] + StringUtils.repeat(" ",  7 - data[2].length()) + "| ");
-        buffer.append(data[3] + StringUtils.repeat(" ",  9 - data[3].length()) + "| ");
-        buffer.append(data[4] + StringUtils.repeat(" ",  7 - data[4].length()) + "| ");
-        buffer.append(data[5] + StringUtils.repeat(" ", 15 - data[5].length()) + "| ");
-        buffer.append(data[6] + StringUtils.repeat(" ", 10 - data[6].length()) + "| ");
-        buffer.append(data[7] + "\n");
+          buffer.append(data[0] + StringUtils.repeat(" ", 45 - data[0].length()) + "| ");
+          buffer.append(data[1] + StringUtils.repeat(" ",  8 - data[1].length()) + "| ");
+          buffer.append(data[2] + StringUtils.repeat(" ",  7 - data[2].length()) + "| ");
+          buffer.append(data[3] + StringUtils.repeat(" ",  9 - data[3].length()) + "| ");
+          buffer.append(data[4] + StringUtils.repeat(" ",  7 - data[4].length()) + "| ");
+          buffer.append(data[5] + StringUtils.repeat(" ", 15 - data[5].length()) + "| ");
+          buffer.append(data[6] + StringUtils.repeat(" ", 10 - data[6].length()) + "| ");
+          buffer.append(data[7] + "\n");
+        }
+
+      } else {
+
+        buffer.append("DEVELOPMENT MANIFEST\n\n");
+
+        String h1 = "MODULE-NAME";
+        String h2 = "TYPE";
+        String h3 = "LOCAL";
+        String h4 = "REMOTE";
+        String h5 = "STATIC";
+        String h6 = "STATE";
+        String h7 = "LOCATION";
+
+        buffer.append(h1 + StringUtils.repeat(" ", 45 - h1.length()) + "| ");
+        buffer.append(h2 + StringUtils.repeat(" ",  8 - h2.length()) + "| ");
+        buffer.append(h3 + StringUtils.repeat(" ",  7 - h3.length()) + "| ");
+        buffer.append(h4 + StringUtils.repeat(" ",  9 - h4.length()) + "| ");
+        buffer.append(h5 + StringUtils.repeat(" ",  7 - h5.length()) + "| ");
+        buffer.append(h6 + StringUtils.repeat(" ", 35 - h6.length()) + "| ");
+        buffer.append(h7 + "\n");
+        buffer.append(StringUtils.repeat("_", 155));
+        buffer.append("\n");
+
+        for (Iterator i = renderedData.iterator(); i.hasNext();) {
+
+          String[] data = (String[]) i.next();
+          buffer.append(data[0] + StringUtils.repeat(" ", 45 - data[0].length()) + "| ");
+          buffer.append(data[1] + StringUtils.repeat(" ",  8 - data[1].length()) + "| ");
+          buffer.append(data[2] + StringUtils.repeat(" ",  7 - data[2].length()) + "| ");
+          buffer.append(data[3] + StringUtils.repeat(" ",  9 - data[3].length()) + "| ");
+          buffer.append(data[4] + StringUtils.repeat(" ",  7 - data[4].length()) + "| ");
+          // No fifth column
+          buffer.append(data[6] + StringUtils.repeat(" ", 35 - data[6].length()) + "| ");
+          buffer.append(data[7] + "\n");
+        }
       }
-
-    } else {
-
-      buffer.append("DEVELOPMENT MANIFEST\n\n");
-
-      String h1 = "MODULE-NAME";
-      String h2 = "TYPE";
-      String h3 = "LOCAL";
-      String h4 = "REMOTE";
-      String h5 = "STATIC";
-      String h6 = "STATE";
-      String h7 = "LOCATION";
-
-      buffer.append(h1 + StringUtils.repeat(" ", 45 - h1.length()) + "| ");
-      buffer.append(h2 + StringUtils.repeat(" ",  8 - h2.length()) + "| ");
-      buffer.append(h3 + StringUtils.repeat(" ",  7 - h3.length()) + "| ");
-      buffer.append(h4 + StringUtils.repeat(" ",  9 - h4.length()) + "| ");
-      buffer.append(h5 + StringUtils.repeat(" ",  7 - h5.length()) + "| ");
-      buffer.append(h6 + StringUtils.repeat(" ", 35 - h6.length()) + "| ");
-      buffer.append(h7 + "\n");
-      buffer.append(StringUtils.repeat("_", 135));
-      buffer.append("\n");
-
-      for (Iterator i = renderedData.iterator(); i.hasNext();) {
-
-        String[] data = (String[]) i.next();
-        buffer.append(data[0] + StringUtils.repeat(" ", 45 - data[0].length()) + "| ");
-        buffer.append(data[1] + StringUtils.repeat(" ",  8 - data[1].length()) + "| ");
-        buffer.append(data[2] + StringUtils.repeat(" ",  7 - data[2].length()) + "| ");
-        buffer.append(data[3] + StringUtils.repeat(" ",  9 - data[3].length()) + "| ");
-        buffer.append(data[4] + StringUtils.repeat(" ",  7 - data[4].length()) + "| ");
-        // No fifth column
-        buffer.append(data[6] + StringUtils.repeat(" ", 35 - data[6].length()) + "| ");
-        buffer.append(data[7] + "\n");
-      }
+    } catch (NegativeArraySizeException n) {
+      logger.error(n);
+      buffer = new StringBuffer().append("Pfff, some data item is bigger than Karma can handle.");
     }
 
     // -- end of formatting
