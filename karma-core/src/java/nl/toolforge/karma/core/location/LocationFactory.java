@@ -244,11 +244,11 @@ public final class LocationFactory {
 				// TODO refactor out, see 'includeAuthentication()'
 				//
         if (authenticatorRoot != null) {
-//				cvsLocation = includeAuthentication(cvsLocation, authenticatorRoot);
-//
-//				//checkLocation(cvsLocation);
-//
-//				locations.put(cvsLocation.getId(), cvsLocation);
+				cvsLocation = includeAuthentication(cvsLocation, authenticatorRoot);
+
+				//checkLocation(cvsLocation);
+
+				locations.put(cvsLocation.getId(), cvsLocation);
         }
 			}
 
