@@ -5,6 +5,9 @@ import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
+import nl.toolforge.karma.core.cmd.SimpleCommandResponse;
+import nl.toolforge.karma.core.cmd.CommandMessage;
+import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Target;
 import org.apache.tools.ant.BuildException;
@@ -13,6 +16,9 @@ import org.apache.tools.ant.types.Path;
 
 import java.io.File;
 
+/**
+ * Builds a module in a manifest.
+ */
 public class BuildModule extends DefaultCommand {
 
 	public BuildModule(CommandDescriptor descriptor) {
@@ -27,7 +33,7 @@ public class BuildModule extends DefaultCommand {
 		// Configure underlying ant to run a command.
 		//
 		Project project = new Project();
-		project.setName("arjen"); // Required
+		project.setName("karma"); // Required
 		project.setDefault("compile"); // Required
 
 		project.init();
@@ -40,10 +46,10 @@ public class BuildModule extends DefaultCommand {
 		//
 
 		Path path = new Path(project);
-		path.setPath("/tmp/MODULE-A/src/java/");
+		path.setPath(getContext().getLocalPath(module).getPath()); // Path settings determined by CommandContext
 
 		task.setSrcdir(path);
-		task.setDestdir(new File("/tmp"));
+		task.setDestdir(getContext().getBuildTarget(module)); // Path settings determined by CommandContext
 
 		Target target = new Target();
 		target.setName("compile");
@@ -54,12 +60,16 @@ public class BuildModule extends DefaultCommand {
 		try {
 			target.execute();
 		} catch (BuildException e) {
-			//e.printStackTrace();
+			e.printStackTrace();
 		}
 
 		//project.executeTarget("compile");
 
-		return null;
+		CommandResponse response = new SimpleCommandResponse();
+		CommandMessage message = new SimpleCommandMessage("Module " + module.getName() + " built succesfully."); // todo localize message
+		response.addMessage(message);
+
+		return response;
 	}
 
 }

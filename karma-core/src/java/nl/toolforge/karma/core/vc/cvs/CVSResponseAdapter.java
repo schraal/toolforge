@@ -7,7 +7,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.command.FileInfoContainer;
 import org.netbeans.lib.cvsclient.command.log.LogInformation;
-import org.netbeans.lib.cvsclient.event.*;
+import org.netbeans.lib.cvsclient.event.CVSListener;
+import org.netbeans.lib.cvsclient.event.FileAddedEvent;
+import org.netbeans.lib.cvsclient.event.FileInfoEvent;
+import org.netbeans.lib.cvsclient.event.FileRemovedEvent;
+import org.netbeans.lib.cvsclient.event.FileUpdatedEvent;
+import org.netbeans.lib.cvsclient.event.MessageEvent;
+import org.netbeans.lib.cvsclient.event.ModuleExpansionEvent;
+import org.netbeans.lib.cvsclient.event.TerminationEvent;
 
 /**
  * Adapts a response from CVS to Karma specific messages. This class listens to CVS responses as per the Netbeans API.

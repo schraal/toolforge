@@ -1,0 +1,61 @@
+<body>
+
+<p>The <code>location</code> package contains classes managing location objects. Each module in a manifest
+has a location attached to it. A location could be a CVS repository, but also a Maven repository; it is a
+rather abstract definition of a place where a module is located.</p>
+
+<p>Location objects are stored in XML files. The {@link nl.toolforge.karma.core.LocalEnvironment} class defines
+the directory on disk where location xml files are stored. Location xml files are generally company-wide and as
+such they could very well be managed in a version control system.</p>
+
+<p>The following XML blob shows the structure of such a file:</p>
+
+<pre>
+
+&lt;?xml version="1.0"&gt;
+&lt;locations>
+
+  &lt;location type="cvs-repository" id="cvs-local"&gt;
+    &lt;protocol&gt;local&lt;/protocol&gt;
+    &lt;host&gt;localhost&lt;/host&gt;
+    &lt;port&gt;2401&lt;/port&gt;
+    &lt;repository&gt;/home/cvs&lt;/repository&gt;
+  &lt;/location>
+
+&lt;/locations>
+
+</pre>
+
+<p>Each location has a <code>type</code>. The domain for the <code>type</code> attribute is defined in the
+{@link nl.toolforge.karma.core.location.Location} interface. The <code>id</code> attribute is the unique identifier
+for the location. In the manifest definition, a module requires one of these <code>id</code>s.
+
+<p>Depending on the type of location, certain elements are expected. A CVS location, for instance, requires
+a <code>protocol</code>, <code>host</code>, <code>port</code> and <code>repository</code>.
+
+<p>Next to the location definition, certain types of locations require authentication data as well. Since these
+location definitions can be maintained in a version control repository, authentication data is stored separately.
+Karma knows which types of locations require authentication data and will try and read this from the configuration
+directory (<code>$HOME/.karma</code>). Files following the <code>repository-authenticator*</code>-pattern are scanned
+for entries that match the location.
+
+<p>The following XML blob shows the structure of such an authenticator file:</p>
+
+<pre>
+
+&lt;?xml version="1.0"&gt;
+&lt;authenticators>
+  &lt;authenticator id="cvs-local" username="asmedes" password="bogus"&gt;
+  &lt;authenticator id="sf-toolforge" username="asmedes"&gt;
+&lt;/authenticators>
+
+</pre>
+
+<p>The snippet above has a matching <code>id</code>-attribute for the <code>cvs-local</code> location and will be used
+as input for the corresponding location object.
+
+<p>Some bits are not yet implemented in this release. The second &lt;authenticatorgt&; element instance shows a
+situation, whereby only a username is configured. This would apply to configurations where a public SSH key is stored
+on the (remote) server, so no password should be given upon each request. Will be implemented later.
+
+</body>

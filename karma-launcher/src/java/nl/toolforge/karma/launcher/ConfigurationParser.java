@@ -33,16 +33,13 @@ final class ConfigurationParser
 				continue;
 			}
 
-
-			System.out.println("Hello ..." + line);
-
 			// ClassLoaders are define in entries like "[<classloader-name>]"
 			//
 			if (line.startsWith("[") && line.endsWith("]")) {
 				classLoaderName = line.substring(1, line.length() - 1).trim();
 				classLoaderRepository.addClassLoader(classLoaderRepository.getClassLoader(classLoaderName));
 
-				System.out.println("Created KarmaClassloader \"" + classLoaderName + "\"");
+				//System.out.println("Created KarmaClassloader \"" + classLoaderName + "\"");
 				continue;
 			}
 
@@ -82,7 +79,7 @@ final class ConfigurationParser
 			KarmaClassLoader classLoader = (KarmaClassLoader) classLoaderRepository.getClassLoader(targetClassLoaderName);
 			classLoader.addRepository(dirName);
 
-			System.out.println("Added directory \"" + dirName + "\" to KarmaClassLoader \"" + targetClassLoaderName + "\"");
+//			System.out.println("Added directory \"" + dirName + "\" to KarmaClassLoader \"" + targetClassLoaderName + "\"");
 		}
 	}
 
@@ -98,7 +95,7 @@ final class ConfigurationParser
 			KarmaClassLoader classLoader = (KarmaClassLoader) classLoaderRepository.getClassLoader(targetClassLoaderName);
 			classLoader.addRepository(fileName);
 
-			System.out.println("Added file \"" + fileName + "\" to KarmaClassLoader \"" + targetClassLoaderName + "\"");
+//			System.out.println("Added file \"" + fileName + "\" to KarmaClassLoader \"" + targetClassLoaderName + "\"");
 		}
 	}
 
@@ -132,12 +129,12 @@ final class ConfigurationParser
 
 				if (versionOrJarPart.startsWith("version")) {
 					classLoader.addRepository(repository.getJarByVersion(id, versionOrJar));
-					System.out.println("Added jar with id \"" + id + "\" and version \"" + versionOrJar +
-						"\" to KarmaClassLoader \"" + targetClassLoaderName + "\"");
+//					System.out.println("Added jar with id \"" + id + "\" and version \"" + versionOrJar +
+//						"\" to KarmaClassLoader \"" + targetClassLoaderName + "\"");
 				} else if (versionOrJarPart.startsWith("jar")) {
 					classLoader.addRepository(repository.getJarByName(id, versionOrJar));
-					System.out.println("Added jar with id \"" + id + "\" and filename \"" + versionOrJar +
-						"\" to KarmaClassLoader \"" + targetClassLoaderName + "\"");
+//					System.out.println("Added jar with id \"" + id + "\" and filename \"" + versionOrJar +
+//						"\" to KarmaClassLoader \"" + targetClassLoaderName + "\"");
 				}
 
 			}

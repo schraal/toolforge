@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+
+<document>
+ <properties>
+  <title>Karma Core</title>
+ </properties>
+
+<body>
+
+<section name="Outstanding work for the current release">
+
+<subsection name="Work to do for the current release">
+<p>
+  <ul>
+    <li>finish the karma-core-2.0 release so it can be used in production
+        environments; it is anticipated that the production release is ready
+        early April. Beta-releases will be tested extensively by Wisdom
+        Information Consultants, based in Assen, The Netherlands.</li>
+    <li>make sure that the documentation is up to the standard; developers
+        should</li>
+  </ul>
+</p>
+</subsection>
+
+<subsection name="Current release or next release)">
+<p>
+  <ul>
+    <li>although some base code for Subversion support is included, the
+        implementation will be finished in karma-core_3-0;</li>
+  </ul>
+</p>
+</subsection>
+
+</section>
+</body>
+</document>

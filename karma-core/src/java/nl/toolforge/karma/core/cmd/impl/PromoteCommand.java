@@ -51,9 +51,9 @@ public class PromoteCommand extends DefaultCommand {
 	}
 
 	/**
-	 * Returns the new version number for the module, or null when no version number could be set.
+	 * Returns the new version number for the module, or <code>null</code> when no version number could be set.
 	 *
-	 * @return
+	 * @return The new version number for the module, or <code>null</code> when no version number could be set.
 	 */
 	protected final Version getNewVersion() {
 		return newVersion;

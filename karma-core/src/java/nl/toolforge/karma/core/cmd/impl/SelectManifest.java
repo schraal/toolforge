@@ -8,7 +8,7 @@ import nl.toolforge.karma.core.cmd.SimpleCommandResponse;
 import nl.toolforge.karma.core.location.LocationException;
 
 /**
- * This command activates a manifest, which is a general requirement for most other commands. The newly activated
+ * <p>This command activates a manifest, which is a general requirement for most other commands. The newly activated
  * manifest is stored for the Karma session in the {@link nl.toolforge.karma.core.cmd.CommandContext} that is associated
  * with the Karma session.
  *
@@ -23,7 +23,7 @@ public class SelectManifest extends DefaultCommand {
 	}
 
 	/**
-	 * Executes the real stuff, i.e. activates the manifest.
+	 * Activates a manifest.
 	 *
 	 * @return A command response with the results of the activation.
 	 * @throws ManifestException When problems occurred while loading the new manifest.

@@ -41,8 +41,6 @@ class LocalRepository
 
 	private LocalRepository() throws IOException {
 
-		System.out.println("Arjen ...");
-
 		// If there is a $HOME/.karma/karma-launcher.properties file, the karma.repository.local property is supposed to
 		// point to a repository location. This will override the default repository location
 		//
@@ -68,7 +66,7 @@ class LocalRepository
 			(new File(defaultRepositoryLocation)).mkdirs();
 		}
 
-		System.out.println("Repository location set to \"" + repositoryLocation + "\".");
+		//System.out.println("Repository location set to \"" + repositoryLocation + "\".");
 	}
 
 	File getJarByVersion(String id, String version) throws FileNotFoundException {

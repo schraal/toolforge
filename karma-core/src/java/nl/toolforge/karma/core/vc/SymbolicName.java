@@ -7,9 +7,7 @@ package nl.toolforge.karma.core.vc;
 public interface SymbolicName {
 
 	/**
-	 * Checks if the symbolic name is sticky, i.e.
-	 *
-	 * @return
+	 * Checks if the symbolic name is sticky.
 	 */
 	public boolean isSticky();
 
@@ -17,8 +15,6 @@ public interface SymbolicName {
 
 	/**
 	 * Returns a <code>String</code> representation of this symbolic name.
-	 *
-	 * @return
 	 */
 	public String getSymbolicName();
 }

@@ -92,7 +92,7 @@ public interface Runner {
 	 *
 	 * @param module
 	 * @param branch A symbolic name, representing the branch name.
-	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>
+	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>.
 	 */
 	public CommandResponse branch(Module module, SymbolicName branch) throws VersionControlException;
 
@@ -101,7 +101,7 @@ public interface Runner {
 	 *
 	 * @param module
 	 * @param tag
-	 * @return
+	 * @return Response from the version control system wrapped in a <code>CommandResponse</code>.
 	 */
 	public CommandResponse tag(Module module, SymbolicName tag) throws VersionControlException;
 

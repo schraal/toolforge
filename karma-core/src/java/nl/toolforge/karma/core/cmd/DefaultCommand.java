@@ -145,7 +145,7 @@ public abstract class DefaultCommand implements Command {
 	public abstract CommandResponse execute() throws KarmaException;
 
 	/**
-	 * Provides the {@link BundleCache#FRONTEND_MESSAGES} resource bundle to implementations of the default command.
+	 * Helper method to get a resource bundle for frontend messages for commands.
 	 *
 	 * @return The <code>ResourceBundle</code> for the current locale for frontend messages.
 	 */

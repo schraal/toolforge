@@ -1,6 +1,12 @@
 package nl.toolforge.karma.core.cmd;
 
-import nl.toolforge.karma.core.*;
+import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.Manifest;
+import nl.toolforge.karma.core.ManifestException;
+import nl.toolforge.karma.core.ManifestLoader;
+import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.LocationFactory;
@@ -16,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Set;
+import java.io.File;
 
 /**
  * <p>The command context is the class that provides a runtime for commands to run in. The command context maintains
@@ -33,7 +40,7 @@ public final class CommandContext {
 	private static ManifestLoader manifestLoader = null;
 
 	private Manifest currentManifest = null;
-  private LocalEnvironment env = null;
+	private LocalEnvironment env = null;
 
 	private boolean initialized = false;
 
@@ -52,7 +59,6 @@ public final class CommandContext {
 	 * Initializes the context to run commands. This method can only be called once.
 	 *
 	 * @param env The users' {@link nl.toolforge.karma.core.LocalEnvironment}.
-	 *
 	 * @throws KarmaException
 	 */
 	public synchronized void init(LocalEnvironment env) throws KarmaException {
@@ -63,7 +69,7 @@ public final class CommandContext {
 
 			// Read in all location data
 			//
-			LocationFactory.getInstance().load();
+			LocationFactory.getInstance(env).load();
 
 			// Try reloading the last manifest that was used.
 			//
@@ -76,13 +82,9 @@ public final class CommandContext {
 	/**
 	 * Gets the currently active manifest.
 	 *
-	 * @return The currently active manifest.
+	 * @return The currently active manifest, or <code>null</code> when no manifest is current.
 	 */
 	public Manifest getCurrent() {
-
-//    if (currentManifest == null) {
-//      throw new KarmaException(KarmaException.NO_MANIFEST_SELECTED);
-//    }
 		return currentManifest;
 	}
 
@@ -192,6 +194,53 @@ public final class CommandContext {
 
 	public LocalEnvironment getLocalEnvironment() {
 		return this.env;
+	}
+
+
+	/**
+	 * <p>Some module-types (e.g. source modules) have a physical location on disk where the module can be located. This
+	 * method returns a valid reference to that location. When the module-root is located at
+	 * <code>/home/jensen/dev/modules/CORE-conversion</code>, <code>getLocalPath()</code> will return a <code>File</code>
+	 * handle to that directory.
+	 *
+	 * @return A <code>File</code> handle to the module directory on a local disk.
+	 *
+	 * todo consider moving it to Module.
+	 */
+	public final File getLocalPath(Module module) throws KarmaException {
+
+		File localPath = new File(getBase(), module.getName());
+		logger.debug("getLocalPath() = " + localPath.getPath());
+
+		return localPath;
+	}
+
+	/**
+	 * <p>Gets the build target directory for <code>module</code>, creating it when not existing. The current default
+	 * location for a build target directory is determined as follows :
+	 *
+	 * <pre>{@link LocalEnvironment#DEVELOPMENT_HOME_DIRECTORY} + File.separator + {@link #getCurrent()} + File.separator
+	 * + build + module.getName()</pre>
+	 *
+	 * todo consider moving it to Module.
+	 */
+	public final File getBuildTarget(Module module) throws KarmaException {
+
+		File localPath = new File(new File(getBase(), "build"), module.getName());
+
+		if (localPath.mkdirs()) {
+			return localPath;
+		}
+		throw new KarmaException(KarmaException.LAZY_BASTARD); // todo proper exception
+	}
+
+	/**
+	 * Helper to get the module base for the current manifest.
+	 */
+	// todo what to do with the throws clause ???
+	//
+	private File getBase() throws KarmaException {
+		return new File(getLocalEnvironment().getDevelopmentHome(), getCurrent().getName());
 	}
 
 }

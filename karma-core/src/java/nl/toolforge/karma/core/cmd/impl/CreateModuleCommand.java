@@ -3,7 +3,13 @@ package nl.toolforge.karma.core.cmd.impl;
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.ModuleFactory;
-import nl.toolforge.karma.core.cmd.*;
+import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import nl.toolforge.karma.core.cmd.CommandException;
+import nl.toolforge.karma.core.cmd.CommandMessage;
+import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.DefaultCommand;
+import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
+import nl.toolforge.karma.core.cmd.SimpleCommandResponse;
 import nl.toolforge.karma.core.vc.Runner;
 import org.apache.commons.cli.CommandLine;
 
@@ -44,6 +50,7 @@ public class CreateModuleCommand extends DefaultCommand {
 			if (!getContext().isManifestLoaded()) {
 				throw new CommandException(CommandException.NO_MANIFEST_SELECTED);
 			}
+
 			module = getContext().getCurrent().createModule(moduleName, locationAlias, true);
 
 		} else {
@@ -61,7 +68,7 @@ public class CreateModuleCommand extends DefaultCommand {
 		// If we get to this point, creation of the module was succesfull.
 		//
 		CommandMessage message =
-				new SimpleCommandMessage(getFrontendMessages().getString("message.MODULE_CREATED"), new Object[]{moduleName, locationAlias});
+			new SimpleCommandMessage(getFrontendMessages().getString("message.MODULE_CREATED"), new Object[]{moduleName, locationAlias});
 
 		// Ensure that only this message is passed back to the client
 		//

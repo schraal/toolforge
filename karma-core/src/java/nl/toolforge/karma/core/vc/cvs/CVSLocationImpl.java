@@ -152,7 +152,9 @@ public final class CVSLocationImpl extends BaseLocation {
 	}
 
 	/**
-	 * @return
+	 * String representation of the CVSROOT.
+	 *
+	 * @return String representation of the CVSROOT, or the message from the {@link CVSException#INVALID_CVSROOT} exception.
 	 */
 	public String toString() {
 

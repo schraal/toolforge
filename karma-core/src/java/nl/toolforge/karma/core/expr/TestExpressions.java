@@ -2,8 +2,8 @@ package nl.toolforge.karma.core.expr;
 
 import junit.framework.TestCase;
 
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TestExpressions extends TestCase {
 

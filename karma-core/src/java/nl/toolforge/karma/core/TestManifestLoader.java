@@ -1,11 +1,6 @@
 package nl.toolforge.karma.core;
 
 import nl.toolforge.karma.core.test.BaseTest;
-import nl.toolforge.core.util.file.MyFileUtils;
-
-import java.util.Properties;
-import java.io.File;
-import java.io.IOException;
 
 /**
  * @author D.A. Smedes
@@ -21,7 +16,7 @@ public class TestManifestLoader extends BaseTest {
 
 		try {
 			Manifest m =
-					ml.load("test/test-manifest-1.xml", this.getClass().getClassLoader(), "");
+				ml.load("test/test-manifest-1.xml", this.getClass().getClassLoader(), "");
 
 			assertEquals(2, m.countSourceModules());
 			assertEquals(2, m.countJarModules());

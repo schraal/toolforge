@@ -1,6 +1,6 @@
 package nl.toolforge.karma.cli;
 
-import nl.toolforge.karma.core.prefs.Preferences;
+//import nl.toolforge.karma.core.prefs.Preferences;
 import org.apache.commons.lang.StringUtils;
 
 /**

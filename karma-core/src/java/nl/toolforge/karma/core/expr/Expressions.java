@@ -1,8 +1,8 @@
 package nl.toolforge.karma.core.expr;
 
-import java.util.regex.Pattern;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Class defining pattern strings for model elements, such as module names, version numbers and the like. This class can

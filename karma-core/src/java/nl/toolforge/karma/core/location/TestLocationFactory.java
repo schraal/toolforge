@@ -15,7 +15,7 @@ public class TestLocationFactory extends TestCase {
 
 		try {
 			factory.load(getClass().getClassLoader().getResourceAsStream("test/locations.xml"),
-					getClass().getClassLoader().getResourceAsStream("test/location-authentication.xml"));
+				getClass().getClassLoader().getResourceAsStream("test/location-authentication.xml"));
 
 			assertNotNull(factory.get("local-test"));
 			assertNotNull(factory.get("subversion-test"));

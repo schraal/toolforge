@@ -1,9 +1,9 @@
 package nl.toolforge.karma.cli;
 
 import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.Manifest;
 import nl.toolforge.karma.core.LocalEnvironment;
-import nl.toolforge.karma.core.prefs.Preferences;
+import nl.toolforge.karma.core.Manifest;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.bundle.BundleCache;
 import nl.toolforge.karma.core.cmd.CommandContext;
 import nl.toolforge.karma.core.cmd.CommandFactory;
@@ -122,6 +122,10 @@ public class CLI {
 					} else {
 
 						CommandResponse response = ctx.execute(line);
+
+						if (response == null) {
+							throw new NullPointerException("Command response has not been generated correctly; should not be null");
+						}
 
 						// For now, just print the response.
 						//

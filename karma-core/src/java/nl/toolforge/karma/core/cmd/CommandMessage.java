@@ -14,7 +14,7 @@ public interface CommandMessage {
 	 * Returns the message in a human readable form. This string should be formatted without
 	 * newline characters, to enable any interface application to process them easily.
 	 *
-	 * @return
+	 * @return The message text of this message.
 	 */
 	public String getMessageText();
 }

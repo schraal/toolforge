@@ -78,21 +78,21 @@ public final class KarmaClassLoaderRepository
 
 		InputStream in = null;
 		try {
-			System.out.println("Trying to read KarmaClassLoaderRepository configuration " +
-				"\"" + configFile + "\" from filesystem.");
+//			System.out.println("Trying to read KarmaClassLoaderRepository configuration " +
+//				"\"" + configFile + "\" from filesystem.");
 			in = new FileInputStream(configFile);
 
-			System.out.println("Found KarmaClassLoaderRepository configuration on filesystem.");
+//			System.out.println("Found KarmaClassLoaderRepository configuration on filesystem.");
 		} catch (IOException e) {
 			System.out.println("Failed to read KarmaClassLoaderRepository configuration " +
 				"\"" + configFile + "\" from filesystem, due to \"" +
 				e.getMessage() + "\", trying to find file in classpath.");
 			if ((in = this.getClass().getClassLoader().getResourceAsStream(configFile)) == null) {
-				System.out.println("Failed to find KarmaClassLoaderRepository configuration " +
-					"\"" + configFile + "\" in classpath.");
+//				System.out.println("Failed to find KarmaClassLoaderRepository configuration " +
+//					"\"" + configFile + "\" in classpath.");
 				throw e;
 			} else {
-				System.out.println("Found KarmaClassLoaderRepository configuration in classpath.");
+//				System.out.println("Found KarmaClassLoaderRepository configuration in classpath.");
 			}
 		}
 

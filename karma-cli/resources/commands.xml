@@ -4,6 +4,24 @@
 
 <commands>
 
+	<command name="build-module" alias="bm">
+
+		<description lang="en">
+			Something.
+ 		</description>
+		
+		<options>
+			<option opt="m" longOpt="module" required="true" description="The module name">
+				<arg name="module-name"/>
+			</option>
+		</options>
+
+		<classname>nl.toolforge.karma.core.cmd.impl.BuildModule</classname>
+
+		<help/>
+
+	</command>
+
 	<command name="update-all" alias="ua">
 
 		<description lang="en">

@@ -120,9 +120,9 @@ public interface Manifest {
 	public boolean isLocal(Module module) throws KarmaException;
 
 	/**
-	 * A manifest on a users' local disk is located in a directory relative to
-	 * {@link nl.toolforge.karma.core.prefs.Preferences#getDevelopmentHome}. This method returns the full path to this
-	 * manifests' directory.
+	 * A manifest on a users' local disk is located in a directory relative to {@link LocalEnvironment#getDevelopmentHome}.
+	 * This method returns the full path to this manifests' directory, and results in something like a file reference to
+	 * <code>/home/asmedes/karma/projects/test-1.0/</code>
 	 *
 	 * @return A <code>File</code> reference to the manifests' local directory.
 	 * @throws ManifestException When a <code>File</code> reference cannot be obtained. See {@link ManifestException#INVALID_LOCAL_PATH}.

@@ -1,6 +1,10 @@
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.*;
+import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.Manifest;
+import nl.toolforge.karma.core.ManifestException;
+import nl.toolforge.karma.core.ModuleMap;
+import nl.toolforge.karma.core.SourceModule;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
@@ -51,7 +55,7 @@ public class ViewManifest extends DefaultCommand {
 				moduleData[2] = "(" + (CVSVersionExtractor.getInstance().getLastVersion(module)).getVersionNumber() + ")";
 			} catch (KarmaException k) {
 				logger.warn("Something failed when trying to extract the latest patch level for module : " + module.getName() +
-						"; " + k.getMessage());
+					"; " + k.getMessage());
 				moduleData[2] = "(N/A)"; // Sort of unknown
 			}
 			moduleData[3] = (module.getDevelopmentLine() == null ? "N/A" : module.getDevelopmentLine().getName());

@@ -1,7 +1,6 @@
 package nl.toolforge.karma.core;
 
 import nl.toolforge.karma.core.exception.ErrorCode;
-import nl.toolforge.karma.core.prefs.Preferences;
 
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -79,19 +78,33 @@ public class KarmaException extends Exception {
 	 */
 	public static final ErrorCode NO_CONFIGURATION_DIRECTORY = new ErrorCode("CORE-00006");
 
-	/** Duplicate command descriptor name in commands XML file */
+	/**
+	 * Duplicate command descriptor name in commands XML file
+	 */
 	public static final ErrorCode DUPLICATE_COMMAND = new ErrorCode("CORE-00007");
-	/** Duplicate command descriptor alias in commands XML file */
+	/**
+	 * Duplicate command descriptor alias in commands XML file
+	 */
 	public static final ErrorCode DUPLICATE_COMMAND_ALIAS = new ErrorCode("CORE-00008");
-	/** Data format errors (errors during pattern matching, etc). */
+	/**
+	 * Data format errors (errors during pattern matching, etc).
+	 */
 	public static final ErrorCode DATAFORMAT_ERROR = new ErrorCode("CORE-00020");
-	/** The console could not be initialized with user defined settings. Settings could not be available. */
+	/**
+	 * The console could not be initialized with user defined settings. Settings could not be available.
+	 */
 	public static final ErrorCode CONSOLE_INITIALIZATION_ERROR = new ErrorCode("CORE-00040");
-	/** Command does not exist */
+	/**
+	 * Command does not exist
+	 */
 	public static final ErrorCode INVALID_COMMAND = new ErrorCode("CORE-00050");
-	/** Invalid option for this command */
+	/**
+	 * Invalid option for this command
+	 */
 	public static final ErrorCode INVALID_COMMAND_OPTION = new ErrorCode("CORE-00051");
-	/** No <code>module.info</code> file exists for the module. This file is mandatory for <code>SourceModule</code>s. */
+	/**
+	 * No <code>module.info</code> file exists for the module. This file is mandatory for <code>SourceModule</code>s.
+	 */
 	public static final ErrorCode NO_MODULE_INFO = new ErrorCode("CORE-00065");
 
 	protected ErrorCode errorCode = null;
@@ -168,7 +181,7 @@ public class KarmaException extends Exception {
 			return getMessage();
 		} else {
 //			String errorMessage = errorCode.getErrorMessage(LocalEnvironment.getLocale());
-      //todo read from system
+			//todo read from system
 			String errorMessage = errorCode.getErrorMessage(Locale.ENGLISH);
 			if (getMessageArguments().length != 0) {
 				MessageFormat messageFormat = new MessageFormat(errorMessage);

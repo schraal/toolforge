@@ -70,7 +70,7 @@
       <module fileurl="file://$PROJECT_DIR$/toolforge.iml" filepath="$PROJECT_DIR$/toolforge.iml" />
     </modules>
   </component>
-  <component name="ProjectRootManager" version="2" assert-keyword="false" />
+  <component name="ProjectRootManager" version="2" assert-keyword="false" project-jdk-name="java version &quot;1.4.1_02&quot;" />
   <component name="WebManager">
     <option enabled="false" />
   </component>

@@ -1,12 +1,22 @@
 package nl.toolforge.karma.cli.cmd;
 
 import nl.toolforge.karma.cli.ConsoleConfiguration;
+import nl.toolforge.karma.cli.CLI;
 import nl.toolforge.karma.core.ManifestException;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.prefs.Preferences;
-import nl.toolforge.karma.core.cmd.*;
+import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.cmd.CommandDescriptor;
+import nl.toolforge.karma.core.cmd.CommandMessage;
+import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
+import nl.toolforge.karma.core.cmd.SimpleCommandResponse;
 import nl.toolforge.karma.core.cmd.impl.SelectManifest;
+import nl.toolforge.karma.core.location.LocationException;
+
+import java.util.prefs.Preferences;
+import java.util.prefs.BackingStoreException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * @author W.H. Schraal
@@ -14,6 +24,8 @@ import nl.toolforge.karma.core.cmd.impl.SelectManifest;
  * @version $Id$
  */
 public class SelectManifestImpl extends SelectManifest {
+
+	private static Log logger = LogFactory.getLog(SelectManifestImpl.class);
 
   public SelectManifestImpl(CommandDescriptor descriptor) throws ManifestException {
     super(descriptor);
@@ -35,13 +47,19 @@ public class SelectManifestImpl extends SelectManifest {
 
 		ConsoleConfiguration.setManifest(getContext().getCurrent());
 
-    throw new KarmaRuntimeException("refactor this");
-    //getContext().getLocalEnvironment().setManifestHistory(getContext().getCurrent().getName());
+		// Store this manifest as the last used manifest.
+		//
+		Preferences.userRoot().put(LocalEnvironment.LAST_USED_MANIFEST_PREFERENCE, getContext().getCurrent().getName());
+		try {
+			Preferences.userRoot().flush();
+		} catch (BackingStoreException e) {
+			logger.warn("Could not write user preferences due to java.util.prefs.BackingStoreException.");
+		}
 
-//    CommandMessage message = new SimpleCommandMessage(getFrontendMessages().getString("message.MANIFEST_ACTIVATED"));
-//    CommandResponse response = new SimpleCommandResponse();
-//    response.addMessage(message);
+		CommandMessage message = new SimpleCommandMessage(getFrontendMessages().getString("message.MANIFEST_ACTIVATED"));
+    CommandResponse response = new SimpleCommandResponse();
+    response.addMessage(message);
 
-//    return response;
+    return response;
   }
 }

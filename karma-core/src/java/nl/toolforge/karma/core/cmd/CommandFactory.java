@@ -1,11 +1,22 @@
 package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.MissingArgumentException;
+import org.apache.commons.cli.MissingOptionException;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.TreeMap;
 
 /**
  * This factory is the single resource of Command objects.
@@ -119,7 +130,7 @@ public final class CommandFactory {
 				// Construct the command implementation, with the default constructor
 				//
 				Constructor defaultConstructor =
-						descriptor.getImplementation().getConstructor(new Class[]{CommandDescriptor.class});
+					descriptor.getImplementation().getConstructor(new Class[]{CommandDescriptor.class});
 
 				cmd = (Command) defaultConstructor.newInstance(new Object[]{descriptor});
 

@@ -1,14 +1,14 @@
 package nl.toolforge.karma.core;
 
-import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.expr.Expressions;
+import nl.toolforge.karma.core.location.Location;
 
 import java.io.File;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * <p>A <code>JarModule</code> represents a Java <code>jar</code>-artifact. *
+ * <p>A <code>JarModule</code> represents a Java <code>jar</code>-artifact. 
  *
  * @author D.A. Smedes
  * @version $Id$

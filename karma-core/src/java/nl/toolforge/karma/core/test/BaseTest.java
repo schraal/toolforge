@@ -1,20 +1,20 @@
 package nl.toolforge.karma.core.test;
 
 import junit.framework.TestCase;
+import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.location.LocationFactory;
-import nl.toolforge.karma.core.prefs.Preferences;
-import nl.toolforge.core.util.file.MyFileUtils;
+//import nl.toolforge.karma.core.prefs.Preferences;
 
-import java.util.Properties;
 import java.io.File;
 import java.io.IOException;
+import java.util.Properties;
 
 /**
  * This testclass is highly recommended when writing JUnit testclasses for Karma. It initializes some basic stuff
- * that affects classes like {@link Preferences} etc.
+ * that affects classes like {@link java.util.prefs.Preferences} etc.
  *
  * @author D.A. Smedes
  * @version $Id$
@@ -52,8 +52,8 @@ public class BaseTest extends TestCase {
 
 		p = new Properties();
 		p.put(LocalEnvironment.DEVELOPMENT_HOME_DIRECTORY, f1.getPath());
-		p.put(LocalEnvironment.MANIFEST_STORE_DIRECTORY  , f2.getPath());
-		p.put(LocalEnvironment.LOCATION_STORE_DIRECTORY  , f3.getPath());
+		p.put(LocalEnvironment.MANIFEST_STORE_DIRECTORY, f2.getPath());
+		p.put(LocalEnvironment.LOCATION_STORE_DIRECTORY, f3.getPath());
 
 		// Initialize the LocationFactory
 		//

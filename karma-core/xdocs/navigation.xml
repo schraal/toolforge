@@ -1,28 +1,45 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="karma-core">
-  <title>Karma Core</title>
+<project name="Toolforge"
+        href="http://sourceforge.net/projects/toolforge">
+
+  <title>Toolforge - Karma Core Module</title>
 
   <body>
-	  <!--    <links>
-      <item name="Wisdom Commons"     href="http://maven.wisdom.nl/dev/docs/wisdom-compmons/"/>
-      <item name="Wisdom Components"  href="http://maven.wisdom.nl/dev/docs/wisdom-components/"/>
-      <item name="Maven Repository"   href="http://maven.wisdom.nl/repository/"/>
+    <links>
+      <item name="Toolforge Home"	   href="http://toolforge.sourceforge.net"/>
     </links>
-    -->
-    <menu name="Overview">
-      <item name="Introduction"             href="/index.html"/>
+
+    <menu name="General Information">
+      <item name="Overview"              href="/index.html"/>
+      <item name="Features"              href="/features.html"/>
+      <item name="Getting Started"       href="/getting-started.html"/>
+      <item name="Howto Build "	         href="/how-to-build.html"/>
     </menu>
-    <!--
-    <menu name="Utilities">
-      <item name="Common Utils"             href="/util/index.html"/>
-      <item name="Swing Utils"              href="/swing/index.html"/>
-      <item name="Turbine Utils"            href="/turbine/index.html"/>
+
+    <menu name="Interface Apps">
+      <item name="Command Line Interface"  href=""/>
+      <item name="Aura GUI"                href=""/>
+
+      <submenu name="Plugins">
+      <item name="Intelli-J" href="/plugins/intelli-j.html"/>    
+      <item name="Eclipse" href="/plugins/eclipse.html"/>    
+      <item name="JDeveloper" href="/plugins/jdeveloper.html"/>    
+      <item name="Maven Plugin" href=""/>    
+      </submenu>
+
     </menu>
-    -->
-    <!--
-    <menu name="Maven Plugins">
-      <item name="Source Generator Plugin"  href="/sourcegen-plugin/index.html"/>
+
+    <menu name="Documentation">
+      <item name="Commands"              href="/commands.html"/>
+      <item name="How-To's"              href="/howto/index.html"/>
+      <item name="JavaDocs"		 href="/apidocs/index.html"/>
     </menu>
-    -->
+
+    <menu name="Development">
+      <item name="Proposals"             href="/proposals.html"/>
+      <item name="How To Help"           href="/how-to-help.html"/>
+      <item name="Todo"                  href="/todo.html"/>
+    </menu>
+
   </body>
 </project>

@@ -107,8 +107,9 @@ public final class CommandDescriptor {
 	/**
 	 * Commands are equal when their names are equal.
 	 *
-	 * @param o
-	 * @return
+	 * @param o The object instance that should be compared with <code>this</code>.
+	 * @return <code>true</code> if this command descriptor is equal to <code>o</code> or <code>null</code> when
+	 *   <code>o</code> is not a <code>CommandDescriptor</code> instance or when it is not the same object.
 	 */
 	public boolean equals(Object o) {
 

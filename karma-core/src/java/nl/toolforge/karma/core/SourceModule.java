@@ -6,6 +6,7 @@ import nl.toolforge.karma.core.vc.DevelopmentLine;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.io.File;
 
 /**
  * <p>A <code>SourceModule</code> represents a module for which the developer wants to have the sources available to
@@ -103,15 +104,6 @@ public class SourceModule extends BaseModule {
 		return developmentLine;
 	}
 
-//	/**
-//	 * Returns the branch name as a string. The phrase "development line" is used throughout ui implementations."
-//	 *
-//	 * @return The branch name as a string.
-//	 */
-//	public final String getBranchAsString() {
-//		 return (developmentLine == null ? "N/A" : developmentLine.getName());
-//	}
-
 	/**
 	 * If the module element in the manifest contains a <code>version</code> attribute, this method will return the
 	 * value of that attribute.
@@ -132,49 +124,6 @@ public class SourceModule extends BaseModule {
 	public final String getVersionAsString() {
 		return (version == null ? "N/A" : version.getVersionNumber());
 	}
-
-//	/**
-//	 * Returns the full path, based on {@link LocalEnvironment#getDevelopmentHome} and the modules' name {@link #getName}.
-//	 */
-//	public static File getLocalPath() {
-//
-//		String localPath = null;
-//		try {
-//			localPath = prefs.getDevelopmentHome().getPath().concat(File.separator).concat(this.getName());
-//			logger.debug("getLocalPath() = " + localPath);
-//		} catch (KarmaException e) {
-//			e.printStackTrace();
-//		}
-//
-//		return new File(localPath);
-//	}
-//
-//	/**
-//	 * Checks if this module has a <code>module.info</code> file (to be more exact, a file by the name identified by
-//	 * {@link #MODULE_INFO}.
-//	 *
-//	 * @return <code>true</code> if that file is present, false if it isn't.
-//	 */
-//	public boolean hasModuleInfo() {
-//
-//		try {
-//			new File(getLocalPath(), MODULE_INFO);
-//			return true;
-//		} catch (Exception e) {
-//			return false;
-//		}
-//	}
-
-//  /**
-//   * Gets a file reference to the <code>module.info</code> file for this module.
-//   */
-//  public File getModuleInfo() throws KarmaException {
-//
-//    if (hasModuleInfo()) {
-//      return new File(getLocalPath(), MODULE_INFO);
-//    }
-//    throw new KarmaException(KarmaException.NO_MODULE_INFO);
-//  }
 
 	/**
 	 * Checks if this module has a version number.

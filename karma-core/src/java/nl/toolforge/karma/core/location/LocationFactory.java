@@ -1,11 +1,10 @@
 package nl.toolforge.karma.core.location;
 
 import nl.toolforge.core.util.file.XMLFilenameFilter;
-import nl.toolforge.karma.core.prefs.Preferences;
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
-import nl.toolforge.karma.core.LocalEnvironment;
-import nl.toolforge.karma.core.KarmaRuntimeException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.CVSRoot;
@@ -21,27 +20,34 @@ import java.util.Hashtable;
 import java.util.Map;
 
 /**
- * Class to gain access to <code>Location</code> instances.
+ * <p>Factory class to gain access to <code>Location</code> instances. Location instances are created based on XML
+ * definitions in the location store. The location store is a directory on the user's local harddisk, which is a
+ * mandatory property in <code>karma.properties</code>. See {@link LocalEnvironment} for more information.
+ *
+ * <p>A location can be of different types. Some locations require authenticator data, which is mapped from XML files
+ * in the Karma configuration directory. The filename pattern used for authenticator files is
+ * <code>repository-authenticator*.xml</code>. A location with id <code>cvs-1</code> will be mapped to an authenticator
+ * with the same id.
  *
  * @author D.A. Smedes
  * @author W.M. Oosterom
+ *
  * @version $Id$
  */
 public final class LocationFactory {
 
 	private static Log logger = LogFactory.getLog(LocationFactory.class);
 
-	private static LocalEnvironment env = null;
+	private static LocalEnvironment env = null; // Reference to the local environment.
 	private static LocationFactory instance = null;
 
 	private static Map locations = null;
 
-	private LocationFactory() {
-	}
+	private LocationFactory() {}
 
 	/**
 	 * Gets the singleton instance of the location factory. This instance can be used to get access to all location
-	 * objects.
+	 * objects. This method expects an initialized {@link LocalEnvironment}.
 	 *
 	 * @return A location factory.
 	 */
@@ -65,7 +71,7 @@ public final class LocationFactory {
 	}
 
 	/**
-	 * Loads all location xml files from the path specified by the {@link LocalEnvironment#LOCATION_STORE_DIRECTORY)}
+	 * Loads all location xml files from the path specified by the {@link LocalEnvironment#LOCATION_STORE_DIRECTORY}
 	 * property. Location objects are matched against authenticator objects, which should be available in the Karma
 	 * configuration directory and should start with '<code>authentication</code>' and have an <code>xml</code>-extension.
 	 *
@@ -73,7 +79,7 @@ public final class LocationFactory {
 	 */
 	public synchronized void load() throws LocationException {
 
-    if (env == null) {
+		if (env == null) {
 			throw new KarmaRuntimeException("Local environment is not initialized. Use 'getInstance(LocalEnvironment)'.");
 		}
 
@@ -110,8 +116,7 @@ public final class LocationFactory {
 			// Repeat this step for authenticator files.
 			//
 
-//todo refactor
-			//files = new File(env.getConfigurationDirectory()).list(new AuthenticationFilenameFilter());
+			files = env.getConfigurationDirectory().list(new AuthenticationFilenameFilter());
 
 			Document authenticationRoot = null;
 
@@ -119,8 +124,7 @@ public final class LocationFactory {
 
 				// Load the first file. todo Later on, more than one file can be supported.
 				//
-//todo refactor
-//				authenticationRoot = builder.parse(new File(env.getConfigurationDirectory(), files[0]));
+				authenticationRoot = builder.parse(new File(env.getConfigurationDirectory(), files[0]));
 
 				// Load the rest of them
 				//
@@ -133,8 +137,7 @@ public final class LocationFactory {
 					authenticationRoot = (Document) authenticationRoot.importNode(document.getDocumentElement(), true);
 				}
 			} else {
-//todo refactor
-//				logger.info("No authentication files found in " + env.getConfigurationDirectory() + ".");
+				logger.info("No authentication files found in " + env.getConfigurationDirectory().getPath() + ".");
 			}
 
 			load(locationRoot, authenticationRoot);

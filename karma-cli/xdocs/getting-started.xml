@@ -2,106 +2,102 @@
 
 <document>
 
-  <properties>
-    <title>Toolforge</title>
-    <author email="asmedes@home.nl">Arjen Smedes</author>
-  </properties>
+	<properties>
+		<title>Toolforge</title>
+		<author email="asmedes@home.nl">Arjen Smedes</author>
+	</properties>
 
-  <body>
+	<body>
 
-  <section name="Getting Started">
+		<section name="Getting Started">
 
-  <p>
+			<p>
     This page describes how to get the CLI tool started on your local
     machine.
-  </p>
+			</p>
 
-  </section>
+		</section>
 
-  <section name="Compiling dependent modules">
+		<section name="Compiling dependent modules">
 
-  <p>
-    The CLI module depends on three other toolforge modules : <code>toolforge-core</code>,
-    <code>karma-core</code> and <code>karma-launcher</code>. These modules
-    have to be compiled and deployed to your local Maven repository. The
-    easiest route is to execute the following steps:
-  </p>
+			<p>
+        The CLI module depends on three other toolforge modules : <code>toolforge-core</code>,
+				<code>karma-core</code> and <code>karma-launcher</code>. These modules have to be compiled
+        and deployed to your local Maven repository. The easiest route is to execute the following steps:
+			</p>
 
-  <ul>
-    <li/>Check out the full <code>toolforge</code> project from Sourceforge.
-    <li/>On <code>toolforge-core</code> execute the <code>jar:install</code> goal. This will
-    install <code>toolforge-core-1.0-dev.jar</code> into the local Maven
-    repository (well, that is assuming you have that as your default
-    repository.
-    <li/>On <code>karma-launcher</code> execute the <code>jar</code> goal. This will
-    compile and package <code>karma-launcher-1.2.jar</code> into the
-    <code>target</code> directory of the <code>karma-launcher</code>
-    module.
-    <li/>Refer to the documentation site for the <code>karma-core</code> and
-    follow the steps for the JUnit test setup. There is a manual procedure to
-    follow before the <code>karma-core</code> module can be succesfully
-    deployed as a jar in the Maven repository. The quick route is to disable
-    junit tests in the <code>karma-core</code> module and execute the
-    <code>jar:install</code> goal upon the module.
-    <li/>Last, but not least, the <code>karma-cli</code> module should be
-    compiled. Use <code>java:compile</code> on the <code>karma-cli</code>
-    module to compile the sources into the <code>target/classes</code>
-    directory.
-  </ul>
+			<ul>
+				<li/>Check out the full <code>toolforge</code> project from Sourceforge.
+				<li/>On <code>toolforge-core</code> execute the <code>jar:install</code> goal.
+             This will install <code>toolforge-core-1.0-dev.jar</code> into the local
+             Maven repository (well, that is assuming you have that as your default repository.
+				<li/>On <code>karma-launcher</code> execute the <code>jar</code> goal. This will
+             compile and package <code>karma-launcher-1.2.jar</code> into the <code>target</code>
+             directory of the <code>karma-launcher</code> module.
+				<li/>Refer to the documentation site for the <code>karma-core</code> and follow the
+             steps for the JUnit test setup. There is a manual procedure to follow before
+             the <code>karma-core</code> module can be succesfully deployed as a jar in the
+             Maven repository. The quick route is to disable junit tests in the <code>karma-core</code>
+             module and execute the <code>jar:install</code> goal upon the module.
+				<li/>Last, but not least, the <code>karma-cli</code> module should be compiled. Use
+				     <code>java:compile</code> on the <code>karma-cli</code> module to compile the sources
+             into the <code>target/classes</code> directory.
+			</ul>
 
-  </section>
+		</section>
 
-  <section name="Configuration">
+		<section name="Configuration">
 
-  <p>
-    Karma (whichever user interface you use) depends on a few configuration
-    items that must be present. Follow the following steps to configure your
-    local environment.
-  </p>
+			<p>
+        Karma (whichever user interface you use) depends on a few configuration items that must
+        be present. Follow the following steps to configure your local environment.
+			</p>
 
-  <ul>
-    <li/>Create a configuration directory in your user home directory. The
-    location is really optional, but it is recommended to create the directory
-    in your home directory. A good one is <code>$HOME/.karma</code>
-    <li/>Create a <code>karma.properties</code>-file in that directory and
-    configure the following properties:
-    <table>
-      <tr>
-        <th>Name</th>
-	<th>Value</th>
-      </tr>
-      <tr>
-        <td><code>locale</code></td>
-	<td><code>en</code> (or <code>nl</code>)</td>
-      </tr>
-      <tr>
-        <td><code>karma.location-store.directory</code></td>
-	<td><code>/tmp/toolforge/locations</code>)</td>
-      </tr>
-    </table>
-    <li/>Copy
-    <code>karma-core/resources/templates/locations.xml.template</code> as
-    <code>locations.xml</code> (only the extension is important) to the
-    directory you configured for <code>karma.location-store.directory</code>
-    in <code>karma.properties</code>. 
-    <li/>Copy <code>karma-launcher-1.2.jar</code> into the <code>lib</code>
-    directory of your <code>karma-cli</code> module directory (create that
-    directory if it doesn't exist.
-  </ul>
+			<ul>
+				<li/>A configuration directory <code>$HOME/.karma</code> should be created.
+             The <code>LocalEnvironment</code> class will create this one upon instantiation,
+             with the default configuration, if you don't supply one.
+				<li/>Create a <code>karma.properties</code>-file in that directory and configure
+             the following properties:
+				<table>
+					<tr>
+						<th>Name</th>
+						<th>Value</th>
+					</tr>
+					<tr>
+						<td><code>development.store</code></td>
+						<td><code>/home/asmedes/karma/projects</code> (default value)</td>
+					</tr>
+					<tr>
+						<td><code>manifest.store</code></td>
+						<td><code>/home/asmedes/karma/manifests</code> (default value)</td>
+					</tr>
+					<tr>
+						<td><code>location.store</code></td>
+						<td><code>/home/asmedes/karma/locations</code> (default value)</td>
+					</tr>
+				</table>
+				<li/>Copy <code>karma-core/resources/templates/locations.xml.template</code> as
+				     <code>locations.xml</code> (only the extension is important) to the directory
+             you configured for <code>location.store</code> in <code>karma.properties</code>.
+				<li/>Copy <code>karma-core/resources/templates/repository-authenticators.xml.template</code>
+             as <code>repository-authenticators.xml</code> to <code>$HOME/.karma</code>.
+				<li/>Copy <code>karma-launcher-1.2.jar</code> into the <code>lib</code> directory
+             of your <code>karma-cli</code> module directory (create that directory if it
+             doesn't exist.
+			</ul>
 
-  </section>
+		</section>
 
-  <section name="Start the Command Line Interface">
+		<section name="Start the Command Line Interface">
 
-  <p>
-    All set ? Start the command line interface. Use
-    <code>bin/karma -Dbootstrap.configuration=&lt;path-to-karma.properties&gt;</code> on
-    a Unix system to see the thing happening (Windows users wait a bit or do
-    it yourself for now).
-  </p>
+			<p>
+        All set ? Start the command line interface. Use <code>bin/karma</code> on a Unix system to see the
+        thing happening (Windows users wait a bit or do it yourself for now).
+			</p>
 
-  </section>
+		</section>
 
-</body>
+	</body>
 
 </document>

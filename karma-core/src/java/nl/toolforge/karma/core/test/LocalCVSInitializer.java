@@ -20,9 +20,10 @@ import java.util.Random;
  * CVS repository with predefined modules that can be used for testing purposes. If the CVS repository cannot be found
  * (i.e. the user has not prepared his/her local environment with the CVSROOT), and you don't want your CVS stuff to
  * be tested, make sure you ignore these testcases in your test-configuration.
- * <p/>
- * <p>Note the dependency of this class with {@link nl.toolforge.karma.core.location.Location} and {@link nl.toolforge.karma.core.vc.cvs.CVSLocationImpl}.
- * <p/>
+ *
+ * <p>Note the dependency of this class with {@link nl.toolforge.karma.core.location.Location} and
+ * {@link nl.toolforge.karma.core.vc.cvs.CVSLocationImpl}.
+ *
  * <p>When performing operations on managed files, a randomize function is used to be able to repeatedly perform
  * tests. Filenames and modulenames in the repository could be named like <code>bla_036548290.56437</code>.
  *
@@ -120,7 +121,7 @@ public class LocalCVSInitializer extends BaseTest {
 
 	/**
 	 * Gets the temporary development home for the testrun. In a normal runtime environment, this would be equivalent
-	 * with <code>new File({@link nl.toolforge.karma.core.prefs.Preferences#getDevelopmentHome})</code>.
+	 * with <code>new File({@link nl.toolforge.karma.core.LocalEnvironment#getDevelopmentHome})</code>.
 	 */
 	protected File getDevelopmentHome() {
 		return tempDevelopmentHome;

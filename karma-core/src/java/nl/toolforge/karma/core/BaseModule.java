@@ -49,7 +49,7 @@ public abstract class BaseModule implements Module {
 	/**
 	 * Gets the modules' name.
 	 *
-	 * @see {@link Module#getName}
+	 * @see Module#getName
 	 */
 	public final String getName() {
 		return name;
@@ -79,7 +79,7 @@ public abstract class BaseModule implements Module {
 	/**
 	 * Gets the modules' current state.
 	 *
-	 * @return
+	 * @return The current state of the module.
 	 */
 	public final State getState() {
 		return state;

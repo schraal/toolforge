@@ -2,9 +2,7 @@ package nl.toolforge.karma.core;
 
 import nl.toolforge.core.util.file.XMLFilenameFilter;
 import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.LocationFactory;
-import nl.toolforge.karma.core.prefs.UnavailableValueException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -22,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.prefs.Preferences;
 
 /**
  * <p>The manifest loader is responsible for loading a manifest from disk in memory. Manifests are stored on disk in
@@ -35,14 +34,8 @@ public final class ManifestLoader {
 	private static Log logger = LogFactory.getLog(ManifestLoader.class);
 
 	private static ManifestLoader instance = null;
-
 	private static LocalEnvironment env = null;
-
-	//private Manifest currentManifest = null;
-
-//	private static Preferences prefs = Preferences.getInstance();
 	private static ClassLoader classLoader = null;
-	private static String resourceDir = null;
 
 	public synchronized static ManifestLoader getInstance(LocalEnvironment localEnvironment) {
 		if (instance == null) {
@@ -76,23 +69,16 @@ public final class ManifestLoader {
 	 * <code>manifest.saved.id</code> in the <code>karma.properties</code> is used as the identifier for the manifest
 	 * name.
 	 *
-	 * @return The <code>Manifest</code> that was restored based on the {@link LocalEnvironment#MANIFEST_HISTORY} or
-	 *         <code>null</code> when no history was defined.
+	 * @return The <code>Manifest</code> that was restored. This will only succeed, when a preference value
+	 *   <code>karma.manifest.last</code> is present. If no such preference was found, <code>null</code> will be returned.
 	 * @throws ManifestException See {@link ManifestException#MANIFEST_LOAD_ERROR}
 	 */
-	public final Manifest loadFromHistory() throws ManifestException, LocationException {
+	public final Manifest loadFromHistory() throws ManifestException {
 
-		String historyId = null;
-
-		try {
-//			historyId = env.getManifestHistory();
-		} catch (UnavailableValueException u) {
-			// TODO : logger.debug("No history available for manifest. Returning null.);
-			// No history property available. Fine, we'll just return nothing.
-			//
+		String historyId = Preferences.userRoot().get("karma.manifest.last", null);
+		if (historyId == null) {
 			return null;
 		}
-
 		return load(historyId);
 	}
 
@@ -107,11 +93,8 @@ public final class ManifestLoader {
 	 * @return A <code>Manifest</code> implementation. See {@link ManifestImpl}.
 	 * @throws ManifestException See {@link ManifestException#MANIFEST_LOAD_ERROR}
 	 */
-	public final Manifest load(String id, ClassLoader loader, String dir) throws ManifestException, LocationException {
-
+	public final Manifest load(String id, ClassLoader loader, String dir) throws ManifestException {
 		classLoader = loader;
-		resourceDir = dir;
-
 		return load(id);
 	}
 
@@ -124,7 +107,7 @@ public final class ManifestLoader {
 	 * @return A <code>Manifest</code> instance.
 	 * @throws ManifestException See {@link ManifestException#MANIFEST_LOAD_ERROR}.
 	 */
-	public final Manifest load(String id) throws ManifestException, LocationException {
+	public final Manifest load(String id) throws ManifestException{
 
 		Manifest manifest = null;
 

@@ -1,7 +1,12 @@
 package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.core.util.file.MyFileUtils;
-import nl.toolforge.karma.core.*;
+import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.Manifest;
+import nl.toolforge.karma.core.Module;
+import nl.toolforge.karma.core.SourceModule;
+import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.location.Location;
