@@ -70,7 +70,11 @@ public class KarmaLauncher {
                 .getClassLoader());
         if (classPathEntries != null) {
             for (int i = 0; i < classPathEntries.length; i++) {
-                classLoader.addClassPathEntry(classPathEntries[i]);
+                try {
+                    classLoader.addClassPathEntry(classPathEntries[i]);
+                } catch (FileNotFoundException e) {
+                    System.out.println("[karma-launcher] WARNING: Classpath entry '" + classPathEntries[i] + "' does not exist.");
+                }
             }
         }
         Class clazz = Class.forName(className, true, classLoader);
