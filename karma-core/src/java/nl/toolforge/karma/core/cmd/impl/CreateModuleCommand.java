@@ -63,9 +63,9 @@ public class CreateModuleCommand extends DefaultCommand {
       runner.setCommandResponse(getCommandResponse());
 
       if (moduleName.startsWith(Module.WEBAPP_PREFIX)) {
-        runner.create(module, new WebappModuleLayoutTemplate());
+        runner.create(module, comment, new WebappModuleLayoutTemplate());
       } else {
-        runner.create(module, new SourceModuleLayoutTemplate());
+        runner.create(module, comment, new SourceModuleLayoutTemplate());
       }
 
       // If we get to this point, creation of the module was succesfull.
