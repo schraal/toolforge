@@ -79,6 +79,7 @@ public final class ManifestLoader {
     ManifestStructure structure = null;
     try {
       structure = (ManifestStructure) digester.parse(getManifestFileAsStream(manifest));
+      structure.setName(manifest);
     } catch (IOException e) {
       throw new ManifestException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{manifest});
     } catch (SAXException e) {

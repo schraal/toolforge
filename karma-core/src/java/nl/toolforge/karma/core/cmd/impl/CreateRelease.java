@@ -33,14 +33,13 @@ import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.ManifestFactory;
 import nl.toolforge.karma.core.manifest.ManifestLoader;
-import nl.toolforge.karma.core.module.Module;
+import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.cvsimpl.Utils;
 import nl.toolforge.karma.core.vc.cvsimpl.threads.CVSLogThread;
 import nl.toolforge.karma.core.vc.threads.ParallelRunner;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -156,7 +155,7 @@ public class CreateRelease extends CompositeCommand {
     StringBuffer buffer = new StringBuffer();
     buffer.append("<?xml version=\"1.0\"?>\n");
 
-    buffer.append("<manifest name=\"" + releaseName + "\" type=\"release\" version=\"1-0\">\n");
+    buffer.append("<manifest type=\"release\" version=\"1-0\">\n");
 
     buffer.append("  <modules>\n");
 

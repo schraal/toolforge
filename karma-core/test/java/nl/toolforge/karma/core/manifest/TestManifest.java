@@ -36,6 +36,8 @@ public class TestManifest extends TestManifestLoader {
     try {
       ManifestStructure structure = loader.load("test-manifest-1");
 
+      assertEquals("test-manifest-1", structure.getName());
+
       DevelopmentManifest manifest = new DevelopmentManifest(getWorkingContext(), structure);
 
       assertEquals(5, manifest.getAllModules().size());
@@ -56,6 +58,9 @@ public class TestManifest extends TestManifestLoader {
 
     try {
       ManifestStructure structure = loader.load("test-manifest-2");
+
+      assertEquals("test-manifest-2", structure.getName());
+
       new DevelopmentManifest(getWorkingContext(), structure);
 
       fail("Duplicate module in manifest should have been detected.");
@@ -76,6 +81,9 @@ public class TestManifest extends TestManifestLoader {
 
     try {
       ManifestStructure structure = loader.load("test-manifest-3");
+
+      assertEquals("test-manifest-3", structure.getName());
+
       new DevelopmentManifest(getWorkingContext(), structure);
 
       fail("Manifest include recursion should have been detected.");

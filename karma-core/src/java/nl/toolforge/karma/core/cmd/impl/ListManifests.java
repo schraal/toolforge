@@ -64,7 +64,7 @@ public class ListManifests extends DefaultCommand {
   /**
    * Scans the manifest store and parses all manifest files.
    *
-   * @throws CommandException 
+   * @throws CommandException
    */
   public void execute() throws CommandException {
 
@@ -79,11 +79,12 @@ public class ListManifests extends DefaultCommand {
 
     for (int i = 0; i < manifestFiles.length; i++) {
       try {
-        headers.add((ManifestHeader) getDigester().parse(new File(baseDir, manifestFiles[i])));
+        ManifestHeader header = (ManifestHeader) getDigester().parse(new File(baseDir, manifestFiles[i]));
+        header.setName(manifestFiles[i].substring(0, manifestFiles[i].lastIndexOf(".xml")));
+        headers.add(header);
       } catch (IOException e) {
         throw new CommandException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{manifestFiles[i]});
       } catch (SAXException e) {
-        e.printStackTrace();
         throw new CommandException(e, ManifestException.MANIFEST_LOAD_ERROR, new Object[]{manifestFiles[i]});
       }
     }
