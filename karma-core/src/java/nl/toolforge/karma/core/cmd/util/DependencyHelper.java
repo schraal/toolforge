@@ -101,6 +101,9 @@ public final class DependencyHelper {
   /**
    * Gets a <code>Set</code> of {@link DependencyPath}s, each one identifying the path to a module dependency (a
    * dependency of <code>module</code> to another <code>Module</code>).
+   * <p>
+   * Dependencies are retrieved recursively when doPackage is false. I.e. not only the
+   * direct dependencies of a module are returned, but also the indirect ones.
    *
    * @param module      The module for which a dependency-path should be determined.
    * @param doTest      Whether to include test resources for all deps.
@@ -269,6 +272,8 @@ public final class DependencyHelper {
   /**
    * <p>Gets a <code>Set</code> of {@link DependencyPath}s, each one identifying a <code>jar</code>-file. Jar files are looked
    * up Maven-style (see {@link ModuleDependency}.
+   * <p>Unless doPackage is true the method recursively descents the dependency tree looking
+   * for jar dependencies. This recursive step is obviously only taken for module dependencies.
    *
    * @param module         The module for which jar dependencies should be determined.
    * @param doPackage      Indicate if the dependencies that are to be packaged (<code>&lt;package="true"&gt;</code>)
@@ -310,6 +315,18 @@ public final class DependencyHelper {
 
         if (!doPackage || dep.doPackage()) {
           s.add(path);
+        }
+      } else if (dep.isModuleDependency() && !doPackage) {
+        try {
+          Module depModule = manifest.getModule(dep.getModule());
+          Set subset = getJarDependencies(depModule, doPackage);
+          s.addAll(subset);
+        } catch (ManifestException me) {
+          if (me.getErrorCode().equals(ManifestException.MODULE_NOT_FOUND)) {
+            throw new DependencyException(DependencyException.MODULE_NOT_IN_MANIFEST, me.getMessageArguments());
+          } else {
+            throw new DependencyException(me.getErrorCode(), me.getMessageArguments());
+          }
         }
       }
     }
