@@ -38,16 +38,6 @@
   </command>
 
 
-  <command name="package-all-modules" alias="paam">
-    <description lang="en">todo Something.</description>
-
-    <options/>
-
-    <classname>nl.toolforge.karma.core.cmd.impl.PackageAllModules</classname>
-    <help/>
-  </command>
-
-
   <command name="start-work" alias="start">
     <description lang="en">todo Something.</description>
 
