@@ -2,60 +2,60 @@
 
 <installation version="1.0">
 
-    <info>
-        <appname>karma-cli</appname>
-        <appversion>1.0 BETA 1</appversion>
-        <authors>
-            <author name="Arjen Smedes" email="d.a.smedes@toolforge.nl"/>
-            <author name="Hilbert Schraal" email="w.h.schraal@toolforge.nl"/>
-            <author name="Martin Oosterom" email="w.m.oosterom@toolforge.nl"/>
-            <author name="Wietze Helmantel" email="w.helmantel@toolforge.nl"/>
-            <author name="Chris Spelberg" email="c.spelberg@toolforge.nl"/>
-            <author name="Age Mooy" email="a.mooy@wisdom.nl"/>
-        </authors>
-        <url>http://toolforge.sourceforge.net/</url>
-    </info>
-    
-    <guiprefs width="800" height="600" resizable="no"/>
-    
-    <locale>
-        <langpack iso3="eng"/>
-        <langpack iso3="ned"/>
-    </locale>
-    
-    <resources>
-        <res id="LicencePanel.licence" src="../LICENSE.txt"/>
-        <res id="InfoPanel.info" src="../README"/>
-    </resources>
-    
-    <panels>
-        <panel classname="HelloPanel"/>
-        <panel classname="InfoPanel"/>
-        <panel classname="LicencePanel"/>
-        <panel classname="TargetPanel"/> 
-        <panel classname="PacksPanel"/>
-        <panel classname="InstallPanel"/>
-        <panel classname="SimpleFinishPanel"/>
-    </panels>
-    
-    <packs>
-        <pack name="Base" required="yes">
-            <description>Karma cli base stuff.</description>
-            <file src="../README" targetdir="$INSTALL_PATH"/>
-            <file src="../LICENSE.txt" targetdir="$INSTALL_PATH"/>
+  <info>
+    <appname>karma-cli</appname>
+    <appversion>1.0 BETA 1</appversion>
+    <authors>
+      <author name="Arjen Smedes" email="d.a.smedes@toolforge.nl"/>
+      <author name="Hilbert Schraal" email="w.h.schraal@toolforge.nl"/>
+      <author name="Martin Oosterom" email="w.m.oosterom@toolforge.nl"/>
+      <author name="Wietze Helmantel" email="w.helmantel@toolforge.nl"/>
+      <author name="Chris Spelberg" email="c.spelberg@toolforge.nl"/>
+      <author name="Age Mooy" email="a.mooy@toolforge.nl"/>
+    </authors>
+    <url>http://toolforge.sourceforge.net/</url>
+  </info>
 
-            <fileset dir="../lib" targetdir="$INSTALL_PATH/lib">
-	      <include name="*.jar"/>
-	    </fileset>
-            <fileset dir="../resources" targetdir="$INSTALL_PATH/resources">
-	      <include name="**/*"/>
-	    </fileset>
+  <guiprefs width="800" height="600" resizable="no"/>
 
-            <file src="../bin/karma" targetdir="$INSTALL_PATH/bin"/>
-            <file src="../bin/karma.bat" targetdir="$INSTALL_PATH/bin"/>
+  <locale>
+    <langpack iso3="eng"/>
+    <langpack iso3="ned"/>
+  </locale>
 
-        </pack>
+  <resources>
+    <res id="LicencePanel.licence" src="../LICENSE.txt"/>
+    <res id="InfoPanel.info" src="../README"/>
+  </resources>
 
-    </packs>
-    
+  <panels>
+    <panel classname="HelloPanel"/>
+    <panel classname="InfoPanel"/>
+    <panel classname="LicencePanel"/>
+    <panel classname="TargetPanel"/>
+    <panel classname="PacksPanel"/>
+    <panel classname="InstallPanel"/>
+    <panel classname="SimpleFinishPanel"/>
+  </panels>
+
+  <packs>
+    <pack name="Base" required="yes">
+      <description>Karma cli base stuff.</description>
+      <file src="../README" targetdir="$INSTALL_PATH"/>
+      <file src="../LICENSE.txt" targetdir="$INSTALL_PATH"/>
+
+      <fileset dir="../lib" targetdir="$INSTALL_PATH/lib">
+        <include name="*.jar"/>
+      </fileset>
+      <fileset dir="../resources" targetdir="$INSTALL_PATH/resources">
+        <include name="**/*"/>
+      </fileset>
+
+      <file src="../bin/karma" targetdir="$INSTALL_PATH/bin"/>
+      <file src="../bin/karma.bat" targetdir="$INSTALL_PATH/bin"/>
+
+    </pack>
+
+  </packs>
+
 </installation>

@@ -64,7 +64,7 @@ public class ModuleHistoryFactory {
    * can be found.
    *
    * @param module  The module for which to retrieve the module history.
-   * @return ModuleHistory of the given module or null when no module history can be found or created.
+   * @return <code>ModuleHistory</code> of the given module or null when no module history can be found or created.
    */
   public ModuleHistory getModuleHistory(Module module) throws ModuleHistoryException {
     ModuleHistory moduleHistory = null;
