@@ -109,7 +109,7 @@ public class LocalCVSInitializer extends BaseTest {
 
       logger.debug("cvs.local.path = " + localPath);
 
-      location = new CVSRepository("local");
+      location = new CVSRepository("test-id-1");
       location.setProtocol(CVSRepository.LOCAL);
       location.setRepository(localCVSRepository.getPath());
 
