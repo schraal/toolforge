@@ -9,10 +9,10 @@ fi
 if [ "x$1" = "x" ]; then
   echo ""
   echo "Usage   :    make-dist <version>"
-  echo "Example :    make-dist 1-0-rc1 (results in karma-cli-1-0-rc1.jar)"
+  echo "Example :    make-dist 1-0-rc1 (results in karma-1-0-rc1.jar)"
   exit 1
 fi
 
-compile karma-cli-installer.xml -b . -o /tmp/karma-cli-$1-INSTALLER
+compile karma-installer.xml -b . -o /tmp/karma-$1-INSTALLER
 
 
