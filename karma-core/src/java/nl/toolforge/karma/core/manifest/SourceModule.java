@@ -18,19 +18,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest;
 
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.scm.digester.ModuleDependencyCreationFactory;
-import nl.toolforge.karma.core.scm.ModuleDependency;
-import org.apache.commons.digester.Digester;
-import org.xml.sax.SAXException;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Iterator;
+
+import org.apache.commons.digester.Digester;
+import org.xml.sax.SAXException;
+
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.scm.digester.ModuleDependencyCreationFactory;
 
 /**
  * <p>A <code>SourceModule</code> represents a module for which the developer wants to have the sources available to
@@ -41,9 +40,6 @@ import java.util.Iterator;
  * @see Module
  */
 public class SourceModule extends BaseModule {
-
-//  private State state = null;
-  private Set dependencies = null;
 
   /**
    * Constructs a <code>SourceModule</code> with a <code>name</code> and <code>location</code>.
@@ -77,27 +73,24 @@ public class SourceModule extends BaseModule {
    */
   public Set getDependencies() {
 
-    if (dependencies == null) {
+    Set dependencies = new HashSet();
 
-      dependencies = new HashSet();
+    // Read in the base dependency structure of a Maven project.xml file
+    //
+    Digester digester = new Digester();
 
-      // Read in the base dependency structure of a Maven project.xml file
-      //
-      Digester digester = new Digester();
+    digester.addObjectCreate("*/dependencies", HashSet.class);
+    digester.addFactoryCreate("*/dependency", ModuleDependencyCreationFactory.class);
+    digester.addSetNext("*/dependency", "add");
 
-      digester.addObjectCreate("*/dependencies", HashSet.class);
-      digester.addFactoryCreate("*/dependency", ModuleDependencyCreationFactory.class);
-      digester.addSetNext("*/dependency", "add");
+    try {
 
-      try {
+      dependencies = (Set) digester.parse(new File(getBaseDir(), "dependencies.xml"));
 
-        dependencies = (Set) digester.parse(new File(getBaseDir(), "dependencies.xml"));
-
-      } catch (IOException e) {
-        return new HashSet();
-      } catch (SAXException e) {
-        throw new KarmaRuntimeException(ManifestException.DEPENDENCY_FILE_LOAD_ERROR, new Object[]{getName()});
-      }
+    } catch (IOException e) {
+      return new HashSet();
+    } catch (SAXException e) {
+      throw new KarmaRuntimeException(ManifestException.DEPENDENCY_FILE_LOAD_ERROR, new Object[]{getName()});
     }
     return dependencies;
   }
