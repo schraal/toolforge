@@ -35,7 +35,7 @@ public final class LocalEnvironment {
   private static final Log logger = LogFactory.getLog(LocalEnvironment.class);
 
 	/** Property that identifies the user's development home directory. */
-	public static final String DEVELOPMENT_HOME_DIRECTORY = "development.store";
+	public static final String DEVELOPMENT_STORE_DIRECTORY = "development.store";
 
 	/** Property that identifies the directory where manifest files are stored. */
 	public static final String MANIFEST_STORE_DIRECTORY = "manifest.store";
@@ -58,7 +58,7 @@ public final class LocalEnvironment {
 	 * Return the one-and-only instance of this class. It will be initialized from file
 	 * when it does not yet exist.
 	 */
-	public static LocalEnvironment getInstance() {
+	public static LocalEnvironment getInstance() throws KarmaException {
 		return getInstance(null);
 	}
 
@@ -68,7 +68,7 @@ public final class LocalEnvironment {
 	 *
 	 * @param properties Properties object used to initialize the instance.
 	 */
-	public static LocalEnvironment getInstance(Properties properties) {
+	public static LocalEnvironment getInstance(Properties properties) throws KarmaException {
 		if (localEnvironment == null) {
 			localEnvironment = new LocalEnvironment(properties);
 		} else {
@@ -83,7 +83,7 @@ public final class LocalEnvironment {
 	 * @param properties The properties object that is used to initialize. When this parameter is null,
 	 *                   the properties are read from file.
 	 */
-	private LocalEnvironment(Properties properties) {
+	private LocalEnvironment(Properties properties) throws KarmaException {
 
 		try {
 
@@ -110,9 +110,25 @@ public final class LocalEnvironment {
 
 			// Create the directories, if they don't yet exist.
 			//
-			new File((String) configuration.get(DEVELOPMENT_HOME_DIRECTORY)).mkdirs();
-			new File((String) configuration.get(MANIFEST_STORE_DIRECTORY)).mkdirs();
-			new File((String) configuration.get(LOCATION_STORE_DIRECTORY)).mkdirs();
+      String store;
+      store = (String) configuration.get(DEVELOPMENT_STORE_DIRECTORY);
+      if (store == null || store.equals("") ) {
+        throw new KarmaException(KarmaException.MISSING_CONFIGURATION, new Object[]{DEVELOPMENT_STORE_DIRECTORY});
+      } else {
+        new File(store).mkdirs();
+      }
+      store = (String) configuration.get(MANIFEST_STORE_DIRECTORY);
+      if (store == null || store.equals("") ) {
+        throw new KarmaException(KarmaException.MISSING_CONFIGURATION, new Object[]{MANIFEST_STORE_DIRECTORY});
+      } else {
+        new File(store).mkdirs();
+      }
+      store = (String) configuration.get(LOCATION_STORE_DIRECTORY);
+      if (store == null || store.equals("") ) {
+        throw new KarmaException(KarmaException.MISSING_CONFIGURATION, new Object[]{LOCATION_STORE_DIRECTORY});
+      } else {
+        new File(store).mkdirs();
+      }
 
 		} catch (IOException e) {
 			throw new KarmaRuntimeException("The bootstrap configuration file could not be loaded.", e);
@@ -133,7 +149,7 @@ public final class LocalEnvironment {
 	 * Create the karma.properties file with default values:
 	 * <p/>
 	 * <ul>
-	 * <li/><code>DEVELOPMENT_HOME_DIRECTORY = $USER_HOME/karma/projects</code>
+	 * <li/><code>DEVELOPMENT_STORE_DIRECTORY = $USER_HOME/karma/projects</code>
 	 * <li/><code>MANIFEST_STORE_DIRECTORY   = $USER_HOME/karma/manifests</code>
 	 * <li/><code>LOCATION_STORE_DIRECTORY   = $USER_HOME/karma/locations</code>
 	 * </ul>
@@ -145,7 +161,7 @@ public final class LocalEnvironment {
 
 		String karmaBase = System.getProperty("user.home") + File.separator + "karma" + File.separator;
 
-		configuration.put(DEVELOPMENT_HOME_DIRECTORY, karmaBase + "projects");
+		configuration.put(DEVELOPMENT_STORE_DIRECTORY, karmaBase + "projects");
 		configuration.put(MANIFEST_STORE_DIRECTORY, karmaBase + "manifests");
 		configuration.put(LOCATION_STORE_DIRECTORY, karmaBase + "locations");
 
@@ -217,7 +233,7 @@ public final class LocalEnvironment {
 		try {
 			File home = null;
 
-			String developmentHome = (String) configuration.get(DEVELOPMENT_HOME_DIRECTORY);
+			String developmentHome = (String) configuration.get(DEVELOPMENT_STORE_DIRECTORY);
 			logger.debug("development home directory: " + developmentHome);
 			home = new File(developmentHome);
 			if (!home.exists()) {

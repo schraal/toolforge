@@ -143,7 +143,7 @@ public final class LocationFactory {
 			load(locationRoot, authenticationRoot);
 
 		} catch (Exception e) {
-			throw new LocationException(LocationException.GENERAL_LOCATION_ERROR);
+			throw new LocationException(LocationException.GENERAL_LOCATION_ERROR, e);
 		}
 	}
 
@@ -191,10 +191,26 @@ public final class LocationFactory {
 			if (Location.Type.CVS_REPOSITORY.type.equals(locationElement.getAttribute("type").toUpperCase())) {
 				CVSLocationImpl cvsLocation = new CVSLocationImpl(locationElement.getAttribute("id"));
 
-				cvsLocation.setProtocol(locationElement.getElementsByTagName("protocol").item(0).getFirstChild().getNodeValue());
-				cvsLocation.setHost(locationElement.getElementsByTagName("host").item(0).getFirstChild().getNodeValue());
-				cvsLocation.setPort(new Integer(locationElement.getElementsByTagName("port").item(0).getFirstChild().getNodeValue()).intValue());
-				cvsLocation.setRepository(locationElement.getElementsByTagName("repository").item(0).getFirstChild().getNodeValue());
+        try {
+				  cvsLocation.setProtocol(locationElement.getElementsByTagName("protocol").item(0).getFirstChild().getNodeValue());
+        } catch (NullPointerException ne) {
+          throw new LocationException(LocationException.MISSING_LOCATION_PROPERTY, new Object[]{"protocol"});
+        }
+        try {
+  				cvsLocation.setHost(locationElement.getElementsByTagName("host").item(0).getFirstChild().getNodeValue());
+        } catch (NullPointerException ne) {
+          throw new LocationException(LocationException.MISSING_LOCATION_PROPERTY, new Object[]{"host"});
+        }
+        try {
+  				cvsLocation.setPort(new Integer(locationElement.getElementsByTagName("port").item(0).getFirstChild().getNodeValue()).intValue());
+        } catch (NullPointerException ne) {
+          throw new LocationException(LocationException.MISSING_LOCATION_PROPERTY, new Object[]{"port"});
+        }
+        try {
+	  			cvsLocation.setRepository(locationElement.getElementsByTagName("repository").item(0).getFirstChild().getNodeValue());
+        } catch (NullPointerException ne) {
+          throw new LocationException(LocationException.MISSING_LOCATION_PROPERTY, new Object[]{"repository"});
+        }
 
 				// TODO refactor out, see 'includeAuthentication()'
 				//
@@ -255,8 +271,9 @@ public final class LocationFactory {
 
 			if (loc.getProtocol().equals(CVSRoot.METHOD_EXT)) {
 				if (loc.getUsername() == null) {
-					logger.debug("Connection protocol (" + CVSRoot.METHOD_EXT + ") requires username.");
-					throw new LocationException(LocationException.LOCATION_CONFIGURATION_ERROR);
+          String error = "Connection protocol (" + CVSRoot.METHOD_EXT + ") requires username in repository-authenticators.xml";
+          logger.error(error);
+          throw new LocationException(LocationException.LOCATION_CONFIGURATION_ERROR, new Object[]{error});
 				}
 //				if ((loc.getUsername() == null) || (!loc.passwordSet())) {
 //					logger.debug("Connection protocol (" + CVSRoot.METHOD_EXT + ") requires username and password.");
@@ -266,15 +283,17 @@ public final class LocationFactory {
 
 				if (loc.getProtocol().equals(CVSRoot.METHOD_PSERVER)) {
 					if ((loc.getUsername() == null) || (!loc.passwordSet())) {
-						logger.debug("Connection protocol (" + CVSRoot.METHOD_PSERVER + ") requires username and password.");
-						throw new LocationException(LocationException.LOCATION_CONFIGURATION_ERROR);
+            String error = "Connection protocol (" + CVSRoot.METHOD_PSERVER + ") requires username and password in repository-authenticators.xml";
+            logger.error(error);
+            throw new LocationException(LocationException.LOCATION_CONFIGURATION_ERROR, new Object[]{error});
 					}
 				} else {
 
 					if (loc.getProtocol().equals(CVSRoot.METHOD_SERVER)) {
 						if ((loc.getUsername() == null) || (!loc.passwordSet())) {
-							logger.debug("Connection protocol (" + CVSRoot.METHOD_SERVER + ") requires username and password.");
-							throw new LocationException(LocationException.LOCATION_CONFIGURATION_ERROR);
+              String error = "Connection protocol (" + CVSRoot.METHOD_SERVER + ") requires username and password in repository-authenticators.xml";
+							logger.error(error);
+							throw new LocationException(LocationException.LOCATION_CONFIGURATION_ERROR, new Object[]{error});
 						}
 					}
 				}

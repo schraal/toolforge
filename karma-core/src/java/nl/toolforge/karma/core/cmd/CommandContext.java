@@ -219,7 +219,7 @@ public final class CommandContext {
 	 * <p>Gets the build target directory for <code>module</code>, creating it when non existing. The current default
 	 * location for a build target directory is determined as follows :
 	 *
-	 * <pre>{@link LocalEnvironment#DEVELOPMENT_HOME_DIRECTORY} + File.separator + {@link #getCurrent()} + File.separator
+	 * <pre>{@link LocalEnvironment#DEVELOPMENT_STORE_DIRECTORY} + File.separator + {@link #getCurrent()} + File.separator
 	 * + build + module.getName()</pre>
 	 *
 	 * todo consider moving it to Module.

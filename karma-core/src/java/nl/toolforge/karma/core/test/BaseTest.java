@@ -50,7 +50,7 @@ public class BaseTest extends TestCase {
 		}
 
 		p = new Properties();
-		p.put(LocalEnvironment.DEVELOPMENT_HOME_DIRECTORY, f1.getPath());
+		p.put(LocalEnvironment.DEVELOPMENT_STORE_DIRECTORY, f1.getPath());
 		p.put(LocalEnvironment.MANIFEST_STORE_DIRECTORY, f2.getPath());
 		p.put(LocalEnvironment.LOCATION_STORE_DIRECTORY, f3.getPath());
 

@@ -21,7 +21,7 @@ public final class TestLocalEnvironment extends TestCase {
 			f3 = MyFileUtils.createTempDirectory();
 
 			p = new Properties();
-			p.put(LocalEnvironment.DEVELOPMENT_HOME_DIRECTORY, f1.getPath());
+			p.put(LocalEnvironment.DEVELOPMENT_STORE_DIRECTORY, f1.getPath());
 			p.put(LocalEnvironment.MANIFEST_STORE_DIRECTORY, f2.getPath());
 			p.put(LocalEnvironment.LOCATION_STORE_DIRECTORY, f3.getPath());
 
@@ -35,7 +35,9 @@ public final class TestLocalEnvironment extends TestCase {
 		try {
 			localEnvironment = LocalEnvironment.getInstance(p);
 			assertNotNull(localEnvironment);
-		} catch (KarmaRuntimeException kre) {
+    } catch (KarmaException ke) {
+      fail(ke.getMessage());
+    } catch (KarmaRuntimeException kre) {
 			fail(kre.getMessage());
 		}
 	}

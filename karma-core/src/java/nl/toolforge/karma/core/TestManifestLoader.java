@@ -10,11 +10,11 @@ public class TestManifestLoader extends BaseTest {
 
 	public void testParse1() {
 
-		LocalEnvironment env = LocalEnvironment.getInstance(getProperties());
+    try {
+  		LocalEnvironment env = LocalEnvironment.getInstance(getProperties());
 
-		ManifestLoader ml = ManifestLoader.getInstance(env);
+	  	ManifestLoader ml = ManifestLoader.getInstance(env);
 
-		try {
 			Manifest m =
 				ml.load("test/test-manifest-1.xml", this.getClass().getClassLoader(), "");
 

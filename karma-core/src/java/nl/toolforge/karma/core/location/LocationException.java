@@ -32,6 +32,8 @@ public final class LocationException extends KarmaException {
 	public static final ErrorCode LOCATION_CONFIGURATION_ERROR = new ErrorCode("LOC-00007");
 	/** No directory is present where location data can be found. */
 	public static final ErrorCode NO_LOCATION_STORE_DIRECTORY = new ErrorCode("LOC-00008");
+  /** Missing location property */
+  public static final ErrorCode MISSING_LOCATION_PROPERTY = new ErrorCode("LOC-00010");
 
 	public LocationException(ErrorCode errorCode) {
 		super(errorCode);
