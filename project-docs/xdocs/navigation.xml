@@ -12,8 +12,9 @@
     <menu name="General Information">
       <item name="Overview"               href="index.html"/>
       <item name="The Standard Problem"   href="problem.html"/>
+      <item name="Features"               href="features.html"/>
       <item name="Basics"                 href="basics.html"/>
-      <item name="Getting Started"        href="getting-started.html">
+      <item name="Getting Started"        href="getting-started.html" collapse="true">
         <item name="Administration Guide" href="administration-guide.html"/>
       </item>
       <item name="News and Status"        href="news.html"/>

@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+
+<document>
+
+<properties>
+  <title>Karma Features</title>
+</properties>
+
+<body>
+
+  <section name="Feature List">
+
+  <p>
+    The following listing shows most, if not all, of Karma's features. For
+    clarity, they've been structured in a number of categories.
+  </p>
+
+  <subsection name="Build Management">
+
+  <p>
+    Build management features describe Karma's support for builds.
+  </p>
+
+  <ul>
+    <li/>Source code compilation with <code>javac</code> and <code>jikes</code>.
+    <li/>Modules determine their dependencies and compile them when necessary.
+    <li/>
+    <li/>
+    <li/>
+  </ul>
+
+  </subsection>
+
+  <subsection name="Structural Features">
+
+  <p>
+    Karma helps in structuring source code, modularization and
+    componentization.
+  </p>
+
+  <ul>
+    <li/>Four main types of modules, each with a standardized directory
+         structure.
+    <li/>Working contexts allow for and organized structure of software
+         projects, one for each client ... or project. The amount of working
+         contexts is unlimited.
+    <li/>
+
+  </ul>
+
+  </subsection>
+
+  <subsection name="User Interface Features">
+
+  <p>
+    No graphical user interface, but the command-line and the console will do
+    for now.
+  </p>
+
+  <ul>
+    <li/>Help system; each command is well-documented.
+    <li/>Commands can have any number of aliasses; users can implement their
+         own favourites.
+    <li/>
+  </ul>
+
+  </subsection>
+
+  <subsection name="Developer Features">
+
+  <ul>
+    <li/>Clearly documented Java API allowing extensions to 
+    <li/>Easy to create plugins to extend Karma with commands
+    <li/>
+  </ul>
+
+  </subsection>
+
+  </section> 
+
+</body>
+
+</document>
+
+
