@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+<authenticators>
+  <authenticator id="cvs-local-pserver" username="asmedes" password="bla"/>
+  <authenticator id="sf-toolforge" username="asmedes"/>
+</authenticators>
+
