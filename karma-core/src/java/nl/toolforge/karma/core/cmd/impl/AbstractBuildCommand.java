@@ -27,6 +27,7 @@ import nl.toolforge.karma.core.cmd.util.BuildEnvironment;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.ModuleTypeException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -136,7 +137,7 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
    *
    * @return
    */
-  protected final File getCompileDirectory() {
+  protected final File getCompileDirectory() throws ModuleTypeException {
 
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
@@ -144,7 +145,8 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
 
     File base = env.getModuleBuildRootDirectory();
 
-    if (module.getDeploymentType().equals(Module.WEBAPP)) {
+    if (module.getType().equals(Module.JAVA_WEB_APPLICATION)) {
+//    if (module.getDeploymentType().equals(Module.WEBAPP)) {
       return new File(base, "build/WEB-INF/classes");
     } else {
       return new File(base, "build");

@@ -123,7 +123,7 @@ public class StopWorkCommand extends DefaultCommand {
       }
       response.addMessage(
           new SuccessMessage(
-              getFrontendMessages().getString("message.STOP_WORK_SUCCESFULL"),
+              getFrontendMessages().getString("message.STOP_WORK_SUCCESSFULL"),
               new Object[]{module.getName(), m.getState(module).toString()}));
     } else {
       response.addMessage(new SuccessMessage("Module " + moduleName + " still WORKING."));

@@ -8,8 +8,10 @@ DO NOT CHANGE THE CONTENTS OF THIS FILE. IT IS USED BY JUnit TEST CLASSES
   
   <modules>
     
-    <module name="module-1" type="src" location="test-id-1" version="0-1"/>
-    <module name="module-1" type="src" location="test-id-1"/>
+    <module name="module-1" location="test-id-1" version="0-1"/>
+    <module name="module-1" location="test-id-1"/>
+<!--    <module name="module-1" type="src" location="test-id-1" version="0-1"/>-->
+<!--    <module name="module-1" type="src" location="test-id-1"/>-->
 
   </modules>
   

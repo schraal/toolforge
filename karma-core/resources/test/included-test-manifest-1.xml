@@ -10,7 +10,8 @@ DO NOT CHANGE THE CONTENTS OF THIS FILE. IT IS USED BY JUnit TEST CLASSES
 
   <modules>
 
-    <module name="CORE-arjen" type="src" version="0-1" location="test-id-2"/>
+    <module name="CORE-arjen" version="0-1" location="test-id-2"/>
+<!--    <module name="CORE-arjen" type="src" version="0-1" location="test-id-2"/>-->
 
   </modules>
 

@@ -18,13 +18,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest;
 
-import java.io.File;
-import java.util.regex.PatternSyntaxException;
-import java.util.Set;
-
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
+
+import java.io.File;
+import java.util.Set;
+import java.util.regex.PatternSyntaxException;
 
 
 /**
@@ -41,26 +41,47 @@ import nl.toolforge.karma.core.vc.DevelopmentLine;
  */
 public interface Module {
 
+  /**
+   * <code>UNKNOWN</code> applies to module which have no local presence. The actual type can only be determined when
+   * the <code>module-descriptor.xml</code> file is available, which is the case after a checkout of the module.
+   */
+  public static final Type UNKNOWN = new Type("UNKNOWN");
+  /**
+   * Represents <code>&lt;type&gt;LIBRARY_MODULE&lt;/type&gt;</code>.
+   */
+  public static final Type LIBRARY_MODULE = new Type("LIBRARY-MODULE");
+  /**
+   * Represents <code>&lt;type&gt;JAVA_SOURCE_MODULE&lt;/type&gt;</code>.
+   */
+  public static final Type JAVA_SOURCE_MODULE = new Type("JAVA-SOURCE-MODULE");
+  /**
+   * Represents <code>&lt;type&gt;JAVA_WEB_APPLICATION&lt;/type&gt;</code>.
+   */
+  public static final Type JAVA_WEB_APPLICATION = new Type("JAVA-WEB-APPLICATION");
+  /**
+   * Represents <code>&lt;type&gt;JAVA_ENTERPRISE_APPLICATION&lt;/type&gt;</code>.
+   */
+  public static final Type JAVA_ENTERPRISE_APPLICATION = new Type("JAVA-ENTERPRISE-APPLICATION");
+
   public static final State WORKING = new State("WORKING");
   public static final State DYNAMIC = new State("DYNAMIC");
   public static final State STATIC = new State("STATIC");
-  public static final State UNDEFINED = new State("UNDEFINED");
 
-  public static final DeploymentType JAR = new DeploymentType("jar");
+//  public static final DeploymentType JAR = new DeploymentType("jar");
 
   /**
    * <p>Modules that contain application server specific configuration, must have this prefix.
    *
    * <p>Check the Karma User Manual for background information about this type of module.
    */
-  public static final DeploymentType CONFIG_APPSERVER = new DeploymentType("config-appserver");
+//  public static final DeploymentType CONFIG_APPSERVER = new DeploymentType("config-appserver");
 
   /**
    * <p>Modules that contain application server software (or the applicatin server as a whole), must have this prefix.
    *
    * <p>Check the Karma User Manual for background information about this type of module.
    */
-  public static final DeploymentType APPSERVER = new DeploymentType("appserver");
+//  public static final DeploymentType APPSERVER = new DeploymentType("appserver");
 
   /**
    * <p>Modules containing a web application (resulting in the creation of a web application archive - WAR -, must have
@@ -68,7 +89,7 @@ public interface Module {
    *
    * <p>Check the Karma User Manual for background information about this type of module.
    */
-  public static final DeploymentType WEBAPP = new DeploymentType("webapp");
+//  public static final DeploymentType WEBAPP = new DeploymentType("webapp");
 
   /**
    * <p>Modules containing an enterprise application (resulting in the creation of a enterprise application archive - EAR -, must have
@@ -76,19 +97,20 @@ public interface Module {
    *
    * <p>Check the Karma User Manual for background information about this type of module.
    */
-  public static final DeploymentType EAPP = new DeploymentType("eapp");
+//  public static final DeploymentType EAPP = new DeploymentType("eapp");
 
   /**
    * Modules that should create an <code>EAR</code>-file as a means of distribution, should have a module with
    * a <code>deploy-config</code>-prefix. Each of these modules is scanned for the <code>application.xml</code> file. 
    */
-  public static final DeploymentType DEPLOY_CONFIG = new DeploymentType("deploy-config");
+//  public static final DeploymentType DEPLOY_CONFIG = new DeploymentType("deploy-config");
 
-  /**
-   * The name of the mandatory file in a module. A file with this name is created by Karma or should be created
-   * manually and is used by Karma to log the modules' version control status.
-   */
-  public static final String MODULE_INFO = ".module.info";
+//  /**
+//   * The name of the mandatory file in a module. A file with this name is created by Karma or should be created
+//   * manually and is used by Karma to log the modules' version control status.
+//   */
+//  public static final String MODULE_INFO = ".module.info";
+  public static final String MODULE_DESCRIPTOR = "module-descriptor.xml";
 
   /**
    * Retrieves a modules' name, the <code>name</code> attribute of the module in the manifest XML file.
@@ -97,9 +119,16 @@ public interface Module {
    */
   public String getName();
 
-  public SourceType getSourceType();
+  /**
+   * Determines the type of the module. This is only possible when the module is checked out locally.
+   *
+   * @return The type of the module (see constants defined in <code>Module</code>).
+   */
+  public Type getType() throws ModuleTypeException;
 
-  public DeploymentType getDeploymentType();
+//  public SourceType getSourceType();
+
+//  public DeploymentType getDeploymentType();
 
   /**
    * Returns the <code>Location</code> instance, which is derived from the <code>location</code>-attribute.
@@ -185,107 +214,164 @@ public interface Module {
    */
   public Set getDependencies();
 
-
-//  public MetaDescriptor getDescriptor();
-
   /**
    * Types a module in the source hierarchy.
    */
-  final class SourceType {
-
-    private String sourceType = null;
-
-    public SourceType(String sourceType) {
-
-      if (sourceType == null || !sourceType.matches(ModuleDescriptor.SOURCE_TYPE_PATTERN_STRING)) {
-        throw new PatternSyntaxException(
-            "Pattern mismatch for type-attribute. Should match " + ModuleDescriptor.SOURCE_TYPE_PATTERN_STRING, sourceType, -1);
-      }
-      this.sourceType = sourceType;
-    }
-
-    public boolean equals(Object o) {
-
-      if (o instanceof SourceType) {
-        if (((SourceType) o).getSourceType().equals(this.getSourceType())) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-      return false;
-    }
-
-    public String getSourceType() {
-      return this.sourceType;
-    }
-
-    public int hashCode() {
-      return sourceType.hashCode();
-    }
-  }
+//  final class SourceType {
+//
+//    private String sourceType = null;
+//
+//    public SourceType(String sourceType) {
+//
+//      if (sourceType == null || !sourceType.matches(ModuleDigester.SOURCE_TYPE_PATTERN_STRING)) {
+//        throw new PatternSyntaxException(
+//            "Pattern mismatch for type-attribute. Should match " + ModuleDigester.SOURCE_TYPE_PATTERN_STRING, sourceType, -1);
+//      }
+//      this.sourceType = sourceType;
+//    }
+//
+//    public boolean equals(Object o) {
+//
+//      if (o instanceof SourceType) {
+//        if (((SourceType) o).getSourceType().equals(this.getSourceType())) {
+//          return true;
+//        } else {
+//          return false;
+//        }
+//      }
+//      return false;
+//    }
+//
+//    public String getSourceType() {
+//      return this.sourceType;
+//    }
+//
+//    public int hashCode() {
+//      return sourceType.hashCode();
+//    }
+//  }
 
   /**
    * Types a module in the deployment hierarchy.
    */
-  final class DeploymentType {
+//  final class DeploymentType {
+//
+//    private static final String CONFIG_APPSERVER_PREFIX = "config-appserver";
+//    private static final String APPSERVER_PREFIX = "appserver";
+//    private static final String WEBAPP_PREFIX = "webapp";
+//    private static final String EAPP_PREFIX = "eapp";
+//    private static final String DEPLOY_CONFIG_PREFIX = "deploy-config";
+//
+//    private String deploymentType = null;
+//
+//    public DeploymentType(String moduleName) {
+//
+//      if (moduleName == null) {
+//        throw new IllegalArgumentException("");
+//      }
+//
+//      if (moduleName.startsWith(CONFIG_APPSERVER_PREFIX)) {
+//        deploymentType = CONFIG_APPSERVER_PREFIX;
+//      } else if (moduleName.startsWith(APPSERVER_PREFIX)) {
+//        deploymentType = APPSERVER_PREFIX;
+//      } else if (moduleName.startsWith(WEBAPP_PREFIX)) {
+//        deploymentType = WEBAPP_PREFIX;
+//      } else if (moduleName.startsWith(EAPP_PREFIX)) {
+//        deploymentType = EAPP_PREFIX;
+//      } else if (moduleName.startsWith(DEPLOY_CONFIG_PREFIX)) {
+//        deploymentType = DEPLOY_CONFIG_PREFIX;
+//      } else {
+//        deploymentType = "jar"; // This is a JAR;
+//      }
+//    }
+//
+//    public boolean equals(Object o) {
+//
+//      if (o instanceof DeploymentType) {
+//        if (((DeploymentType) o).getDeploymentType().equals(this.getDeploymentType())) {
+//          return true;
+//        } else {
+//          return false;
+//        }
+//      }
+//      return false;
+//    }
+//
+//    public String getDeploymentType() {
+//      return deploymentType;
+//    }
+//
+//    public int hashCode() {
+//      return deploymentType.hashCode();
+//    }
+//
+//    public String getPrefix() {
+//
+//      if (getDeploymentType().equals("jar")) {
+//        return ""; // No prefix
+//      } else {
+//        return deploymentType;
+//      }
+//    }
+//  }
 
-    private static final String CONFIG_APPSERVER_PREFIX = "config-appserver";
-    private static final String APPSERVER_PREFIX = "appserver";
-    private static final String WEBAPP_PREFIX = "webapp";
-    private static final String EAPP_PREFIX = "eapp";
-    private static final String DEPLOY_CONFIG_PREFIX = "deploy-config";
+  /**
+   * Inner class representing the type of the module, which is determined at runtime by reading the
+   * <code>module-descriptor.xml</code> file from the module base directory.
+   *
+   * @author D.A. Smedes
+   */
+  final class Type {
 
-    private String deploymentType = null;
+    private String type = null;
+    private String shortType = null;
 
-    public DeploymentType(String moduleName) {
+    public Type() {}
 
-      if (moduleName == null) {
-        throw new IllegalArgumentException("");
-      }
+    private Type(String type) {
+      this.type = type;
+    }
 
-      if (moduleName.startsWith(CONFIG_APPSERVER_PREFIX)) {
-        deploymentType = CONFIG_APPSERVER_PREFIX;
-      } else if (moduleName.startsWith(APPSERVER_PREFIX)) {
-        deploymentType = APPSERVER_PREFIX;
-      } else if (moduleName.startsWith(WEBAPP_PREFIX)) {
-        deploymentType = WEBAPP_PREFIX;
-      } else if (moduleName.startsWith(EAPP_PREFIX)) {
-        deploymentType = EAPP_PREFIX;
-      } else if (moduleName.startsWith(DEPLOY_CONFIG_PREFIX)) {
-        deploymentType = DEPLOY_CONFIG_PREFIX;
+    // todo think of better shortcuts for these types.
+    public void setType(String type) {
+      if ("src".equals(type) || JAVA_SOURCE_MODULE.getType().equals(type)) {
+        this.type = JAVA_SOURCE_MODULE.getType();
+        shortType = "src";
+      } else if ("lib".equals(type) || LIBRARY_MODULE.getType().equals(type)) {
+        this.type = LIBRARY_MODULE.getType();
+        shortType = "lib";
+      } else if ("webapp".equals(type) || JAVA_WEB_APPLICATION.getType().equals(type)) {
+        this.type = JAVA_WEB_APPLICATION.getType();
+        shortType = "webapp";
+      } else if ("eapp".equals(type) || JAVA_ENTERPRISE_APPLICATION.getType().equals(type)) {
+        this.type = JAVA_ENTERPRISE_APPLICATION.getType();
+        shortType = "eapp";
       } else {
-        deploymentType = "jar"; // This is a JAR;
+        throw new IllegalArgumentException("Type must be 'src', 'lib', 'webapp' or 'eapp'.");
       }
     }
 
-    public boolean equals(Object o) {
+    public String getType() {
+      return type;
+    }
 
-      if (o instanceof DeploymentType) {
-        if (((DeploymentType) o).getDeploymentType().equals(this.getDeploymentType())) {
+    public String getShortType() {
+      return shortType;
+    }
+
+    public int hashCode() {
+      return type.hashCode();
+    }
+
+    public boolean equals(Object o) {
+      if (o instanceof Type) {
+        if (((Type) o).type.equals(type)) {
           return true;
         } else {
           return false;
         }
       }
       return false;
-    }
-
-    public String getDeploymentType() {
-      return deploymentType;
-    }
-
-    public int hashCode() {
-      return deploymentType.hashCode();
-    }
-
-    public String getPrefix() {
-
-      if (getDeploymentType().equals("jar")) {
-        return ""; // No prefix
-      } else {
-        return deploymentType;
-      }
     }
   }
 
@@ -293,11 +379,19 @@ public interface Module {
    * <p>Inner class representing the 'state' of a module. Three states exist at the moment : <code>WORKING</code>,
    * <code>STATIC</code> and <code>DYNAMIC</code>.
    * <p/>
+   *
    * <ul>
-   * <li/><code>WORKING</code> means that a developer wants to develop on the module; add code, remove code etc. The
-   * local copy of the module will be updated to the reflect the latest versions of files in a particular
-   * branch. <code>WORKING</code> state also implies that a developer can promote a module so that manifests
-   * that have the module in a <code>DYNAMIC</code> state, can
+   *   <li/><code>WORKING</code> means that a developer wants to develop on the module; add code, remove code etc. The
+   *        local copy of the module will be updated to the reflect the latest versions of files in a particular
+   *        branch. <code>WORKING</code> state also implies that a developer can promote a module so that manifests
+   *        that have the module in a <code>DYNAMIC</code> state, can choose to upgrade their manifest to the latest
+   *        (stable) version of the module.
+   *   <li/><code>DYNAMNIC</code> means that a developer is not interested in the HEAD of a development line, but only
+   *        in stable versions of the module.
+   *   <li/><code>STATIC</code> means that a developer wants to use a fixed version of the module in the manifest.
+   * </ul>
+   *
+   * @author D.A. Smedes
    */
   final class State {
 

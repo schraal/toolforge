@@ -35,6 +35,7 @@ import nl.toolforge.karma.core.cmd.ErrorMessage;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.util.DependencyException;
 import nl.toolforge.karma.core.cmd.util.DependencyHelper;
+import nl.toolforge.karma.core.manifest.ModuleTypeException;
 
 /**
  * Run the unit tests of a given module.
@@ -71,8 +72,8 @@ public class TestModule extends AbstractBuildCommand {
       command.execute();
     } catch (CommandException ce) {
       if (    ce.getErrorCode().equals(CommandException.DEPENDENCY_DOES_NOT_EXIST) ||
-              ce.getErrorCode().equals(CommandException.BUILD_FAILED) ||
-              ce.getErrorCode().equals(DependencyException.DEPENDENCY_NOT_FOUND) ) {
+          ce.getErrorCode().equals(CommandException.BUILD_FAILED) ||
+          ce.getErrorCode().equals(DependencyException.DEPENDENCY_NOT_FOUND) ) {
         commandResponse.addMessage(new ErrorMessage(ce.getErrorCode(), ce.getMessageArguments()));
         throw new CommandException(ce, CommandException.TEST_FAILED, new Object[]{module.getName()});
       } else {
@@ -104,8 +105,10 @@ public class TestModule extends AbstractBuildCommand {
 
     project.setProperty("module-source-dir", getBuildEnvironment().getModuleTestSourceDirectory().getPath());
     project.setProperty("module-test-dir", getBuildEnvironment().getModuleTestBuildDirectory().getPath());
-    project.setProperty("module-compile-dir", getCompileDirectory().getPath());
+
     try {
+
+      project.setProperty("module-compile-dir", getCompileDirectory().getPath());
 
       // todo should be replaced by call to DependencyHelper.getTestClassPath()
 
@@ -127,6 +130,8 @@ public class TestModule extends AbstractBuildCommand {
       project.setProperty("module-classpath", deps);
 
     } catch (DependencyException d) {
+      throw new CommandException(d.getErrorCode(), d.getMessageArguments());
+    } catch (ModuleTypeException d) {
       throw new CommandException(d.getErrorCode(), d.getMessageArguments());
     }
 

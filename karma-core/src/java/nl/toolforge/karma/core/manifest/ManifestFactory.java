@@ -18,19 +18,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest;
 
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.boot.WorkingContext;
-import nl.toolforge.karma.core.manifest.DevelopmentManifest;
-import nl.toolforge.karma.core.manifest.Manifest;
-import nl.toolforge.karma.core.manifest.ReleaseManifest;
-import org.apache.commons.digester.AbstractObjectCreationFactory;
-import org.xml.sax.Attributes;
-
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Hashtable;
+import nl.toolforge.karma.core.location.LocationException;
 
 /**
  * Creation factory to be able to create {@link Manifest} instances. The reason to have this class

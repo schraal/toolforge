@@ -21,8 +21,21 @@ package nl.toolforge.karma.core.scm;
 import java.io.File;
 
 /**
- * Describes a dependency for a <code>Module</code>. This class is accessed by a Digester reading in a file called
- * <code>dependencies.xml</code> which is located in the root for each module.
+ * <p>Describes a dependency for a <code>Module</code>. This class is used by a Digester reading in a file called
+ * <code>dependencies.xml</code> which is located in the root for each module that need dependencies. Dpeendencies can
+ * be defined in three ways:
+ *
+ * <ul>
+ *   <li/><code>&lt;dependency module="&lt;module-name&gt;"/&gt;</code> defines a dependency to another module that is
+ *        part of the same manifest. Those module should be of the correct type (<code>Java - Source Module</code>).
+ *   <li/><code>&lt;dependency groupId="" artifactId="" version=""/&gt;</code> defines a dependency Maven-style. This
+ *        means that the actual <code>jar</code>-file is found on a local disk in a Maven repository. Karma imposes a
+ *        stronger definition of Maven dependencies than Maven does itself. Karma does not allow the following
+ *        structure : <code>id="" jar=""</code>.
+ *   <li/> todo Define stuff for libmodules
+ * </ul>
+ *
+ * @see nl.toolforge.karma.core.cmd.util.DependencyException
  *
  * @author D.A. Smedes
  * @version $Id$
@@ -73,8 +86,6 @@ public final class ModuleDependency {
   }
 
   public void setModule(String module) {
-    // todo should comply to the correct pattern !!!!
-
     this.module = module;
   }
 

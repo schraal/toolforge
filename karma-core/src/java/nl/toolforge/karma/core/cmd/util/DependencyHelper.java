@@ -12,6 +12,7 @@ import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.manifest.ModuleTypeException;
 import nl.toolforge.karma.core.scm.ModuleDependency;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.Utils;
@@ -42,7 +43,7 @@ public final class DependencyHelper {
    * @param module The module for which a classpath should be determined.
    * @return See method description.
    */
-  public String getClassPath(Module module) throws DependencyException {
+  public String getClassPath(Module module) throws ModuleTypeException, DependencyException {
 
     Set moduleDeps = getModuleDependencies(module);
     Set jarDeps = getJarDependencies(module);
@@ -81,7 +82,7 @@ public final class DependencyHelper {
    * @return See method description.
    * @throws DependencyException When a dependency for a module is not available.
    */
-  public Set getModuleDependencies(Module module) throws DependencyException {
+  public Set getModuleDependencies(Module module) throws ModuleTypeException, DependencyException {
 
     if (module == null) {
       throw new IllegalArgumentException("Module cannot be null.");
@@ -194,16 +195,18 @@ public final class DependencyHelper {
    * @param module A <code>SourceModule</code> instance.
    * @return The artifact-name as determined the way as described above.
    */
-  public String resolveArchiveName(Module module) throws DependencyException {
+  public String resolveArchiveName(Module module) throws ModuleTypeException, DependencyException {
 
     String jar = module.getName() + "_";
 
     // todo introduce a method to determine if a module is webapp-module; maybe its own class.
     //
     String extension;
-    if (module.getDeploymentType().equals(Module.WEBAPP)) {
+//    if (module.getDeploymentType().equals(Module.WEBAPP)) {
+    if (module.getType().equals(Module.JAVA_WEB_APPLICATION)) {
       extension = ".war";
-    } else if (module.getDeploymentType().equals(Module.EAPP)) {
+//    } else if (module.getDeploymentType().equals(Module.EAPP)) {
+    } else if (module.getType().equals(Module.JAVA_ENTERPRISE_APPLICATION)) {
       extension = ".ear";
     } else {
       extension = ".jar";

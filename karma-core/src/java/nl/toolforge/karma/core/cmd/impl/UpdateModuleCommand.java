@@ -31,17 +31,12 @@ import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ReleaseManifest;
-import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.cvs.Utils;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
-import nl.toolforge.karma.core.vc.cvs.AdminHandler;
+import nl.toolforge.karma.core.vc.cvs.Utils;
 
 import java.util.regex.PatternSyntaxException;
-import java.util.Set;
-import java.util.List;
-import java.io.IOException;
 
 /**
  * <p>This command updates a module on a developers' local system. When the module has not been updated before, the
@@ -80,7 +75,7 @@ public class UpdateModuleCommand extends DefaultCommand {
    * the module is already present, otherwise a checkout will be performed. The checkout directory for the module
    * is relative to the root directory of the <code>active</code> manifest.
    */
-  public synchronized void execute() throws CommandException {
+  public void execute() throws CommandException {
 
     String moduleName = "";
     Module module = null;

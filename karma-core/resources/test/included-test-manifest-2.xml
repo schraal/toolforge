@@ -10,8 +10,10 @@ DO NOT CHANGE THE CONTENTS OF THIS FILE. IT IS USED BY JUnit TEST CLASSES
 
   <modules>
 
-    <module name="level3a" type="src" version="0-1" location="test-id-2"/>
-    <module name="level3b" type="src" version="0-1" location="test-id-2"/>
+    <module name="level3a" version="0-1" location="test-id-2"/>
+    <module name="level3b" version="0-1" location="test-id-2"/>
+<!--    <module name="level3a" type="src" version="0-1" location="test-id-2"/>-->
+<!--    <module name="level3b" type="src" version="0-1" location="test-id-2"/>-->
 
   </modules>
 

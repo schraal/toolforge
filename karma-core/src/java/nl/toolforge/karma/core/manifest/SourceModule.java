@@ -18,18 +18,17 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.apache.commons.digester.Digester;
-import org.xml.sax.SAXException;
-
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.scm.digester.ModuleDependencyCreationFactory;
+import org.apache.commons.digester.Digester;
+import org.xml.sax.SAXException;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * <p>A <code>SourceModule</code> represents a module for which the developer wants to have the sources available to
@@ -60,9 +59,9 @@ public class SourceModule extends BaseModule {
 
   }
 
-  public SourceType getSourceType() {
-    return new Module.SourceType("src");
-  }
+//  public SourceType getSourceType() {
+//    return new Module.SourceType("src");
+//  }
 
   /**
    * See {@link Module#getDependencies}. This implementation throws a <code>KarmaRuntimeException</code> when the

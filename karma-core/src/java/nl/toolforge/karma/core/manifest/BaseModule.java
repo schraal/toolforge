@@ -25,8 +25,11 @@ import nl.toolforge.karma.core.vc.DevelopmentLine;
 import nl.toolforge.karma.core.vc.PatchLine;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.digester.Digester;
+import org.xml.sax.SAXException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.regex.PatternSyntaxException;
 
 /**
@@ -50,7 +53,7 @@ public abstract class BaseModule implements Module {
   private boolean developmentLine = false;
 
 
-  private Module.DeploymentType deploymentType = null;
+//  private Module.DeploymentType deploymentType = null;
 
   public BaseModule(String name, Location location, Version version) {
     this(name, location);
@@ -59,16 +62,16 @@ public abstract class BaseModule implements Module {
 
   public BaseModule(String name, Location location) {
 
-    if (!name.matches(ModuleDescriptor.NAME_PATTERN_STRING)) {
+    if (!name.matches(ModuleDigester.NAME_PATTERN_STRING)) {
       throw new PatternSyntaxException(
-          "Pattern mismatch for 'name'. Should match " + ModuleDescriptor.NAME_PATTERN_STRING, name, -1);
+          "Pattern mismatch for 'name'. Should match " + ModuleDigester.NAME_PATTERN_STRING, name, -1);
     }
     if (location == null) {
       throw new IllegalArgumentException("Location cannot be null.");
     }
 
     this.name = name;
-    setDeploymentType(name);
+//    setDeploymentType(name);
 
     this.location = location;
   }
@@ -82,13 +85,13 @@ public abstract class BaseModule implements Module {
     return name;
   }
 
-  private void setDeploymentType(String moduleName) {
-    deploymentType = new Module.DeploymentType(moduleName);
-  }
-
-  public final DeploymentType getDeploymentType() {
-    return deploymentType;
-  }
+//  private void setDeploymentType(String moduleName) {
+//    deploymentType = new Module.DeploymentType(moduleName);
+//  }
+//
+//  public final DeploymentType getDeploymentType() {
+//    return deploymentType;
+//  }
 
   /**
    * Gets the modules' location.
@@ -178,14 +181,48 @@ public abstract class BaseModule implements Module {
     this.baseDir = baseDir;
   }
 
-
-
   public final File getBaseDir() {
 
     if (baseDir == null) {
       throw new KarmaRuntimeException("Basedir not set.");
     }
     return baseDir;
+  }
+
+  /**
+   * Reads <code>module-descriptor</code> from the module base directory. If the base directory does not exist,
+   * <code>Module.UNKNOWN</code> is returned.
+   *
+   * @return The module type.
+   * @throws ModuleTypeException When <code>module-descriptor</code> is non-existing. This is possible when the
+   *   module is not locally available.
+   */
+  public final Type getType() throws ModuleTypeException {
+
+    try {
+      getBaseDir();
+    } catch (KarmaRuntimeException k) {
+      return Module.UNKNOWN;
+    }
+
+    if (!new File(getBaseDir(), Module.MODULE_DESCRIPTOR).exists()) {
+      throw new ModuleTypeException(ModuleTypeException.MISSING_MODULE_DESCRIPTOR);
+    }
+
+    Digester digester = new Digester();
+
+    digester.addObjectCreate("module-descriptor", Module.Type.class);
+    digester.addCallMethod("module-descriptor/type", "setType", 0);
+
+    try {
+      Type t = (Type) digester.parse(new File(getBaseDir(), Module.MODULE_DESCRIPTOR).getPath());
+      return (Type) digester.parse(new File(getBaseDir(), Module.MODULE_DESCRIPTOR).getPath());
+    } catch (IOException e) {
+      throw new KarmaRuntimeException(e.getMessage());
+    } catch (SAXException e) {
+      e.printStackTrace();
+      throw new KarmaRuntimeException(e.getMessage());
+    }
   }
 
 }

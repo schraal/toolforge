@@ -254,12 +254,14 @@
       <option opt="c" longOpt="comment" hasArgs="true" required="true" description="The developer's comment">
         <arg>comment</arg>
       </option>
-    </options>
+      <option opt="t" longOpt="type" hasArgs="true" required="true" description="Type of the module (see documentation!)">
+         <arg>module-type</arg>
+       </option>
+     </options>
 
     <classname>nl.toolforge.karma.core.cmd.impl.CreateModuleCommand</classname>
     <help>
-			This command adds a module to a version control system and optionally includes the module in the active
-			manifest.
+			This command adds a module to a version control system.
     </help>
   </command>
 

@@ -38,6 +38,7 @@ import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ModuleComparator;
+import nl.toolforge.karma.core.manifest.ModuleTypeException;
 import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.threads.CVSLogThread;
@@ -95,25 +96,35 @@ public class ViewManifest extends DefaultCommand {
 
       ModuleStatus moduleStatus = (ModuleStatus) statusOverview.get(module);
 
-      String[] moduleData = new String[7];
+      String[] moduleData = new String[8];
       moduleData[0] = module.getName();
 
       boolean existsInRepository = moduleStatus.existsInRepository();
 
       try {
 
-        if (manifest.getState(module).equals(Module.WORKING)) {
-          moduleData[1] = "HEAD";
+        try {
+          moduleData[1] = module.getType().getShortType();
+        } catch (ModuleTypeException e) {
+          moduleData[1] = Module.UNKNOWN.getType();
+        }
+
+        if (!manifest.isLocal(module)) {
+          moduleData[2] = "N/A";
         } else {
-          Version localVersion = moduleStatus.getLocalVersion();
-          moduleData[1] = (localVersion == null ? "" : localVersion.getVersionNumber());
+          if (manifest.getState(module).equals(Module.WORKING)) {
+            moduleData[2] = "HEAD";
+          } else {
+            Version localVersion = moduleStatus.getLocalVersion();
+            moduleData[2] = (localVersion == null ? "" : localVersion.getVersionNumber());
+          }
         }
 
         if (existsInRepository) {
           Version remoteVersion = moduleStatus.getLastVersion();
-          moduleData[2] = (remoteVersion == null ? "" : "(" + remoteVersion.getVersionNumber() + ")");
+          moduleData[3] = (remoteVersion == null ? "" : "(" + remoteVersion.getVersionNumber() + ")");
         } else {
-          moduleData[2] = "";
+          moduleData[3] = "";
         }
 
       } catch (VersionControlException v) {
@@ -122,21 +133,21 @@ public class ViewManifest extends DefaultCommand {
         throw new CommandException(v.getErrorCode(), v.getMessageArguments());
       }
 
-      moduleData[3] = "(" + module.getVersionAsString() + ")";
-      if ( moduleData[3].equals("(N/A)") ) {
-        moduleData[3] = "";
+      moduleData[4] = "(" + module.getVersionAsString() + ")";
+      if ( moduleData[4].equals("(N/A)") ) {
+        moduleData[4] = "";
       }
-      moduleData[4] = (module.hasPatchLine() ? "available" : "not available");
+      moduleData[5] = (module.hasPatchLine() ? "available" : "not available");
 
       if (existsInRepository) {
-        moduleData[5] = manifest.getState(module).toString();
-        moduleData[6] = module.getLocation().getId();
+        moduleData[6] = manifest.getState(module).toString();
+        moduleData[7] = module.getLocation().getId();
       } else {
-        moduleData[5] = "";
+        moduleData[6] = "";
         if (moduleStatus.connectionFailure()) {
-          moduleData[6] = "Connection failed.";
+          moduleData[7] = "Connection failed.";
         } else {
-          moduleData[6] = "** Not in repository **";
+          moduleData[7] = "** Not in repository **";
         }
       }
       renderedList.add(moduleData);

@@ -18,8 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest;
 
-import nl.toolforge.karma.core.boot.WorkingContext;
-
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;

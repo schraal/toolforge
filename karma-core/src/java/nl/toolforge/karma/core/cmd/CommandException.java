@@ -126,6 +126,12 @@ public class CommandException extends Exception {
    */
   public static final ErrorCode NO_TEST_DIR = new ErrorCode(EXCEPTION_PREFIX + "00051");
 
+  public static final ErrorCode UNCOMMITTED_NEW_FILES = new ErrorCode(EXCEPTION_PREFIX + "00055");
+
+  public static final ErrorCode UNCOMMITTED_CHANGED_FILES = new ErrorCode(EXCEPTION_PREFIX + "00056");
+  
+  public static final ErrorCode UNCOMMITTED_REMOVED_FILES = new ErrorCode(EXCEPTION_PREFIX + "00057");
+
   /**
    * <code>build/&lt;module&gt;</code> (the default directory for a module where built files are located) is missing.
    */
@@ -141,6 +147,11 @@ public class CommandException extends Exception {
   public static final ErrorCode TEST_WARNING = new ErrorCode(EXCEPTION_PREFIX + "00100");
 
   public static final ErrorCode BUILD_WARNING = new ErrorCode(EXCEPTION_PREFIX + "00101");
+
+  /**
+   * Thrown when a module is not working and the user wants to stop work on it.
+   */
+  public static final ErrorCode INVALID_STATE_MODULE_NOT_WORKING = new ErrorCode(EXCEPTION_PREFIX + "00102");;
 
   public CommandException(ErrorCode errorCode) {
     this(errorCode, null);

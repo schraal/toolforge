@@ -24,7 +24,7 @@ import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationException;
 
 /**
- * <p>Factory class to create modules based on a {@link ModuleDescriptor}.</p>
+ * <p>Factory class to create modules based on a {@link ModuleDigester}.</p>
  *
  * @author D.A. Smedes
  * @version $Id$
@@ -37,58 +37,58 @@ public final class ModuleFactory {
     this.workingContext = workingContext;
   }
 
-  public Module create(ModuleDescriptor descriptor) throws LocationException {
+  public Module create(ModuleDigester digester) throws LocationException {
 
-    if (descriptor == null) {
+    if (digester == null) {
       throw new IllegalArgumentException("Descriptor cannot be null.");
     }
 
     Module module = null;
 
-    Location location = workingContext.getLocationLoader().get(descriptor.getLocation());
+    Location location = workingContext.getLocationLoader().get(digester.getLocation());
 
     Version version = null;
-    if (descriptor.getVersion() != null) {
-      version = new Version(descriptor.getVersion());
+    if (digester.getVersion() != null) {
+      version = new Version(digester.getVersion());
     }
 
-    //
-    // Create a SourceModule instance.
-    //
-    if (version != null) {
+//    //
+//    // Create a SourceModule instance.
+//    //
+//    if (version != null) {
+//
+//      //
+//      // <module name="" location="" version="">
+//      //
+//      switch (digester.getType()) {
+//        case ModuleDigester.SOURCE_MODULE :
+//          module = new SourceModule(digester.getName(), location, version);
+//          break;
+//        case ModuleDigester.MAVEN_MODULE :
+//          module = new MavenModule(digester.getName(), location, version);
+//          break;
+//        case ModuleDigester.LIB_MODULE :
+//          module = new LibModule(digester.getName(), location, version);
+//          break;
+//      }
+//    } else {
+//      //
+//      // <module name="" location="">
+//      //
+//      switch (digester.getType()) {
+//        case ModuleDigester.SOURCE_MODULE :
+//          module = new SourceModule(digester.getName(), location);
+//          break;
+//        case ModuleDigester.MAVEN_MODULE :
+//          module = new MavenModule(digester.getName(), location);
+//          break;
+//        case ModuleDigester.LIB_MODULE :
+//          module = new LibModule(digester.getName(), location);
+//          break;
+//      }
+//    }
 
-      //
-      // <module name="" location="" version="">
-      //
-      switch (descriptor.getType()) {
-        case ModuleDescriptor.SOURCE_MODULE :
-          module = new SourceModule(descriptor.getName(), location, version);
-          break;
-        case ModuleDescriptor.MAVEN_MODULE :
-          module = new MavenModule(descriptor.getName(), location, version);
-          break;
-        case ModuleDescriptor.LIB_MODULE :
-          module = new LibModule(descriptor.getName(), location, version);
-          break;
-      }
-    } else {
-      //
-      // <module name="" location="">
-      //
-      switch (descriptor.getType()) {
-        case ModuleDescriptor.SOURCE_MODULE :
-          module = new SourceModule(descriptor.getName(), location);
-          break;
-        case ModuleDescriptor.MAVEN_MODULE :
-          module = new MavenModule(descriptor.getName(), location);
-          break;
-        case ModuleDescriptor.LIB_MODULE :
-          module = new LibModule(descriptor.getName(), location);
-          break;
-      }
-    }
-
-    return module;
+    return new SourceModule(digester.getName(), location, version);
   }
 
 }

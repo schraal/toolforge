@@ -18,9 +18,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest.util;
 
-import java.io.File;
-
 import nl.toolforge.karma.core.manifest.Module;
+
+import java.io.File;
 
 /**
  * <p>Layout for an eapp-module. A eapp-module has the following directory-structure:
@@ -41,7 +41,8 @@ public final class EappModuleLayoutTemplate implements ModuleLayoutTemplate {
   public FileTemplate[] getFileElements() {
     return new FileTemplate[] {
       new FileTemplate(new File("/templates/cvsignore.template"), new File(".cvsignore")),
-      new FileTemplate(new File("/templates/module.info.template"), new File(Module.MODULE_INFO)),
+//      new FileTemplate(new File("/templates/module.info.template"), new File(Module.MODULE_INFO)),
+      new FileTemplate(new File("/templates/module-descriptor.xml_template"), new File(Module.MODULE_DESCRIPTOR)),
       new FileTemplate(new File("/templates/dependencies.xml_template"), new File("dependencies.xml")),
       new FileTemplate(new File("/templates/application.xml_template"), new File("META-INF", "application.xml"))
     };

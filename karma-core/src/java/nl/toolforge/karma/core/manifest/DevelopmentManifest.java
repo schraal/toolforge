@@ -72,7 +72,6 @@ public final class DevelopmentManifest extends AbstractManifest {
         setState(module, Module.DYNAMIC);
       }
     }
-
     removeLocal((SourceModule) module);
   }
 

@@ -33,7 +33,7 @@ import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.ModuleDescriptor;
+import nl.toolforge.karma.core.manifest.ModuleDigester;
 import nl.toolforge.karma.core.manifest.ModuleFactory;
 import nl.toolforge.karma.core.manifest.util.EappModuleLayoutTemplate;
 import nl.toolforge.karma.core.manifest.util.SourceModuleLayoutTemplate;
@@ -41,6 +41,7 @@ import nl.toolforge.karma.core.manifest.util.WebappModuleLayoutTemplate;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 
 /**
  * Creates a module in a repository. Modules are created using a layout template (instances of 
@@ -73,9 +74,11 @@ public class CreateModuleCommand extends DefaultCommand {
     // Part 1 of the transaction is the creation of a Module instance.
     //
 
-    ModuleDescriptor descriptor = null;
+    // todo this bit sucks. Since renamed to ModuleDigester, it doesn't make sense anymore.
+    ModuleDigester digester = null;
     try {
-      descriptor = new ModuleDescriptor(moduleName, "src", locationAlias);
+//      digester = new ModuleDigester(moduleName, "src", locationAlias);
+      digester = new ModuleDigester(moduleName, locationAlias);
     } catch (PatternSyntaxException e) {
       throw new CommandException(CommandException.INVALID_ARGUMENT, new Object[]{moduleName});
     }
@@ -83,9 +86,16 @@ public class CreateModuleCommand extends DefaultCommand {
     Module module = null;
     try {
       ModuleFactory factory = new ModuleFactory(getWorkingContext());
-      module = factory.create(descriptor);
+      module = factory.create(digester);
     } catch (LocationException e) {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+    }
+
+    Module.Type moduleType = new Module.Type();
+    try {
+      moduleType.setType(commandLine.getOptionValue("t"));
+    } catch (IllegalArgumentException e1) {
+      throw new CommandException(CommandException.INVALID_ARGUMENT);
     }
 
     CommandMessage message = new SuccessMessage(getFrontendMessages().getString("message.CREATE_MODULE_STARTED"), new Object[]{moduleName, locationAlias});
@@ -97,19 +107,24 @@ public class CreateModuleCommand extends DefaultCommand {
       Runner runner = RunnerFactory.getRunner(module.getLocation());
       runner.setCommandResponse(getCommandResponse());
 
-      if (module.getDeploymentType().equals(Module.WEBAPP)) {
+      if (moduleType.equals(Module.JAVA_WEB_APPLICATION)) {
+//      if (module.getDeploymentType().equals(Module.WEBAPP)) {
         runner.create(module, comment, new WebappModuleLayoutTemplate());
         message = new SuccessMessage(getFrontendMessages().getString("message.WEBAPP_MODULE_CREATED"), new Object[]{moduleName, locationAlias});
-      } else if (module.getDeploymentType().equals(Module.EAPP)) {
+      } else if (moduleType.equals(Module.JAVA_ENTERPRISE_APPLICATION)) {
+//      } else if (module.getDeploymentType().equals(Module.EAPP)) {
         runner.create(module, comment, new EappModuleLayoutTemplate());
         message = new SuccessMessage(getFrontendMessages().getString("message.EAPP_MODULE_CREATED"), new Object[]{moduleName, locationAlias});
-      } else {
+      } else if (moduleType.equals(Module.JAVA_SOURCE_MODULE)) {
         runner.create(module, comment, new SourceModuleLayoutTemplate());
         message = new SuccessMessage(getFrontendMessages().getString("message.SRC_MODULE_CREATED"), new Object[]{moduleName, locationAlias});
+      } else if (moduleType.equals(Module.LIBRARY_MODULE)) {
+        throw new KarmaRuntimeException("NOT IMPLEMENTED.");
       }
 
       // Ensure that only this message is passed back to the client
       //
+      message = new SuccessMessage(getFrontendMessages().getString("message.CREATE_MODULE_SUCCESSFULL"), new Object[]{moduleName, locationAlias});
       commandResponse.addMessage(new SuccessMessage(message.getMessageText()));
 
     } catch (VersionControlException e) {

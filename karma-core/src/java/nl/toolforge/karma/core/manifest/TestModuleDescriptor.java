@@ -28,21 +28,26 @@ public class TestModuleDescriptor extends TestCase {
 
   public void testSettersAndGetters() {
 
-    ModuleDescriptor m = new ModuleDescriptor("a", "src", "o");
+    ModuleDigester m = new ModuleDigester("a", "o");
+//    ModuleDigester m = new ModuleDigester("a", "src", "o");
     m.setVersion("0-1");
-    
+
     assertEquals("0-1", m.getVersion());
     assertEquals("o", m.getLocation());
     assertEquals("a", m.getName());
-    assertEquals(ModuleDescriptor.SOURCE_MODULE, m.getType());
+//    assertEquals(ModuleDigester.SOURCE_MODULE, m.getType());
   }
 
   public void testEquals() {
 
-    ModuleDescriptor m1 = new ModuleDescriptor("a", "src", "o");
-    ModuleDescriptor m2 = new ModuleDescriptor("a", "src", "o");
-    ModuleDescriptor m3 = new ModuleDescriptor("b", "src", "o");
-    ModuleDescriptor m4 = new ModuleDescriptor("a", "src", "b");
+    ModuleDigester m1 = new ModuleDigester("a", "o");
+    ModuleDigester m2 = new ModuleDigester("a", "o");
+    ModuleDigester m3 = new ModuleDigester("b", "o");
+    ModuleDigester m4 = new ModuleDigester("a", "b");
+//    ModuleDigester m1 = new ModuleDigester("a", "src", "o");
+//    ModuleDigester m2 = new ModuleDigester("a", "src", "o");
+//    ModuleDigester m3 = new ModuleDigester("b", "src", "o");
+//    ModuleDigester m4 = new ModuleDigester("a", "src", "b");
 
     assertTrue(m1.equals(m2));
     assertFalse(m1.equals(m3));

@@ -68,7 +68,7 @@ public final class ManifestLoader {
     //
     digester.addFactoryCreate("*/module", ModuleDescriptorCreationFactory.class);
     digester.addSetProperties("*/module");
-    digester.addSetNext("*/module", "addModule", "nl.toolforge.karma.core.manifest.ModuleDescriptor");
+    digester.addSetNext("*/module", "addModule", "nl.toolforge.karma.core.manifest.ModuleDigester");
 
     // All <include-manifest>-elements
     //

@@ -61,7 +61,8 @@ import nl.toolforge.karma.core.cmd.util.DependencyHelper;
 import nl.toolforge.karma.core.cmd.util.DescriptorReader;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.ModuleDescriptor;
+import nl.toolforge.karma.core.manifest.ModuleDigester;
+import nl.toolforge.karma.core.manifest.ModuleTypeException;
 
 /**
  * @author D.A. Smedes
@@ -134,9 +135,10 @@ public class PackageModule extends AbstractBuildCommand {
 
       File packageName = new File(getBuildEnvironment().getModuleBuildRootDirectory(), helper.resolveArchiveName(getCurrentModule()));
 
-      if (getCurrentModule().getDeploymentType().equals(Module.WEBAPP)) {
+//      if (getCurrentModule().getDeploymentType().equals(Module.WEBAPP)) {
+      if (getCurrentModule().getType().equals(Module.JAVA_WEB_APPLICATION)) {
         packageWar(packageName);
-      } else if (getCurrentModule().getDeploymentType().equals(Module.EAPP)) {
+      } else if (getCurrentModule().getType().equals(Module.JAVA_ENTERPRISE_APPLICATION)) {
         packageEar(packageName);
       } else {
         packageJar(packageName);
@@ -149,6 +151,8 @@ public class PackageModule extends AbstractBuildCommand {
       commandResponse.addMessage(message);
 
     } catch (DependencyException d) {
+      throw new CommandException(d.getErrorCode(), d.getMessageArguments());
+    } catch (ModuleTypeException d) {
       throw new CommandException(d.getErrorCode(), d.getMessageArguments());
     }
   }
@@ -235,6 +239,8 @@ e.printStackTrace();
         commandResponse.addMessage(new AntErrorMessage(e));
       }
       throw new CommandException(e, CommandException.PACKAGE_FAILED, new Object[] {getCurrentModule().getName()});
+    } catch (ModuleTypeException e) {
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
 
   }
@@ -327,6 +333,8 @@ e.printStackTrace();
       throw new CommandException(e, CommandException.PACKAGE_FAILED, new Object[] {getCurrentModule().getName()});
     } catch (DependencyException d) {
       throw new CommandException(d.getErrorCode(), d.getMessageArguments());
+    } catch (ModuleTypeException d) {
+      throw new CommandException(d.getErrorCode(), d.getMessageArguments());
     }
 
   }
@@ -359,7 +367,7 @@ e.printStackTrace();
       for (Iterator it = reader.getModuleNames().iterator(); it.hasNext(); ) {
         String moduleName = ((StringBuffer) it.next()).toString();
 //System.out.println("FOund module name: "+moduleName);
-        Pattern p = Pattern.compile("@("+ModuleDescriptor.NAME_PATTERN_STRING+")@");
+        Pattern p = Pattern.compile("@("+ModuleDigester.NAME_PATTERN_STRING+")@");
         Matcher m = p.matcher(moduleName);
 
         if (m.matches()) {
@@ -471,6 +479,8 @@ e.printStackTrace();
       throw new CommandException(d.getErrorCode(), d.getMessageArguments());
     } catch (IOException e) {
       throw new CommandException(e, CommandException.PACKAGE_FAILED);
+    } catch (ModuleTypeException d) {
+      throw new CommandException(d.getErrorCode(), d.getMessageArguments());
     }
 
   }

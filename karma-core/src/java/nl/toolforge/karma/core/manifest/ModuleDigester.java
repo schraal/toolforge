@@ -19,8 +19,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.Version;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.util.regex.PatternSyntaxException;
 
@@ -30,9 +28,9 @@ import java.util.regex.PatternSyntaxException;
  * @author D.A. Smedes
  * @version $Id$
  */
-public final class ModuleDescriptor {
+public final class ModuleDigester {
 
-  private static Log logger = LogFactory.getLog(ModuleDescriptor.class);
+//  private static Log logger = LogFactory.getLog(ModuleDigester.class);
 
   // todo string validation should be done in the xml-schema.
   //
@@ -46,7 +44,7 @@ public final class ModuleDescriptor {
   public static final int LIB_MODULE = 2;
 
   private String name = null;
-  private Module.SourceType sourceType = null;
+//  private Module.SourceType sourceType = null;
   private String location = null;
 
   private String version = null;
@@ -54,7 +52,8 @@ public final class ModuleDescriptor {
   /**
    *
    */
-  public ModuleDescriptor(String name, String type, String location) {
+//  public ModuleDigester(String name, String type, String location) {
+  public ModuleDigester(String name, String location) {
 
     if (name == null || !name.matches(NAME_PATTERN_STRING)) {
       throw new PatternSyntaxException(
@@ -62,12 +61,12 @@ public final class ModuleDescriptor {
     }
     this.name = name;
 
-    if (type == null || !type.matches(SOURCE_TYPE_PATTERN_STRING)) {
-      throw new PatternSyntaxException(
-          "Pattern mismatch for type-attribute. Should match " + SOURCE_TYPE_PATTERN_STRING, type, -1);
-    }
+//    if (type == null || !type.matches(SOURCE_TYPE_PATTERN_STRING)) {
+//      throw new PatternSyntaxException(
+//          "Pattern mismatch for type-attribute. Should match " + SOURCE_TYPE_PATTERN_STRING, type, -1);
+//    }
 
-    sourceType = new Module.SourceType(type);
+//    sourceType = new Module.SourceType(type);
 
     if (location == null || !location.matches(LOCATION_PATTERN_STRING)) {
       throw new PatternSyntaxException(
@@ -81,11 +80,11 @@ public final class ModuleDescriptor {
     return name;
   }
 
-  public int getType() {
-    if ("src".equals(sourceType.getSourceType())) return SOURCE_MODULE;
-    if ("maven".equals(sourceType.getSourceType())) return MAVEN_MODULE;
-    return LIB_MODULE;
-  }
+//  public int getType() {
+//    if ("src".equals(sourceType.getSourceType())) return SOURCE_MODULE;
+//    if ("maven".equals(sourceType.getSourceType())) return MAVEN_MODULE;
+//    return LIB_MODULE;
+//  }
 
   public String getLocation() {
     return location;
@@ -118,10 +117,10 @@ public final class ModuleDescriptor {
    */
   public boolean equals(Object o) {
 
-    if (o instanceof ModuleDescriptor) {
+    if (o instanceof ModuleDigester) {
       if (
-          (getName().equals(((ModuleDescriptor) o).getName())) &&
-          (getLocation().equals(((ModuleDescriptor) o).getLocation())) ) {
+          (getName().equals(((ModuleDigester) o).getName())) &&
+          (getLocation().equals(((ModuleDigester) o).getLocation())) ) {
         return true;
       } else {
         return false;

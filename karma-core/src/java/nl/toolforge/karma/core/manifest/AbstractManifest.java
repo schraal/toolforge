@@ -22,11 +22,7 @@ import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.scm.ModuleDependency;
-import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.AdminHandler;
-import nl.toolforge.karma.core.vc.cvs.Utils;
-import nl.toolforge.karma.core.vc.cvs.threads.PatchLineThread;
-import nl.toolforge.karma.core.vc.threads.ParallelRunner;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -127,7 +123,7 @@ public abstract class AbstractManifest implements Manifest {
     ModuleFactory moduleFactory = new ModuleFactory(workingContext);
 
     for (Iterator i = manifestStructure.getModules().iterator(); i.hasNext();) {
-      Module module = moduleFactory.create((ModuleDescriptor) i.next());
+      Module module = moduleFactory.create((ModuleDigester) i.next());
       modules.put(module.getName(), module);
     }
 
@@ -483,8 +479,8 @@ public abstract class AbstractManifest implements Manifest {
 
     // todo this method is not abstract ! handles CVS only.
 
-    AdminHandler handler = new AdminHandler();
-    if (!handler.isEqualLocation(module)) {
+    AdminHandler handler = new AdminHandler(module);
+    if (!handler.isEqualLocation()) {
       try {
         FileUtils.deleteDirectory(module.getBaseDir());
       } catch (IOException e) {

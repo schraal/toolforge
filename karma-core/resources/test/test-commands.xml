@@ -9,7 +9,7 @@
 		</description>
 
 		<options>
-			<option opt="m" longOpt="module" required="true" description="The module name that should be updated">
+			<option opt="m" longOpt="module" hasArgs="true" required="true" description="The module name that should be updated">
 				<arg>module-name</arg>
 			</option>
 
@@ -30,7 +30,7 @@
 		</description>
 
 		<options>
-			<option opt="m" longOpt="manifest" required="true" description="The manifest name">
+			<option opt="m" longOpt="manifest" hasArgs="true" required="true" description="The manifest name">
 				<arg>manifest-name</arg>
 			</option>
 		</options>

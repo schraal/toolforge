@@ -28,8 +28,11 @@ import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.cmd.util.BuildEnvironment;
 import nl.toolforge.karma.core.cmd.util.DependencyException;
 import nl.toolforge.karma.core.cmd.util.DependencyHelper;
+import nl.toolforge.karma.core.manifest.ModuleTypeException;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Builds a module in a manifest. Building a module means that all java sources will be compiled into the
@@ -39,6 +42,8 @@ import org.apache.tools.ant.Project;
  * @version $Id$
  */
 public class BuildModule extends AbstractBuildCommand {
+
+  private static final Log logger = LogFactory.getLog(BuildModule.class);
 
   private static final String DEFAULT_SRC_PATH = "src/java";
 
@@ -72,10 +77,15 @@ public class BuildModule extends AbstractBuildCommand {
       project.executeTarget("run");
 
     } catch (DependencyException e) {
+      logger.error(e);
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     } catch (BuildException e) {
+      logger.error(e);
       commandResponse.addMessage(new AntErrorMessage(e));
       throw new CommandException(e, CommandException.BUILD_FAILED, new Object[] {getCurrentModule().getName()});
+    } catch (ModuleTypeException e) {
+      logger.error(e);
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
 
     CommandMessage message = new SuccessMessage(getFrontendMessages().getString("message.MODULE_BUILT"), new Object[] {getCurrentModule().getName()});

@@ -19,9 +19,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.core.util.file.XMLFilenameFilter;
-import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.boot.WorkingContext;
-//import nl.toolforge.karma.core.boot.KarmaRuntime;
+import nl.toolforge.karma.core.location.LocationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -30,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 /**

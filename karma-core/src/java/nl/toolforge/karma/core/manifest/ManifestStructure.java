@@ -48,12 +48,12 @@ public final class ManifestStructure {
     return modules;
   }
 
-  public void addModule(ModuleDescriptor descriptor) throws ManifestException {
+  public void addModule(ModuleDigester digester) throws ManifestException {
 
-    if (modules.contains(descriptor)) {
-      throw new ManifestException(ManifestException.DUPLICATE_MODULE, new Object[] {descriptor.getName()});
+    if (modules.contains(digester)) {
+      throw new ManifestException(ManifestException.DUPLICATE_MODULE, new Object[] {digester.getName()});
     }
-    modules.add(descriptor);
+    modules.add(digester);
   }
 
   public String getName() {

@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE manifest [
+  <!ELEMENT manifest (description,modules*,include-manifest*)>
+  <!ELEMENT description (#PCDATA)>
+  <!ELEMENT modules (module+)>
+  <!ELEMENT module>
+  <!ELEMENT include-manifest>
+
+<!ATTLIST manifest name CDATA #REQUIRED>
+<!ATTLIST manifest type CDATA #FIXED "development">
+<!ATTLIST manifest version CDATA #FIXED "1.0">
+
+<!ATTLIST module name CDATA #REQUIRED>
+<!ATTLIST module type CDATA #FIXED "src">
+<!ATTLIST module location CDATA #REQUIRED>
+<!ATTLIST module version CDATA #IMPLIED>
+
+<!ATTLIST include-manifest name CDATA #REQUIRED>
+
+]>
+
+<!-- Example
+
+<manifest name="" type="development" version="1.0">
+
+  <description/>
+
+  <modules>
+
+    <module name="" type="src" location=""/>
+
+  </modules>
+
+  <include-manifest name=""/>
+
+</manifest>
+
+-->

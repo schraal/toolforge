@@ -175,12 +175,12 @@ public class CreateRelease extends CompositeCommand {
   private String getModule(Module module) throws CommandException {
 
     String n;
-    String t;
+//    String t;
     String v;
     String l;
 
     n = "\"" + module.getName() + "\"";
-    t = module.getSourceType().getSourceType();
+//    t = module.getSourceType().getSourceType();
     l = module.getLocation().getId();
 
     if (module.hasVersion()) {
@@ -196,7 +196,8 @@ public class CreateRelease extends CompositeCommand {
       }
     }
 
-    return "    <module name=" + n + " type=\"" + t + "\" version=\"" + v + "\" location=\"" + l + "\"/>\n";
+//    return "    <module name=" + n + " type=\"" + t + "\" version=\"" + v + "\" location=\"" + l + "\"/>\n";
+    return "    <module name=" + n + " version=\"" + v + "\" location=\"" + l + "\"/>\n";
 
   }
 

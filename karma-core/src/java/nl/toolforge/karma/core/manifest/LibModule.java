@@ -23,14 +23,14 @@ public class LibModule extends BaseModule {
     super(name, location, version);
   }
 
-  /**
-   * Returns the <code>lib</code> SourceType.
-   *
-   * @return
-   */
-  public SourceType getSourceType() {
-    return new Module.SourceType("lib");
-  }
+//  /**
+//   * Returns the <code>lib</code> SourceType.
+//   *
+//   * @return
+//   */
+//  public SourceType getSourceType() {
+//    return new Module.SourceType("lib");
+//  }
 
   /**
    * Not implemented. Will throw a <code>KarmaRuntimeException</code>.
