@@ -19,18 +19,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.location;
 
 import nl.toolforge.core.util.file.XMLFilenameFilter;
-import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
-import nl.toolforge.karma.core.ErrorCode;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
-import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
-import nl.toolforge.karma.core.vc.VersionControlException;
 import org.apache.commons.digester.Digester;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.netbeans.lib.cvsclient.CVSRoot;
 import org.xml.sax.SAXException;
 
 import java.io.File;
@@ -45,10 +38,9 @@ import java.util.Map;
  * definitions in the location store. The location store is a directory on the user's local harddisk, which is a
  * mandatory property in <code>karma.properties</code>. See {@link nl.toolforge.karma.core.LocalEnvironment} for more information.
  * <p/>
- * <p>A location can be of different types. Some locations require authenticator data, which is mapped from XML files
- * in the Karma configuration directory. The filename pattern used for authenticator files is
- * <code>repository-authenticator*.xml</code>. A location with id <code>cvs-1</code> will be mapped to an authenticator
- * with the same id.
+ * <p>A location can be of different types. Some locations require authenticator data, which is mapped from an XML file
+ * in the Karma configuration directory (<code>uthenticator.xml</code>). A location with id <code>cvs-1</code> will be
+ *  mapped to an authenticator with the same id.
  *
  * @author D.A. Smedes
  * @author W.M. Oosterom
@@ -56,7 +48,7 @@ import java.util.Map;
  */
 public final class LocationLoader {
 
-  private static Log logger = LogFactory.getLog(LocationLoader.class);
+//  private static Log logger = LogFactory.getLog(LocationLoader.class);
   
   private static LocationLoader instance = null;
 
@@ -74,7 +66,7 @@ public final class LocationLoader {
    *
    * @return A location factory.
    */
-  public static LocationLoader getInstance() throws LocationException {
+  public static LocationLoader getInstance() {
 
     if (instance == null) {
       instance = new LocationLoader();
@@ -202,7 +194,7 @@ public final class LocationLoader {
     load();
   }
 
-  private Location getLocation(LocationDescriptor locDescriptor, AuthenticatorDescriptor authDescriptor) throws LocationException {
+  private Location getLocation(LocationDescriptor locDescriptor, AuthenticatorDescriptor authDescriptor) {
 
     if (Location.Type.CVS_REPOSITORY.type.equals(locDescriptor.getType().toUpperCase())) {
 
@@ -224,44 +216,6 @@ public final class LocationLoader {
   }
 
   /**
-   * @deprecated The checks in this method apply to all CVS connection methods.
-   */
-  private void checkLocation(Location location) throws LocationException {
-
-    if (location instanceof CVSLocationImpl) {
-
-      CVSLocationImpl loc = (CVSLocationImpl) location;
-
-      if (loc.getProtocol().equals(CVSRoot.METHOD_EXT)) {
-        if (loc.getUsername() == null) {
-          String error = "Connection protocol (" + CVSRoot.METHOD_EXT + ") requires username in repository-authenticators.xml";
-          logger.error(error);
-          throw new LocationException(LocationException.INVALID_AUTHENTICATOR_CONFIGURATION, new Object[]{loc.getId()});
-        }
-      } else {
-
-        if (loc.getProtocol().equals(CVSRoot.METHOD_PSERVER)) {
-          if ((loc.getUsername() == null) || (!loc.passwordSet())) {
-            String error = "Connection protocol (" + CVSRoot.METHOD_PSERVER + ") requires username in repository-authenticators.xml";
-            logger.error(error);
-            throw new LocationException(LocationException.INVALID_AUTHENTICATOR_CONFIGURATION, new Object[]{loc.getId()});
-          }
-        } else {
-
-          if (loc.getProtocol().equals(CVSRoot.METHOD_SERVER)) {
-            if ((loc.getUsername() == null) || (!loc.passwordSet())) {
-              String error = "Connection protocol (" + CVSRoot.METHOD_SERVER + ") requires username repository-authenticators.xml";
-              logger.error(error);
-              throw new LocationException(LocationException.INVALID_AUTHENTICATOR_CONFIGURATION, new Object[]{loc.getId()});
-            }
-          }
-        }
-      }
-    }
-
-  }
-
-  /**
    * Returns all locations that have been loaded by the loader.
    *
    * @return A map containing <code>Location</code>-objects, accessible by their <code>id</code> as a key.
@@ -280,7 +234,6 @@ public final class LocationLoader {
   public final Location get(String locationAlias) throws LocationException {
 
     if (locations.containsKey(locationAlias)) {
-
       return (Location) locations.get(locationAlias);
     }
     throw new LocationException(LocationException.LOCATION_NOT_FOUND, new Object[]{locationAlias});

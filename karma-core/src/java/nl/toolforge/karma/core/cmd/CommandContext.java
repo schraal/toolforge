@@ -41,11 +41,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.ArrayList;
 
 /**
  * <p>The command context is the class that provides a runtime for commands to run in. The command context maintains
@@ -115,6 +115,7 @@ public final class CommandContext implements ChangeListener {
         // Nothing serious ...
         //
         handler.commandResponseChanged(new CommandResponseEvent(new ErrorMessage(KarmaException.MANIFEST_STORE_UPDATE_FAILED)));
+        handler.commandResponseChanged(new CommandResponseEvent(new ErrorMessage(e.getErrorCode())));
       }
     } else {
       throw new KarmaRuntimeException("Pietje puk exception");
@@ -145,6 +146,7 @@ public final class CommandContext implements ChangeListener {
         //
 
         handler.commandResponseChanged(new CommandResponseEvent(new ErrorMessage(KarmaException.LOCATION_STORE_UPDATE_FAILED)));
+        handler.commandResponseChanged(new CommandResponseEvent(new ErrorMessage(e.getErrorCode())));
       }
     } else {
       throw new KarmaRuntimeException("Pietje puk exception");
@@ -279,7 +281,6 @@ public final class CommandContext implements ChangeListener {
     //
     currentManifest = newManifest;
 
-//    setFileModificationTimes();
     register();
   }
 
@@ -304,7 +305,6 @@ public final class CommandContext implements ChangeListener {
     }
   }
 
-
   /**
    * Gets all manifests.
    *
@@ -323,7 +323,7 @@ public final class CommandContext implements ChangeListener {
    * @throws CommandException A whole lot. Interface applications should <b>*** NOT ***</b> quit program execution as a
    *                        result of this exception. It should be handled nicely.
    */
-  public synchronized void execute(String commandLine) throws CommandException {
+  public void execute(String commandLine) throws CommandException {
 
     Command command = CommandFactory.getInstance().getCommand(commandLine);
     execute(command);
@@ -335,7 +335,7 @@ public final class CommandContext implements ChangeListener {
    * @param command The command to execute.
    * @throws CommandException
    */
-  public synchronized void execute(Command command) throws CommandException {
+  public void execute(Command command) throws CommandException {
 
     if (command == null) {
       throw new IllegalArgumentException("Invalid command; command cannot be null.");
@@ -352,7 +352,6 @@ public final class CommandContext implements ChangeListener {
     command.deregisterCommandResponseListener(responseHandler);
     command.cleanUp();
   }
-
   /**
    * Checks if a manifest is active for this context.
    *

@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.vc.threads.RunnerResult;
 
 /**
  * <p>Each module exists on a number of places. Virtually, they appear as a <code>Module</code> instance in Karma. The
@@ -43,7 +44,7 @@ import nl.toolforge.karma.core.Version;
  * @author D.A. Smedes
  * @version $Id$
  */
-public interface ModuleStatus {
+public interface ModuleStatus extends RunnerResult {
 
   public Version getNextVersion();
 

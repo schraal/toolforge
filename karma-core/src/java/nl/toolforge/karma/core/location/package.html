@@ -36,8 +36,7 @@ a <code>protocol</code>, <code>host</code>, <code>port</code> and <code>reposito
 <p>Next to the location definition, certain types of locations require authentication data as well. Since these
 location definitions can be maintained in a version control repository, authentication data is stored separately.
 Karma knows which types of locations require authentication data and will try and read this from the configuration
-directory (<code>$HOME/.karma</code>). Files following the <code>repository-authenticator*</code>-pattern are scanned
-for entries that match the location.
+directory (<code>$HOME/.karma</code>). A file named as <code>authenticator.xml</code> is expected.
 
 <p>The following XML blob shows the structure of such an authenticator file:</p>
 
@@ -45,7 +44,7 @@ for entries that match the location.
 
 &lt;?xml version="1.0"&gt;
 &lt;authenticators>
-  &lt;authenticator id="cvs-local" username="asmedes" password="bogus"&gt;
+  &lt;authenticator id="cvs-local" username="asmedes"&gt;
   &lt;authenticator id="sf-toolforge" username="asmedes"&gt;
 &lt;/authenticators>
 

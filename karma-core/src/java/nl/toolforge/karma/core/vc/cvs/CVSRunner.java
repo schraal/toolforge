@@ -625,11 +625,6 @@ public final class CVSRunner implements Runner {
     return symbolicNames.contains(symbolicName.getSymbolicName());
   }
 
-//  private void executeOnCVS(org.netbeans.lib.cvsclient.command.Command command,
-//                            File contextDirectory) throws CVSException {
-//    executeOnCVS(command, contextDirectory, null);
-//  }
-
   /**
    * Runs a CVS command on the repository (through the Netbeans API). contextDirectory is assigned to client.setLocalPath()
    *

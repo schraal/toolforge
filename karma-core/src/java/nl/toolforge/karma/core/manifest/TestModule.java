@@ -35,14 +35,10 @@ import java.util.List;
 public class TestModule extends BaseTest {
 
   private LocationLoader locationFactory = null;
-
+  
   public void setUp() {
     super.setUp();
-    try {
-      locationFactory = LocationLoader.getInstance();
-    } catch (LocationException e) {
-     fail(e.getMessage());
-    }
+    locationFactory = LocationLoader.getInstance();
   }
 
   public void testTypes() {

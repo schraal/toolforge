@@ -40,14 +40,15 @@ public abstract class DefaultCommand implements Command {
 	private String description = null;
 	private String helpText = null;
 	private Class implementation = null;
+//  protected CommandDescriptor descriptor;
 
-	/**
+  /**
 	 * Creates a command by initializing the command through its <code>CommandDescriptor</code>.
 	 *
 	 * @param descriptor The command descriptor instance containing the basic information for this command
 	 */
 	public DefaultCommand(CommandDescriptor descriptor) {
-
+//    this.descriptor = descriptor;
 		if (descriptor == null) {
 			throw new IllegalArgumentException("Command descriptor cannot be null.");
 		}
@@ -65,6 +66,9 @@ public abstract class DefaultCommand implements Command {
 	 * @param contextRef The <code>CommandContext</code> for this command.
 	 */
 	public final void setContext(CommandContext contextRef) {
+    if (this.contextRef != null) {
+      throw new IllegalStateException("context is already set");
+    }
 		this.contextRef = contextRef;
 	}
 
@@ -109,12 +113,19 @@ public abstract class DefaultCommand implements Command {
 		return commandLine;
 	}
 
+  private CommandResponseListener responseListener = null;
+
   public final void registerCommandResponseListener(CommandResponseListener responseListener) {
+    this.responseListener = responseListener;
     getCommandResponse().addCommandResponseListener(responseListener);
   }
 
   public final void deregisterCommandResponseListener(CommandResponseListener responseListener) {
     getCommandResponse().removeCommandReponseListener(responseListener);
+  }
+
+  public final CommandResponseListener getResponseListener() {
+    return responseListener;
   }
 
 	public final Class getImplementation() {
@@ -155,4 +166,8 @@ public abstract class DefaultCommand implements Command {
   public void cleanUp() {
     // Nothing
   }
+
+//  public CommandDescriptor getDescriptor() {
+//    return descriptor;
+//  }
 }

@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.vc.threads;
 
-import nl.toolforge.karma.core.vc.ModuleStatus;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.manifest.Module;
 
 /**
@@ -29,8 +29,12 @@ public abstract class RunnerThread extends Thread {
 
   private boolean running = true;
 
-  protected ModuleStatus moduleStatus = null;
+  protected RunnerResult result = null;
   private Module module = null;
+
+  public RunnerThread(Module module) {
+    this.module = module;
+  }
 
   /**
    * Must be implemented by subclasses. The subclass is where all logic is performed.
@@ -60,12 +64,8 @@ public abstract class RunnerThread extends Thread {
     return running;
   }
 
-  public final ModuleStatus getModuleStatus() {
-    return moduleStatus;
-  }
-
-  public void setModule(Module module) {
-    this.module = module;
+  public final RunnerResult getResult() {
+    return result;
   }
 
   /**
@@ -75,6 +75,9 @@ public abstract class RunnerThread extends Thread {
    * @return The ModuleStatus instance generated based on what the {@link #run()} has done when executed properly.
    */
   public Module getModule() {
+    if (module == null) {
+      throw new KarmaRuntimeException("Module instance has not been set.");
+    }
     return module;
   }
 

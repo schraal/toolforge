@@ -21,11 +21,15 @@ package nl.toolforge.karma.core.vc.threads;
 import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.vc.ModuleStatus;
-import nl.toolforge.karma.core.vc.cvs.threads.CVSRunnerThread;
+import nl.toolforge.karma.core.vc.cvs.threads.CVSLogThread;
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.cmd.CommandContext;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * The ParallelRunner handles parallel <code>RunnerThread</code>s. This concept should be used when parallel read
@@ -37,20 +41,25 @@ import java.util.Map;
  */
 public class ParallelRunner {
 
-  private Map statusOverview = null;
+  private Map results = null;
 
   private Manifest manifest = null;
   private RunnerThread[] threads = null;
 
   private boolean initializing = true;
+  private Class impl = null;
 
   /**
    * Initializes this <code>ParallelRunner</code> with the correct <code>Manifest</code>.
    *
    * @param manifest The manifest.
+   * @param threadClass A
+   *
+   * @throws ClassNotFoundException When runnerThread cannot be instantiated
    */
-  public ParallelRunner(Manifest manifest) {
+  public ParallelRunner(Manifest manifest, Class threadClass) throws ClassNotFoundException {
     this.manifest = manifest;
+    this.impl = threadClass;
   }
 
   /**
@@ -64,7 +73,7 @@ public class ParallelRunner {
 
     // Initialize status overview map
     //
-    statusOverview = new HashMap();
+    results = new HashMap();
 
     // Initialize an array of threads.
     //
@@ -78,7 +87,20 @@ public class ParallelRunner {
     initializing = true;
 
     for (Iterator i = modules.values().iterator(); i.hasNext();) {
-      threads[index] = new CVSRunnerThread((Module) i.next());
+
+      try {
+        Constructor constructor = impl.getConstructor(new Class[]{Module.class});
+        RunnerThread t = (RunnerThread) constructor.newInstance(new Object[]{(Module) i.next()});
+
+//        Constructor constructor = impl.getConstructor(new Class[]{Module.class, Manifest.class});
+//        RunnerThread t = (RunnerThread) constructor.newInstance(new Object[]{(Module) i.next(), manifest});
+
+        threads[index] = t;
+      } catch (Exception e) {
+        e.printStackTrace();
+        throw new KarmaRuntimeException("Could not start a RunnerThread instance.");
+      }
+
       threads[index].start();
       index++;
     }
@@ -86,8 +108,8 @@ public class ParallelRunner {
     initializing = false;
   }
 
-  private void addStatus(Module module, ModuleStatus moduleStatus) {
-    statusOverview.put(module, moduleStatus);
+  private void addResult(Module module, RunnerResult result) {
+    results.put(module, result);
   }
 
   /**
@@ -96,8 +118,8 @@ public class ParallelRunner {
    *
    * @return
    */
-  public Map retrieveStatus() {
-    return statusOverview;
+  public Map retrieveResults() {
+    return results;
   }
 
   /**
@@ -123,7 +145,7 @@ public class ParallelRunner {
       runningThreads -= (runningThread ? 0 : 1);
 
       if (!runningThread) {
-        addStatus(threads[i].getModule(), threads[i].getModuleStatus());
+        addResult(threads[i].getModule(), threads[i].getResult());
       }
     }
     return (runningThreads == 0);

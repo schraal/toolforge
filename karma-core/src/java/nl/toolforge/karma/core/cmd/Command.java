@@ -113,6 +113,4 @@ public interface Command {
    * @return CommandResponse
    */
   public CommandResponse getCommandResponse();
-
-
 }

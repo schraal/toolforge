@@ -25,14 +25,18 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandFactory;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.CompositeCommand;
-import nl.toolforge.karma.core.cmd.ErrorMessage;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
+import nl.toolforge.karma.core.cmd.threads.ParallelCommandWrapper;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.ModuleComparator;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.List;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * This command updates all modules in the active manifest on a developers' local system.
@@ -42,6 +46,22 @@ import java.util.Map;
  */
 //public class UpdateAllModulesCommand extends DefaultCommand {
 public class UpdateAllModulesCommand extends CompositeCommand {
+
+  public void commandHeartBeat() {
+
+  }
+
+  public void commandResponseChanged(CommandResponseEvent event) {
+
+  }
+
+  public void commandResponseFinished(CommandResponseEvent event) {
+
+  }
+
+  public CommandResponse getCommandResponse() {
+    return commandResponse;
+  }
 
   private CommandResponse commandResponse = new ActionCommandResponse();
 
@@ -63,7 +83,7 @@ public class UpdateAllModulesCommand extends CompositeCommand {
    *
    */
   public void execute() throws CommandException {
-    
+
     // A manifest must be present for this command
     //
     if (!getContext().isManifestLoaded()) {
@@ -72,59 +92,37 @@ public class UpdateAllModulesCommand extends CompositeCommand {
 
     // todo what to do about jarmodules etc ?
     //
-    Map modules = getContext().getCurrentManifest().getAllModules();
+    Collection modules = getContext().getCurrentManifest().getAllModules().values();
 
-    // Loop through all modules and use UpdateModuleCommand on each module.
+    // Initialize an array of threads.
     //
-    for (Iterator i = modules.keySet().iterator(); i.hasNext() && !errorOccurred;) {
+    ParallelCommandWrapper[] threads = new ParallelCommandWrapper[modules.size()];
 
-      Module module = (Module) modules.get(i.next());
+    int j = 0;
+    for (Iterator i = modules.iterator(); i.hasNext();) {
+      Module module = (Module) i.next();
 
-      // todo hmm, the commandname is hardcoded whilst we have it dynamically in a file ...
-      //
-      //getContext().execute(CommandDescriptor.UPDATE_MODULE_COMMAND + " -m ".concat(module.getName()));
-      //todo cast to updatecommand?
-      Command command = CommandFactory.getInstance().getCommand(CommandDescriptor.UPDATE_MODULE_COMMAND + " -m ".concat(module.getName()));
-      command.registerCommandResponseListener(this);
-      try {
-        getContext().execute(command);
+      String commandLineString = "um -m " + module.getName();
+      Command clone = CommandFactory.getInstance().getCommand(commandLineString);
+      clone.setContext(getContext());
 
-        //empty line between updating 2 modules.
-        SuccessMessage message = new SuccessMessage("");
-        commandResponse.addMessage(message);
+      threads[j] = new ParallelCommandWrapper(clone, getResponseListener());
+      threads[j].start();
+      j++;
+    }
 
-      } catch (CommandException c) {
-        commandResponse.addMessage(new ErrorMessage(c.getErrorCode()));
-        break; //break out of the for loop.
-      } finally {
-        command.deregisterCommandResponseListener(this);
+    int totalThreads = threads.length;
+    int runningThreads = threads.length;
+
+    // todo use join() ?
+
+    while (runningThreads != 0) {
+
+      for (int i = 0; i < totalThreads; i++) {
+
+        boolean runningThread = threads[i].isRunning();
+        runningThreads -= (runningThread ? 0 : 1);
       }
     }
   }
-
-  public CommandResponse getCommandResponse() {
-    return commandResponse;
-  }
-
-  public void commandHeartBeat() {
-    // todo implementation required
-  }
-
-  /**
-   *
-   *
-   * @param event
-   */
-  public void commandResponseChanged(CommandResponseEvent event) {
-    //check what the change is. In case of an error, we want to give an error
-    //message and stop with updating the modules.
-    if (event.getEventMessage() instanceof ErrorMessage) {
-      errorOccurred = true;  
-    }
-  }
-
-  public void commandResponseFinished(CommandResponseEvent event) {
-    //the update module has finished. which is good. nothing to do.
-  }
-
 }

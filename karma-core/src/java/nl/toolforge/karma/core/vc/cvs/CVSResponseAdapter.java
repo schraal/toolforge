@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -91,7 +90,7 @@ public final class CVSResponseAdapter implements CVSListener {
     List argList = new ArrayList();
     StringTokenizer tokenizer = new StringTokenizer(args, ",");
     while (tokenizer.hasMoreTokens()) {
-      argList.add((String) tokenizer.nextElement());
+      argList.add(((String) tokenizer.nextElement()).trim());
     }
 
     // First pass ... count actual available parameters; is there a value for each requested key ?
@@ -241,18 +240,9 @@ public final class CVSResponseAdapter implements CVSListener {
       updateParser.addNewFile(message.substring(message.indexOf(" ") + 1));
     }
 
-    if (!"".equals(message)) {
-
-//      if (newLineCounter == 40) {
-//        System.out.println(".");
-//        newLineCounter = 0;
-//      } else {
-//        System.out.print(".");
-//        newLineCounter++;
-//      }
-
-      logger.debug("MessageEvent from CVS : " + message);
-    }
+//    if (!"".equals(message)) {
+//      logger.debug("MessageEvent from CVS : " + message);
+//    }
   }
 
 //  private static int newLineCounter = 0;

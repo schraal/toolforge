@@ -18,21 +18,25 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.vc.cvs;
 
-import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.Patch;
 import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.Patch;
+import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
-import nl.toolforge.karma.core.vc.SymbolicName;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
+import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.PatchLine;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
-import nl.toolforge.karma.core.vc.ModuleStatus;
+import nl.toolforge.karma.core.vc.SymbolicName;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.model.MainLine;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public final class Utils {
+
+  private static final Log logger = LogFactory.getLog(Utils.class);
 
   /**
    * <p>Creates a symbolic name for <code>module</code>, based on <code>version</code> and whether a module has an
@@ -99,6 +103,8 @@ public final class Utils {
 
   public static Version getLastVersion(Module module) throws VersionControlException {
 
+    logger.debug("Getting last version for module : " + module.getName());
+
     Runner runner = RunnerFactory.getRunner(module.getLocation());
 
     ModuleStatus status = new CVSModuleStatus(module, ((CVSRunner) runner).log(module));
@@ -106,6 +112,8 @@ public final class Utils {
   }
 
   public static Version getLocalVersion(Module module) throws VersionControlException {
+
+    logger.debug("Getting local version for module : " + module.getName());
 
     Runner runner = RunnerFactory.getRunner(module.getLocation());
 

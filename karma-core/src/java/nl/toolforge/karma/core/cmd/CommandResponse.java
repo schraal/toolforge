@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Collections;
 
 /**
  * A CommandResponse object is used to report messages from 
@@ -53,7 +54,7 @@ public abstract class CommandResponse {
    *
    * @param message The message to add to the response.
    */
-	public void addMessage(CommandMessage message) {
+	public synchronized void addMessage(CommandMessage message) {
     if (listeners.size() > 0) {
       for (Iterator it = listeners.iterator(); it.hasNext(); ) {
         CommandResponseListener listener = (CommandResponseListener) it.next();
@@ -70,14 +71,14 @@ public abstract class CommandResponse {
    *
    * @param responseListener
    */
-  public final void addCommandResponseListener(CommandResponseListener responseListener) {
+  public final synchronized void addCommandResponseListener(CommandResponseListener responseListener) {
     listeners.add(responseListener);
   }
 
   /**
    * Remove the CommandResponseListener.
    */
-  public final void removeCommandReponseListener(CommandResponseListener responseListener) {
+  public final synchronized void removeCommandReponseListener(CommandResponseListener responseListener) {
     listeners.remove(responseListener);
   }
 

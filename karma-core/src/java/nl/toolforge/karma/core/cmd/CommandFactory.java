@@ -28,15 +28,15 @@ import org.apache.commons.cli.UnrecognizedOptionException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.TreeMap;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * This factory is the single resource of Command objects. <code>KarmaRuntimeException</code>s are thrown when
@@ -252,6 +252,41 @@ public final class CommandFactory {
     throw new CommandException(CommandException.INVALID_COMMAND, new Object[]{commandLineString});
   }
 
+//  public Command getParallelClone(Command command) {
+//    CommandDescriptor descriptor = command.getDescriptor();
+//    try {
+//      Constructor defaultConstructor = null;
+//      defaultConstructor = descriptor.getImplementation().getConstructor(new Class[]{CommandDescriptor.class});
+//      Command parallelClone = (Command) defaultConstructor.newInstance(new Object[]{descriptor});
+//      return parallelClone;
+//    } catch (NoSuchMethodException e) {
+//      throw new KarmaRuntimeException(e);
+//    } catch (IllegalAccessException e) {
+//      throw new KarmaRuntimeException(e);
+//    } catch (InvocationTargetException e) {
+//      throw new KarmaRuntimeException(e);
+//    } catch (InstantiationException e) {
+//      throw new KarmaRuntimeException(e);
+//    }
+//  }
+
+//  public Command getParallelClone(Command command) {
+//     CommandDescriptor descriptor = command.getDescriptor();
+//     try {
+//       Constructor defaultConstructor = null;
+//       defaultConstructor = descriptor.getImplementation().getConstructor(new Class[]{CommandDescriptor.class});
+//       Command parallelClone = (Command) defaultConstructor.newInstance(new Object[]{descriptor});
+//       return parallelClone;
+//     } catch (NoSuchMethodException e) {
+//       throw new KarmaRuntimeException(e);
+//     } catch (IllegalAccessException e) {
+//       throw new KarmaRuntimeException(e);
+//     } catch (InvocationTargetException e) {
+//       throw new KarmaRuntimeException(e);
+//     } catch (InstantiationException e) {
+//       throw new KarmaRuntimeException(e);
+//     }
+//   }
 
   /**
    * Checks if some string is a command within this context.

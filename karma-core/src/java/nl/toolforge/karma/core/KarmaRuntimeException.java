@@ -32,6 +32,10 @@ public class KarmaRuntimeException extends RuntimeException {
 
   protected Object[] messageArguments = new Object[]{};
 
+  public KarmaRuntimeException(Throwable t) {
+    super(t);
+  }
+
   public KarmaRuntimeException(String message) {
     super(message);
   }

@@ -21,6 +21,7 @@ package nl.toolforge.karma.core.vc.cvs.threads;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.vc.cvs.CVSModuleStatus;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
@@ -30,16 +31,16 @@ import org.netbeans.lib.cvsclient.command.log.LogInformation;
 import java.io.File;
 
 /**
- * A <code>CVSRunnerThread</code> runs a <code>cvs log</code> command on a modules' <code>.module.info</code> file and
+ * A <code>CVSLogThread</code> runs a <code>cvs log</code> command on a modules' <code>.module.info</code> file and
  * fills a {@link nl.toolforge.karma.core.vc.ModuleStatus} instance with the full status overview of a module.
  *
  * @author D.A. Smedes
  * @version $Id$
  */
-public class CVSRunnerThread extends RunnerThread {
+public class CVSLogThread extends RunnerThread {
 
-  public CVSRunnerThread(Module module) {
-    setModule(module);
+  public CVSLogThread(Module module) {
+    super(module);
   }
 
   /**
@@ -54,9 +55,8 @@ public class CVSRunnerThread extends RunnerThread {
       CVSRunner runner = (CVSRunner) RunnerFactory.getRunner(getModule().getLocation());
 
       LogInformation logInfo = null;
+      ModuleStatus moduleStatus = new CVSModuleStatus(getModule());
       try {
-
-        moduleStatus = new CVSModuleStatus(getModule());
 
         logInfo = runner.log(getModule());
 
@@ -75,6 +75,8 @@ public class CVSRunnerThread extends RunnerThread {
           throw e;
         }
       }
+
+      result = moduleStatus;
 
     } catch (VersionControlException v) {
       v.printStackTrace();

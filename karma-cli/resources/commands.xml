@@ -202,7 +202,6 @@
     </help>
   </command>
 
-
   <command name="update-all-modules" alias="uam">
     <description lang="en">Updates all modules from the active manifest.</description>
 
@@ -257,7 +256,7 @@
     </help>
   </command>
 
-  
+
   <command name="promote-module" alias="prm">
     <description lang="en">Promotes a module to the next version.</description>
 

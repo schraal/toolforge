@@ -73,7 +73,7 @@ public final class DevelopmentManifest extends AbstractManifest {
       throw new KarmaRuntimeException("Could not set base directory for module " + module.getName());
     }
 
-    if (((SourceModule)module).hasVersion()) {
+    if (module.hasVersion()) {
       setState(module, Module.STATIC);
     } else {
       if (isLocal(module)) {

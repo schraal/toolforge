@@ -112,7 +112,7 @@ public final class CVSLocationImpl extends BaseLocation {
     return password;
   }
 
-  public synchronized boolean passwordSet() {
+  public boolean passwordSet() {
 
     if (!passwordSet) {
       try {
@@ -255,7 +255,7 @@ public final class CVSLocationImpl extends BaseLocation {
     return connection;
   }
 
-  private synchronized void createCVSRoot() throws CVSException {
+  private void createCVSRoot() throws CVSException {
 
     StringBuffer buffer = new StringBuffer(":" + protocol + ":");
 
