@@ -57,12 +57,11 @@ goto end
 
 :init
 SET KARMA_JAVACMD="%JAVA_HOME%\bin\java.exe"
-SET KARMA_MAIN_CLASS="nl.toolforge.karma.cli.FireAway"
-SET KARMA_CLASSPATH="%KARMA_HOME%\resources;%KARMA_HOME%\lib\ant-1.6.1.jar;%KARMA_HOME%\lib\ant-junit.jar;%KARMA_HOME%\lib\ant-launcher-1.6.1.jar;%KARMA_HOME%\lib\commons-beanutils-1.6.1.jar;%KARMA_HOME%\lib\commons-cli-1.0.jar;%KARMA_HOME%\lib\commons-collections-2.1.jar;%KARMA_HOME%\lib\commons-digester-1.5.jar;%KARMA_HOME%\lib\commons-io-1.0.jar;%KARMA_HOME%\lib\commons-lang-1.0.1.jar;%KARMA_HOME%\lib\commons-logging-1.0.3.jar;%KARMA_HOME%\lib\cvslib-3.6.jar;%KARMA_HOME%\lib\junit-3.8.1.jar;%KARMA_HOME%\lib\karma-cli-1.0-dev.jar;%KARMA_HOME%\lib\karma-core-1.0-dev.jar;%KARMA_HOME%\lib\log4j-1.2.8.jar;%KARMA_HOME%\lib\maven-1.0.jar;%KARMA_HOME%\lib\toolforge-core-1.0.jar;%KARMA_HOME%\lib\xerces-2.4.0.jar;%KARMA_HOME%\lib\xercesImpl-2.4.0.jar;%KARMA_HOME%\lib\xmlParserAPIs-2.2.1.jar;%JAVA_HOME%\lib\tools.jar;%KARMA_HOME%\lib\sillyexceptions-1.0.1.jar"
-SET KARMA_LOGLEVEL=INFO
+SET KARMA_LOGLEVEL=DEBUG
+SET KARMA_CLASSPATH="%KARMA_HOME%\resources;%KARMA_HOME%\lib\;%JAVA_HOME%\lib\tools.jar"
+SET KARMA_LAUNCHER_JAR=%KARMA_HOME%\lib\karma-launcher-1.5.jar
 
-REM Run the Karma application
-%KARMA_JAVACMD% -Dkarma.home="%KARMA_HOME%" -Dloglevel=%KARMA_LOGLEVEL% -cp %KARMA_CLASSPATH% %KARMA_MAIN_CLASS% %*
+%KARMA_JAVACMD% -cp %KARMA_LAUNCHER_JAR% -DKARMA_CLASSPATH=%KARMA_CLASSPATH% -Dkarma.home=%KARMA_HOME% -Dloglevel=%KARMA_LOGLEVEL% nl.toolforge.karma.launcher.KarmaLauncher nl.toolforge.karma.cli.FireAway %*
 goto end
 
 :end
