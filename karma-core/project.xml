@@ -177,7 +177,7 @@
 
   <build>
     <sourceDirectory>src/java/</sourceDirectory>
-
+    <nagEmailAddress>toolforge-dudes@lists.sourceforge.net</nagEmailAddress>
     <resources>
       <resource>
         <directory>resources</directory>
