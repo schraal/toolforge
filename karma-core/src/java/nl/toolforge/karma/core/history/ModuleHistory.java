@@ -85,17 +85,26 @@ public class ModuleHistory {
       fileContents += "</history>";
 
       logger.debug(fileContents);
+      Writer writer = null;
       try {
         if (!historyLocation.exists()) {
           historyLocation.createNewFile();
         }
-        Writer writer = new BufferedWriter(new FileWriter(historyLocation));
+        writer = new BufferedWriter(new FileWriter(historyLocation));
         writer.write(fileContents);
-        writer.flush();
+
         logger.info("Saved module history");
       } catch (IOException ioe) {
         //todo: throw new exception here
         logger.error("Something went wrong when saving module history", ioe);
+      } finally {
+        if (writer != null) {
+          try {
+            writer.close();
+          } catch (Exception e) {
+            //too bad.
+          }
+        }
       }
     } else {
       //todo: give decent error message

@@ -186,16 +186,12 @@
       </resource>
     </resources>
 
-    <unitTestSourceDirectory>src/java</unitTestSourceDirectory>
+    <unitTestSourceDirectory>test/java</unitTestSourceDirectory>
 
     <unitTest>
       <includes>
         <include>**/Test*.java</include>
       </includes>
-      <excludes>
-        <exclude>**/impl/TestModule.java</exclude>
-        <exclude>**/impl/TestAllModules.java</exclude>
-      </excludes>
     </unitTest>
   </build>
 
