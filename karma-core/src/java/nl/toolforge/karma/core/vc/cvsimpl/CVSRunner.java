@@ -325,7 +325,6 @@ public final class CVSRunner implements Runner {
     UpdateCommand updateCommand = new UpdateCommand();
     updateCommand.setRecursive(true);
     updateCommand.setBuildDirectories(true); //-d
-    updateCommand.setPruneDirectories(true); //-P
 
     if (version != null || module.hasPatchLine()) {
       updateCommand.setUpdateByRevision(Utils.createSymbolicName(module, version).getSymbolicName());
