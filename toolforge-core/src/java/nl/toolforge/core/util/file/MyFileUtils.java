@@ -69,30 +69,49 @@ public final class MyFileUtils {
     return tmp;
   }
 
-  /**
-   * Makes all files in <code>dir</code> and all its subdirectories writeable.
+ /**
+   * Makes the specified file or directory writeable. If the <code>recurse</code>
+   * parameter is true and the specified target is a directory, this method will
+   * recurse into subdirectories.
    *
-   * @param dir Starting directory.
+   * @param target File or directory to make writeable.
+   * @param recurse
+   * @throws IOException
+   * @throws InterruptedException
    */
-  public static void makeWriteable(File dir, boolean recurse) throws IOException, InterruptedException {
-
-    String osName = System.getProperty("os.name");
-    String recursive;
-    if (recurse) {
-      recursive = "-R";
-    } else {
-      recursive = "";
+  public static void makeWriteable(File target, boolean recurse) throws IOException, InterruptedException {
+    String osName  = System.getProperty("os.name");
+    String command = null;
+    
+    if (target == null) {
+      throw new IllegalArgumentException("The specified file or directory is null.");
     }
-    String command = "";
+    
     if (osName.toUpperCase().startsWith("WINDOWS")) {
-      command = "cmd.exe /c attrib "+recursive+" " + dir + File.separator + "*.* /S /D";
-    } else if (osName.toUpperCase().startsWith("LINUX")) {
-      command = "chmod "+recursive+" -f u+w " + dir;
-    } else {
-      //all os-es other then Windows and Linux.
-      command = "chmod "+recursive+" -f u+w " + dir;
+      if (target.isDirectory()) {
+        command = "cmd.exe /c attrib -r " + target + "\\*.*" + (recurse ? " /s" : "");
+      } else {
+        command = "cmd.exe /c attrib -r " + target;
+      }
     }
+    else if (osName.toUpperCase().startsWith("LINUX")) {
+      if (target.isDirectory()) {
+        command = "chmod " + (recurse ? "-R" : "") + " -f u+w " + target;
+      } else {
+        command = "chmod -f u+w " + target;
+      }
+    }
+    else {
+      //all os-es other then Windows and Linux.
+      if (target.isDirectory()) {
+        command = "chmod " + (recurse ? "-R" : "") + " -f u+w " + target;
+      } else {
+        command = "chmod -f u+w " + target;
+      }
+    }
+    
     Process proc = Runtime.getRuntime().exec(command);
+    
     proc.waitFor();
   }
 
