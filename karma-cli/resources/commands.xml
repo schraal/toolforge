@@ -307,7 +307,7 @@
     </help>
   </command>
 
-  <command name="quit" alias="q exit bye later mzl">
+  <command name="quit" alias="q exit bye later mzl :wq :q">
     <description lang="en">Exit the great Karma environment.</description>
     <options/>
     <classname>nl.toolforge.karma.cli.cmd.ExitCleanImpl</classname>
