@@ -73,8 +73,16 @@ public class ManifestException extends Exception {
    * When a modules' <code>project.xml</code> cannot be found.
    */
   public static final ErrorCode DEPENDENCY_FILE_NOT_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00013");
+	/**
+	 * When a module has not yet been checked out for this manifest
+	 */
+	public static final ErrorCode MODULE_NOT_LOCAL = new ErrorCode(EXCEPTION_PREFIX + "00014");
+	/**
+	 * When a module has a conflicting state while being loaded by a manifest
+	 */
+	public static final ErrorCode STATE_CONFLICT = new ErrorCode(EXCEPTION_PREFIX + "00015");
 
-  public ManifestException(ErrorCode errorCode) {
+	public ManifestException(ErrorCode errorCode) {
     this(errorCode, null);
   }
 

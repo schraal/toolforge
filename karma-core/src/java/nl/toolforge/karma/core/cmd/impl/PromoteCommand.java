@@ -2,6 +2,7 @@ package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
@@ -40,16 +41,11 @@ public class PromoteCommand extends DefaultCommand {
     try {
 
       String moduleName = getCommandLine().getOptionValue("m");
-      // todo : module should be in working state !!!!!
-      //
-
 
       SourceModule module = (SourceModule) getContext().getCurrent().getModule(moduleName);
 
-      if (!module.hasVersion()) {
-        // todo can be replaced with the stuff that determines if a module is in working state
-        //
-        throw new CommandException(CommandException.MODULE_WITHOUT_VERSION);
+      if (module.getState().equals(Module.UNDEFINED) || !module.getState().equals(Module.WORKING)) {
+        throw new CommandException(CommandException.PROMOTE_ONLY_ALLOWED_ON_WORKING_MODULE);
       }
 
       // TODO extractor impl should be obtained from karma.properties or Preferences to enable configurable stuff.
@@ -59,6 +55,8 @@ public class PromoteCommand extends DefaultCommand {
       Version nextVersion = extractor.getNextVersion(module);
 
       Runner runner = RunnerFactory.getRunner(module, getContext().getCurrent().getDirectory());
+
+			// TODO chech whether files exist that have not yet been committed
       runner.tag(module, nextVersion);
 
       this.newVersion = nextVersion;

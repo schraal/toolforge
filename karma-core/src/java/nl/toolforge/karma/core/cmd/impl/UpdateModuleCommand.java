@@ -32,75 +32,80 @@ import nl.toolforge.karma.core.vc.VersionControlException;
  */
 public class UpdateModuleCommand extends DefaultCommand {
 
-  private CommandResponse response = null;
-  /**
-   * Creates a <code>UpdateModuleCommand</code> for module <code>module</code> that should be updated. This module
-   * requires an <code>Option</code>
-   *
-   * @param descriptor The command descriptor for this command.
-   */
-  public UpdateModuleCommand(CommandDescriptor descriptor) throws CommandException {
+	private CommandResponse response = null;
 
-    super(descriptor);
+	/**
+	 * Creates a <code>UpdateModuleCommand</code> for module <code>module</code> that should be updated. This module
+	 * requires an <code>Option</code>
+	 *
+	 * @param descriptor The command descriptor for this command.
+	 */
+	public UpdateModuleCommand(CommandDescriptor descriptor) throws CommandException {
 
-    response = new ActionCommandResponse();
-  }
+		super(descriptor);
 
-  /**
-   * This command will update the module from the version control system. An update is done when
-   * the module is already present, otherwise a checkout will be performed. The checkout directory for the module
-   * is relative to the root directory of the <code>active</code> manifest.
-   */
-  public void execute() throws CommandException {
+		response = new ActionCommandResponse();
+	}
 
-    String moduleName = "";
-    Module module = null;
+	/**
+	 * This command will update the module from the version control system. An update is done when
+	 * the module is already present, otherwise a checkout will be performed. The checkout directory for the module
+	 * is relative to the root directory of the <code>active</code> manifest.
+	 */
+	public void execute() throws CommandException {
 
-    // A manifest must be present for this command
-    //
-    // todo move to aspect; this type of checking can be done by one aspect.
-    //
-    if (!getContext().isManifestLoaded()) {
-      throw new CommandException(ManifestException.NO_ACTIVE_MANIFEST);
-    }
+		String moduleName = "";
+		Module module = null;
 
-    moduleName = getCommandLine().getOptionValue("m");
-    try {
-      module = getContext().getCurrent().getModule(moduleName);
-    } catch (ManifestException e) {
-      throw new CommandException(e.getErrorCode());
-    }
+		// A manifest must be present for this command
+		//
+		// todo move to aspect; this type of checking can be done by one aspect.
+		//
+		if (!getContext().isManifestLoaded()) {
+			throw new CommandException(ManifestException.NO_ACTIVE_MANIFEST);
+		}
 
-    Version version = null;
-    if (getCommandLine().getOptionValue("v") != null) {
-      // The module should be updated to a specific version.
-      //
-      version = new Version(getCommandLine().getOptionValue("v"));
-    }
+		moduleName = getCommandLine().getOptionValue("m");
+		try {
+			module = getContext().getCurrent().getModule(moduleName);
+		} catch (ManifestException e) {
+			throw new CommandException(e.getErrorCode());
+		}
 
-    try {
+		Version version = null;
+		if (getCommandLine().getOptionValue("v") != null) {
+			// The module should be updated to a specific version.
+			//
+			version = new Version(getCommandLine().getOptionValue("v"));
+		}
 
-      Runner runner = RunnerFactory.getRunner(module, getContext().getCurrent().getDirectory());
-      runner.setCommandResponse(response);
+		try {
 
-      if (getContext().getCurrent().isLocal(module) && runner.existsInRepository(module)) {
-        runner.update(module, version);
-      } else {
-        runner.checkout(module, version);
-      }
-    } catch (VersionControlException e) {
+			Runner runner = RunnerFactory.getRunner(module, getContext().getCurrent().getDirectory());
+			runner.setCommandResponse(response);
+
+			if (!runner.existsInRepository(module)) {
+				throw new CommandException(VersionControlException.MODULE_NOT_IN_REPOSITORY);
+			}
+
+			if (getContext().getCurrent().isLocal(module)) {
+				runner.update(module, version);
+			} else {
+				runner.checkout(module, version);
+			}
+		} catch (VersionControlException e) {
 //        response.addMessage(new ErrorMessage(e, new Object[]{moduleName, module.getLocation().getId()}));
-      throw new CommandException(e.getErrorCode());
-    } catch (ManifestException e) {
-     throw new CommandException(e.getErrorCode());
-    }
+			throw new CommandException(e.getErrorCode());
+		} catch (ManifestException e) {
+			throw new CommandException(e.getErrorCode());
+		}
 
-    // todo message to be internationalized.
-    //
-    response.addMessage(new SuccessMessage("Module " + module.getName() + " updated ..."));
-  }
+		// todo message to be internationalized.
+		//
+		response.addMessage(new SuccessMessage("Module " + module.getName() + " updated ..."));
+	}
 
-  public CommandResponse getCommandResponse() {
-    return response;
-  }
+	public CommandResponse getCommandResponse() {
+		return response;
+	}
 }

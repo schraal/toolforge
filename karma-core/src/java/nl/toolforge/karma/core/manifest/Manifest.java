@@ -3,6 +3,8 @@ package nl.toolforge.karma.core.manifest;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.LocalEnvironment;
 import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.ErrorCode;
+import nl.toolforge.karma.core.KarmaException;
 import org.apache.commons.digester.Digester;
 import org.apache.commons.digester.xmlrules.DigesterLoader;
 import org.apache.commons.logging.Log;
@@ -251,6 +253,21 @@ public final class Manifest {
 
     Module module = moduleFactory.create(descriptor);
 
+		
+		// Verify whether there is no state conflict, if so ... kaboom! ...
+		if( ((SourceModule)module).hasVersion() && this.isLocal(module) && !this.getState(module).equals(Module.STATIC) ) {
+			throw new ManifestException(ManifestException.STATE_CONFLICT, new Object[] {descriptor.getName()});
+		}
+
+		// Verify whether a local module without a version has a state or not. If not then set the state
+		// to be DYNAMIC
+		if( !((SourceModule)module).hasVersion() && this.isLocal(module) && this.getState(module).equals(Module.UNDEFINED)) {
+			this.setState(module, Module.DYNAMIC);
+		}
+
+		// We can now be sure that the module has a state (not being UNDEFINED), so we specifically set it.
+		module.setState( this.getState(module) );
+
     try {
       if (getLocalEnvironment() != null) {
         if (module instanceof SourceModule) {
@@ -329,26 +346,26 @@ public final class Manifest {
 
   public boolean isLocal(Module module) {
 
-//    File moduleDirectory = null;
-//    try {
-//      moduleDirectory = new File(new File(env.getDevelopmentHome(), getName()), module.getName());
-//    } catch (KarmaException e) {
-//      return false;
-//    }
-//    return moduleDirectory.exists();
-    return false;
+    File moduleDirectory = null;
+    try {
+      moduleDirectory = new File(new File(env.getDevelopmentHome(), getName()), module.getName());
+    } catch (KarmaException e) {
+      return false;
+    }
+    return moduleDirectory.exists();
   }
 
   public boolean isLocal() {
 
-//    for (Iterator i = modules.values().iterator(); i.hasNext();) {
-//
-//      Module m = (Module) i.next();
-//
-//      if (!m.getModuleDirectory().exists()) {
-//        return false;
-//      }
-//    }
+    for (Iterator i = getAllModules().values().iterator(); i.hasNext();) {
+
+      Module m = (Module) i.next();
+
+			// If we stumble upon a non local module, return false
+      if (!this.isLocal(m)) {
+        return false;
+      }
+    }
 
     return true;
   }
@@ -435,7 +452,9 @@ public final class Manifest {
    * @return
    * @throws ManifestException
    */
-  public final Module.State getState(Module module) throws ManifestException {
+  private final Module.State getState(Module module) throws ManifestException {
+
+		// TODO isLocal check may now be done in this method
 
     FilenameFilter filter = new FilenameFilter() {
       public boolean accept(File dir, String name) {
@@ -448,6 +467,11 @@ public final class Manifest {
     };
 
     String[] stateFiles = new File(getDirectory(), module.getName()).list(filter);
+
+		// When no state can be determined, return the UNDEFINED state
+		if( stateFiles == null ) {
+			return Module.UNDEFINED;
+		}
 
     if (stateFiles.length > 1) {
       throw new ManifestException(ManifestException.TOO_MANY_STATE_FILES, new Object[] {module.getName()});

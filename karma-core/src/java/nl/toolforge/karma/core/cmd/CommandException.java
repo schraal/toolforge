@@ -65,7 +65,12 @@ public class CommandException extends Exception {
    */
   public static final ErrorCode MODULE_TYPE_MUST_BE_SOURCEMODULE = new ErrorCode(EXCEPTION_PREFIX + "00042");
 
-  public CommandException(ErrorCode errorCode) {
+	/**
+	 * Promote command is not allowed on static and dynamic modules.
+	 */
+	public static final ErrorCode PROMOTE_ONLY_ALLOWED_ON_WORKING_MODULE = new ErrorCode(EXCEPTION_PREFIX + "00043");
+
+	public CommandException(ErrorCode errorCode) {
     this(errorCode, null);
   }
 

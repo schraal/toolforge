@@ -105,7 +105,7 @@ public class BuildModule extends DefaultCommand {
 
     } catch (KarmaException e) {
 
-      message = new ErrorMessage(e);
+      message = new ErrorMessage(e.getErrorCode());
       commandResponse.addMessage(message);
 
       // Throw a build-failed ...

@@ -1,6 +1,7 @@
 package nl.toolforge.karma.core.cmd;
 
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.ErrorCode;
 
 /**
  * A <code>CommandMessage</code> that implements an error.
@@ -12,15 +13,12 @@ import nl.toolforge.karma.core.KarmaException;
  */
 public class ErrorMessage extends AbstractCommandMessage {
 
-  private Throwable exception;
-
-  public ErrorMessage(Throwable ke) {
-    this(ke, null);
+  public ErrorMessage(ErrorCode code) {
+    this(code, null);
   }
 
-  public ErrorMessage(Throwable ke, Object[] messageParameters) {
-    super(ke.getMessage(), messageParameters);
-    this.exception = ke;
+  public ErrorMessage(ErrorCode code, Object[] messageParameters) {
+    super(code.getErrorMessage(), messageParameters);
   }
 
 //  public String getMessageText() {

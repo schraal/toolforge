@@ -72,7 +72,7 @@ public class UpdateAllModulesCommand extends CompositeCommand {
       try {
         getContext().execute(command);
       } catch (CommandException c) {
-        commandResponse.addMessage(new ErrorMessage(c));
+        commandResponse.addMessage(new ErrorMessage(c.getErrorCode()));
         break; //break out of the for loop.
       } finally {
         command.deregisterCommandResponseListener(this);

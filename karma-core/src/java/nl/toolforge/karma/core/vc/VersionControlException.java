@@ -34,7 +34,13 @@ public abstract class VersionControlException extends Exception {
    */
   public static final ErrorCode FILE_NOT_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00012");
 
-  public VersionControlException(ErrorCode errorCode) {
+  /**
+   * The requested module does not exist in the repository
+   */
+	public static final ErrorCode MODULE_NOT_IN_REPOSITORY = new ErrorCode(EXCEPTION_PREFIX + "00013");
+
+	
+	public VersionControlException(ErrorCode errorCode) {
     this(errorCode, null);
   }
 

@@ -59,7 +59,7 @@ public class StartWorkCommand extends DefaultCommand {
 
     try {
 
-      if (Module.WORKING.equals(getContext().getCurrent().getState(module))) {
+      if (Module.WORKING.equals(((SourceModule)module).getState())) {
 
         // todo message to be internationalized.
         //
