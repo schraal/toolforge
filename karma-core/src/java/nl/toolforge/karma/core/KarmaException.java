@@ -1,6 +1,9 @@
 package nl.toolforge.karma.core;
 
 
+import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.location.LocationException;
+
 import java.text.MessageFormat;
 import java.util.Locale;
 
@@ -114,6 +117,12 @@ public class KarmaException extends Exception {
   protected ErrorCode errorCode = null;
 
   protected Object[] messageArguments = new Object[]{};
+  /**
+   * When the manifest store directory could not be found.
+   */
+  public static final ErrorCode MANIFEST_STORE_NOT_FOUND = new ErrorCode(ManifestException.EXCEPTION_PREFIX + "00008");
+  /** No directory is present where location data can be found. */
+  public static final ErrorCode NO_LOCATION_STORE_DIRECTORY = new ErrorCode(LocationException.EXCEPTION_PREFIX + "00008");
 
   /**
    * Create a new KarmaException, with the specific errorCode.
@@ -184,21 +193,6 @@ public class KarmaException extends Exception {
       errorCode.setMessageArguments(messageArguments);
     }
     return errorCode.getErrorMessage();
-//
-//		if (errorCode == null) {
-//			//TODO: deze call zorgt IMHO voor een eindeloze loop.
-//			return getMessage();
-//		} else {
-////			String errorMessage = errorCode.getErrorMessage(LocalEnvironment.getLocale());
-//			//todo read from system
-//			String errorMessage = errorCode.getErrorMessage(Locale.ENGLISH);
-//			if (getMessageArguments().length != 0) {
-//				MessageFormat messageFormat = new MessageFormat(errorMessage);
-//				return messageFormat.format(getMessageArguments());
-//			} else {
-//				return errorMessage;
-//			}
-//		}
   }
 
   /**

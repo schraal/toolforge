@@ -1,5 +1,6 @@
 package nl.toolforge.karma.core.cmd.impl;
 
+import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
@@ -8,19 +9,14 @@ import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.ModuleDescriptor;
+import nl.toolforge.karma.core.manifest.ModuleFactory;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.ManifestException;
-import nl.toolforge.karma.core.manifest.ModuleDescriptor;
-import nl.toolforge.karma.core.manifest.ModuleFactory;
-import nl.toolforge.karma.core.location.LocationException;
-import nl.toolforge.karma.core.LocalEnvironment;
-import nl.toolforge.karma.core.KarmaException;
 import org.apache.commons.cli.CommandLine;
-
-import java.io.File;
 
 /**
  * Creates a module in a repository. The command provides the option to create the module in the current manifest as
@@ -62,7 +58,8 @@ public class CreateModuleCommand extends DefaultCommand {
     try {
       // Part 2 of the transaction is the creation in a version control system.
       //
-      Runner runner = RunnerFactory.getRunner(module, getContext().getLocalEnvironment().getDevelopmentHome());
+      Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getLocalEnvironment().getDevelopmentHome());
+//      Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getLocalEnvironment().getDevelopmentHome());
       runner.setCommandResponse(getCommandResponse());
       runner.create(module);
 

@@ -1,7 +1,9 @@
 package nl.toolforge.karma.core;
 
 import nl.toolforge.karma.core.location.LocationException;
+import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -35,82 +37,96 @@ public final class LocalEnvironment {
 
   private static final Log logger = LogFactory.getLog(LocalEnvironment.class);
 
-	/** Property that identifies the user's development home directory. */
-	public static final String DEVELOPMENT_STORE_DIRECTORY = "development.store";
+  /** Property that identifies the user's development home directory. */
+  public static final String DEVELOPMENT_STORE_DIRECTORY = "development.store";
 
-	/** Property that identifies the directory where manifest files are stored. */
-	public static final String MANIFEST_STORE_DIRECTORY = "manifest.store";
+  /** Property that identifies the directory where manifest files are stored. */
+  public static final String MANIFEST_STORE_DIRECTORY = "manifest.store";
 
-	/** Property that identifies the directory where location files are stored. */
-	public static final String LOCATION_STORE_DIRECTORY = "location.store";
+  /** Property that identifies the directory where location files are stored. */
+  public static final String LOCATION_STORE_DIRECTORY = "location.store";
 
-	/** Preference property identifying the manifest that was used in the last Karma session. */
-	public static final String LAST_USED_MANIFEST_PREFERENCE = "karma.manifest.last";
+  /** Preference property identifying the manifest that was used in the last Karma session. */
+  public static final String LAST_USED_MANIFEST_PREFERENCE = "karma.manifest.last";
 
-	/** Property Object that stores the key-value pairs of the defined properties. */
-	private Properties configuration = new Properties();
+  public static final String MANIFEST_STORE_HOST = "manifest-store.cvs.host";
+  public static final String MANIFEST_STORE_PORT = "manifest-store.cvs.port";
+  public static final String MANIFEST_STORE_REPOSITORY = "manifest-store.cvs.repository";
+  public static final String MANIFEST_STORE_PROTOCOL = "manifest-store.cvs.protocol";
+  public static final String MANIFEST_STORE_USERNAME = "manifest-store.cvs.username";
+  public static final String MANIFEST_STORE_PASSWORD = "manifest-store.cvs.password";
 
-	/**
-	 * The one-and-only instance of this class.
-	 */
-	private static LocalEnvironment localEnvironment;
+  public static final String LOCATION_STORE_HOST = "location-store.cvs.host";
+  public static final String LOCATION_STORE_PORT = "location-store.cvs.port";
+  public static final String LOCATION_STORE_REPOSITORY = "location-store.cvs.repository";
+  public static final String LOCATION_STORE_PROTOCOL = "location-store.cvs.protocol";
+  public static final String LOCATION_STORE_USERNAME = "location-store.cvs.username";
+  public static final String LOCATION_STORE_PASSWORD = "location-store.cvs.password";
 
-	/**
-	 * Return the one-and-only instance of this class. It will be initialized from file
-	 * when it does not yet exist.
-	 */
-	public static LocalEnvironment getInstance() throws KarmaException {
-		return getInstance(null);
-	}
+  /** Property Object that stores the key-value pairs of the defined properties. */
+  private Properties configuration = new Properties();
 
-	/**
-	 * Return the one-and-only instance of this class. It will be initialized using the given
-	 * Properties object when it does not yet exist.
-	 *
-	 * @param properties Properties object used to initialize the instance.
-	 */
-	public static LocalEnvironment getInstance(Properties properties) throws KarmaException {
-		if (localEnvironment == null) {
-			localEnvironment = new LocalEnvironment(properties);
-		} else {
-			logger.warn("This singleton class has already been initialized. Use getInstance() instead.");
-		}
-		return localEnvironment;
-	}
+  /**
+   * The one-and-only instance of this class.
+   */
+  private static LocalEnvironment localEnvironment;
 
-	/**
-	 * Private constructor. This class is only initialized via the getInstance() methods.
-	 *
-	 * @param properties The properties object that is used to initialize. When this parameter is null,
-	 *                   the properties are read from file.
-	 */
-	private LocalEnvironment(Properties properties) throws KarmaException {
+  /**
+   * Return the one-and-only instance of this class. It will be initialized from file
+   * when it does not yet exist.
+   */
+  public static LocalEnvironment getInstance() throws KarmaException {
+    return getInstance(null);
+  }
 
-		try {
+  /**
+   * Return the one-and-only instance of this class. It will be initialized using the given
+   * Properties object when it does not yet exist.
+   *
+   * @param properties Properties object used to initialize the instance.
+   */
+  public static LocalEnvironment getInstance(Properties properties) throws KarmaException {
+    if (localEnvironment == null) {
+      localEnvironment = new LocalEnvironment(properties);
+    } else {
+      logger.warn("This singleton class has already been initialized. Use getInstance() instead.");
+    }
+    return localEnvironment;
+  }
 
-			if (properties == null) {
-				//read the properties from file
-				File configFile = new File(getConfigurationDirectory(), "karma.properties");
-				if (getConfigurationDirectory().exists()) {
-					if (configFile.exists()) {
-						//inlezen
-						configuration.load(new FileInputStream(configFile));
-					} else {
-						//file aanmaken
-						createDefaultProperties(configFile);
-					}
-				} else {
-					//dir aanmaken
-					getConfigurationDirectory().mkdir();
-					//file aanmaken
-					createDefaultProperties(configFile);
-				}
-			} else {
-				configuration = properties;
-			}
+  /**
+   * Private constructor. This class is only initialized via the getInstance() methods.
+   *
+   * @param properties The properties object that is used to initialize. When this parameter is null,
+   *                   the properties are read from file.
+   */
+  private LocalEnvironment(Properties properties) throws KarmaException {
 
-			// Create the directories, if they don't yet exist.
-			//
+    try {
+
+      if (properties == null) {
+        //read the properties from file
+        File configFile = new File(getConfigurationDirectory(), "karma.properties");
+        if (getConfigurationDirectory().exists()) {
+          if (configFile.exists()) {
+            //inlezen
+            configuration.load(new FileInputStream(configFile));
+          } else {
+            //file aanmaken
+            createDefaultProperties(configFile);
+          }
+        } else {
+          //dir aanmaken
+          getConfigurationDirectory().mkdir();
+          //file aanmaken
+          createDefaultProperties(configFile);
+        }
+      } else {
+        configuration = properties;
+      }
+
+      // Create the directories, if they don't yet exist.
+      //
       String store;
       store = (String) configuration.get(DEVELOPMENT_STORE_DIRECTORY);
       if (store == null || store.equals("") ) {
@@ -131,118 +147,162 @@ public final class LocalEnvironment {
         new File(store).mkdirs();
       }
 
-		} catch (IOException e) {
-			throw new KarmaRuntimeException("The bootstrap configuration file could not be loaded.", e);
-		}
-	}
+    } catch (IOException e) {
+      throw new KarmaRuntimeException("The bootstrap configuration file could not be loaded.", e);
+    }
+  }
 
-	/**
-	 * <p>Gets a <code>File</code> reference to the configuration directory, currently defined as :
-	 * <code>$HOME/.karma</code>.
-	 *
-	 * @return The configuration directory for Karma.
-	 */
-	public final File getConfigurationDirectory() {
-		return new File(System.getProperty("user.home"), ".karma");
-	}
+  /**
+   * <p>Gets a <code>File</code> reference to the configuration directory, currently defined as :
+   * <code>$HOME/.karma</code>.
+   *
+   * @return The configuration directory for Karma.
+   */
+  public File getConfigurationDirectory() {
+    return new File(System.getProperty("user.home"), ".karma");
+  }
 
-	/**
-	 * Create the karma.properties file with default values:
-	 * <p/>
-	 * <ul>
-	 * <li/><code>DEVELOPMENT_STORE_DIRECTORY = $USER_HOME/karma/projects</code>
-	 * <li/><code>MANIFEST_STORE_DIRECTORY   = $USER_HOME/karma/manifests</code>
-	 * <li/><code>LOCATION_STORE_DIRECTORY   = $USER_HOME/karma/locations</code>
-	 * </ul>
-	 *
-	 * @param configFile The config file to write the default properties to.
-	 * @throws IOException When the config file could not be created.
-	 */
-	private void createDefaultProperties(File configFile) throws IOException {
+  /**
+   * Create the karma.properties file with default values:
+   * <p/>
+   * <ul>
+   * <li/><code>DEVELOPMENT_STORE_DIRECTORY = $USER_HOME/karma/projects</code>
+   * <li/><code>MANIFEST_STORE_DIRECTORY   = $USER_HOME/karma/manifests</code>
+   * <li/><code>LOCATION_STORE_DIRECTORY   = $USER_HOME/karma/locations</code>
+   * </ul>
+   *
+   * @param configFile The config file to write the default properties to.
+   * @throws IOException When the config file could not be created.
+   */
+  private void createDefaultProperties(File configFile) throws IOException {
 
-		String karmaBase = System.getProperty("user.home") + File.separator + "karma" + File.separator;
+    String karmaBase = System.getProperty("user.home") + File.separator + "karma" + File.separator;
 
-		configuration.put(DEVELOPMENT_STORE_DIRECTORY, karmaBase + "projects");
-		configuration.put(MANIFEST_STORE_DIRECTORY, karmaBase + "manifests");
-		configuration.put(LOCATION_STORE_DIRECTORY, karmaBase + "locations");
+    configuration.put(DEVELOPMENT_STORE_DIRECTORY, karmaBase + "projects");
+    configuration.put(MANIFEST_STORE_DIRECTORY, karmaBase + "manifests");
+    configuration.put(LOCATION_STORE_DIRECTORY, karmaBase + "locations");
 
-		logger.info("Karma configuration created in " + configFile.getPath());
+    logger.info("Karma configuration created in " + configFile.getPath());
 
-		configuration.store(new FileOutputStream(configFile), "Generated karma defaults");
-	}
+    configuration.store(new FileOutputStream(configFile), "Generated karma defaults");
+  }
 
 
-	/**
-	 * Retrieve a valid reference to the manifest store directory. The available manifests
-	 * are stored here.
-	 *
-	 * @return A valid reference to the manifest store directory.
-	 * @throws ManifestException When the manifest store directory does not exist.
-	 */
-	public final File getManifestStore() throws ManifestException {
-		try {
-			File home = null;
+  /**
+   * Retrieve a valid reference to the manifest store directory. The available manifests
+   * are stored here.
+   *
+   * @return A valid reference to the manifest store directory.
+   * @throws KarmaException When the manifest store directory does not exist.
+   */
+  public File getManifestStore() throws KarmaException {
+    try {
+      File home = null;
 
-			String manifestStore = (String) configuration.get(MANIFEST_STORE_DIRECTORY);
-			logger.debug("Manifest store directory: " + manifestStore);
+      String manifestStore = (String) configuration.get(MANIFEST_STORE_DIRECTORY);
+      logger.debug("Manifest store directory: " + manifestStore);
 
-			home = new File(manifestStore);
-			if (!home.exists()) {
-				throw new ManifestException(ManifestException.MANIFEST_STORE_NOT_FOUND);
-			}
+      home = new File(manifestStore);
+      if (!home.exists()) {
+        throw new KarmaException(KarmaException.MANIFEST_STORE_NOT_FOUND);
+      }
 
-			return home;
-		} catch (NullPointerException n) {
-			throw new ManifestException(ManifestException.MANIFEST_STORE_NOT_FOUND);
-		}
-	}
+      return home;
+    } catch (NullPointerException n) {
+      throw new KarmaException(KarmaException.MANIFEST_STORE_NOT_FOUND);
+    }
+  }
 
-	/**
-	 * Retrieve a valid reference to the location store directory. The available locations
-	 * are stored here.
-	 *
-	 * @return A valid reference to the location store directory.
-	 * @throws LocationException When then location store directory does not exist.
-	 */
-	public final File getLocationStore() throws LocationException {
-		try {
-			File home = null;
+  /**
+   * Gets a reference to the location where manifests can be retrieved. Supports only CVS for now.
+   */
+  public Location getManifestStoreLocation() throws LocationException {
 
-			String locationStore = (String) configuration.get(LOCATION_STORE_DIRECTORY);
-			logger.debug("Location store directory: " + locationStore);
+    try {
 
-			home = new File(locationStore);
-			if (!home.exists()) {
-				throw new LocationException(LocationException.NO_LOCATION_STORE_DIRECTORY);
-			}
+      CVSLocationImpl location = new CVSLocationImpl("manifest-store");
+      location.setHost(configuration.getProperty(MANIFEST_STORE_HOST));
+      location.setPort(new Integer(configuration.getProperty(MANIFEST_STORE_PORT)).intValue());
+      location.setRepository(configuration.getProperty(MANIFEST_STORE_REPOSITORY));
+      location.setProtocol(configuration.getProperty(MANIFEST_STORE_PROTOCOL));
+      location.setUsername(configuration.getProperty(MANIFEST_STORE_USERNAME));
+      location.setPassword(configuration.getProperty(MANIFEST_STORE_PASSWORD));
 
-			return home;
-		} catch (NullPointerException n) {
-			throw new LocationException(LocationException.NO_LOCATION_STORE_DIRECTORY);
-		}
-	}
+      return location;
 
-	/**
-	 * Retrieve a valid reference to the developer home directory. This is the directory where
-	 * the manifest instances are checked out from the version control system.
-	 *
-	 * @return A valid reference to the development home directory.
-	 * @throws KarmaException When the development home does not exists.
-	 */
-	public final File getDevelopmentHome() throws KarmaException {
+    } catch (Exception e) {
+      throw new LocationException(LocationException.INVALID_MANIFEST_STORE_LOCATION);
+    }
+  }
 
-		try {
-			File home = null;
+  /**
+   * Gets a reference to the location where <code>location.xml</code> can be retrieved. Supports only CVS for now.
+   */
+  public Location getLocationStoreLocation() throws LocationException {
 
-			String developmentHome = (String) configuration.get(DEVELOPMENT_STORE_DIRECTORY);
-			logger.debug("development home directory: " + developmentHome);
-			home = new File(developmentHome);
-			if (!home.exists()) {
-				throw new KarmaException(KarmaException.NO_DEVELOPMENT_HOME);
-			}
-			return home;
-		} catch (NullPointerException n) {
-			throw new KarmaException(KarmaException.NO_DEVELOPMENT_HOME);
-		}
-	}
+    try {
+
+      CVSLocationImpl location = new CVSLocationImpl("location-store");
+      location.setHost(configuration.getProperty(LOCATION_STORE_HOST));
+      location.setPort(new Integer(configuration.getProperty(LOCATION_STORE_PORT)).intValue());
+      location.setRepository(configuration.getProperty(LOCATION_STORE_REPOSITORY));
+      location.setProtocol(configuration.getProperty(LOCATION_STORE_PROTOCOL));
+      location.setUsername(configuration.getProperty(LOCATION_STORE_USERNAME));
+      location.setPassword(configuration.getProperty(LOCATION_STORE_PASSWORD));
+
+      return location;
+
+    } catch (Exception e) {
+      throw new LocationException(LocationException.INVALID_LOCATION_STORE_LOCATION);
+    }
+  }
+
+  /**
+   * Retrieve a valid reference to the location store directory. The available locations
+   * are stored here.
+   *
+   * @return A valid reference to the location store directory.
+   * @throws KarmaException When then location store directory does not exist.
+   */
+  public File getLocationStore() throws KarmaException {
+    try {
+      File home = null;
+
+      String locationStore = (String) configuration.get(LOCATION_STORE_DIRECTORY);
+      logger.debug("Location store directory: " + locationStore);
+
+      home = new File(locationStore);
+      if (!home.exists()) {
+        throw new KarmaException(KarmaException.NO_LOCATION_STORE_DIRECTORY);
+      }
+
+      return home;
+    } catch (NullPointerException n) {
+      throw new KarmaException(KarmaException.NO_LOCATION_STORE_DIRECTORY);
+    }
+  }
+
+  /**
+   * Retrieve a valid reference to the developer home directory. This is the directory where
+   * the manifest instances are checked out from the version control system.
+   *
+   * @return A valid reference to the development home directory.
+   * @throws KarmaException When the development home does not exists.
+   */
+  public File getDevelopmentHome() throws KarmaException {
+
+    try {
+      File home = null;
+
+      String developmentHome = (String) configuration.get(DEVELOPMENT_STORE_DIRECTORY);
+      logger.debug("development home directory: " + developmentHome);
+      home = new File(developmentHome);
+      if (!home.exists()) {
+        throw new KarmaException(KarmaException.NO_DEVELOPMENT_HOME);
+      }
+      return home;
+    } catch (NullPointerException n) {
+      throw new KarmaException(KarmaException.NO_DEVELOPMENT_HOME);
+    }
+  }
 }

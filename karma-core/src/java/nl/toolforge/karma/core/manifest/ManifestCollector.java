@@ -3,6 +3,7 @@ package nl.toolforge.karma.core.manifest;
 import nl.toolforge.core.util.file.XMLFilenameFilter;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.location.LocationException;
 
 import java.io.File;
@@ -58,7 +59,7 @@ public class ManifestCollector {
 
       return Arrays.asList(manifestStore.list(new XMLFilenameFilter()));
 
-    } catch (ManifestException e) {
+    } catch (KarmaException e) {
       return manifests;
     }
   }

@@ -11,7 +11,7 @@ import nl.toolforge.karma.core.vc.VersionControlException;
  */
 public class CVSException extends VersionControlException {
 
-  public static String EXCEPTION_PREFIX = "CVS-";
+   public static String EXCEPTION_PREFIX = "CVS-";
 
 	/**
 	 * When no valid <code>CVSROOT</code> could be compiled from <code>CVSLocationImpl</code> instance variables.
@@ -54,6 +54,10 @@ public class CVSException extends VersionControlException {
 	 * response from CVS or when the command was aborted.
 	 */
 	public static final ErrorCode INTERNAL_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00020");
+  /**
+   * When something is wrong with the local copy of a module.
+   */
+  public static final ErrorCode LOCAL_MODULE_ERROR =  new ErrorCode(EXCEPTION_PREFIX + "00021");
 
   public CVSException(ErrorCode errorCode) {
     super(errorCode);
@@ -70,4 +74,5 @@ public class CVSException extends VersionControlException {
   public CVSException(Throwable t, ErrorCode errorCode, Object[] messageArguments) {
     super(t, errorCode, messageArguments);
   }
+
 }

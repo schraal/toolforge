@@ -2,6 +2,7 @@ package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.SuccessMessage;
+import nl.toolforge.karma.core.manifest.Module;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.command.FileInfoContainer;
@@ -31,6 +32,9 @@ public final class CVSResponseAdapter implements CVSListener {
 
   private static Log logger = LogFactory.getLog(CVSResponseAdapter.class);
 
+//  private String moduleName = null;
+//  private String version = null;
+
   public CVSResponseAdapter() {}
 
   /**
@@ -42,6 +46,20 @@ public final class CVSResponseAdapter implements CVSListener {
   public CVSResponseAdapter(CommandResponse response) {
     this.response = response;
   }
+
+//  public void setModuleName(String moduleName) {
+//    this.moduleName = moduleName;
+//  }
+//  private String getModuleName() {
+//    return moduleName;
+//  }
+//
+//  public void setVersion(String version) {
+//    this.version = version;
+//  }
+//  private String getVersion() {
+//    return version;
+//  }
 
   /**
    * <p>Copied from the Netbeans API documentation : Called when a file is removed.

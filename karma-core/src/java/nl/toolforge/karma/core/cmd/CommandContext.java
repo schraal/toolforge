@@ -3,21 +3,21 @@ package nl.toolforge.karma.core.cmd;
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
-import nl.toolforge.karma.core.vc.Runner;
-import nl.toolforge.karma.core.vc.RunnerFactory;
-import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
+import nl.toolforge.karma.core.ErrorCode;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.location.LocationFactory;
-import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.manifest.ManifestCollector;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.ManifestCollector;
+import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.vc.RunnerFactory;
+import nl.toolforge.karma.core.vc.VersionControlException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
-import java.util.Set;
 import java.util.Collection;
 
 /**
@@ -39,7 +39,7 @@ public final class CommandContext {
   private LocalEnvironment env = null;
   public CommandResponseHandler responseHandler = null;
 
-  private boolean initialized = false;
+//  private boolean initialized = false;
 
   /**
    * <p>Checks if this <code>CommandContext</code> has been initialized. A non-initialized context cannot be used and
@@ -48,62 +48,80 @@ public final class CommandContext {
    *
    * @return <code>true</code> if this command context has been initialized, false if it isn't
    */
-  public boolean isInitialized() {
-    return initialized;
-  }
+//  public boolean isInitialized() {
+//    return initialized;
+//  }
 
   /**
-   * Initializes the context to run commands. This method can only be called once.
+   * Initializes the context to run commands.
    *
    * @param env The users' {@link nl.toolforge.karma.core.LocalEnvironment}.
    */
-  public synchronized void init(LocalEnvironment env, CommandResponseHandler handler) throws LocationException {
+  public synchronized void init(LocalEnvironment env, CommandResponseHandler handler)
+      throws KarmaException, LocationException {
 
-    if (!initialized) {
+//    if (!initialized) {
 
-      if (handler == null) {
-        throw new IllegalArgumentException("CommandResponseHandler may not be null, you lazy bitch.");
-      }
-      this.responseHandler = handler;
-      this.env = env;
-
-      // Try updating the location-store.
-      //
-//      try {
-//
-//        CVSLocationImpl location = new CVSLocationImpl("manifest-store");
-//        location.setHost(getLocalEnvironment().getConfigurationDirectory());
-//
-//        Runner runner = RunnerFactory.getRunner();
-//
-//      } catch (LocationException l) {
-//
-//      }
-//
-//      // Try updating the manifest-store.
-//      //
-//      try {
-//
-//
-//      } catch (ManifestException m) {
-//
-//      }
-
-
-      // Read in all location data
-      //
-      LocationFactory.getInstance(env).load();
-
-      // Try reloading the last manifest that was used.
-      //
-      ManifestCollector collector = ManifestCollector.getInstance(this.env);
-      try {
-        currentManifest = collector.loadFromHistory();
-      } catch (ManifestException e) {
-        // Fine, continue.
-      }
+    if (handler == null) {
+      throw new IllegalArgumentException("CommandResponseHandler may not be null, you lazy bitch.");
     }
-    initialized = true;
+    this.responseHandler = handler;
+    this.env = env;
+
+    // Update the manifest-store.
+    //
+    File karmaDirectory = env.getManifestStore().getParentFile();
+
+    Module manifestStore = new SourceModule("manifests", env.getManifestStoreLocation());
+
+    if (karmaDirectory.exists()) {
+      try {
+        Runner runner = RunnerFactory.getRunner(manifestStore.getLocation(), karmaDirectory);
+        runner.checkout(manifestStore);
+      } catch (VersionControlException e) {
+        // todo some sort of notification would be nice ...
+        //
+        logger.warn(e.getErrorMessage());
+        // Nothing serious ...
+        //
+      }
+    } else {
+      throw new KarmaRuntimeException("Pietje puk exception");
+    }
+
+    // Update the location-store.
+    //
+    Module locationStore = new SourceModule("locations", env.getLocationStoreLocation());
+
+    if (karmaDirectory.exists()) {
+      try {
+        Runner runner = RunnerFactory.getRunner(locationStore.getLocation(), karmaDirectory);
+        runner.checkout(locationStore);
+      } catch (VersionControlException e) {
+        // todo some sort of notification would be nice ...
+        //
+        logger.warn(e.getErrorMessage());
+        // Nothing serious ...
+        //
+      }
+    } else {
+      throw new KarmaRuntimeException("Pietje puk exception");
+    }
+
+    // Read in all location data
+    //
+    LocationFactory.getInstance(env).load();
+
+    // Try reloading the last manifest that was used.
+    //
+    ManifestCollector collector = ManifestCollector.getInstance(this.env);
+    try {
+      currentManifest = collector.loadFromHistory();
+    } catch (ManifestException e) {
+      // Fine, continue.
+    }
+//    }
+//    initialized = true;
   }
 
   /**
@@ -132,7 +150,7 @@ public final class CommandContext {
    *
    * @return See <code>ManifestLoader.getAllManifests()</code>.
    */
-  public Collection getAllManifests() throws ManifestException {
+  public Collection getAllManifests() {
     return ManifestCollector.getInstance().getAllManifests();
   }
 
@@ -147,9 +165,9 @@ public final class CommandContext {
    */
   public void execute(String commandLine) throws CommandException {
 
-    if (!isInitialized()) {
-      throw new CommandException(KarmaException.COMMAND_CONTEXT_NOT_INITIALIZED);
-    }
+//    if (!isInitialized()) {
+//      throw new CommandException(KarmaException.COMMAND_CONTEXT_NOT_INITIALIZED);
+//    }
 
     Command command = CommandFactory.getInstance().getCommand(commandLine);
     execute(command);
@@ -161,9 +179,9 @@ public final class CommandContext {
    */
   public void execute(Command command) throws CommandException {
 
-    if (!isInitialized()) {
-      throw new CommandException(KarmaException.COMMAND_CONTEXT_NOT_INITIALIZED);
-    }
+//    if (!isInitialized()) {
+//      throw new CommandException(KarmaException.COMMAND_CONTEXT_NOT_INITIALIZED);
+//    }
     if (command == null) {
       throw new CommandException(KarmaException.INVALID_COMMAND);
     }

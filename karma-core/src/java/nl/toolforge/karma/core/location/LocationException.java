@@ -37,10 +37,12 @@ public final class LocationException extends Exception {
   public static final ErrorCode NO_LOCATION_DATA_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00006");
   /** The location was configured incorrectly. */
   public static final ErrorCode LOCATION_CONFIGURATION_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00007");
-  /** No directory is present where location data can be found. */
-  public static final ErrorCode NO_LOCATION_STORE_DIRECTORY = new ErrorCode(EXCEPTION_PREFIX + "00008");
   /** Missing location property */
   public static final ErrorCode MISSING_LOCATION_PROPERTY = new ErrorCode(EXCEPTION_PREFIX + "00010");
+
+  public static final ErrorCode INVALID_MANIFEST_STORE_LOCATION = new ErrorCode(EXCEPTION_PREFIX + "00011");
+
+  public static final ErrorCode INVALID_LOCATION_STORE_LOCATION = new ErrorCode(EXCEPTION_PREFIX + "00011");
 
   public LocationException(ErrorCode errorCode) {
     this(errorCode, null);

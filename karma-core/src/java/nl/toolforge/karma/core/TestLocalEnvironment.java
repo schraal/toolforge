@@ -72,10 +72,10 @@ public final class TestLocalEnvironment extends TestCase {
 			try {
 				localEnvironment.getManifestStore();
 				fail("The manifest store should not have been there");
-			} catch (ManifestException ke) {
+			} catch (KarmaException ke) {
 				assertTrue(true);
 			}
-		} catch (ManifestException e) {
+		} catch (KarmaException e) {
 			fail(e.getMessage());
 		}
 
@@ -89,10 +89,10 @@ public final class TestLocalEnvironment extends TestCase {
 			try {
 				localEnvironment.getLocationStore();
 				fail("The location store should not have been there");
-			} catch (LocationException ke) {
+			} catch (KarmaException ke) {
 				assertTrue(true);
 			}
-		} catch (LocationException e) {
+		} catch (KarmaException e) {
 			fail(e.getMessage());
 		}
 

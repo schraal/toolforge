@@ -251,22 +251,20 @@ public final class Manifest {
    */
   public void addModule(ModuleDescriptor descriptor) throws LocationException, ManifestException {
 
+    // todo duidelijk beschrijven hoe het state mechanisme wordt aangestuurd door dit ding.
+    //
+
     Module module = moduleFactory.create(descriptor);
 
-		
-		// Verify whether there is no state conflict, if so ... kaboom! ...
-		if( ((SourceModule)module).hasVersion() && this.isLocal(module) && !this.getState(module).equals(Module.STATIC) ) {
-			throw new ManifestException(ManifestException.STATE_CONFLICT, new Object[] {descriptor.getName()});
-		}
-
-		// Verify whether a local module without a version has a state or not. If not then set the state
-		// to be DYNAMIC
-		if( !((SourceModule)module).hasVersion() && this.isLocal(module) && this.getState(module).equals(Module.UNDEFINED)) {
-			this.setState(module, Module.DYNAMIC);
-		}
-
-		// We can now be sure that the module has a state (not being UNDEFINED), so we specifically set it.
-		module.setState( this.getState(module) );
+    if (((SourceModule)module).hasVersion()) {
+      module.setState(Module.STATIC);
+    } else {
+      if (!isLocal(module)) {
+        module.setState(Module.DYNAMIC);
+      } else {
+        module.setState(getLocalState(module));
+      }
+    }
 
     try {
       if (getLocalEnvironment() != null) {
@@ -348,7 +346,11 @@ public final class Manifest {
 
     File moduleDirectory = null;
     try {
-      moduleDirectory = new File(new File(env.getDevelopmentHome(), getName()), module.getName());
+      if (getClassLoader() == null) {
+        moduleDirectory = new File(new File(env.getDevelopmentHome(), getName()), module.getName());
+      } else {
+        return false;
+      }
     } catch (KarmaException e) {
       return false;
     }
@@ -361,7 +363,7 @@ public final class Manifest {
 
       Module m = (Module) i.next();
 
-			// If we stumble upon a non local module, return false
+      // If we stumble upon a non local module, return false
       if (!this.isLocal(m)) {
         return false;
       }
@@ -429,8 +431,10 @@ public final class Manifest {
 
       String[] stateFiles = new File(getDirectory(), module.getName()).list(filter);
 
-      for (int i = 0; i < stateFiles.length; i++) {
-        new File(new File(getDirectory(), module.getName()), stateFiles[i]).delete();
+      if (stateFiles != null) {
+        for (int i = 0; i < stateFiles.length; i++) {
+          new File(new File(getDirectory(), module.getName()), stateFiles[i]).delete();
+        }
       }
 
       File stateFile = new File(new File(getDirectory(), module.getName()), state.getHiddenFileName());
@@ -445,60 +449,47 @@ public final class Manifest {
     module.setState(state);
   }
 
-  /**
-   * Checks a modules' state on disk within the context of a manifest.
-   *
-   * @param module
-   * @return
-   * @throws ManifestException
-   */
-  private final Module.State getState(Module module) throws ManifestException {
+  public final Module.State getLocalState(Module module) {
 
-		// TODO isLocal check may now be done in this method
-
-    FilenameFilter filter = new FilenameFilter() {
-      public boolean accept(File dir, String name) {
-        if ((name != null) && ((".WORKING".equals(name)) || (".STATIC".equals(name)) || (".DYNAMIC".equals(name)))) {
-          return true;
-        } else {
-          return false;
-        }
+    if (!isLocal(module)) {
+      if (((SourceModule) module).hasVersion()) {
+        return Module.STATIC;
+      } else {
+        return Module.DYNAMIC;
       }
-    };
+    } else {
 
-    String[] stateFiles = new File(getDirectory(), module.getName()).list(filter);
+      FilenameFilter filter = new FilenameFilter() {
+        public boolean accept(File dir, String name) {
+          if ((name != null) && name.matches(".WORKING|.STATIC|.DYNAMIC")) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      };
 
-		// When no state can be determined, return the UNDEFINED state
-		if( stateFiles == null ) {
-			return Module.UNDEFINED;
-		}
+      String[] stateFiles = null;
+      try {
+        stateFiles = new File(getDirectory(), module.getName()).list(filter);
+      } catch (ManifestException e) {
+        throw new KarmaRuntimeException(e.getErrorMessage());
+      }
 
-    if (stateFiles.length > 1) {
-      throw new ManifestException(ManifestException.TOO_MANY_STATE_FILES, new Object[] {module.getName()});
-    }
-
-    if (stateFiles.length == 0) {
-      // Must be DYNAMIC or STATIC, which is true if module instanceof SourceModule (or one of
-      // its descendants) and module.hasVersion() is true.
-      if (module instanceof SourceModule) {
+      if (stateFiles == null || stateFiles.length == 0 ) {
         if (((SourceModule) module).hasVersion()) {
           return Module.STATIC;
         } else {
           return Module.DYNAMIC;
         }
       }
-    } else {
-      // there is exactly one state-file.
-      //
-      if (".WORKING".equals(stateFiles[0])) {
+
+      if (stateFiles.length > 0 && ".WORKING".equals(stateFiles[0])) {
         return Module.WORKING;
       }
+      return Module.DYNAMIC;
     }
-    // todo is this the correct logic ???
-    //
-    throw new ManifestException(ManifestException.INVALID_STATE, new Object[] {module.getName()});
   }
-
 
   /**
    * Saves the manifest to disk, including all its included manifests.
@@ -507,6 +498,11 @@ public final class Manifest {
     // todo this requires a manifest to maintain a map of which module belongs to which manifest ...
   }
 
+  /**
+   * A manifest is equal to another manifest if their names are equal.
+   *
+   * @param o A <code>Manifest</code> instance.
+   */
   public boolean equals(Object o) {
 
     if (o instanceof Manifest) {
@@ -535,9 +531,6 @@ public final class Manifest {
       if (fileName.endsWith(File.separator)) {
         fileName = fileName.substring(0, fileName.length() - 1);
       }
-//      if (fileName.lastIndexOf(File.separator) > 0) {
-//        path = fileName.substring(0, fileName.lastIndexOf(File.separator));
-//      }
       fileName = fileName.substring(fileName.lastIndexOf(File.separator) + 1);
 
       if (getClassLoader() == null) {
@@ -559,6 +552,8 @@ public final class Manifest {
       throw new ManifestException(f, ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[]{id});
     } catch (NullPointerException n) {
       throw new ManifestException(n, ManifestException.MANIFEST_FILE_NOT_FOUND, new Object[]{id});
+    } catch (KarmaException e) {
+      throw new ManifestException(e.getErrorCode(), e.getMessageArguments());
     }
   }
 }

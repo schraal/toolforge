@@ -220,6 +220,11 @@ public class SourceModule extends BaseModule {
     this.state = state;
   }
 
+  /**
+   * Gets the modules' state. State is identified by the manifest that loaded the module.
+   *
+   * @return The state of the module. See {@link Module}.
+   */
   public final State getState() {
     return state;
   }

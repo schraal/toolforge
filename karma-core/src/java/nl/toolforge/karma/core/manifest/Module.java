@@ -22,7 +22,6 @@ public interface Module {
   public static final State WORKING = new State("WORKING");
   public static final State DYNAMIC = new State("DYNAMIC");
   public static final State STATIC = new State("STATIC");
-	public static final State UNDEFINED = new State("UNDEFINED");
 
 	/**
    * Retrieves a modules' name, the <code>name</code> attribute of the module in the manifest XML file.

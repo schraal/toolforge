@@ -99,6 +99,8 @@ public final class ModuleDescriptor {
 
   public void setDevelopmentLine(String developmentLine) {
 
+    // todo persoonlijk wil ik liever development-line in de xml-file, maar die Digester valt daarover.
+
     if (developmentLine == null || !developmentLine.matches(DevelopmentLine.DEVELOPMENT_LINE_PATTERN_STRING)) {
       throw new PatternSyntaxException(
           "Pattern mismatch for version. Should match " + DevelopmentLine.DEVELOPMENT_LINE_PATTERN_STRING, developmentLine, -1);

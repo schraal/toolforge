@@ -10,6 +10,7 @@ import nl.toolforge.karma.core.cmd.ErrorMessage;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.manifest.Manifest;
 
 /**
  *
@@ -50,39 +51,53 @@ public class StartWorkCommand extends DefaultCommand {
       throw new CommandException(e.getErrorCode());
     }
 
+    // Criteria :
+    //
+    // 1. The module has to be a SourceModule
+    // 2. The module cannot be STATIC
+    // 3. The module should not be WORKING (makes no sense ...)
+    // 4. The module should already be local
+    //
     if (!(module instanceof SourceModule)) {
       throw new CommandException(CommandException.MODULE_TYPE_MUST_BE_SOURCEMODULE, new Object[] {module.getName()});
     }
-    if (((SourceModule) module).hasVersion()) {
+    if (((SourceModule) module).getState().equals(Module.STATIC)) {
       throw new CommandException(CommandException.START_WORK_NOT_ALLOWED_ON_STATIC_MODULE, new Object[] {module.getName()});
     }
+    if (Module.WORKING.equals(((SourceModule)module).getState())) {
 
-    try {
+      // todo message to be internationalized.
+      //
+      // todo message handling to karma-cli ???
+      //
+      response.addMessage(new SuccessMessage("Module " + module.getName() + " is already WORKING."));
 
-      if (Module.WORKING.equals(((SourceModule)module).getState())) {
+    } else {
 
-        // todo message to be internationalized.
+      Manifest currentManifest = getContext().getCurrent();
+
+      if (!currentManifest.isLocal(module)) {
+        // todo Hmm, mixing functionality of two exceptions.
         //
-        // todo message handling to karma-cli ???
-        //
-        response.addMessage(new SuccessMessage("Module " + module.getName() + " is already WORKING."));
+        throw new CommandException(ManifestException.MODULE_NOT_LOCAL, new Object[] {module.getName()});
+      }
 
-      } else {
+      try {
 
         // todo development-line should be taken into account
         //
         // todo what if user has made changes to files, even if not allowed by the common process ?
 
-        getContext().getCurrent().setState(module, Module.WORKING);
+        currentManifest.setState(module, Module.WORKING);
 
         // todo message to be internationalized.
         //
         // todo message handling to karma-cli ???
         //
         response.addMessage(new SuccessMessage("You can start working on module " + module.getName() + "; state changed to WORKING."));
+      } catch (ManifestException e) {
+        throw new CommandException(e.getErrorCode());
       }
-    } catch (ManifestException e) {
-      throw new CommandException(e.getErrorCode());
     }
   }
 

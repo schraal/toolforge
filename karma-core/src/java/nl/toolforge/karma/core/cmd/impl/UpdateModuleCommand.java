@@ -4,6 +4,7 @@ import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.cmd.ActionCommandResponse;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
@@ -14,6 +15,7 @@ import nl.toolforge.karma.core.cmd.SuccessMessage;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
 
 /**
  * <p>This command updates a module on a developers' local system. When the module has not been updated before, the
@@ -32,80 +34,100 @@ import nl.toolforge.karma.core.vc.VersionControlException;
  */
 public class UpdateModuleCommand extends DefaultCommand {
 
-	private CommandResponse response = null;
+  private CommandResponse response = null;
 
-	/**
-	 * Creates a <code>UpdateModuleCommand</code> for module <code>module</code> that should be updated. This module
-	 * requires an <code>Option</code>
-	 *
-	 * @param descriptor The command descriptor for this command.
-	 */
-	public UpdateModuleCommand(CommandDescriptor descriptor) throws CommandException {
+  /**
+   * Creates a <code>UpdateModuleCommand</code> for module <code>module</code> that should be updated. This module
+   * requires an <code>Option</code>
+   *
+   * @param descriptor The command descriptor for this command.
+   */
+  public UpdateModuleCommand(CommandDescriptor descriptor) throws CommandException {
 
-		super(descriptor);
+    super(descriptor);
 
-		response = new ActionCommandResponse();
-	}
+    response = new ActionCommandResponse();
+  }
 
-	/**
-	 * This command will update the module from the version control system. An update is done when
-	 * the module is already present, otherwise a checkout will be performed. The checkout directory for the module
-	 * is relative to the root directory of the <code>active</code> manifest.
-	 */
-	public void execute() throws CommandException {
+  /**
+   * This command will update the module from the version control system. An update is done when
+   * the module is already present, otherwise a checkout will be performed. The checkout directory for the module
+   * is relative to the root directory of the <code>active</code> manifest.
+   */
+  public void execute() throws CommandException {
 
-		String moduleName = "";
-		Module module = null;
+    String moduleName = "";
+    Module module = null;
 
-		// A manifest must be present for this command
-		//
-		// todo move to aspect; this type of checking can be done by one aspect.
-		//
-		if (!getContext().isManifestLoaded()) {
-			throw new CommandException(ManifestException.NO_ACTIVE_MANIFEST);
-		}
+    // A manifest must be present for this command
+    //
+    // todo move to aspect; this type of checking can be done by one aspect.
+    //
+    if (!getContext().isManifestLoaded()) {
+      throw new CommandException(ManifestException.NO_ACTIVE_MANIFEST);
+    }
 
-		moduleName = getCommandLine().getOptionValue("m");
-		try {
-			module = getContext().getCurrent().getModule(moduleName);
-		} catch (ManifestException e) {
-			throw new CommandException(e.getErrorCode());
-		}
+    moduleName = getCommandLine().getOptionValue("m");
+    try {
+      module = getContext().getCurrent().getModule(moduleName);
+    } catch (ManifestException e) {
+      throw new CommandException(e.getErrorCode());
+    }
 
-		Version version = null;
-		if (getCommandLine().getOptionValue("v") != null) {
-			// The module should be updated to a specific version.
-			//
-			version = new Version(getCommandLine().getOptionValue("v"));
-		}
+    Version version = null;
+    if (getCommandLine().getOptionValue("v") != null) {
+      // The module should be updated to a specific version.
+      //
+      version = new Version(getCommandLine().getOptionValue("v"));
+    } else if (((SourceModule) module).getState().equals(Module.STATIC)) {
+      version = ((SourceModule) module).getVersion();
+    } else if (((SourceModule) module).getState().equals(Module.DYNAMIC)) {
+      // todo CVSVersionExtractor should be retrieved through a Factory.
+      //
+      try {
+        version = CVSVersionExtractor.getInstance().getLastVersion(module);
+      } catch (VersionControlException e) {
+        throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+      }
+    }
 
-		try {
+    try {
+      if (version.equals(CVSVersionExtractor.getInstance().getLocalVersion(getContext().getCurrent(), module))) {
+        // todo message to be internationalized.
+        //
 
-			Runner runner = RunnerFactory.getRunner(module, getContext().getCurrent().getDirectory());
-			runner.setCommandResponse(response);
+        // No need to update.
+        //
+        response.addMessage(
+            new SuccessMessage("Module " + module.getName() + " is already up-to-date with version " + version.toString()));
 
-			if (!runner.existsInRepository(module)) {
-				throw new CommandException(VersionControlException.MODULE_NOT_IN_REPOSITORY);
-			}
+      } else {
 
-			if (getContext().getCurrent().isLocal(module)) {
-				runner.update(module, version);
-			} else {
-				runner.checkout(module, version);
-			}
-		} catch (VersionControlException e) {
-//        response.addMessage(new ErrorMessage(e, new Object[]{moduleName, module.getLocation().getId()}));
-			throw new CommandException(e.getErrorCode());
-		} catch (ManifestException e) {
-			throw new CommandException(e.getErrorCode());
-		}
+        Runner runner = RunnerFactory.getRunner(module.getLocation(), getContext().getCurrent().getDirectory());
+        runner.setCommandResponse(response);
 
-		// todo message to be internationalized.
-		//
-		response.addMessage(new SuccessMessage("Module " + module.getName() + " updated ..."));
-	}
+        if (!runner.existsInRepository(module)) {
+          throw new CommandException(VersionControlException.MODULE_NOT_IN_REPOSITORY);
+        }
 
-	public CommandResponse getCommandResponse() {
-		return response;
-	}
+        if (getContext().getCurrent().isLocal(module)) {
+          runner.update(module, version);
+        } else {
+          runner.checkout(module, version);
+        }
+
+        // todo message to be internationalized.
+        //
+        response.addMessage(new SuccessMessage("Module " + module.getName() + " updated with version " + version.toString()));
+      }
+    } catch (VersionControlException e) {
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+    } catch (ManifestException e) {
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+    }
+  }
+
+  public CommandResponse getCommandResponse() {
+    return response;
+  }
 }

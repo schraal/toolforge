@@ -1,13 +1,20 @@
 package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.manifest.Manifest;
+import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.VersionExtractor;
+import nl.toolforge.karma.core.vc.model.MainLine;
 import org.netbeans.lib.cvsclient.command.log.LogInformation;
+import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
+import org.netbeans.lib.cvsclient.admin.Entry;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * @author D.A. Smedes
@@ -77,7 +85,12 @@ public final class CVSVersionExtractor implements VersionExtractor {
     List matchingList = collectVersions(module);
 
     if (matchingList.size() == 0) {
-      throw new CVSException(CVSException.VERSION_NOT_FOUND);
+      // todo replace by CVSRuntimeException with ErrorCode instance.
+      //
+      throw new KarmaRuntimeException(
+          "Module " + module.getName() +
+          " is invalid in repository " + module.getLocation().getId() +
+          "; no version info available.");
     }
 
     Version lastMatch = (Version) matchingList.get(matchingList.size() - 1);
@@ -90,13 +103,40 @@ public final class CVSVersionExtractor implements VersionExtractor {
     return getLast(module);
   }
 
-  private static List collectVersions(Module module) throws CVSException {
+  /**
+   * Checks the modules' local version. This is the version
+   *
+   * @return Could be <code>null</code> if there is no local version data found.
+   */
+  public Version getLocalVersion(Manifest manifest, Module module) throws VersionControlException {
 
-//		if (module instanceof SourceModule) {
-//			if (!((SourceModule) module).hasModuleInfo()) {
-//				throw new KarmaException(KarmaException.NO_MODULE_INFO, new Object[]{module.getName()});
-//			}
-//		}
+    StandardAdminHandler handler = new StandardAdminHandler();
+
+    try {
+      Entry[] entries = handler.getEntriesAsArray(new File(manifest.getDirectory(), module.getName()));
+
+      Entry moduleInfo = null;
+      for (int i = 0; i < entries.length; i++) {
+
+        if (entries[i].getName().equals(SourceModule.MODULE_INFO)) {
+          moduleInfo = entries[i];
+        }
+      }
+      try {
+        String tag = moduleInfo.getTag();
+        return (tag == null ? null : new Version(tag.substring(tag.indexOf("_") + 1)));
+      } catch (Exception e) {
+        throw new CVSException(CVSException.LOCAL_MODULE_ERROR);
+      }
+
+    } catch (IOException e) {
+      throw new CVSException(CVSException.LOCAL_MODULE_ERROR);
+    } catch (ManifestException e) {
+      throw new CVSException(e.getErrorCode(), e.getMessageArguments());
+    }
+  }
+
+  private static List collectVersions(Module module) throws CVSException {
 
     // todo : this method should probably check if the module is at all compliant with the standards set by Karma.
     // for instance, are the basic version info and branch available ???
@@ -108,16 +148,8 @@ public final class CVSVersionExtractor implements VersionExtractor {
     List matchingList = new ArrayList();
 
     CVSRunner runner = null;
-      // todo what is the effect of passing a the following instance of CommandResponseListener ??
-      //
-//      CommandResponseListener listener = new CommandResponseListener() {
-//        public void commandHeartBeat() {}
-//        public void commandResponseChanged(CommandResponseEvent event) { }
-//        public void commandResponseFinished(CommandResponseEvent event) { }
-//      };
 
-//      runner = new CVSRunner(module.getLocation(), new File(""), listener); // baseLocation doesn't matter ...
-      runner = new CVSRunner(module.getLocation(), new File("")); // baseLocation doesn't matter ...
+    runner = new CVSRunner(module.getLocation(), new File("")); // baseLocation doesn't matter ...
 
     LogInformation logInformation = runner.log(module);
     Collection currentVersions = logInformation.getAllSymbolicNames();
@@ -127,28 +159,34 @@ public final class CVSVersionExtractor implements VersionExtractor {
     if (((SourceModule) module).hasDevelopmentLine()) {
       // We are working on a branch
       //
-      pattern = Pattern.compile(module.getName().concat("_\\d\\-[\\d\\-\\d]+"));
+      String branchName = ((SourceModule) module).getDevelopmentLine().getName();
+
+      pattern = Pattern.compile(branchName.concat("_").concat(Version.VERSION_PATTERN_STRING));
     } else {
       // We are doing MAINLINE development.
       //
-      pattern = Pattern.compile("MAINLINE+_\\d\\-[\\d\\-\\d]+");
+      pattern = Pattern.compile(MainLine.NAME_PREFIX.concat("_").concat(Version.VERSION_PATTERN_STRING));
     }
 
     // Collect all applicable symbolic names.
     //
     for (Iterator it = currentVersions.iterator(); it.hasNext();) {
 
-      LogInformation.SymName s = (LogInformation.SymName) it.next();
+      String s = ((LogInformation.SymName) it.next()).getName();
 
-      Matcher matcher = pattern.matcher(s.getName());
+      Matcher matcher = pattern.matcher(s);
       if (matcher.matches()) {
-        matchingList.add(new Version(s.getName().substring(s.getName().lastIndexOf("_") + 1)));
+
+        try {
+          matchingList.add(new Version(s.substring(s.lastIndexOf("_") + 1)));
+        } catch (PatternSyntaxException p) {
+          // Ignore, just no match ...
+        }
       }
     }
 
-    // Step 2 : Sort them, so the last one is on top (or something).
+    // Step 2 : Sort them, so the last one is on top.
     //
-
     Collections.sort(matchingList);
 
     return matchingList;

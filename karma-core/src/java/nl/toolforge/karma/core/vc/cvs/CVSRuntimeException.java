@@ -19,6 +19,7 @@ import nl.toolforge.karma.core.ErrorCode;
 final class CVSRuntimeException extends RuntimeException {
 
   private ErrorCode errorCode = null;
+  private Object[] messageArguments = null;
 
   /**
    * Constructs a <code>CVSRuntimeException</code>, with a non-<code>null</code> <code>ErrorCode</code>.
@@ -27,21 +28,47 @@ final class CVSRuntimeException extends RuntimeException {
    *                  <code>IllegalArgumentException</code> will be thrown.
    */
   public CVSRuntimeException(ErrorCode errorCode) {
+    this(errorCode, null);
+  }
 
-    super();
-
-    if (errorCode == null) {
-      throw new IllegalArgumentException("Errorcode cannot be null.");
-    }
+  public CVSRuntimeException(Throwable t, ErrorCode errorCode) {
+    super(t);
     this.errorCode = errorCode;
   }
 
+  public CVSRuntimeException(ErrorCode errorCode, Object[] messageArguments) {
+    this.errorCode = errorCode;
+    this.messageArguments = messageArguments;
+  }
+
+  public CVSRuntimeException(Throwable t, ErrorCode errorCode, Object[] messageArguments) {
+    super(t);
+    this.errorCode = errorCode;
+    this.messageArguments = messageArguments;
+  }
+
   /**
-   * Returns the <code>ErrorCode</code> that was used to construct this exception.
+   * Helper method to get the localized error message based on the {@link nl.toolforge.karma.core.ErrorCode}.
    *
-   * @return An <code>ErrorCode</code> instance.
+   * @return
    */
-  public ErrorCode getErrorCode() {
+  public final String getErrorMessage() {
+    if (messageArguments != null && messageArguments.length > 0) {
+      errorCode.setMessageArguments(messageArguments);
+    }
+    return errorCode.getErrorMessage();
+  }
+
+  /**
+   * Gets the exceptions' {@link nl.toolforge.karma.core.ErrorCode}.
+   * @return
+   */
+  public final ErrorCode getErrorCode() {
     return errorCode;
   }
+
+  public final Object[] getMessageArguments() {
+    return messageArguments;
+  }
+
 }

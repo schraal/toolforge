@@ -29,12 +29,13 @@ public final class RunnerFactory {
    * can determine which implementation of a runner it requires through the
    * {@link nl.toolforge.karma.core.manifest.Module#getLocation} method.
    *
-   * @param module The module for which a runner is required.
+   * @param location The location for which a runner is required.
    * @return A version control system specific <code>Runner</code>.
    */
-  public static Runner getRunner(Module module, File basePoint) throws VersionControlException {
+  public static Runner getRunner(Location location, File basePoint) throws VersionControlException {
+//  public static Runner getRunner(Module module, File basePoint) throws VersionControlException {
 
-    Location location = module.getLocation();
+//    Location location = module.getLocation();
 
     if (location instanceof CVSLocationImpl) {
       logger.debug("Getting new CVSRunner instance.");
@@ -46,7 +47,7 @@ public final class RunnerFactory {
 
     if (location instanceof SubversionLocationImpl) {
       logger.debug("Getting new CVSRunner instance.");
-      return new SubversionRunner(module.getLocation());
+      return null;
     }
     throw new KarmaRuntimeException("Location instance invalid.");
   }

@@ -46,10 +46,6 @@ public class ManifestException extends Exception {
    */
   public static final ErrorCode NO_ACTIVE_MANIFEST = new ErrorCode(EXCEPTION_PREFIX + "00007");
   /**
-   * When the manifest store directory could not be found.
-   */
-  public static final ErrorCode MANIFEST_STORE_NOT_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00008");
-  /**
    * When the manifest has not yet been checked out to the local environment
    */
   public static final ErrorCode MANIFEST_NOT_UPDATED = new ErrorCode(EXCEPTION_PREFIX + "00009");

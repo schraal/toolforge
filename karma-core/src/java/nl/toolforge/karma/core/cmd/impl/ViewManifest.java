@@ -10,8 +10,10 @@ import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.SourceModule;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvs.CVSVersionExtractor;
+import nl.toolforge.karma.core.Version;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.tools.ant.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -37,11 +39,10 @@ public class ViewManifest extends DefaultCommand {
 
   public void execute() throws CommandException {
 
+    // todo most of it is actually part of cli meuk ...
+
     if (!getContext().isManifestLoaded()) {
       throw new CommandException(ManifestException.NO_ACTIVE_MANIFEST);
-    }
-    if (!getContext().getCurrent().isLocal()) {
-      throw new CommandException(ManifestException.MANIFEST_NOT_UPDATED);
     }
     Manifest manifest = getContext().getCurrent();
 
@@ -55,10 +56,14 @@ public class ViewManifest extends DefaultCommand {
       moduleData[0] = module.getName();
 
       try {
-        moduleData[1] = "(N/A)";
-        moduleData[2] = "(N/A)";
+        moduleData[1] = "(N/A)"; // Version as specified in manifest (for STATIC modules)
+        moduleData[2] = "(N/A)"; // Newest version as available on the server
         if (module.hasVersion()) {
           moduleData[1] = module.getVersionAsString();
+          moduleData[2] = "(" + (CVSVersionExtractor.getInstance().getLastVersion(module)).getVersionNumber() + ")";
+        } else {
+          Version localVersion = (CVSVersionExtractor.getInstance().getLocalVersion(manifest, module));
+          moduleData[1] = (localVersion == null ? "   " : localVersion.getVersionNumber());
           moduleData[2] = "(" + (CVSVersionExtractor.getInstance().getLastVersion(module)).getVersionNumber() + ")";
         }
 
@@ -68,6 +73,7 @@ public class ViewManifest extends DefaultCommand {
         throw new CommandException(v.getErrorCode(), v.getMessageArguments());
       }
       moduleData[3] = (module.getDevelopmentLine() == null ? "N/A" : module.getDevelopmentLine().getName());
+//      moduleData[4] = manifest.getLocalState(module).toString();
       moduleData[4] = module.getStateAsString();
       moduleData[5] = module.getLocation().getId();
 

@@ -95,7 +95,6 @@ public final class CVSRunner implements Runner {
 
     // The default ...
     //
-//    this.listener = new BasicListener();
     this.listener = new CVSResponseAdapter();
 
     logger.debug("CVSRunner using CVSROOT : " + cvsLocation.toString());
@@ -188,6 +187,8 @@ public final class CVSRunner implements Runner {
 
     checkout(module, tmp);
 
+    // todo create directory structure via template.
+    //
     add(module, SourceModule.MODULE_INFO, tmp);
 
     tag(module, Version.INITIAL_VERSION, new File(tmp, module.getName()));
@@ -268,10 +269,15 @@ public final class CVSRunner implements Runner {
     updateCommand.setRecursive(true);
     updateCommand.setPruneDirectories(true);
 
+//    ((CVSResponseAdapter) this.listener).setModuleName(module.getName());
+
     if (version != null) {
       updateCommand.setUpdateByRevision(Utils.createSymbolicName(module, version).getSymbolicName());
+//      ((CVSResponseAdapter) this.listener).setModuleName(module.getName());
     }
 
+    // todo add data to the exception. this sort of business logic should be here, not in CVSResponseAdapter.
+    //
     executeOnCVS(updateCommand, new File(basePoint, module.getName()));
   }
 
@@ -389,11 +395,13 @@ public final class CVSRunner implements Runner {
    */
   public LogInformation log(Module module) throws CVSException {
 
-//    if (!(this.listener instanceof CVSResponseAdapter)) {
-//      // todo this stuff sucks, but is a good reminder.
-//      throw new KarmaRuntimeException(
-//          "Due to the way the Netbeans API works, the CVSRunner must be initialized with a 'CommandResponse' object.");
-//    }
+    if (!(this.listener instanceof CVSResponseAdapter)) {
+      // This stuff sucks, but is a good reminder.
+      // todo aspects ?
+      //
+      throw new KarmaRuntimeException(
+          "Due to the way the Netbeans API works, the CVSRunner must be initialized with a 'CommandResponse' object.");
+    }
 
     if (!(module instanceof SourceModule)) {
       throw new KarmaRuntimeException("Only instances of type SourceModule can use this method.");

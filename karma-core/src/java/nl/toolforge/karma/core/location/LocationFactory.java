@@ -3,6 +3,7 @@ package nl.toolforge.karma.core.location;
 import nl.toolforge.core.util.file.XMLFilenameFilter;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
 import org.apache.commons.logging.Log;
@@ -105,8 +106,13 @@ public final class LocationFactory {
 
 //		Preferences prefs = Preferences.getInstance();
 
-		File base = env.getLocationStore();
-		String[] files = base.list(new XMLFilenameFilter());
+    File base = null;
+    try {
+      base = env.getLocationStore();
+    } catch (KarmaException e) {
+      throw new LocationException(e, LocationException.NO_LOCATION_DATA_FOUND);
+    }
+    String[] files = base.list(new XMLFilenameFilter());
 
 		// TODO I can check for files == null, but this could be checked when setting up the user environment during startup.
 		if (files == null || files.length <= 0) {
