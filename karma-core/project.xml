@@ -160,7 +160,7 @@
     <dependency>
       <groupId>netbeans</groupId>
       <artifactId>cvslib</artifactId>
-      <version>3.6-patch-20041111</version>
+      <version>3.6</version>
     </dependency>
 
     <dependency>
