@@ -35,14 +35,18 @@ public final class CLI {
    */
   public void runCli(String[] args) {
     boolean updateStores = new Boolean(args[1]).booleanValue();
-    String commandName = args[2];
-    String[] commandOptions = new String[args.length - 3];
 
-    int j = 0;
+    //compose the command line to be passeg to the getCommand method.
+    String commandLine = args[2];
     for (int i = 3; i < args.length; i++) {
-      commandOptions[j] = args[i];
-      j++;
+      if (args[i].indexOf(" ") != -1) {
+        //put quotes around arguments that contain spaces
+        commandLine += " \""+ args[i] +"\"";
+      } else {
+        commandLine += " " + args[i];
+      }
     }
+    logger.debug("runCli - commandline has become: "+commandLine);
 
     // todo WorkingContext should be initializing the logging system. Some other way.
     WorkingContext workingContext;
@@ -66,7 +70,7 @@ public final class CLI {
       Command command = null;
       try {
         CommandFactory factory = CommandFactory.getInstance();
-        command = factory.getCommand(commandName, commandOptions);
+        command = factory.getCommand(commandLine);
       } catch (CommandLoadException e) {
         throw new CommandException(e.getErrorCode(),  e.getMessageArguments());
       }

@@ -18,16 +18,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd;
 
-import net.sf.sillyexceptions.OutOfTheBlueException;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.MissingArgumentException;
-import org.apache.commons.cli.MissingOptionException;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
-import org.apache.commons.cli.UnrecognizedOptionException;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -39,7 +29,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-//import net.sf.sillyexceptions.OutOfTheBlueException;
+import net.sf.sillyexceptions.OutOfTheBlueException;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.MissingArgumentException;
+import org.apache.commons.cli.MissingOptionException;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.apache.commons.cli.UnrecognizedOptionException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import nl.toolforge.karma.core.KarmaRuntimeException;
 
 /**
  * This factory is the single resource of Command objects. <code>KarmaRuntimeException</code>s are thrown when
@@ -53,6 +54,8 @@ public final class CommandFactory {
   // Singleton
   //
   private static CommandFactory factory = null;
+
+  private static final Log logger = LogFactory.getLog(CommandFactory.class);
 
   // Reference ro all command names
   //
@@ -115,6 +118,7 @@ public final class CommandFactory {
    *                          {@link CommandException#INVALID_COMMAND}.
    */
   public Command getCommand(String commandLineString) throws CommandException {
+    logger.debug("getCommand - commandLineString: "+commandLineString);
 
     String commandName = null;
     commandLineString = commandLineString.trim();
@@ -188,13 +192,14 @@ public final class CommandFactory {
 
       commandOptionsList.add(part);
     }
-
+    logger.debug("getCommand - commandOptionsList"+commandOptionsList);
+    
     String[] commandOptions = (String[]) commandOptionsList.toArray(new String[commandOptionsList.size()]);
 
     return getCommand(commandName, commandOptions);
   }
 
-  public Command getCommand(String commandName, String[] arguments) throws CommandException {
+  private Command getCommand(String commandName, String[] arguments) throws CommandException {
 
     Command cmd = null;
 
