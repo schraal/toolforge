@@ -68,7 +68,15 @@ public final class CLI {
 
     String commandLine = "";
 
-    for (int i = 0; i < arguments.length; i++) {
+    boolean updateStores = false;
+
+    int index = 0;
+    
+    if (arguments.length > 0 && arguments[0].equals("-u")) {
+      updateStores = true;
+      index=1;
+    }
+    for (int i = index; i < arguments.length; i++) {
       commandLine += arguments[i] + " ";
     }
 
@@ -91,24 +99,10 @@ public final class CLI {
 
     CommandContext commandContext = new CommandContext(workingContext);
     try {
-      commandContext.init(new CLICommandResponseHandler());
+      commandContext.init(new CLICommandResponseHandler(), updateStores);
     } catch (LocationException e) {
-//      String message;
-//      if (e.getMessageArguments() != null && e.getMessageArguments().length != 0) {
-//        MessageFormat messageFormat = new MessageFormat(e.getMessage());
-//        message = messageFormat.format(e.getMessageArguments());
-//      } else {
-//        message = e.getMessage();
-//      }
       System.out.println("\n" + e.getMessage());
     } catch (ManifestException e) {
-//      String message;
-//      if (e.getMessageArguments() != null && e.getMessageArguments().length != 0) {
-//        MessageFormat messageFormat = new MessageFormat(e.getMessage());
-//        message = messageFormat.format(e.getMessageArguments());
-//      } else {
-//        message = e.getMessage();
-//      }
       System.out.println("\n" + e.getMessage());
     }
 

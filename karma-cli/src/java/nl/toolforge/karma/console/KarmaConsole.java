@@ -149,7 +149,7 @@ public final class KarmaConsole {
 
     commandContext = new CommandContext(workingContext);
     try {
-      commandContext.init(new ConsoleCommandResponseHandler(this));
+      commandContext.init(new ConsoleCommandResponseHandler(this), true);
     } catch (LocationException e) {
       writeln(e.getMessage());
       logger.error(e.getMessage(), e);
@@ -203,22 +203,16 @@ public final class KarmaConsole {
           commandContext.execute(line);
         } catch (CommandException e) {
           writeln("");
-          //ugly way to format the messages. There is going to be a more elegant
-          //solution for this.
-          String message;
-          if (e.getMessageArguments() != null && e.getMessageArguments().length != 0) {
-            MessageFormat messageFormat = new MessageFormat(e.getMessage());
-            message = messageFormat.format(e.getMessageArguments());
-          } else {
-            message = e.getMessage();
-          }
-          writeln(message);
+          writeln(e.getMessage());
           logger.error(e.getMessage(), e);
         }
       }
     }
     catch (RuntimeException r) {
-      r.printStackTrace();
+      if (logger.isDebugEnabled()) {
+        r.printStackTrace();
+      }
+      writeln("Karma exited unexpectedly : " + r.getMessage());
       System.exit(1);
     }
     catch (Exception e) {
