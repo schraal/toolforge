@@ -20,9 +20,8 @@
 	</appender>
 
 	<root>
-		<priority value ="debug"/>
+		<priority value="debug"/>
 		<appender-ref ref="FileAppender"/>
 	</root>
-
 
 </log4j:configuration>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="karma-core">
+  <title>Karma Core</title>
+
+  <body>
+	  <!--    <links>
+      <item name="Wisdom Commons"     href="http://maven.wisdom.nl/dev/docs/wisdom-compmons/"/>
+      <item name="Wisdom Components"  href="http://maven.wisdom.nl/dev/docs/wisdom-components/"/>
+      <item name="Maven Repository"   href="http://maven.wisdom.nl/repository/"/>
+    </links>
+    -->
+    <menu name="Overview">
+      <item name="Introduction"             href="/index.html"/>
+    </menu>
+    <!--
+    <menu name="Utilities">
+      <item name="Common Utils"             href="/util/index.html"/>
+      <item name="Swing Utils"              href="/swing/index.html"/>
+      <item name="Turbine Utils"            href="/turbine/index.html"/>
+    </menu>
+    -->
+    <!--
+    <menu name="Maven Plugins">
+      <item name="Source Generator Plugin"  href="/sourcegen-plugin/index.html"/>
+    </menu>
+    -->
+  </body>
+</project>

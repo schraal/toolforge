@@ -9,6 +9,47 @@
 	<currentVersion>2.0-dev</currentVersion>
 	<package>nl.toolforge</package>
 
+	<organization>
+		<name>Toolforge</name>
+		<url>http://www.sourceforge.net/projects/toolforge</url>
+		<logo>/images/logo.png</logo>
+	</organization>
+
+	<developers>
+		<developer>
+			<name>Arjen Smedes</name>
+			<id>asmedes</id>
+			<email>asmedes@users.sourceforge.net</email>
+			<organization>toolforge</organization>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Hilbert Schraal</name>
+			<id>hippe</id>
+			<email>hippe@users.sourceforge.net</email>
+			<organization>toolforge</organization>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Martin Oosterom</name>
+			<id>oosterom</id>
+			<email>oosterom@users.sourceforge.net</email>
+			<organization>toolforge</organization>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
+	</developers>
+
+	<repository>
+		<connection>scm:cvs:pserver:anonymous@cvs.sourceforge.net:/cvsroot/toolforge:karma-core</connection>
+		<url>http://cvs.sourceforge.net/viewcvs.py/toolforge/toolforge/</url>
+	</repository>
+
 	<dependencies>
 
 		<dependency>
@@ -86,7 +127,6 @@
 	</dependencies>
 
 	<build>
-
 		<sourceDirectory>src/java/</sourceDirectory>
 
 		<resources>
@@ -103,20 +143,11 @@
 		<unitTestSourceDirectory>src/java</unitTestSourceDirectory>
 
 		<unitTest>
-
 			<includes>
 				<include>**/Test*.java</include>
 			</includes>
-
 		</unitTest>
-
 	</build>
 
 </project>
-
-
-
-
-
-
 
