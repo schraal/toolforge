@@ -89,11 +89,18 @@ public interface Runner {
 	 * Creates a branch on the module.
 	 *
 	 * @param module
-	 * @param branch A symbolic name, representing the branch name.
+	 * @param branch   A symbolic name, representing the branch name.
 	 */
 	public void branch(Module module, SymbolicName branch) throws VersionControlException;
 
-	public void promote(Module module, Version version) throws VersionControlException;
+  /**
+   *
+   * @param module
+   * @param comment  Comment of the developer
+   * @param version
+   * @throws VersionControlException
+   */
+	public void promote(Module module, String comment, Version version) throws VersionControlException;
 
   /**
    * Checks if a module exists in the repository. The module should contain the <code>module.info</code> file.

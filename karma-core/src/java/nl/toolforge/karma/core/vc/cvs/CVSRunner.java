@@ -431,7 +431,7 @@ public final class CVSRunner implements Runner {
   public void branch(Module module, SymbolicName branch) throws CVSException {
   }
 
-  public void promote(Module module, Version version) throws CVSException {
+  public void promote(Module module, String comment, Version version) throws CVSException {
 //    File tmp;
 //    try {
 //      tmp = MyFileUtils.createTempDirectory();
@@ -443,8 +443,7 @@ public final class CVSRunner implements Runner {
 
     //Add an event to the module history.
     //todo: add author
-    //todo: add comment
-    addModuleHistoryEvent(getBasePoint(), module, ModuleHistoryEvent.PROMOTE_MODULE_EVENT, version, new Date(), "", "");
+    addModuleHistoryEvent(getBasePoint(), module, ModuleHistoryEvent.PROMOTE_MODULE_EVENT, version, new Date(), "", comment);
 
     File moduleLocation = new File(getBasePoint(), module.getName());
     tag(module, version, moduleLocation);

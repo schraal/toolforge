@@ -49,6 +49,7 @@ public class PromoteCommand extends DefaultCommand {
     try {
 
       String moduleName = getCommandLine().getOptionValue("m");
+      String comment = getCommandLine().getOptionValue("c");
 
       SourceModule module = (SourceModule) getContext().getCurrentManifest().getModule(moduleName);
 
@@ -82,7 +83,7 @@ public class PromoteCommand extends DefaultCommand {
 
       // TODO check whether files exist that have not yet been committed.
 
-      runner.promote(module, nextVersion);
+      runner.promote(module, comment, nextVersion);
 
       this.newVersion = nextVersion;
 

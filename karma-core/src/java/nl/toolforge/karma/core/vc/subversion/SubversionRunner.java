@@ -85,7 +85,7 @@ public final class SubversionRunner implements Runner {
 //		return null;
 	}
 
-	public void promote(Module module, Version version) {
+	public void promote(Module module, String comment, Version version) {
 //		return null;
 	}
 }

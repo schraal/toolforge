@@ -156,6 +156,9 @@
       <option opt="m" longOpt="module" required="true" description="The module name">
         <arg name="module-name"/>
       </option>
+      <option opt="c" longOpt="comment" required="true" description="The developer's comment">
+        <arg name="comment"/>
+      </option>
       <option opt="v" longOpt="version" required="false" description="The new version number for the module">
         <arg name="new-version"/>
       </option>
