@@ -60,7 +60,7 @@ public class ListManifestsImpl extends ListManifests {
     Set headers = getHeaders();
 
     if (headers.size() == 0) {
-      response.addEvent(new MessageEvent(this, new SimpleMessage("No manifests found.")));
+      response.addEvent(new MessageEvent(this, new SimpleMessage("No manifests found for this working context.")));
     } else {
 
       Iterator manifestsIterator = headers.iterator();

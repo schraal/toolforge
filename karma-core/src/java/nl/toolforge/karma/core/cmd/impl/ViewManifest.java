@@ -148,6 +148,8 @@ public class ViewManifest extends DefaultCommand {
         moduleData[6] = "";
         if (moduleStatus.connectionFailure()) {
           moduleData[7] = "Connection failed.";
+        } else if (moduleStatus.authenticationFailure()) {
+          moduleData[7] = "Authentication failed.";
         } else {
           moduleData[7] = "** Not in repository **";
         }
