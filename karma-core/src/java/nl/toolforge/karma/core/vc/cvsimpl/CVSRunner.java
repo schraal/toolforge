@@ -513,12 +513,6 @@ public final class CVSRunner implements Runner {
     return true;
   }
 
-// todo hmm, do we want his here ??? For the time being ... yes.
-//
-  public final UpdateParser getUpdateParser() {
-    return listener.getUpdateParser();
-  }
-
   private boolean hasVersion(Module module, Version version) throws CVSException {
     return hasSymbolicName(module, Utils.createSymbolicName(module, version));
   }

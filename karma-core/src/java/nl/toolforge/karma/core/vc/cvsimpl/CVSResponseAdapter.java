@@ -51,21 +51,11 @@ public final class CVSResponseAdapter implements CVSListener {
 
   private FileInfoContainer logInformation = null;
   private CommandResponse response = null;
-//  private ErrorCode errorCode = null;
 
   private static Log logger = LogFactory.getLog(CVSResponseAdapter.class);
   private Map arguments = null;
 
-//  private String moduleName = null;
-//  private String version = null;
-
   public CVSResponseAdapter() {}
-
-  private UpdateParser updateParser = new UpdateParser();
-
-  public UpdateParser getUpdateParser() {
-    return updateParser;
-  }
 
   /**
    * This class can use a <code>CommandResponseListener</code> to send cvs events to. For example, user interfaces can
@@ -236,9 +226,7 @@ public final class CVSResponseAdapter implements CVSListener {
 
       throw new CVSRuntimeException(CVSException.SECURITY_VIOLATION);
 
-    } else if (message.startsWith("?")) {
-      updateParser.addNewFile(message.substring(message.indexOf(" ") + 1));
-    }
+    } 
   }
 
 }
