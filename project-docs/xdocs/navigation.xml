@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="Toolforge" href="http://sourceforge.net/projects/toolforge">
+
+  <title>Toolforge Documentation</title>
+
+  <body>
+    <links>
+      <item name="Toolforge Home" href="http://toolforge.sourceforge.net"/>
+    </links>
+
+    <menu name="General Information">
+      <item name="Overview"              href="/index.html"/>
+      <item name="Basics"                href="/basics.html"/>
+      <item name="Getting Started"       href="/getting-started.html"/>
+    </menu>
+
+    <menu name="Questions and Concerns">
+      <item name="Ant is Good"           href="/ant-is-good.html"/>
+      <item name="Maven is Good"         href="/maven-is-good.html"/>
+    </menu>
+
+    <menu name="Component Reference">
+      <item name="Toolforge Core" href="../toolforge-core/"/>
+      <item name="Karma Core"     href="../karma-core/"/>
+      <item name="Karma CLI"      href="../karma-cli/"/>
+      <item name="Karma Launcher" href="../karma-launcher/"/>
+    </menu>
+
+    <menu name="End User Applications">
+      <item name="Command Line Interface"  href="../karma-cli"/>
+      <item name="GUI" />
+
+      <item name="Plugins">
+        <item name="Intelli-J" href="/plugins/intelli-j.html"/>
+        <!--        <item name="Eclipse" href="/plugins/eclipse.html"/>-->
+        <!--        <item name="JDeveloper" href="/plugins/jdeveloper.html"/>-->
+        <!--        <item name="Maven Plugin" href=""/>-->
+      </item>
+
+    </menu>
+
+    <menu name="Documentation">
+      <item name="Reference" href="/reference/index.html" collapse="true">
+        <item name="Introduction"/>
+        <item name="Karma - What about it ?"/>
+        <item name="Concepts" href="/reference/concepts/index.html" collapse="true">
+          <item name="Manifests">
+            <item name="Types"/>
+          </item>
+          <item name="Components"/>
+          <item name="Modules" href="/reference/concepts/modules/index.html" collapse="true">
+            <item name="Types"/>
+            <item name="States"/>
+            <item name="Layout" href="/reference/concepts/modules/layout.html"/>
+          </item>
+        </item>
+        <item name="Command Line Interface : karma-cli" collapse="true">
+          <item name="Build management commands"/>
+          <item name="Version management commands"/>
+          <item name="Release management commands"/>
+        </item>
+        <item name="Version control aspects" collapse="true">
+          <item name="CVS support"/>
+          <item name="Future support"/>
+        </item>
+        <item name="Implementing Karma in your organisation" collapse="true">
+          <item name="Modularize, then componentize"/>
+          <item name="Implementation roadmap"/>
+        </item>
+        <item name="Integration with tools" collapse="true">
+          <item name="IDE support / plugins"/>
+        </item>
+      </item>
+
+      <item name="Commands"              href="/commands.html"/>
+      <item name="Version Management"    href="/version-management.html"/>
+      <item name="State Management"      href="/state-management.html"/>
+      <item name="How-To's"              href="/howto/index.html"/>
+      <item name="JavaDocs"	             href="/apidocs/index.html"/>
+    </menu>
+
+    <menu name="Development">
+      <item name="Proposals"             href="/proposals.html"/>
+      <item name="How To Help"           href="/how-to-help.html"/>
+      <item name="Todo"                  href="/todo.html"/>
+    </menu>
+
+  </body>
+</project>

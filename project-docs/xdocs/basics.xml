@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+
+<document>
+
+  <properties>
+    <title>Toolforge User Documentation</title>
+  </properties>
+
+  <body>
+
+  <section name="Modules, Manifests and Components">
+
+  <p>
+    The smallest unit that is managed by Karma is a <b>module</b>. A module is
+    a directory structure, containing source code, unit tests, documentation,
+    configuration and the like. Nothing new here. Modules are stored in a
+    version control repository (like CVS, Subversion, Clearcase and Perforce)
+    and identified by a 'location', defining which type of version control
+    system, host, port etc should be used to connect to the vcs and get the
+    module.
+  </p>
+
+  <p>
+    Karma uses the concept of a <b>Manifest</b> to group software modules. A
+    group of software modules can be called a component, but we have chosen to
+    refrain from the academic discussion about the definition of a software
+    component. Karma doesn't care ! A manifest is an XML definition for
+    modules and other manifests (the so-called manifest-includes). We will
+    come back to manifest in much more detail (<a href="">later</a>) on, but
+    here's what it looks like:
+  </p>
+
+  <source>
+
+  <![CDATA[
+    <manifest name="oracle-10g-dev" type="development" version="1-0">
+      <modules>
+        <module name="enterprise-manager" version="9-0" location="us-boston-01"/>
+        <module name="sql-plus-client" version="1-6" location="us-boston-01"/>
+      </modules>
+      <include-manifest name="database-server-8i-stable"/>
+    </manifest>
+  ]]>
+
+  </source>
+
+  <p>
+    What is shown here is how Oracle would (aim high ...)
+    manage their database server product with Karma.
+  </p>
+
+  </section>
+
+  <section name="Component Management">
+
+  <p>
+    A manifest is the container for a component. A manifest contains modules,
+    and it is good practice to logically group modules that form a component
+    in a manifest. This way, manifests can easily be used as building blocks
+    for software applications.
+  </p>
+
+  </section>
+
+  <section name="Version Management">
+
+  <p>
+    Obviously, Karma has not implemented its own version control system. Karma
+    uses version control systems like CVS, Subversion, etc.
+  </p>
+
+  <p>
+    On top of what version control systems offer, Karma has implemented layer
+    that is missing in most software development environments. A lot of
+    software development organizations commit code after having run their unit
+    tests and when a release is made, there is a 'code freeze', a period in
+    which developers cannot commit code, because the release manager has to be
+    sure that his checks were worth the effort and no code is added to the
+    repository while he is tagging the release. 
+  </p>
+
+  <p>
+    Karma has implemented a promotion strategy for modules where a developer
+    can promote a module when it is stable enough. This additional layer is
+    very useful, because Karma uses a concept of 'module state' (see the next
+    section) to distinguish between stable modules and non-stable
+    modules. Instead of other users depending on your committed work, they
+    have the option to depend on stable modules.
+  </p>
+
+  </section>
+
+  <section name="State Management">
+
+  <p>
+    Modules in a manifest are managed on a users harddisk. Normal working
+    procedures in a software development company is that developers update the
+    working set of code to integrate with others people's work. Karma fully
+    supports that concept, because it is great, but more than that, Karma
+    supports modules in different states.
+  </p>
+
+  <subsection name="STATIC Modules">
+
+  <p>
+    A module should be designated <code>STATIC</code> when the developer
+    wishes to use a fixed version of a module. This can best be compared with
+    Maven project dependencies, which are all of a static nature. Whatever
+    happens in terms of development for that module, you won't be able to use
+    it, unless you upgrade the module version in your manifest. 
+  </p>
+
+  </subsection>
+
+  <subsection name="DYNAMIC Modules">
+
+  <p>
+    A <code>DYNAMIC</code> module is monitored by Karma continuously to check
+    for newer versions. It will show the latest promoted version of the module
+    and the user can easily upgrade to that version. This mechanism is
+    powerfull in that a user can <b>choose</b> to have stable versions of
+    modules all the time, instead of having to pray for stable source code.
+  </p>
+
+  </subsection>
+
+  <subsection name="WORKING Modules">
+
+  <p>
+    A module is <code>WORKING</code> when the user has checked out the module
+    locally and called a <code>start-work</code> command for
+    it. <code>WORKING</code> state means that the user has indicated that
+    he/she wants to actually develop on the module. In version control
+    terminology, the HEAD of a branch is checked out.
+  </p>
+
+  </subsection>
+
+  <p>
+    The concept of <code>STATIC</code>, <code>DYNAMIC</code> or
+    <code>WORKING</code> modules applies only within the context of a
+    manifest. It is not stored in the version control system as such.
+  </p>
+
+  </section>
+
+  <section name="Build Management">
+
+  <p>
+    Build management is   
+  </p>
+
+  <p>
+    Karma R1.0 will only support Java development. In later versions, other
+    programming languages will be supported as well.
+  </p>
+
+  </section>
+
+  <section name="Release Management">
+  </section>
+
+  <section name="Working Context Support">
+
+  <p>
+    The working set of modules, manifests, etc for a developer is logically
+    grouped in a 'working context'. A working context is used by Karma to
+    check out modules and manage manifests within a logical context. Suppose
+    you work for two different clients. For each client, you can easily
+    configure a working context and separate every client-specific setting
+    from the other. 
+  </p>
+
+  </section>
+
+  </body>
+
+</document>

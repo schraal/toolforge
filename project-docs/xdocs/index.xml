@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+
+<document>
+
+  <properties>
+    <title>Toolforge Documentation</title>
+  </properties>
+
+  <body>
+
+  <section name="What is Toolforge ?">
+
+  <p>
+    <b>Toolforge</b> is the Sourceforge project name for a suite of tools
+    related to build, release and configuration management. The product is
+    known as <b>Karma</b> which is derived from <b>C</b>ode <b>A</b>nd
+    <b>R</b>elease <b>M</b>anagement <b>A</b>pplication, but 'CARMA' wasn't
+    good enough a name for us.
+  </p>
+
+  </section>
+
+  <section name="What is Karma ?">
+
+  <p>
+    Karma is a tool that is positioned in the following areas of software
+    development:
+
+    <ul>
+      <li/>Component Management
+      <li/>Version Management
+      <li/>Build Management
+      <li/>Release Management
+    </ul>
+  </p>
+
+  <p>
+    The tool (and more than that, its methodology) supports software
+    developers and release managers in their quest to manage software systems,
+    components and modules. A true enabler of a smooth software logistics
+    process (yep ...).
+  </p>
+
+  <p>
+    Component based development requires more than a version control system to
+    manage source code and build tools to build that source code. It requires
+    that software components can be easily managed, exchanged, reused.
+  </p>
+
+  <p>
+    Our early releases of Karma showed that developers, familiar with tools
+    like <a href="http://ant.apache.org">Ant</a> and <a
+    href="http://maven.apache.org">Maven</a> needed to be convinced of the
+    power of the Karma concept: <i>"We have Maven to do that.", "Why don't we
+    build an extension to Ant for this ?"</i>. So far, we've been able to convince
+    everyone that Karma offers more.
+  </p>
+
+  <p>
+    Anyway, so far for the sales talk. All of it is true, but let's continue
+    and make it happen.
+  </p>
+
+  </section>
+
+  <section name="What is there to use ?">
+
+<!--    <subsection name="Open source and free"> -->
+
+    <p>
+      The <b>Toolforge</b> project on <a
+      href="http://sourceforge.net/projects/toolforge">Sourceforge</a>
+      contains what is there to get. <b>Read</b> the <a href="basics.html">basics</a>
+      section before anything else to get an idea of what Karma could mean for
+      your organization.
+    </p>
+
+    <p>
+      Released versions of Karma can be found at
+      <a href="http://sourceforge.net/projects/toolforge">Sourceforge</a>.
+    </p>
+
+<!--    </subsection> -->
+
+  </section>
+
+  </body>
+
+</document>
