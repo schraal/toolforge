@@ -34,23 +34,20 @@ import org.apache.tools.ant.DirectoryScanner;
  */
 public final class MyFileUtils {
 
+	/** Randomizer for use by createTempDirectory() */
+	private static Random randomizer = new Random();
+
   /**
-   * Creates a temporary directory with some random positive <code>int</code> as its name.
+   * Creates a temporary directory with some random positive <code>long</code> as its name.
    *
    * @return A <code>File</code> reference to the temporary directory.
    *
    * @throws IOException When some IO error occurred.
    */
   public static File createTempDirectory() throws IOException {
-
-    Random randomizer = new Random();
-
-    int someInt = randomizer.nextInt();
-    someInt = (someInt< 0 ? someInt * -1 : someInt); // > 0
-
-    File tmp = File.createTempFile("" + someInt, null);
-    tmp.delete();
-    tmp.mkdir();
+    File tmp = new File(System.getProperty("java.io.tmpdir") + File.separator + Math.abs(randomizer.nextLong()));
+		
+    tmp.mkdirs();
 
     return tmp;
   }
