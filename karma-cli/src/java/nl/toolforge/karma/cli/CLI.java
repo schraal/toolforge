@@ -1,17 +1,19 @@
 package nl.toolforge.karma.cli;
 
-//import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.core.bundle.BundleCache;
 import nl.toolforge.karma.core.cmd.CommandContext;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
-import nl.toolforge.karma.core.prefs.Preferences;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Collection;
 import java.util.Iterator;
-
-import org.apache.commons.lang.StringUtils;
+import java.util.ResourceBundle;
 
 /**
  * <p>The <code>CLI</code> is the command-line interface for Karma. The class presents a simple-to-use command-line
@@ -19,12 +21,18 @@ import org.apache.commons.lang.StringUtils;
  *
  *
  * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public class CLI {
+
+	private static Log logger = LogFactory.getLog(CLI.class);
 
 //	private static Preferences prefs = Preferences.getInstance();
 
 	public static void main(String[] args) {
+
+		CLI cli = new CLI();
 
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
@@ -34,8 +42,7 @@ public class CLI {
 		try {
 			ctx.init();
 		} catch (KarmaException k) {
-			//log.error(k.getMessage());
-			k.printStackTrace();
+			logger.error(k.getMessage());
 			System.exit(1);
 		}
 
@@ -64,9 +71,9 @@ public class CLI {
 					int length = text.length();
 
 					StringBuffer g = new StringBuffer();
-					g.append("\n\n").append(StringUtils.repeat("*", text.length()));
+					g.append("\n\n").append(StringUtils.repeat("*", length));
 					g.append("\n").append(text).append("\n");
-					g.append(StringUtils.repeat("*", text.length())).append("\n");
+					g.append(StringUtils.repeat("*", length)).append("\n");
 
 					writer.writeln(g.toString());
 
@@ -79,9 +86,9 @@ public class CLI {
 
 					writer.writeln("The following commands are valid:");
 
-					for (Iterator i = ctx.getCommands().iterator(); i.hasNext();) {
-						CommandDescriptor descriptor = (CommandDescriptor) i.next();
-						writer.writeln(descriptor.getName());
+					String[] commandStrings = cli.formatCommands(ctx.getCommands().values());
+					for (int i = 0; i < commandStrings.length; i++) {
+						writer.writeln(commandStrings[i]);
 					}
 
 				} else {
@@ -109,17 +116,38 @@ public class CLI {
 						}
 
 					} else {
-						writer.writeln(commandName.trim().concat(" is an invalid command"));
+						ResourceBundle bundle = BundleCache.FRONTEND_MESSAGES;
+						writer.writeln(commandName.trim().concat(" " + bundle.getString("message.INVALID_COMMAND")));
 					}
 
 				}
 			}
-			//log.info("Bye!");
+			logger.info("Exiting Karma ...");
 			System.exit(0);
 		}
 		catch (IOException e) {
-			//log.error(e.getMessage());
+			logger.error(e.getMessage(), e);
 			System.exit(1);
 		}
+	}
+
+	private String[] formatCommands(Collection commands) {
+
+		String[] commandStrings = new String[commands.size()];
+
+		int j = 0;
+
+		for (Iterator i = commands.iterator(); i.hasNext();) {
+			CommandDescriptor descriptor = (CommandDescriptor) i.next();
+
+			int count1 = 25 - (descriptor.getName().length() + descriptor.getAlias().length() + 2);
+
+			commandStrings[j++] =
+				descriptor.getName() + "(" + descriptor.getAlias() + ")" +
+				StringUtils.repeat(" ", count1) + descriptor.getDescription();
+		}
+
+		return commandStrings;
+
 	}
 }

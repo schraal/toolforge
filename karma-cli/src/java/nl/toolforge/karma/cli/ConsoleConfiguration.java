@@ -11,8 +11,9 @@ import java.util.Set;
  * <p>This class defines stuff for a the console (<code>stdout</code>) to which the command line interface
  * writes its command output.
  *
- * @author D.A. Smedes  
- * @version $revision $date $author
+ * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public final class ConsoleConfiguration {
 

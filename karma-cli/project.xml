@@ -38,29 +38,29 @@
 			<version>1.0</version>
 		</dependency>
 
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>1.0.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-collections</groupId>
-			<artifactId>commons-collections</artifactId>
-			<version>2.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-digester</groupId>
-			<artifactId>commons-digester</artifactId>
-			<version>1.5</version>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-beanutils</groupId>
-			<artifactId>commons-beanutils</artifactId>
-			<version>1.6.1</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>commons-lang</groupId>-->
+<!--			<artifactId>commons-lang</artifactId>-->
+<!--			<version>1.0.1</version>-->
+<!--		</dependency>-->
+<!---->
+<!--		<dependency>-->
+<!--			<groupId>commons-collections</groupId>-->
+<!--			<artifactId>commons-collections</artifactId>-->
+<!--			<version>2.1</version>-->
+<!--		</dependency>-->
+<!---->
+<!--		<dependency>-->
+<!--			<groupId>commons-digester</groupId>-->
+<!--			<artifactId>commons-digester</artifactId>-->
+<!--			<version>1.5</version>-->
+<!--		</dependency>-->
+<!---->
+<!--		<dependency>-->
+<!--			<groupId>commons-beanutils</groupId>-->
+<!--			<artifactId>commons-beanutils</artifactId>-->
+<!--			<version>1.6.1</version>-->
+<!--		</dependency>-->
 
 		<dependency>
 			<groupId>xerces</groupId>
@@ -103,7 +103,7 @@
 		<resources>
 			<resource>
 				<directory>resources</directory>
-				<targetPath></targetPath>
+				<targetPath>resources</targetPath>
 				<includes>
 					<include>**/*.xml</include>
 					<include>**/*.dtd</include>

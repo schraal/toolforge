@@ -7,8 +7,9 @@ import nl.toolforge.karma.core.KarmaException;
 /**
  * Writer to <code>System.out</code>. This class provides a helper to write output to the console.
  *
- * @author D.A. Smedes  
- * @version $revision $date $author
+ * @author D.A. Smedes
+ *
+ * @version $Id$
  */
 public final class ConsoleWriter {
 
@@ -57,6 +58,10 @@ public final class ConsoleWriter {
 	 * @param text Text to write to the console.
 	 */
 	public void writeln(String text) {
+		String a;
+
+		a = null;
+
 		System.out.println(prompt.concat(text));
 	}
 }
