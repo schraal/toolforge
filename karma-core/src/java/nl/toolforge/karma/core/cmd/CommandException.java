@@ -77,6 +77,9 @@ public class CommandException extends Exception {
   /** The test of a module failed. */
   public static final ErrorCode CLEAN_ALL_FAILED = new ErrorCode(EXCEPTION_PREFIX + "00063");
 
+  /** The packaging of a module failed. */
+  public static final ErrorCode PACKAGE_FAILED = new ErrorCode(EXCEPTION_PREFIX + "00070");
+
   /**
    * When the manifest is a development manifest and the module is STATIC. Not allowed to start work on this module.
    */
@@ -101,6 +104,7 @@ public class CommandException extends Exception {
    * </ul>
    */
   public static final ErrorCode DEPENDENCY_DOES_NOT_EXIST = new ErrorCode(EXCEPTION_PREFIX + "00044");
+  public static final ErrorCode DEPENDENCY_FILE_INVALID = new ErrorCode(EXCEPTION_PREFIX + "00047");
 
   /**
    * <code>src/java</code> (the default directory for a module where java sources are located) is missing.
@@ -123,6 +127,8 @@ public class CommandException extends Exception {
   public static final ErrorCode NO_BUILD_DIR = new ErrorCode(EXCEPTION_PREFIX + "00062");
 
   public static final ErrorCode MODULE_VERSION_ERROR = new ErrorCode(EXCEPTION_PREFIX + "00064");
+
+  public static final ErrorCode TEST_WARNING = new ErrorCode(EXCEPTION_PREFIX + "00100");
 
   public CommandException(ErrorCode errorCode) {
     this(errorCode, null);
