@@ -146,8 +146,13 @@ public final class ModuleDependency {
 
       if (isModuleDependency()) {
         return module.equals(((ModuleDependency) obj).module);
-      } else {
+      } else if (groupId != null){
         return artifactId.equals(((ModuleDependency) obj).artifactId);
+      } else if (id != null) {
+        return id.equals(((ModuleDependency) obj).id) &&
+                jar.equals(((ModuleDependency) obj).jar);
+      } else {
+        return false;
       }
     }
   }
