@@ -30,21 +30,13 @@ import java.util.regex.PatternSyntaxException;
  */
 public final class ModuleDigester {
 
-//  private static Log logger = LogFactory.getLog(ModuleDigester.class);
-
   // todo string validation should be done in the xml-schema.
   //
 
   public static final String NAME_PATTERN_STRING = "[A-Za-z\\-\\d]+";
-  public static final String SOURCE_TYPE_PATTERN_STRING = "src|maven|lib";
   public static final String LOCATION_PATTERN_STRING = "[0-9a-z\\-\\_]+";
 
-  public static final int SOURCE_MODULE = 0;
-  public static final int MAVEN_MODULE = 1;
-  public static final int LIB_MODULE = 2;
-
   private String name = null;
-//  private Module.SourceType sourceType = null;
   private String location = null;
 
   private String version = null;
@@ -52,7 +44,6 @@ public final class ModuleDigester {
   /**
    *
    */
-//  public ModuleDigester(String name, String type, String location) {
   public ModuleDigester(String name, String location) {
 
     if (name == null || !name.matches(NAME_PATTERN_STRING)) {
@@ -60,13 +51,6 @@ public final class ModuleDigester {
           "Pattern mismatch for name-attribute. Should match " + NAME_PATTERN_STRING, name, -1);
     }
     this.name = name;
-
-//    if (type == null || !type.matches(SOURCE_TYPE_PATTERN_STRING)) {
-//      throw new PatternSyntaxException(
-//          "Pattern mismatch for type-attribute. Should match " + SOURCE_TYPE_PATTERN_STRING, type, -1);
-//    }
-
-//    sourceType = new Module.SourceType(type);
 
     if (location == null || !location.matches(LOCATION_PATTERN_STRING)) {
       throw new PatternSyntaxException(
@@ -79,12 +63,6 @@ public final class ModuleDigester {
   public String getName() {
     return name;
   }
-
-//  public int getType() {
-//    if ("src".equals(sourceType.getSourceType())) return SOURCE_MODULE;
-//    if ("maven".equals(sourceType.getSourceType())) return MAVEN_MODULE;
-//    return LIB_MODULE;
-//  }
 
   public String getLocation() {
     return location;
