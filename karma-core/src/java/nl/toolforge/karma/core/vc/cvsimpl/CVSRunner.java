@@ -311,7 +311,7 @@ public final class CVSRunner implements Runner {
     }
 
     // The checkout directory for a module has to be relative to
-
+    
     executeOnCVS(checkoutCommand, module.getBaseDir().getParentFile(), arguments);
 
     updateModuleHistoryXml(module);
@@ -558,21 +558,7 @@ public final class CVSRunner implements Runner {
     logCommand.setModule(getModuleOffset(module) + "/" + Module.MODULE_DESCRIPTOR);
     logCommand.setRecursive(false);
 
-
-    File tmp = null;
-    try {
-      tmp = MyFileUtils.createTempDirectory();
-    } catch (IOException e) {
-      //
-    }
-
-    executeOnCVS(logCommand, tmp, arguments);
-
-    try {
-      FileUtils.deleteDirectory(tmp);
-    } catch (IOException e) {
-      //
-    }
+    executeOnCVS(logCommand, MyFileUtils.getSystemTempDirectory(), arguments);
 
     // Another hook into ext support.
     //
@@ -661,8 +647,8 @@ public final class CVSRunner implements Runner {
     try {
       RlogCommand logCommand = new RlogCommand();
       logCommand.setModule(getModuleOffset(module));
-      executeOnCVS(logCommand, new File("."), null);
-
+      
+      executeOnCVS(logCommand, MyFileUtils.getSystemTempDirectory(), null);
     } catch (CVSException e) {
       return false;
     }
