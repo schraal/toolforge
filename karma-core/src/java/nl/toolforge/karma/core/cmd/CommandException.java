@@ -35,6 +35,8 @@ public class CommandException extends Exception {
 
   public static final String EXCEPTION_PREFIX = "CMD-";
 
+  /** Not to be used for business logic. Needed for testing. */
+  public static final ErrorCode TEST_CODE = new ErrorCode(EXCEPTION_PREFIX + "00000");
 
   public static final ErrorCode NO_IMPLEMENTING_CLASS = new ErrorCode(EXCEPTION_PREFIX + "00001");
 
@@ -100,9 +102,9 @@ public class CommandException extends Exception {
   public static final ErrorCode START_WORK_NOT_ALLOWED_ON_STATIC_MODULE = new ErrorCode(EXCEPTION_PREFIX + "00041");
 
   /**
-   * When the module is not (a descendant of) <code>SourceModule</code>. Not allowed to start work on this module.
+   * When the module is not (a descendant of) <code>BaseModule</code>. Not allowed to start work on this module.
    */
-  public static final ErrorCode MODULE_TYPE_MUST_BE_SOURCEMODULE = new ErrorCode(EXCEPTION_PREFIX + "00042");
+  public static final ErrorCode MODULE_TYPE_MUST_BE_BASEMODULE = new ErrorCode(EXCEPTION_PREFIX + "00042");
 
   /**
    * Promote command is not allowed on static and dynamic modules.
@@ -185,17 +187,17 @@ public class CommandException extends Exception {
    * @return
    */
   public final String getErrorMessage() {
-//    if (messageArguments != null && messageArguments.length > 0) {
-//      errorCode.setMessageArguments(messageArguments);
-//    }
-
-    if (getMessageArguments() != null && getMessageArguments().length != 0) {
-      MessageFormat messageFormat = new MessageFormat(getErrorCode().getErrorMessage());
-      return messageFormat.format(getMessageArguments());
-    } else {
-      return getErrorCode().getErrorMessage();
+    if (messageArguments != null && messageArguments.length > 0) {
+      errorCode.setMessageArguments(messageArguments);
     }
-//    return getErrorCode().getErrorMessage();
+
+//    if (getMessageArguments() != null && getMessageArguments().length != 0) {
+//      MessageFormat messageFormat = new MessageFormat(getErrorCode().getErrorMessage());
+//      return messageFormat.format(getMessageArguments());
+//    } else {
+//      return getErrorCode().getErrorMessage();
+//    }
+    return getErrorCode().getErrorMessage();
   }
 
   public String getMessage() {

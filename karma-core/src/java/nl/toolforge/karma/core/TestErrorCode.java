@@ -20,6 +20,9 @@ package nl.toolforge.karma.core;
 
 import junit.framework.TestCase;
 
+import java.util.ResourceBundle;
+import java.util.Locale;
+
 /**
  * @author D.A. Smedes
  * @version $Id$
@@ -49,12 +52,21 @@ public class TestErrorCode extends TestCase {
   }
 
   public void testGetErrorMessage() {
-    ErrorCode e = new ErrorCode("AAA-00000");
-    assertEquals("AAA-00000", e.getErrorMessage());
+
+    ErrorCode e = new ErrorCode("TST-00001");
+    e.setMessageBundle(ResourceBundle.getBundle("test-error-messages", Locale.ENGLISH));
+    assertEquals("TST-00001 : Test message 1 with argument `{0}`", e.getErrorMessage());
+
+    e.setMessageArguments(new Object[]{"blaat"});
+    assertEquals("TST-00001 : Test message 1 with argument `blaat`", e.getErrorMessage());
+
+    e.setMessageArguments(new Object[]{"bloot"});
+    assertEquals("TST-00001 : Test message 1 with argument `bloot`", e.getErrorMessage());
   }
 
   public void testGetErrorCodeString() {
-    ErrorCode e = new ErrorCode("AAA-00000");
-    assertEquals("AAA-00000", e.getErrorCodeString());
+    ErrorCode e = new ErrorCode("TST-00001");
+    e.setMessageBundle(ResourceBundle.getBundle("test-error-messages", Locale.ENGLISH));
+    assertEquals("TST-00001", e.getErrorCodeString());
   }
 }

@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.text.MessageFormat;
 
 /**
  * <p>Class representing a Karma errorcode. These error codes are localized to support different languages. Errorcodes
@@ -38,7 +39,9 @@ public final class ErrorCode {
 
   private static Locale currentLocale = null;
 
-//  private Object[] messageArguments = new Object[]{};
+  private Object[] messageArguments = new Object[]{};
+
+  private ResourceBundle messageBundle = null;
 
   static {
 
@@ -48,8 +51,6 @@ public final class ErrorCode {
   }
 
   private String errorCode = null;
-
-//  public static final ErrorCode NO_ERROR = new ErrorCode("XXX-00000");
 
   /**
    * Creates an error code. Error codes must comply to the following pattern : <code>[A-Z]{3}-\d{5}</code>. Examples are:
@@ -65,14 +66,18 @@ public final class ErrorCode {
     this.errorCode = errorCode;
   }
 
+  public void setMessageBundle(ResourceBundle messageBundle) {
+    this.messageBundle = messageBundle;
+  }
+
   /**
    * Assigns message arguments to this error code as per the <code>MessageFormat</code> definition.
    *
    * @param messageArguments An Object array (currently only <code>String</code> instances are supported).
    */
-//  public final void setMessageArguments(Object[] messageArguments) {
-//    this.messageArguments = messageArguments;
-//  }
+  public final void setMessageArguments(Object[] messageArguments) {
+    this.messageArguments = messageArguments;
+  }
 
   /**
    * <p>Gets a localized error message for the <code>ErrorCode</code> instance. Error messages are defined in a
@@ -92,21 +97,12 @@ public final class ErrorCode {
       locale = currentLocale;
     }
 
-    ResourceBundle bundle = null;
-
     String message = "";
 
-    try {
-      bundle = ResourceBundle.getBundle("error-messages", locale);
-    } catch (MissingResourceException m) {
-      logger.info("No resource bundle available for locale " + locale);
-      message = getErrorCodeString();
-    }
-
-    if (bundle == null) {
+    if (messageBundle == null) {
       try {
         locale = Locale.ENGLISH;
-        bundle = ResourceBundle.getBundle("error_messages", locale);
+        messageBundle = ResourceBundle.getBundle("error-messages", locale);
       } catch (MissingResourceException m) {
         logger.error("No default resource bundle available for locale " + locale);
         return getErrorCodeString();
@@ -114,15 +110,13 @@ public final class ErrorCode {
     }
 
     try {
-      message = bundle.getString("message." + getErrorCodeString());
+      message = messageBundle.getString("message." + getErrorCodeString());
 
-      // NOTE ! the following block remains as-is !!! There's a bug in this code.
-      //
+      if (getMessageArguments().length != 0) {
+        MessageFormat messageFormat = new MessageFormat(message);
+        message = messageFormat.format(getMessageArguments());
+      }
 
-//      if (getMessageArguments().length != 0) {
-//        MessageFormat messageFormat = new MessageFormat(message);
-//        message = messageFormat.format(getMessageArguments());
-//      }
     } catch (RuntimeException r) {
       logger.error("No message found for errorcode : " + getErrorCodeString());
       message = getErrorCodeString();
@@ -153,9 +147,9 @@ public final class ErrorCode {
     return errorCode;
   }
 
-//  private Object[] getMessageArguments() {
-//    return messageArguments;
-//  }
+  private Object[] getMessageArguments() {
+    return messageArguments;
+  }
 
   public boolean equals(Object o) {
     if (this == o) return true;
