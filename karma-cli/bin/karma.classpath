@@ -3,7 +3,7 @@
 # class.
 #
 [karma.root]
-	id=ant, version=1.5.4-TWEAKED
+	id=ant, version=1.5.4
 	id=log4j, version=1.2.8
 	id=netbeans, jar=netbeans-cvs-beta3.6.jar
 	id=commons-lang, version=1.0.1
