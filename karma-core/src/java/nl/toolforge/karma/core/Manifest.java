@@ -32,6 +32,16 @@ public interface Manifest {
 
   public void addModule(Module module);
 
+	/**
+	 * Retrieves a module instance from this manifest.
+	 *
+	 * @param moduleName The name of the module contained in this manifest.
+	 *
+	 * @return The correct module instance as found in the manifest.
+	 * @throws ManifestException See {@link ManifestException#NO_SUCH_MODULE}.
+	 */
+	public Module getModule(String moduleName) throws ManifestException;
+
   /**
    * Creates a <code>SourceModule</code>.
    *
@@ -41,14 +51,23 @@ public interface Manifest {
   public Module createModule(String name, String locationAlias) throws KarmaException;
 
   /**
-   * Retrieves a module instance from this manifest.
+   * <p>Creates a module and includes the module in the manifest instance. If the module
+   * does not yet exist in the version control system provided, this method will try and
+   * create the module in the version control system. If the module already exists in the
+   * version control system, a <code>KarmaException</code> will be thrown. When the module
+   * should be added to the manifest anyway, the {@link #createModule(int, String, String, boolean)} should be used.
    *
-   * @param moduleName The name of the module contained in this manifest.
+   * <p>This method is not intended to load modules from a manifest file into the Manifest
+   * instance. See {@link nl.toolforge.karma.core.ManifestLoader}.
    *
-   * @return The correct module instance as found in the manifest.
-   * @throws ManifestException See {@link ManifestException#NO_SUCH_MODULE}.
+   * @param name See {@link #createModule(java.lang.String, java.lang.String)}.
+   * @param locationAlias See {@link #createModule(java.lang.String, java.lang.String)}
+   *
+   * @return A <code>Module</code> instance.
+   *
+   * @throws KarmaException TODO to be documented; should be manifest exception ??
    */
-  public Module getModule(String moduleName) throws ManifestException;
+  public Module createModule(String name, String locationAlias, boolean include) throws KarmaException;
 
   /**
    * <p>Creates a module and includes the module in the manifest instance. If the module
@@ -68,13 +87,13 @@ public interface Manifest {
    *
    * @throws KarmaException TODO to be documented; should be manifest exception ??
    */
-  public Module createModule(int typeIdentifier, String name, String locationAlias) throws KarmaException;
+	public Module createModule(int typeIdentifier, String name, String locationAlias) throws KarmaException;
 
   /**
    * @param typeIdentifier See {@link Module}. A type identifier should be provided. <b>NOTE:</b> unused at this moment.
    * @param locationAlias {@link #createModule(java.lang.String, java.lang.String)}.
    * @param name {@link #createModule(java.lang.String, java.lang.String)}.
-   * @param addToFile <code>true</code> when the module should be added to the manifest file
+   * @param include <code>true</code> when the module should be added to the manifest file
    *   irrespective of succesfull creation in the version control system. Defaults to <code>false</code>.
    *
    * @return A <code>Module</code> instance.
@@ -82,7 +101,7 @@ public interface Manifest {
    * @throws KarmaException When the new module manifest file could not be written
    *   ({@link KarmaException#MANIFEST_FLUSH_ERROR}
    */
-  public Module createModule(int typeIdentifier, String name, String locationAlias, boolean addToFile) throws KarmaException;
+  public Module createModule(int typeIdentifier, String name, String locationAlias, boolean include) throws KarmaException;
 
   /**
    * Returns the physical location of this manifest's file representation on a user's

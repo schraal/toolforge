@@ -19,4 +19,8 @@ public final class CVSCommandMessage extends SimpleCommandMessage {
     super(message);
   }
 
+	public CVSCommandMessage(String message, Object[] parameters) {
+		super(message, parameters);
+	}
+
 }

@@ -20,4 +20,12 @@ public abstract class VersionControlException extends KarmaException {
 	public VersionControlException(ErrorCode errorCode) {
 		super(errorCode);
 	}
+
+	public VersionControlException(ErrorCode errorCode, Object[] messageArguments) {
+		super(errorCode, messageArguments);
+	}
+
+	public VersionControlException(ErrorCode errorCode, Object[] messageArguments, Throwable t) {
+		super(errorCode, messageArguments, t);
+	}
 }

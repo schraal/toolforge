@@ -1,12 +1,10 @@
 package nl.toolforge.karma.core.test;
 
-import junit.framework.Assert;
-import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.core.util.file.FileUtils;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
-import nl.toolforge.core.util.file.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -70,16 +68,8 @@ public class LocalCVSInitializer extends BaseTest {
     // random name.
     //
     try {
-
-      int someInt = randomizer.nextInt();
-      someInt = (someInt< 0 ? someInt * -1 : someInt); // > 0
-
-      tempDevelopmentHome = File.createTempFile("" + someInt, null);
-      tempDevelopmentHome.delete();
-      tempDevelopmentHome.mkdir();
-
-      logger.info("Temporary directory " + tempDevelopmentHome.getPath() + " created.");
-
+			File file = FileUtils.createTempDirectory();
+      logger.info("Temporary directory " + file.getPath() + " created.");
     } catch (IOException e) {
       throw new InitializationException("Directory in " + System.getProperty("TMP_DIR") + " could be created.");
     }
@@ -118,7 +108,6 @@ public class LocalCVSInitializer extends BaseTest {
   /**
    * Gets the temporary development home for the testrun. In a normal runtime environment, this would be equivalent
    * with <code>new File({@link nl.toolforge.karma.core.prefs.Preferences#getDevelopmentHome})</code>.
-   * @return
    */
   protected File getDevelopmentHome() {
     return tempDevelopmentHome;

@@ -12,11 +12,24 @@ import nl.toolforge.karma.core.vc.VersionControlException;
  */
 public class CVSException extends VersionControlException {
 
+
+	/** When no valid <code>CVSROOT</code> could be compiled from <code>CVSLocationImpl</code> instance variables. */
+	public static final ErrorCode INVALID_CVSROOT = new ErrorCode("CVS-00010");
+
+
+	/** The module already exists in the repository. */
+	public static final ErrorCode MODULE_EXISTS_IN_REPOSITORY = new ErrorCode("CVS-00015");
+
 	public CVSException(ErrorCode errorCode) {
 		super(errorCode);
 	}
 
-	/** When no valid <code>CVSROOT</code> could be compiled from <code>CVSLocationImpl</code> instance variables. */
-	public static final ErrorCode INVALID_CVSROOT = new ErrorCode("CVS-00010");
+	public CVSException(ErrorCode errorCode, Object[] messageArguments) {
+		super(errorCode, messageArguments);
+	}
+
+	public CVSException(ErrorCode errorCode, Object[] messageArguments, Throwable t) {
+		super(errorCode, messageArguments, t);
+	}
 
 }

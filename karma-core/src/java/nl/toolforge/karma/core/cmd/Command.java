@@ -76,8 +76,6 @@ public interface Command {
 
 	/**
 	 * The command's help text. Help text can be unlimited. Use <code>HTML</code> for formatting.
-	 *
-	 * @return
 	 */
 	public String getHelp();
 

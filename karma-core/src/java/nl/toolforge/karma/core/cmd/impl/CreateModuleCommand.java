@@ -1,9 +1,10 @@
 package nl.toolforge.karma.core.cmd.impl;
 
-import nl.toolforge.karma.core.cmd.*;
 import nl.toolforge.karma.core.KarmaException;
 import nl.toolforge.karma.core.Module;
+import nl.toolforge.karma.core.ModuleFactory;
 import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.cmd.*;
 import org.apache.commons.cli.CommandLine;
 
 /**
@@ -18,35 +19,53 @@ import org.apache.commons.cli.CommandLine;
  */
 public class CreateModuleCommand extends DefaultCommand {
 
-  public CreateModuleCommand(CommandDescriptor descriptor) {
-    super(descriptor);
-  }
+	public CreateModuleCommand(CommandDescriptor descriptor) {
+		super(descriptor);
+	}
 
-  public CommandResponse execute() throws KarmaException {
+	/**
+	 * Physical creation of a module in a version control system.
+	 */
+	public CommandResponse execute() throws KarmaException {
 
-    CommandLine commandLine = getCommandLine();
+		CommandLine commandLine = getCommandLine();
 
-    String locationAlias = commandLine.getOptionValue("l");
-    String moduleName = commandLine.getOptionValue("m");
+		String locationAlias = commandLine.getOptionValue("l");
+		String moduleName = commandLine.getOptionValue("m");
+		boolean include = commandLine.hasOption("i");
 
-    // The manifest itself is responsible for creating new modules.
-    //
-    Module module = getContext().getCurrent().createModule(moduleName, locationAlias);
+		// Part 1 of the transaction is the creation of a Module instance.
+		//
 
-    // If we get to this point, creation of the module was succesfull.
-    //
-    CommandMessage message = new SimpleCommandMessage(getFrontendMessages().getString("message."));
+		// The manifest itself is responsible for creating new modules.
+		//
+		Module module = null;
+		if (include) {
+			// Include the module in the manifest
+			//
+			if (!getContext().isManifestLoaded()) {
+				throw new CommandException(CommandException.NO_MANIFEST_SELECTED);
+			}
+			module = getContext().getCurrent().createModule(moduleName, locationAlias, true);
 
+		} else {
+			// Just create the module
+			//
+			module = ModuleFactory.getInstance().createModule(Module.SOURCE_MODULE, moduleName, locationAlias);
+		}
 
+		// Part 2 of the transaction is the creation in a version control system.
+		//
+		Runner runner = getContext().getRunner(module);
 
-//    if (commandLine.hasOption("i")) {
-//      // A manifest must be present for this option to be completed.
-//      //
-//      if (!getContext().isManifestLoaded()) {
-//        throw new CommandException(CommandException.NO_MANIFEST_SELECTED);
-//      }
-//    }
+		CommandResponse response = runner.create(module);
 
-    return new SimpleCommandResponse();
-  }
+		// If we get to this point, creation of the module was succesfull.
+		//
+		CommandMessage message =
+			new SimpleCommandMessage(getFrontendMessages().getString("message.MODULE_CREATED"), new Object[]{moduleName});
+    response.addMessage(message);
+
+		return response;
+	}
 }

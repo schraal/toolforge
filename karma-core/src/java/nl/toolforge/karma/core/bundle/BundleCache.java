@@ -31,7 +31,7 @@ public class BundleCache {
 	 *
 	 * <p>This bundle can also be obtained using <code>getBundle("ERROR_MESSAGES")</code>.
 	 */
-	public static final ResourceBundle ERROR_MESSAGES =
+	private static final ResourceBundle ERROR_MESSAGES =
 		ResourceBundle.getBundle("error-messages", Preferences.getInstance().getLocale());
 
   public static final String ERROR_MESSAGES_KEY = "ERROR_MESSAGES";
@@ -44,7 +44,7 @@ public class BundleCache {
 	 *
 	 * <p>This bundle can also be obtained using <code>getBundle("FRONTEND_MESSAGES")</code>
 	 */
-	public static final ResourceBundle FRONTEND_MESSAGES =
+	private static final ResourceBundle FRONTEND_MESSAGES =
 		ResourceBundle.getBundle("frontend-messages", Preferences.getInstance().getLocale());
 
   public static final String FRONTEND_MESSAGES_KEY = "FRONTEND_MESSAGES";

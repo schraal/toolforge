@@ -27,7 +27,8 @@ import java.util.ResourceBundle;
  */
 public class CLI {
 
-  private static final ResourceBundle FRONTEND_MESSAGES = BundleCache.FRONTEND_MESSAGES;
+  private static final ResourceBundle FRONTEND_MESSAGES =
+		BundleCache.getInstance().getBundle(BundleCache.FRONTEND_MESSAGES_KEY);
 
   private static Log logger = LogFactory.getLog(CLI.class);
 

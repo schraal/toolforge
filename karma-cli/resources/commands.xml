@@ -17,10 +17,10 @@
       <option opt="l" longOpt="location" required="true" description="The location alias">
         <arg name="location-alias"/>
       </option>
-      <option opt="t" longOpt="type" required="true" description="The module type">
-        <arg name="module-type"/>
-      </option>
-<!--      <option opt="i" longOpt="include" required="false" description="Include the module in the manifest"/>-->
+<!--      <option opt="t" longOpt="type" required="false" description="The module type">-->
+<!--        <arg name="module-type"/>-->
+<!--      </option>-->
+      <option opt="i" longOpt="include" required="false" description="Include the module in the manifest"/>
     </options>
 
     <classname>nl.toolforge.karma.core.cmd.impl.CreateModuleCommand</classname>

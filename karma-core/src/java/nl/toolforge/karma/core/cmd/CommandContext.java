@@ -1,13 +1,6 @@
 package nl.toolforge.karma.core.cmd;
 
-import java.util.Set;
-
-import nl.toolforge.karma.core.KarmaException;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.Manifest;
-import nl.toolforge.karma.core.ManifestException;
-import nl.toolforge.karma.core.ManifestLoader;
-import nl.toolforge.karma.core.Module;
+import nl.toolforge.karma.core.*;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationFactory;
 import nl.toolforge.karma.core.vc.Runner;
@@ -17,7 +10,8 @@ import nl.toolforge.karma.core.vc.subversion.SubversionLocationImpl;
 import nl.toolforge.karma.core.vc.subversion.SubversionRunner;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.cli.Options;
+
+import java.util.Set;
 
 /**
  * <p>The command context is the class that provides a runtime for commands to run in. The command context maintains

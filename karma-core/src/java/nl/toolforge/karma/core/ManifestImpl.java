@@ -1,6 +1,10 @@
 package nl.toolforge.karma.core;
 
 import nl.toolforge.karma.core.prefs.Preferences;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,9 +20,15 @@ import java.io.IOException;
  */
 public class ManifestImpl implements Manifest {
 
+	private static Log logger = LogFactory.getLog(ManifestImpl.class);
+
   private String manifestName = null;
 
   private ModuleMap modules = null;
+
+	// Contains this manifest as a DOM
+	//
+	private Document root = null;
 
   /**
    * Constructs a manifest instance with name <code>manifestName</code>.
@@ -57,30 +67,32 @@ public class ManifestImpl implements Manifest {
     }
   }
 
-  /**
-   * Creates a <code>SourceModule</code>.
-   */
-  public final Module createModule(String name, String locationAlias) throws KarmaException {
-    return createModule(Module.SOURCE_MODULE, name, locationAlias);
+  public final Module createModule(String moduleName, String locationAlias) throws KarmaException {
+    return createModule(Module.SOURCE_MODULE, moduleName, locationAlias, false);
   }
 
-  public final Module createModule(int typeIdentifier, String name, String locationAlias) throws KarmaException {
-    return ModuleFactory.getInstance().createModule(typeIdentifier, name, locationAlias);
+	public final Module createModule(String moduleName, String locationAlias, boolean include) throws KarmaException {
+    return createModule(Module.SOURCE_MODULE, moduleName, locationAlias, include);
   }
 
-  public final Module createModule(int typeIdentifier, String name, String locationAlias, boolean addToFile) throws KarmaException {
+  public final Module createModule(int typeIdentifier, String moduleName, String locationAlias) throws KarmaException {
+    return createModule(typeIdentifier, moduleName, locationAlias, false);
+  }
 
-    Module module = createModule(typeIdentifier, name, locationAlias);
+  public final synchronized Module createModule(int typeIdentifier, String moduleName, String locationAlias, boolean include) throws KarmaException {
+
+		Module module = ModuleFactory.getInstance().createModule(typeIdentifier, moduleName, locationAlias);
 
     addModule(module);
 
-    if (addToFile) {
-      // TODO logger.debug();
+    if (include) {
+
       try {
-        flush();
+        flush(module);
       } catch (IOException i) {
         throw new KarmaException(KarmaException.MANIFEST_FLUSH_ERROR, i);
       }
+			logger.info("Module " + module.getName() + " has been added to manifest " + getName());
     }
 
     return module;
@@ -107,9 +119,17 @@ public class ManifestImpl implements Manifest {
     return manifestName;
   }
 
-  void flush() throws IOException {
+  private void flush(Module module) throws IOException {
 
+    if (module instanceof SourceModule) {
+			Element moduleElement = root.createElement(SourceModule.ELEMENT_NAME);
+			moduleElement.setAttribute(SourceModule.NAME_ATTRIBUTE, module.getName());
+			moduleElement.setAttribute(SourceModule.LOCATION_ATTRIBUTE, module.getLocation().getId());
+		}
 
+		// Serialize DOM
+		//
+    throw new KarmaRuntimeException("Has to be implemented");
   }
 
   public boolean isLocal(Module module) {

@@ -51,11 +51,8 @@ public interface Module {
 
 	/**
 	 * Returns the <code>Location</code> instance, which is derived from the <code>location</code>-attribute.
-	 *
-	 * @return
-	 * @throws KarmaException
 	 */
-	public Location getLocation() throws KarmaException;
+	public Location getLocation();
 
 //	/**
 //	 * <p>Some module-types (e.g. source modules) have a physical location on disk where the module can be located. This
