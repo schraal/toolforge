@@ -43,8 +43,6 @@ public final class ModuleFactory {
       throw new IllegalArgumentException("Descriptor cannot be null.");
     }
 
-    Module module = null;
-
     Location location = workingContext.getLocationLoader().get(digester.getLocation());
 
     Version version = null;
