@@ -18,18 +18,36 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest;
 
+import net.sf.sillyexceptions.OutOfTheBlueException;
+import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.history.ModuleHistory;
+import nl.toolforge.karma.core.history.ModuleHistoryEvent;
+import nl.toolforge.karma.core.history.ModuleHistoryException;
+import nl.toolforge.karma.core.history.ModuleHistoryFactory;
 import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
+import nl.toolforge.karma.core.module.ModuleDescriptor;
+import nl.toolforge.karma.core.scm.digester.ModuleDependencyCreationFactory;
+import nl.toolforge.karma.core.vc.AuthenticationException;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
 import nl.toolforge.karma.core.vc.PatchLine;
+import nl.toolforge.karma.core.vc.RunnerFactory;
+import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.VersionControlSystem;
+import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
 import org.apache.commons.digester.Digester;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.PatternSyntaxException;
 
 /**
@@ -144,6 +162,7 @@ public abstract class BaseModule implements Module {
     return version != null;
   }
 
+
   /**
    * Checks if this module has been patched (and is thus part of a <code>ReleaseManifest</code>).
    *
@@ -197,8 +216,89 @@ public abstract class BaseModule implements Module {
     return checkoutDir;
   }
 
+  public abstract ModuleLayoutTemplate getLayoutTemplate();
+
   /**
-   * Reads <code>module-descriptor</code> from the module base directory. If the base directory does not exist,
+   *
+   * @param createComment
+   * @throws VersionControlException
+   * @throws AuthenticationException
+   */
+  public final void createRemote(String createComment) throws AuthenticationException, VersionControlException {
+
+    // Create the layout and return its location.
+    //
+    File tmpDir = null;
+    try {
+      tmpDir = MyFileUtils.createTempDirectory();
+    } catch (IOException e) {
+      throw new KarmaRuntimeException("Could not create temporary directory.");
+    }
+
+    File moduleDir = new File(tmpDir, getName());
+    moduleDir.mkdir();
+
+    // Create the modules' layout
+    //
+    try {
+      getLayoutTemplate().createLayout(moduleDir);
+    } catch (IOException e) {
+      // todo
+      e.printStackTrace();
+    }
+
+    logger.debug("Created layout for module `" + getName() + "`");
+
+    // Add the module to the version control system
+    //
+    setCheckoutDir(tmpDir);
+    setBaseDir(moduleDir);
+
+    ModuleDescriptor descriptor = new ModuleDescriptor(this);
+    try {
+      descriptor.createFile(moduleDir);
+    } catch (IOException e) {
+      // todo
+      e.printStackTrace();
+    }
+
+    // Prepare the module history
+    //
+    ModuleHistory history = null;
+    try {
+      history = ModuleHistoryFactory.getInstance(getBaseDir()).getModuleHistory(this);
+    } catch (ModuleHistoryException e) {
+      throw new OutOfTheBlueException("Module history does not yet exist, so this is impossible.");
+    }
+
+    ModuleHistoryEvent event = new ModuleHistoryEvent();
+    event.setType(ModuleHistoryEvent.CREATE_MODULE_EVENT);
+    event.setVersion(Version.INITIAL_VERSION);
+    event.setDatetime(new Date());
+
+    // Is a requirement.
+    //
+    ((VersionControlSystem) getLocation()).authenticate();
+
+    event.setAuthor(((VersionControlSystem) getLocation()).getUsername());
+
+    event.setComment(createComment);
+    history.addEvent(event);
+
+    history.save();
+
+    CVSRunner runner = (CVSRunner) RunnerFactory.getRunner(getLocation());
+    runner.addModule(this, createComment);
+
+    try {
+      FileUtils.deleteDirectory(tmpDir);
+    } catch (IOException e) {
+      throw new KarmaRuntimeException("Could not remove temporary directory.");
+    }
+  }
+
+  /**
+   * Reads <code>module-descriptor.xml</code>-file from the module base directory. If the base directory does not exist,
    * <code>Module.UNKNOWN</code> is returned.
    *
    * @return The module type.
@@ -225,11 +325,41 @@ public abstract class BaseModule implements Module {
     try {
       return (Type) digester.parse(new File(getBaseDir(), Module.MODULE_DESCRIPTOR).getPath());
     } catch (IOException e) {
-      throw new KarmaRuntimeException(e.getMessage());
+      throw new ModuleTypeException(ModuleTypeException.INVALID_MODULE_DESCRIPTOR);
     } catch (SAXException e) {
-      e.printStackTrace();
-      throw new KarmaRuntimeException(e.getMessage());
+      throw new ModuleTypeException(ModuleTypeException.INVALID_MODULE_DESCRIPTOR);
     }
+  }
+
+  /**
+   * See {@link Module#getDependencies}. This implementation throws a <code>KarmaRuntimeException</code> when the
+   *  modules' <code>dependencies.xml</code> could not be parsed properly. When no dependencies have been specified, or
+   * when the file does not exist, the method returns an empty <code>Set</code>.
+   *
+   * @return A <code>Set</code> containing {@link nl.toolforge.karma.core.scm.ModuleDependency} instances.
+   */
+  public final Set getDependencies() {
+
+    Set dependencies = new HashSet();
+
+    // Read in the base dependency structure of a Maven project.xml file
+    //
+    Digester digester = new Digester();
+
+    digester.addObjectCreate("*/dependencies", HashSet.class);
+    digester.addFactoryCreate("*/dependency", ModuleDependencyCreationFactory.class);
+    digester.addSetNext("*/dependency", "add");
+
+    try {
+
+      dependencies = (Set) digester.parse(new File(getBaseDir(), "dependencies.xml"));
+
+    } catch (IOException e) {
+      return new HashSet();
+    } catch (SAXException e) {
+      throw new KarmaRuntimeException(ManifestException.DEPENDENCY_FILE_LOAD_ERROR, new Object[]{getName()});
+    }
+    return dependencies;
   }
 
   public String toString() {

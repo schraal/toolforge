@@ -102,10 +102,14 @@ public class ViewManifest extends DefaultCommand {
 
       try {
 
-        try {
-          moduleData[1] = module.getType().getShortType();
-        } catch (ModuleTypeException e) {
+        if (!existsInRepository) {
           moduleData[1] = Module.UNKNOWN.getType();
+        } else {
+          try {
+            moduleData[1] = module.getType().getShortType();
+          } catch (ModuleTypeException e) {
+            moduleData[1] = Module.UNKNOWN.getType();
+          } 
         }
 
         if (!manifest.isLocal(module)) {

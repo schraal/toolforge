@@ -5,4 +5,8 @@ package nl.toolforge.karma.core.vc;
  * @version $Id$
  */
 public class AuthenticationException extends Exception {
+
+  public AuthenticationException(String message) {
+    super(message);
+  }
 }

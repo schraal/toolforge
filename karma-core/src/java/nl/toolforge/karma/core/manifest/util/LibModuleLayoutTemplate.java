@@ -21,6 +21,7 @@ package nl.toolforge.karma.core.manifest.util;
 import nl.toolforge.karma.core.manifest.Module;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * <p>Layout for a lib-module. A lib-module (implemented by the
@@ -33,14 +34,14 @@ import java.io.File;
  * @author W.H. Schraal
  * @version $Id$
  */
-public final class LibModuleLayoutTemplate implements ModuleLayoutTemplate {
+public final class LibModuleLayoutTemplate extends BaseModuleLayoutTemplate {
 
   // todo constructor met xml file naam waar de layout gevonden kan worden.
 
   public FileTemplate[] getFileElements() {
     return new FileTemplate[] {
       new FileTemplate(new File("/templates/cvsignore.template"), new File(".cvsignore")),
-      new FileTemplate(new File("/templates/module-descriptor.xml_template"), new File(Module.MODULE_DESCRIPTOR)),
+//      new FileTemplate(new File("/templates/module-descriptor.xml_template"), new File(Module.MODULE_DESCRIPTOR)),
     };
   }
 

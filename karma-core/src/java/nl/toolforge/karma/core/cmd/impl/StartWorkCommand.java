@@ -29,6 +29,7 @@ import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.manifest.BaseModule;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
@@ -55,9 +56,7 @@ public class StartWorkCommand extends DefaultCommand {
    * @param descriptor The command descriptor for this command.
    */
   public StartWorkCommand(CommandDescriptor descriptor) {
-
     super(descriptor);
-
   }
 
   public void execute() throws CommandException {
@@ -87,8 +86,8 @@ public class StartWorkCommand extends DefaultCommand {
     // 3. The module should not be WORKING (makes no sense ...)
     // 4. The module should already be local
     //
-    if (!(module instanceof SourceModule)) {
-      throw new CommandException(CommandException.MODULE_TYPE_MUST_BE_SOURCEMODULE, new Object[] {module.getName()});
+    if (!(module instanceof BaseModule)) {
+      throw new CommandException(CommandException.MODULE_TYPE_MUST_BE_BASEMODULE, new Object[] {module.getName()});
     }
 
     Manifest currentManifest = getContext().getCurrentManifest();

@@ -27,6 +27,7 @@ import nl.toolforge.karma.core.test.BaseTest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.io.IOException;
 
 /**
  * @author D.A. Smedes
@@ -35,7 +36,7 @@ import java.util.List;
 public class TestModule extends BaseTest {
 
   private LocationLoader locationFactory = null;
-  
+
   public void setUp() {
     super.setUp();
     try {
@@ -55,7 +56,7 @@ public class TestModule extends BaseTest {
   public void testConstructor() {
 
     try {
-      Location l = locationFactory.get("local-test");
+      Location l = locationFactory.get("test-id-1");
 
       SourceModule s = null;
 
@@ -73,7 +74,7 @@ public class TestModule extends BaseTest {
       assertEquals("0-1", s.getVersionAsString());
 
     } catch (LocationException e) {
-
+      fail();
     }
   }
 

@@ -39,14 +39,14 @@ import java.io.File;
  * @author D.A. Smedes
  * @version $Id$
  */
-public final class WebappModuleLayoutTemplate implements ModuleLayoutTemplate {
+public final class WebappModuleLayoutTemplate extends BaseModuleLayoutTemplate {
 
   // todo constructor met xml file naam waar de layout gevonden kan worden.
 
   public FileTemplate[] getFileElements() {
     return new FileTemplate[] {
       new FileTemplate(new File("/templates/cvsignore.template"), new File(".cvsignore")),
-      new FileTemplate(new File("/templates/module-descriptor.xml_template"), new File(Module.MODULE_DESCRIPTOR)),
+//      new FileTemplate(new File("/templates/module-descriptor.xml_template"), new File(Module.MODULE_DESCRIPTOR)),
       new FileTemplate(new File("/templates/dependencies.xml_template"), new File("dependencies.xml")),
       new FileTemplate(new File("/templates/web.xml_template"), new File("src/web/WEB-INF","web.xml"))
     };

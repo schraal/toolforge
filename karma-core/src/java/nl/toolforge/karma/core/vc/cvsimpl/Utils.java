@@ -55,8 +55,6 @@ public final class Utils {
    */
   public static SymbolicName createSymbolicName(Module module, DevelopmentLine developmentLine, Version version) {
 
-//    if (module instanceof SourceModule) {
-
     if (version == null) {
       new CVSTag("");
       if (developmentLine != null) {

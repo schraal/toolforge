@@ -30,6 +30,7 @@ import nl.toolforge.karma.core.manifest.Manifest;
 import nl.toolforge.karma.core.manifest.ManifestException;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ReleaseManifest;
+import nl.toolforge.karma.core.manifest.BaseModule;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
@@ -71,9 +72,9 @@ public class StopWorkCommand extends DefaultCommand {
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
 
-//    if (!(module instanceof SourceModule)) {
-//      throw new CommandException(CommandException.MODULE_TYPE_MUST_BE_SOURCEMODULE, new Object[] {module.getName()});
-//    }
+    if (!(module instanceof BaseModule)) {
+      throw new CommandException(CommandException.MODULE_TYPE_MUST_BE_BASEMODULE, new Object[] {module.getName()});
+    }
 
     if (!Module.WORKING.equals(getContext().getCurrentManifest().getState(module))) {
       throw new CommandException(CommandException.INVALID_STATE_MODULE_NOT_WORKING, new Object[]{moduleName});

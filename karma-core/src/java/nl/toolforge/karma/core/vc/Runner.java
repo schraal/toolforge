@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.vc;
 
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.vc.cvsimpl.CVSException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
@@ -35,14 +36,14 @@ public interface Runner {
 
   public void setCommandResponse(CommandResponse response);
 
-	/**
-	 * Creates a module in a version control repository, including the directory structure and files as defined by
-   * <code>template</code>. The <code>comment</code> is added as a
-   * {@link nl.toolforge.karma.core.history.ModuleHistoryEvent}.
-   *
-   * @throws VersionControlException related to version control operations.
-	 */
-	public void create(Module module, String comment, ModuleLayoutTemplate template) throws VersionControlException;
+//	/**
+//	 * Creates a module in a version control repository, including the directory structure and files as defined by
+//   * <code>template</code>. The <code>comment</code> is added as a
+//   * {@link nl.toolforge.karma.core.history.ModuleHistoryEvent}.
+//   *
+//   * @throws VersionControlException related to version control operations.
+//	 */
+//	public void create(Module module, String comment, ModuleLayoutTemplate template) throws VersionControlException;
 
 	/**
 	 * Adds a set of files and/or a set of directories (recursively) to the version control system. Files and directories
@@ -147,4 +148,6 @@ public interface Runner {
    * Creates a <code>PatchLine<code> for the module.
    */
   public void createPatchLine(Module module) throws VersionControlException ;
+
+  public void addModule(Module module, String comment) throws CVSException;
 }

@@ -20,15 +20,32 @@ package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.module.ModuleDescriptor;
+import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
+import nl.toolforge.karma.core.manifest.util.SourceModuleLayoutTemplate;
+import nl.toolforge.karma.core.manifest.util.FileTemplate;
+import nl.toolforge.karma.core.vc.VersionControlSystem;
+import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.vc.RunnerFactory;
+import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.cvsimpl.CVSRunner;
+import nl.toolforge.karma.core.vc.cvsimpl.CVSException;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.scm.digester.ModuleDependencyCreationFactory;
+import nl.toolforge.core.util.file.MyFileUtils;
 import org.apache.commons.digester.Digester;
+import org.apache.commons.io.FileUtils;
 import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.FileOutputStream;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
  * <p>A <code>SourceModule</code> represents a module for which the developer wants to have the sources available to
@@ -50,48 +67,19 @@ public class SourceModule extends BaseModule {
     this(name, location, null);
   }
 
+  public Type getInstanceType() {
+    return Module.JAVA_SOURCE_MODULE;
+  }
+
+  public ModuleLayoutTemplate getLayoutTemplate() {
+    return new SourceModuleLayoutTemplate();
+  }
+
   /**
    * Constructs a <code>SourceModule</code> with a <code>name</code>, <code>location</code> and <code>version</code>.
    */
   public SourceModule(String name, Location location, Version version) {
-
     super(name, location, version);
-
-  }
-
-//  public SourceType getSourceType() {
-//    return new Module.SourceType("src");
-//  }
-
-  /**
-   * See {@link Module#getDependencies}. This implementation throws a <code>KarmaRuntimeException</code> when the
-   *  modules' <code>dependencies.xml</code> could not be parsed properly. When no dependencies have been specified, or
-   * when the file does not exist, the method returns an empty <code>Set</code>.
-   *
-   * @return A <code>Set</code> containing {@link nl.toolforge.karma.core.scm.ModuleDependency} instances.
-   */
-  public Set getDependencies() {
-
-    Set dependencies = new HashSet();
-
-    // Read in the base dependency structure of a Maven project.xml file
-    //
-    Digester digester = new Digester();
-
-    digester.addObjectCreate("*/dependencies", HashSet.class);
-    digester.addFactoryCreate("*/dependency", ModuleDependencyCreationFactory.class);
-    digester.addSetNext("*/dependency", "add");
-
-    try {
-
-      dependencies = (Set) digester.parse(new File(getBaseDir(), "dependencies.xml"));
-
-    } catch (IOException e) {
-      return new HashSet();
-    } catch (SAXException e) {
-      throw new KarmaRuntimeException(ManifestException.DEPENDENCY_FILE_LOAD_ERROR, new Object[]{getName()});
-    }
-    return dependencies;
   }
 
 }

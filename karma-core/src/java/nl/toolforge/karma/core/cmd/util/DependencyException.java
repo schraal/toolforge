@@ -50,16 +50,16 @@ public class DependencyException extends Exception {
    * @return
    */
   public final String getErrorMessage() {
-    if (getMessageArguments() != null && getMessageArguments().length != 0) {
-      MessageFormat messageFormat = new MessageFormat(getErrorCode().getErrorMessage());
-      return messageFormat.format(getMessageArguments());
-    } else {
-      return getErrorCode().getErrorMessage();
-    }
-//    if (messageArguments != null && messageArguments.length > 0) {
-//      errorCode.setMessageArguments(messageArguments);
+//    if (getMessageArguments() != null && getMessageArguments().length != 0) {
+//      MessageFormat messageFormat = new MessageFormat(getErrorCode().getErrorMessage());
+//      return messageFormat.format(getMessageArguments());
+//    } else {
+//      return getErrorCode().getErrorMessage();
 //    }
-//    return errorCode.getErrorMessage();
+    if (messageArguments != null && messageArguments.length > 0) {
+      errorCode.setMessageArguments(messageArguments);
+    }
+    return errorCode.getErrorMessage();
   }
 
   public String getMessage() {

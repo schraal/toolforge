@@ -68,6 +68,10 @@ public class ModuleHistoryEvent {
   }
 
   public void setAuthor(String author) {
+
+    if (author == null) {
+      throw new IllegalArgumentException("Author must be set.");
+    }
     this.author = author;
   }
 

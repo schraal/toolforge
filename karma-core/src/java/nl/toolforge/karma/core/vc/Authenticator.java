@@ -67,7 +67,7 @@ public final class Authenticator {
       location.setUsername(((Authenticator) getAuthenticators().get(location.getId())).getUsername());
     } catch (LocationException e) {
       // todo extend the messaging scheme
-      throw new AuthenticationException();
+      throw new AuthenticationException("Could not authenticate location.");
     }
   }
 

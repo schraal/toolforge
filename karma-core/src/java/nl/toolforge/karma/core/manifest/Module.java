@@ -19,10 +19,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
+import nl.toolforge.karma.core.vc.VersionControlSystem;
+import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.AuthenticationException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Set;
 import java.util.regex.PatternSyntaxException;
 
@@ -85,10 +90,6 @@ public interface Module {
    * @return The type of the module (see constants defined in <code>Module</code>).
    */
   public Type getType() throws ModuleTypeException;
-
-//  public SourceType getSourceType();
-
-//  public DeploymentType getDeploymentType();
 
   /**
    * Returns the <code>Location</code> instance, which is derived from the <code>location</code>-attribute.
@@ -177,6 +178,17 @@ public interface Module {
    * @return A <code>Set</code> containing all dependencies as <code>ModuleDependency</code> objects.
    */
   public Set getDependencies();
+
+  /**
+   * Returns the correct layout template for the module.
+   *
+   * @return A <code>ModuleLayoutTemplate</code> for the specific module type.
+   */
+  public ModuleLayoutTemplate getLayoutTemplate();
+
+//  public void create() throws IOException;
+
+  public void createRemote(String createComment) throws VersionControlException, AuthenticationException ;
 
   /**
    * Inner class representing the type of the module, which is determined at runtime by reading the

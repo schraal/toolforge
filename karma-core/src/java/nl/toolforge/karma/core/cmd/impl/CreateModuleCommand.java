@@ -37,6 +37,7 @@ import nl.toolforge.karma.core.manifest.util.WebappModuleLayoutTemplate;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.RunnerFactory;
 import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.AuthenticationException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -82,14 +83,6 @@ public class CreateModuleCommand extends DefaultCommand {
       throw new CommandException(CommandException.INVALID_ARGUMENT, new Object[]{moduleName, e.getMessage()});
     }
 
-    Module module = null;
-    try {
-      ModuleFactory factory = new ModuleFactory(getWorkingContext());
-      module = factory.create(digester);
-    } catch (LocationException e) {
-      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
-    }
-
     Module.Type moduleType = new Module.Type();
     try {
       moduleType.setType(commandLine.getOptionValue("t"));
@@ -97,30 +90,20 @@ public class CreateModuleCommand extends DefaultCommand {
       throw new CommandException(CommandException.INVALID_ARGUMENT);
     }
 
+    Module module = null;
+    try {
+      ModuleFactory factory = new ModuleFactory(getWorkingContext());
+      module = factory.create(digester, moduleType);
+    } catch (LocationException e) {
+      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+    }
+
     CommandMessage message = new SuccessMessage(getFrontendMessages().getString("message.CREATE_MODULE_STARTED"), new Object[]{moduleName, locationAlias});
     commandResponse.addMessage(message);
 
     try {
-      // Part 2 of the transaction is the creation in a version control system.
-      //
-      Runner runner = RunnerFactory.getRunner(module.getLocation());
-      runner.setCommandResponse(getCommandResponse());
 
-      if (moduleType.equals(Module.JAVA_WEB_APPLICATION)) {
-        runner.create(module, comment, new WebappModuleLayoutTemplate());
-        message = new SuccessMessage(getFrontendMessages().getString("message.WEBAPP_MODULE_CREATED"), new Object[]{moduleName, locationAlias});
-      } else if (moduleType.equals(Module.JAVA_ENTERPRISE_APPLICATION)) {
-        runner.create(module, comment, new EappModuleLayoutTemplate());
-        message = new SuccessMessage(getFrontendMessages().getString("message.EAPP_MODULE_CREATED"), new Object[]{moduleName, locationAlias});
-      } else if (moduleType.equals(Module.JAVA_SOURCE_MODULE)) {
-        runner.create(module, comment, new SourceModuleLayoutTemplate());
-        message = new SuccessMessage(getFrontendMessages().getString("message.SRC_MODULE_CREATED"), new Object[]{moduleName, locationAlias});
-      } else if (moduleType.equals(Module.LIBRARY_MODULE)) {
-        runner.create(module, comment, new LibModuleLayoutTemplate());
-        message = new SuccessMessage(getFrontendMessages().getString("message.LIB_MODULE_CREATED"), new Object[]{moduleName, locationAlias});
-      } else {
-        throw new KarmaRuntimeException("NOT IMPLEMENTED, module type: "+moduleType);
-      }
+      module.createRemote(comment);
 
       // Ensure that only this message is passed back to the client
       //
@@ -130,6 +113,10 @@ public class CreateModuleCommand extends DefaultCommand {
     } catch (VersionControlException e) {
       logger.error(e);
       throw new CommandException(e.getErrorCode(), e.getMessageArguments());
+    } catch (AuthenticationException e) {
+      // todo moet anders.
+      logger.error(e.getMessage());
+      // throw new CommandException();
     }
   }
 

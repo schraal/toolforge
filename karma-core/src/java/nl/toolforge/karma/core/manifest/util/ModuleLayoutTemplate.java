@@ -18,7 +18,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.manifest.util;
 
-
+import java.io.File;
+import java.io.IOException;
 
 
 /**
@@ -33,5 +34,13 @@ public interface ModuleLayoutTemplate {
   public FileTemplate[] getFileElements();
 
   public String[] getDirectoryElements();
+
+  /**
+   * Creates a templates' files and directories.
+   * 
+   * @param baseDir
+   * @throws IOException
+   */
+  public void createLayout(File baseDir) throws IOException;
 
 }

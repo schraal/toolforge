@@ -33,7 +33,8 @@ import java.util.List;
 
 /**
  * This class holds the history information of a module. This information is stored per module in a file
- * called <b>history.xml</b>. The ModuleHistory has to be retrieved through the {@link ModuleHistoryFactory}.
+ * called <b>history.xml</b>. The <code>ModuleHistory</code> has to be retrieved through the
+ * {@link ModuleHistoryFactory}.
  *
  * @see ModuleHistoryEvent
  * @author W.H. Schraal

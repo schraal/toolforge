@@ -3,9 +3,12 @@ package nl.toolforge.karma.core.module;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.ModuleTypeException;
+import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
 import nl.toolforge.karma.core.vc.DevelopmentLine;
 import nl.toolforge.karma.core.vc.Authenticator;
+import nl.toolforge.karma.core.vc.VersionControlSystem;
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.KarmaRuntimeException;
 
 import java.util.Set;
 
@@ -22,11 +25,9 @@ public class ManifestModule extends AdminModule {
   }
 
 
-
-
-
-
-
+  public ModuleLayoutTemplate getLayoutTemplate() {
+    throw new KarmaRuntimeException("To be implemented ...");
+  }
 
 
 
@@ -38,7 +39,7 @@ public class ManifestModule extends AdminModule {
 
 
 
-  public Type getType() throws ModuleTypeException {
+  public Type getType() {
     return null;
   }
 
@@ -76,5 +77,9 @@ public class ManifestModule extends AdminModule {
 
   public Set getDependencies() {
     return null;
+  }
+
+  public void createRemote(String createComment) {
+
   }
 }

@@ -124,7 +124,7 @@ public abstract class AbstractManifest implements Manifest {
     ModuleFactory moduleFactory = new ModuleFactory(workingContext);
 
     for (Iterator i = manifestStructure.getModules().iterator(); i.hasNext();) {
-      Module module = moduleFactory.create((ModuleDigester) i.next());
+      Module module = moduleFactory.create((ModuleDigester) i.next(), Module.UNKNOWN);
       modules.put(module.getName(), module);
     }
 
@@ -385,7 +385,7 @@ public abstract class AbstractManifest implements Manifest {
         //
 
         Set moduleDependencies = null;
-        moduleDependencies = ((SourceModule) module).getDependencies();
+        moduleDependencies = ((BaseModule) module).getDependencies();
 
         // Iterate over all dependencies. If it is a module dep, check if we already have an
         // entry in the interdep-collection; create one when necessary.

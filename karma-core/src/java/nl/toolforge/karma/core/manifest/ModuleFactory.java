@@ -19,6 +19,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.module.JavaEnterpriseApplicationModule;
+import nl.toolforge.karma.core.module.JavaWebApplicationModule;
+import nl.toolforge.karma.core.module.UntypedModule;
 import nl.toolforge.karma.core.boot.WorkingContext;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.location.LocationException;
@@ -37,10 +41,13 @@ public final class ModuleFactory {
     this.workingContext = workingContext;
   }
 
-  public Module create(ModuleDigester digester) throws LocationException {
+  public Module create(ModuleDigester digester, Module.Type moduleType) throws LocationException {
 
     if (digester == null) {
       throw new IllegalArgumentException("Descriptor cannot be null.");
+    }
+    if (moduleType == null) {
+      throw new IllegalArgumentException("Module type cannot be null.");
     }
 
     Location location = workingContext.getLocationLoader().get(digester.getLocation());
@@ -50,7 +57,18 @@ public final class ModuleFactory {
       version = new Version(digester.getVersion());
     }
 
-    return new SourceModule(digester.getName(), location, version);
-  }
+    if (moduleType.equals(Module.JAVA_SOURCE_MODULE)) {
+      return new SourceModule(digester.getName(), location, version);
+    } else if (moduleType.equals(Module.JAVA_ENTERPRISE_APPLICATION)) {
+      return new JavaEnterpriseApplicationModule(digester.getName(), location, version);
+    } else if (moduleType.equals(Module.JAVA_WEB_APPLICATION)) {
+      return new JavaWebApplicationModule(digester.getName(), location, version);
+    } else if (moduleType.equals(Module.LIBRARY_MODULE)) {
+      return new LibModule(digester.getName(), location, version);
+    } else if (moduleType.equals(Module.UNKNOWN)) {
+      return new UntypedModule(digester.getName(), location, version);
+    }
 
+    throw new KarmaRuntimeException("Type mismatch. Could not create module.");
+  }
 }

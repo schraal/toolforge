@@ -77,10 +77,10 @@ public class CVSRepository extends VersionControlSystem {
   }
 
   public void authenticate() throws AuthenticationException {
-    if (PSERVER.equals(getProtocol())) {
+//    if (PSERVER.equals(getProtocol())) {
       Authenticator authenticator = new Authenticator();
       authenticator.authenticate(this);
-    }
+//    }
   }
 
   /**

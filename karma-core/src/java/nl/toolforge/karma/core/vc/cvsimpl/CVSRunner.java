@@ -18,21 +18,25 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.vc.cvsimpl;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-
+import nl.toolforge.core.util.file.MyFileUtils;
+import nl.toolforge.karma.core.ErrorCode;
+import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.Version;
+import nl.toolforge.karma.core.cmd.Command;
+import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.history.ModuleHistory;
+import nl.toolforge.karma.core.history.ModuleHistoryEvent;
+import nl.toolforge.karma.core.history.ModuleHistoryException;
+import nl.toolforge.karma.core.history.ModuleHistoryFactory;
+import nl.toolforge.karma.core.location.Location;
+import nl.toolforge.karma.core.manifest.Module;
+import nl.toolforge.karma.core.manifest.SourceModule;
+import nl.toolforge.karma.core.vc.DevelopmentLine;
+import nl.toolforge.karma.core.vc.PatchLine;
+import nl.toolforge.karma.core.vc.Runner;
+import nl.toolforge.karma.core.vc.SymbolicName;
+import nl.toolforge.karma.core.vc.VersionControlException;
+import nl.toolforge.karma.core.vc.VersionControlSystem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,27 +57,16 @@ import org.netbeans.lib.cvsclient.connection.Connection;
 import org.netbeans.lib.cvsclient.connection.ConnectionFactory;
 import org.netbeans.lib.cvsclient.connection.PServerConnection;
 
-import nl.toolforge.core.util.file.MyFileUtils;
-import nl.toolforge.karma.core.ErrorCode;
-import nl.toolforge.karma.core.KarmaRuntimeException;
-import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.cmd.Command;
-import nl.toolforge.karma.core.cmd.CommandResponse;
-import nl.toolforge.karma.core.history.ModuleHistory;
-import nl.toolforge.karma.core.history.ModuleHistoryEvent;
-import nl.toolforge.karma.core.history.ModuleHistoryException;
-import nl.toolforge.karma.core.history.ModuleHistoryFactory;
-import nl.toolforge.karma.core.location.Location;
-import nl.toolforge.karma.core.manifest.Module;
-import nl.toolforge.karma.core.manifest.SourceModule;
-import nl.toolforge.karma.core.manifest.util.FileTemplate;
-import nl.toolforge.karma.core.manifest.util.ModuleLayoutTemplate;
-import nl.toolforge.karma.core.vc.DevelopmentLine;
-import nl.toolforge.karma.core.vc.PatchLine;
-import nl.toolforge.karma.core.vc.Runner;
-import nl.toolforge.karma.core.vc.SymbolicName;
-import nl.toolforge.karma.core.vc.VersionControlException;
-import nl.toolforge.karma.core.vc.VersionControlSystem;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * <p>Runner class for CVS. Executes stuff on a CVS repository.
@@ -160,120 +153,164 @@ public final class CVSRunner implements Runner {
     }
   }
 
-  /**
-   * <p>Creates a module in a CVS repository. This is done through the CVS <code>import</code> command. The basic structure
-   * of the module directory is defined by the file <code>module-structure.model</code>, which should be available from
-   * the classpath. If the file cannot be located, a basic structure is created:
-   * <p/>
-   * <ul>
-   * <li/>A directory based on <code>module.getName()</code>.
-   * <li/>A file in that directory, called <code>module.info</code>.
-   * </ul>
-   * <p/>
-   * <p>After creation, the module is available with the initial version <code>0-0</code>.
-   *
-   * @param module The module to be created.
-   * @throws CVSException Errorcode <code>MODULE_EXISTS_IN_REPOSITORY</code>, when the module already exists on the
-   *                      location as specified by the module.
-   */
-  public void create(Module module, String comment, ModuleLayoutTemplate template) throws CVSException {
+  public void addModule(Module module, String comment) throws CVSException {
 
-    // TODO the initial version should also be made configurable, together with the patterns for modulenames et al.
-
+    // Step 1 : check if the module doesn't yet exist
+    //
     if (existsInRepository(module)) {
       throw new CVSException(CVSException.MODULE_EXISTS_IN_REPOSITORY, new Object[]{module.getName(), module.getLocation().getId()});
     }
 
-    // Step 1 : create an empty module structure
+    // Step 2 : import the module, including its full structure.
     //
     ImportCommand importCommand = new ImportCommand();
-//    importCommand.setModule(module.getName());
     importCommand.setModule(getOffSetLocation(module));
     importCommand.setLogMessage("Module " + module.getName() + " created automatically by Karma on " + new Date().toString());
     importCommand.setVendorTag("Karma");
     importCommand.setReleaseTag("MAINLINE_0-0");
 
-    // Create a temporary structure
+    executeOnCVS(importCommand, module.getBaseDir(), null);
+
+    // Step 3 : checkout the module to be able to tag create module.info
     //
-    File tmp = null;
-    try {
-      tmp = MyFileUtils.createTempDirectory();
-    } catch (IOException e) {
-      throw new KarmaRuntimeException("Panic! Failed to create temporary directory.");
-    }
+//    File tmp = null;
+//    try {
+//      tmp = MyFileUtils.createTempDirectory();
+//    } catch (IOException e) {
+//      throw new KarmaRuntimeException("Panic! Failed to create temporary directory.");
+//    }
 
-    File moduleDirectory = new File(tmp, module.getName());
-    if (!moduleDirectory.mkdir()) {
-      throw new KarmaRuntimeException("Panic! Failed to create temporary directory for module " + module.getName());
-    }
+//    module.setBaseDir(new File(tmp, getOffSetLocation(module)));
+//    module.setCheckoutDir(tmp);
+//
+//    checkout(module, null, null);
 
-    executeOnCVS(importCommand, moduleDirectory, null); // Use module as context directory
-
-    // Remove the temporary structure.
-    //
-    try {
-      FileUtils.deleteDirectory(tmp);
-    } catch (IOException e) {
-      throw new KarmaRuntimeException(e.getMessage());
-    }
-
-    // Step 2 : checkout the module to be able to create module.info
-    //
-    try {
-      tmp = MyFileUtils.createTempDirectory();
-    } catch (IOException e) {
-      throw new KarmaRuntimeException("Panic! Failed to create temporary directory.");
-    }
-    
-    module.setBaseDir(new File(tmp, getOffSetLocation(module)));
-    module.setCheckoutDir(tmp);
-
-    checkout(module, null, null);
-
-    //copy the file templates here
-    try {
-      FileTemplate[] fileTemplates = template.getFileElements();
-      String[] templateFiles = new String[fileTemplates.length];
-      for (int i = 0; i < fileTemplates.length; i++) {
-        FileTemplate fileTemplate = fileTemplates[i];
-        logger.debug("Going to write template '"+fileTemplate.getSource()+"' to '"+fileTemplate.getTarget()+"'.");
-        Reader input = new BufferedReader(new InputStreamReader(CVSRunner.class.getResourceAsStream(fileTemplate.getSource().toString().replace('\\','/'))));
-        File outputFile = new File(module.getBaseDir() + File.separator + fileTemplate.getTarget());
-        outputFile.getParentFile().mkdirs();
-        outputFile.createNewFile();
-        FileOutputStream output = new FileOutputStream(outputFile);
-        while (input.ready()) {
-          output.write(input.read());
-        }
-        templateFiles[i] = fileTemplate.getTarget().getPath();
-        logger.debug("Wrote template.");
-      }
-
-      add(module, templateFiles, template.getDirectoryElements());
-    } catch (Exception e) {
-      logger.error("Copying the templates failed.", e);
-      throw new CVSException(CVSException.TEMPLATE_CREATION_FAILED);
-    }
-
-    //module has been created. Now, create the module history.
-    try {
-      String author = ((CVSRepository) module.getLocation()).getUsername();
-      addModuleHistoryEvent(null, module, ModuleHistoryEvent.CREATE_MODULE_EVENT, Version.INITIAL_VERSION, new Date(), author, comment);
-
-      tag(module, Version.INITIAL_VERSION);
-    } catch (ModuleHistoryException mhe) {
-      //writing the module history failed.
-      //the module will not be tagged, since it is invalid by default.
-      logger.error("Creating the module history failed.", mhe);
-      throw new CVSException(CVSException.MODULE_HISTORY_ERROR, new Object[]{mhe.getMessage()});
-    } finally {
-      try {
-        FileUtils.deleteDirectory(tmp);
-      } catch (IOException e) {
-        throw new KarmaRuntimeException(e.getMessage());
-      }
-    }
+//    try {
+//      String author = ((CVSRepository) module.getLocation()).getUsername();
+//      addModuleHistoryEvent(null, module, ModuleHistoryEvent.CREATE_MODULE_EVENT, Version.INITIAL_VERSION, new Date(), author, comment);
+//
+////      tag(module, Version.INITIAL_VERSION);
+//    } catch (ModuleHistoryException mhe) {
+//      //writing the module history failed.
+//      //the module will not be tagged, since it is invalid by default.
+//      logger.error("Creating the module history failed.", mhe);
+//      throw new CVSException(CVSException.MODULE_HISTORY_ERROR, new Object[]{mhe.getMessage()});
+//    }
   }
+
+//  /**
+//   * <p>Creates a module in a CVS repository. This is done through the CVS <code>import</code> command. The basic structure
+//   * of the module directory is defined by the file <code>module-structure.model</code>, which should be available from
+//   * the classpath. If the file cannot be located, a basic structure is created:
+//   * <p/>
+//   * <ul>
+//   * <li/>A directory based on <code>module.getName()</code>.
+//   * <li/>A file in that directory, called <code>module.info</code>.
+//   * </ul>
+//   * <p/>
+//   * <p>After creation, the module is available with the initial version <code>0-0</code>.
+//   *
+//   * @param module The module to be created.
+//   * @throws CVSException Errorcode <code>MODULE_EXISTS_IN_REPOSITORY</code>, when the module already exists on the
+//   *                      location as specified by the module.
+//   */
+//  public void create(Module module, String comment, ModuleLayoutTemplate template) throws CVSException {
+//
+//    // TODO the initial version should also be made configurable, together with the patterns for modulenames et al.
+//
+//    if (existsInRepository(module)) {
+//      throw new CVSException(CVSException.MODULE_EXISTS_IN_REPOSITORY, new Object[]{module.getName(), module.getLocation().getId()});
+//    }
+//
+//    // Step 1 : create an empty module structure
+//    //
+//    ImportCommand importCommand = new ImportCommand();
+//    importCommand.setModule(getOffSetLocation(module));
+//    importCommand.setLogMessage("Module " + module.getName() + " created automatically by Karma on " + new Date().toString());
+//    importCommand.setVendorTag("Karma");
+//    importCommand.setReleaseTag("MAINLINE_0-0");
+//
+//    // Create a temporary structure
+//    //
+//    File tmp = null;
+//    try {
+//      tmp = MyFileUtils.createTempDirectory();
+//    } catch (IOException e) {
+//      throw new KarmaRuntimeException("Panic! Failed to create temporary directory.");
+//    }
+//
+//    File moduleDirectory = new File(tmp, module.getName());
+//    if (!moduleDirectory.mkdir()) {
+//      throw new KarmaRuntimeException("Panic! Failed to create temporary directory for module " + module.getName());
+//    }
+//
+//    executeOnCVS(importCommand, moduleDirectory, null); // Use module as context directory
+//
+//    // Remove the temporary structure.
+//    //
+//    try {
+//      FileUtils.deleteDirectory(tmp);
+//    } catch (IOException e) {
+//      throw new KarmaRuntimeException(e.getMessage());
+//    }
+//
+//    // Step 2 : checkout the module to be able to create module.info
+//    //
+//    try {
+//      tmp = MyFileUtils.createTempDirectory();
+//    } catch (IOException e) {
+//      throw new KarmaRuntimeException("Panic! Failed to create temporary directory.");
+//    }
+//
+//    module.setBaseDir(new File(tmp, getOffSetLocation(module)));
+//    module.setCheckoutDir(tmp);
+//
+//    checkout(module, null, null);
+//
+//    //copy the file templates here
+//    try {
+//      FileTemplate[] fileTemplates = template.getFileElements();
+//      String[] templateFiles = new String[fileTemplates.length];
+//      for (int i = 0; i < fileTemplates.length; i++) {
+//        FileTemplate fileTemplate = fileTemplates[i];
+//        logger.debug("Going to write template '"+fileTemplate.getSource()+"' to '"+fileTemplate.getTarget()+"'.");
+//        Reader input = new BufferedReader(new InputStreamReader(CVSRunner.class.getResourceAsStream(fileTemplate.getSource().toString().replace('\\','/'))));
+//        File outputFile = new File(module.getBaseDir() + File.separator + fileTemplate.getTarget());
+//        outputFile.getParentFile().mkdirs();
+//        outputFile.createNewFile();
+//        FileOutputStream output = new FileOutputStream(outputFile);
+//        while (input.ready()) {
+//          output.write(input.read());
+//        }
+//        templateFiles[i] = fileTemplate.getTarget().getPath();
+//        logger.debug("Wrote template.");
+//      }
+//
+//      add(module, templateFiles, template.getDirectoryElements());
+//    } catch (Exception e) {
+//      logger.error("Copying the templates failed.", e);
+//      throw new CVSException(CVSException.TEMPLATE_CREATION_FAILED);
+//    }
+//
+//    //module has been created. Now, create the module history.
+//    try {
+//      String author = ((CVSRepository) module.getLocation()).getUsername();
+//      addModuleHistoryEvent(null, module, ModuleHistoryEvent.CREATE_MODULE_EVENT, Version.INITIAL_VERSION, new Date(), author, comment);
+//
+//      tag(module, Version.INITIAL_VERSION);
+//    } catch (ModuleHistoryException mhe) {
+//      //writing the module history failed.
+//      //the module will not be tagged, since it is invalid by default.
+//      logger.error("Creating the module history failed.", mhe);
+//      throw new CVSException(CVSException.MODULE_HISTORY_ERROR, new Object[]{mhe.getMessage()});
+//    } finally {
+//      try {
+//        FileUtils.deleteDirectory(tmp);
+//      } catch (IOException e) {
+//        throw new KarmaRuntimeException(e.getMessage());
+//      }
+//    }
+//  }
 
   /**
    * Performs the <code>cvs checkout [-r &lt;symbolic-name&gt;] &lt;module&gt;</code>command for a module.
@@ -546,12 +583,8 @@ public final class CVSRunner implements Runner {
           "Due to the way the Netbeans API works, the CVSRunner must be initialized with a 'CommandResponse' object.");
     }
 
-    if (!(module instanceof SourceModule)) {
-      throw new KarmaRuntimeException("Only instances of type SourceModule can use this method.");
-    }
-
-// Logs are run on a temporary checkout of the module.info of a module.
-//
+    // Logs are run on a temporary checkout of the module-descriptor.xml of a module.
+    //
     File tmp = null;
 
     try {
@@ -722,9 +755,9 @@ public final class CVSRunner implements Runner {
     logger.debug("Running CVS command : '" + command.getCVSCommand() + "' in " + client.getLocalPath());
 
     try {
-// A CVSResponseAdapter is registered as a listener for the response from CVS. This one adapts to Karma
-// specific stuff.
-//
+      // A CVSResponseAdapter is registered as a listener for the response from CVS. This one adapts to Karma
+      // specific stuff.
+      //
       listener.setArguments(args);
       client.getEventManager().addCVSListener(listener);
       client.executeCommand(command, globalOptions);

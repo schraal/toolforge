@@ -42,11 +42,11 @@ public final class SubversionRunner implements Runner {
 
   }
 
-  public void setCommandResponse(CommandResponse response) {
+  public void addModule(Module module, String comment) throws CVSException {
 
   }
 
-  public void create(Module module, String comment, ModuleLayoutTemplate template) throws VersionControlException {
+  public void setCommandResponse(CommandResponse response) {
 
   }
 

@@ -20,8 +20,6 @@ package nl.toolforge.karma.core.manifest;
 
 import nl.toolforge.karma.core.ErrorCode;
 
-import java.text.MessageFormat;
-
 
 /**
  * Exception thrown by the AbstractManifest Domain.
@@ -37,6 +35,7 @@ public class ModuleTypeException extends Exception {
   public static final String EXCEPTION_PREFIX = "MOD-";
 
   public static final ErrorCode MISSING_MODULE_DESCRIPTOR = new ErrorCode(EXCEPTION_PREFIX + "00001");
+  public static final ErrorCode INVALID_MODULE_DESCRIPTOR = new ErrorCode(EXCEPTION_PREFIX + "00002");
 
   public ModuleTypeException(ErrorCode errorCode) {
     this(errorCode, null);
@@ -60,16 +59,10 @@ public class ModuleTypeException extends Exception {
    * @return
    */
   public final String getErrorMessage() {
-    if (getMessageArguments() != null && getMessageArguments().length != 0) {
-      MessageFormat messageFormat = new MessageFormat(getErrorCode().getErrorMessage());
-      return messageFormat.format(getMessageArguments());
-    } else {
-      return getErrorCode().getErrorMessage();
+    if (messageArguments != null && messageArguments.length > 0) {
+      errorCode.setMessageArguments(messageArguments);
     }
-//    if (messageArguments != null && messageArguments.length > 0) {
-//      errorCode.setMessageArguments(messageArguments);
-//    }
-//    return errorCode.getErrorMessage();
+    return errorCode.getErrorMessage();
   }
 
   public String getMessage() {
