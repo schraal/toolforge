@@ -119,7 +119,8 @@ create-module -m karma-core -c "The core of Karma" -t JAVA-SOURCE-MODULE -l karm
 </source>
 
         This command will create a module with the name <code>karma-core</code>
-        and type <code>JAVA-SOURCE-MODULE</code> in the location <code>karma-sf</code>.
+        and type <code>JAVA-SOURCE-MODULE</code> in the
+        <a href='../locations/index.html'>location</a> <code>karma-sf</code>.
         This location represents the karma cvs repository on SourceForge, e.g.
         Module creation is logged in the history of a module by means of a module
         creation event. The comment is stored as an attribute of this event.
