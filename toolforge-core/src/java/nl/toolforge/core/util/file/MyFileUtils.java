@@ -41,7 +41,19 @@ public final class MyFileUtils {
 
   /** Randomizer for use by createTempDirectory() */
   private static Random randomizer = new Random();
+  
+  /**  */
+  private static File systemTempDir = new File(System.getProperty("java.io.tmpdir"));
 
+  
+  /**
+   * @return A File instance pointing to the system temp dir
+   *          (specified in the "java.io.tmpdir" system property). 
+   */
+  public static File getSystemTempDirectory() {
+    return systemTempDir;
+  }
+  
   /**
    * Creates a temporary directory with some random positive <code>long</code> as its name.
    *
