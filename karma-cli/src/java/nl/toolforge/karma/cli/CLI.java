@@ -124,7 +124,6 @@ public class CLI {
 
       logger.error(k.getMessage(), k);
 
-      writer.writeln(FRONTEND_MESSAGES.getString("message.EXIT"));
       System.exit(1);
     }
 
@@ -168,19 +167,6 @@ public class CLI {
         // Check if the user wants to exit
         //
         if (ConsoleConfiguration.getExitCommands().contains(line.trim().toUpperCase())) {
-
-          String text = FRONTEND_MESSAGES.getString("message.THANK_YOU");
-          int length = text.length();
-
-          StringBuffer g = new StringBuffer();
-          g.append("\n\n").append(StringUtils.repeat("*", length));
-          g.append("\n").append(text).append("\n");
-          g.append(StringUtils.repeat("*", length)).append("\n");
-
-          writer.writeln(g.toString());
-
-          immediate = false;
-
           break;
         }
 
@@ -202,8 +188,6 @@ public class CLI {
           logger.error(e.getMessage(), e);
         }
       }
-      writer.writeln(FRONTEND_MESSAGES.getString("message.EXIT"));
-      logger.info("Exiting Karma ...");
 
       System.exit(0);
     }
