@@ -9,6 +9,7 @@ import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.CommandResponseHandler;
+import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.vc.Runner;
 
 /**
@@ -28,23 +29,23 @@ import nl.toolforge.karma.core.vc.Runner;
  */
 public class UpdateModuleCommand extends DefaultCommand {
 
-	/**
-	 * Creates a <code>UpdateModuleCommand</code> for module <code>module</code> that should be updated. This module
-	 * requires an <code>Option</code>
-	 *
-	 * @param descriptor The command descriptor for this command.
-	 */
-	public UpdateModuleCommand(CommandDescriptor descriptor) throws CommandException {
+  /**
+   * Creates a <code>UpdateModuleCommand</code> for module <code>module</code> that should be updated. This module
+   * requires an <code>Option</code>
+   *
+   * @param descriptor The command descriptor for this command.
+   */
+  public UpdateModuleCommand(CommandDescriptor descriptor) throws CommandException {
 
-		super(descriptor);
-	}
+    super(descriptor);
+  }
 
-	/**
-	 * This command will update the module from the version control system. An update is done when
-	 * the module is already present, otherwise a checkout will be performed. The checkout directory for the module
-	 * is relative to the root directory of the <code>active</code> manifest.
-	 */
-	public void execute(CommandResponseHandler handler) {
+  /**
+   * This command will update the module from the version control system. An update is done when
+   * the module is already present, otherwise a checkout will be performed. The checkout directory for the module
+   * is relative to the root directory of the <code>active</code> manifest.
+   */
+  public void execute(CommandResponseHandler handler) {
     try {
       // A manifest must be present for this command
       //
@@ -72,14 +73,14 @@ public class UpdateModuleCommand extends DefaultCommand {
         response = runner.checkout(module, version);
       }
 
-      // Apparently, no exceptions where thrown, so we can continue
+      // todo message to be internationalized.
       //
+      handler.commandResponseChanged(new CommandResponseEvent("Module " + module.getName() + " updated ..."));
 
-      // ...
     } catch (Exception e) {
       //todo proper exception handling
       e.printStackTrace();
     }
-	}
+  }
 
 }

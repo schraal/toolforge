@@ -3,6 +3,8 @@ package nl.toolforge.karma.core.vc.cvs;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
+import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.command.FileInfoContainer;
@@ -15,6 +17,9 @@ import org.netbeans.lib.cvsclient.event.FileUpdatedEvent;
 import org.netbeans.lib.cvsclient.event.MessageEvent;
 import org.netbeans.lib.cvsclient.event.ModuleExpansionEvent;
 import org.netbeans.lib.cvsclient.event.TerminationEvent;
+
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Adapts a response from CVS to Karma specific messages. This class listens to CVS responses as per the Netbeans API.
@@ -60,8 +65,24 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
   public static final Integer SYMBOLIC_NAME_NOT_FOUND = new Integer(6);
 
   private FileInfoContainer logInformation = null;
+  private CommandResponseListener listener = null;
 
   private static Log logger = LogFactory.getLog(CVSResponseAdapter.class);
+
+  /**
+   *
+   */
+  public CVSResponseAdapter() {}
+
+  /**
+   * This class can use a <code>CommandResponseListener</code> to send cvs events to. For example, user interfaces can
+   * register a listener to receive events from underlying code, thus creating interactivity.
+   *
+   * @param listener
+   */
+  public CVSResponseAdapter(CommandResponseListener listener) {
+    this.listener = listener;
+  }
 
   /**
    * Adds a message to a <code>CommandResponse</code>s' messages list.
@@ -79,8 +100,8 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
    * @param event The event from CVS.
    */
   public void fileRemoved(FileRemovedEvent event) {
-
-    logger.debug("FileRemovedEvent from CVS");
+    listener.commandHeartBeat();
+    //logger.debug("FileRemovedEvent from CVS");
 
 //    if (!hasStatus(FILE_REMOVED_OK)) {
 //      try { addStatusUpdate(FILE_REMOVED_OK); } catch (CommandException e) { } // Ignore
@@ -99,7 +120,8 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
    * @param event The event from CVS.
    */
   public void moduleExpanded(ModuleExpansionEvent event) {
-    //logger.debug("ModuleExpansionEvent from CVS");
+//    logger.debug("ModuleExpansionEvent from CVS");
+    listener.commandHeartBeat();
   }
 
   /**
@@ -108,7 +130,8 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
    * @param event The event from CVS.
    */
   public void fileAdded(FileAddedEvent event) {
-    //
+//    logger.debug("fileAdded from CVS");
+    listener.commandHeartBeat();
   }
 
   /**
@@ -138,7 +161,10 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
    * @param event The event from CVS.
    */
   public void commandTerminated(TerminationEvent event) {
-    //logger.debug("TerminationEvent from CVS : " + event.toString());
+//    logger.debug("TerminationEvent from CVS : " + event.toString());
+//    startTransaction();
+//    listener.commandResponseFinished(new CommandResponseEvent(null));
+    listener.commandHeartBeat();
   }
 
 
@@ -148,7 +174,8 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
    * @param event The event from CVS.
    */
   public void fileUpdated(FileUpdatedEvent event) {
-    logger.debug("FileUpdatedEvent from CVS : " + event.toString());
+//    logger.debug("FileUpdatedEvent from CVS : " + event.toString());
+    listener.commandHeartBeat();
   }
 
   /**
@@ -163,6 +190,15 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
     //
     String message = event.getMessage();
 
+    if (listener != null) {
+
+//      if ("newline".equals(message)) {
+//        listener.commandResponseFinished(new CommandResponseEvent(null));
+//      } else {
+      listener.commandHeartBeat();
+//      }
+    }
+
     if (message.startsWith("Checking in")) {
 
       // TODO Localize message
@@ -173,8 +209,7 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
       if (!hasStatus(FILE_ADDED_OK)) {
         try {
           addStatusUpdate(FILE_ADDED_OK);
-        } catch (CommandException e) {
-        } // Ignore
+        } catch (CommandException e) { }
       }
     } else if (message.startsWith("cvs server: Updating")) {
 
@@ -186,8 +221,7 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
       if (!hasStatus(MODULE_UPDATED_OK)) {
         try {
           addStatusUpdate(MODULE_UPDATED_OK);
-        } catch (CommandException e) {
-        } // Ignore
+        } catch (CommandException e) { }
       }
     } else if (message.startsWith("cvs server: cannot find module")) {
 
@@ -199,8 +233,7 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
       if (!hasStatus(MODULE_NOT_FOUND)) {
         try {
           addStatusUpdate(MODULE_NOT_FOUND);
-        } catch (CommandException e) {
-        } // Ignore
+        } catch (CommandException e) { }
       }
     } else if (message.startsWith("cvs add:") && message.indexOf("already exists") > 0) {
 
@@ -212,8 +245,7 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
       if (!hasStatus(FILE_EXISTS)) {
         try {
           addStatusUpdate(FILE_EXISTS);
-        } catch (CommandException e) {
-        } // Ignore
+        } catch (CommandException e) { }
       }
     } else if (message.startsWith("cvs") && message.indexOf("no such tag") > 0) {
 
@@ -225,8 +257,7 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
       if (!hasStatus(SYMBOLIC_NAME_NOT_FOUND)) {
         try {
           addStatusUpdate(SYMBOLIC_NAME_NOT_FOUND);
-        } catch (CommandException e) {
-        } // Ignore
+        } catch (CommandException e) { }
       }
     } else if (message.indexOf("contains characters other than digits") > 0) {
       String messageText = event.getMessage();
@@ -236,12 +267,20 @@ public final class CVSResponseAdapter extends CommandResponse implements CVSList
       if (!hasStatus(INVALID_SYMBOLIC_NAME)) {
         try {
           addStatusUpdate(INVALID_SYMBOLIC_NAME);
-        } catch (CommandException e) {
-        } // Ignore
+        } catch (CommandException e) { }
       }
     }
 
-    logger.debug("MessageEvent from CVS : " + event.getMessage());
+    if (!"".equals(event.getMessage())) {
+      logger.debug("MessageEvent from CVS : " + event.getMessage());
+    }
+  }
+
+  /**
+   * Marks the end of a CVS command. A <code>commandResponseFinished</code> event is thrown.
+   */
+  void finalizeTransaction() {
+    listener.commandResponseFinished(new CommandResponseEvent(null));
   }
 
 }

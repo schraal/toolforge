@@ -52,7 +52,7 @@ public class UpdateAllModulesCommand extends DefaultCommand {
 
         Module module = (Module) modules.get(i.next());
 
-        // todo hmm, the commandname is hardcoded whilst we have it dynamic in a file ...
+        // todo hmm, the commandname is hardcoded whilst we have it dynamically in a file ...
         //
         getContext().execute("update-module -m ".concat(module.getName()), handler);
       }

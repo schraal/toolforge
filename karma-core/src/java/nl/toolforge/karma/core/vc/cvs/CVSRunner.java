@@ -9,6 +9,7 @@ import nl.toolforge.karma.core.SourceModule;
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.vc.ManagedFile;
 import nl.toolforge.karma.core.vc.Runner;
@@ -54,9 +55,10 @@ public final class CVSRunner implements Runner {
 		System.setProperty("javacvs.multiple_commands_warning", "false");
 	}
 
+  private CVSResponseAdapter listener = null; // The listener that receives events from this runner.
+
 	private static Log logger = LogFactory.getLog(CVSRunner.class);
 
-//	private Client client = null;
 	private GlobalOptions globalOptions = new GlobalOptions();
 
 	private File basePoint = null;
@@ -73,8 +75,9 @@ public final class CVSRunner implements Runner {
 	 *                  the location and connection details of the CVS repository.
 	 * @param basePoint The basePoint determines the base point where cvs commands should be run. If not used by commands and extended,
 	 *                  this <code>basePoint.getPath()</code> will be used by the CVS client as the
+   * @param listener  The class that can receive CommandResponseEvent objects, generated
 	 */
-	public CVSRunner(Location location, File basePoint) throws CVSException {
+	public CVSRunner(Location location, File basePoint, CommandResponseListener listener) throws CVSException {
 
 		CVSLocationImpl cvsLocation = null;
 		try {
@@ -90,7 +93,12 @@ public final class CVSRunner implements Runner {
 		this.connection = cvsLocation.getConnection();
 		this.basePoint = basePoint;
 
-//		client = new Client(getConnection(), new StandardAdminHandler());
+    // Get the listener and wrap it in a CVSResponseAdapter.
+    //
+    if (listener == null) {
+      throw new IllegalArgumentException("A CVSRunner requires a non-null listener.");
+    }
+    this.listener = new CVSResponseAdapter(listener);
 
 		logger.debug("CVSRunner using CVSROOT : " + cvsLocation.toString());
 		globalOptions.setCVSRoot(cvsLocation.getCVSRootAsString());
@@ -134,8 +142,8 @@ public final class CVSRunner implements Runner {
 		ImportCommand importCommand = new ImportCommand();
 		importCommand.setModule(module.getName());
 		importCommand.setLogMessage("Module " + module.getName() + " created automatically by Karma on " + new Date().toString());
-		importCommand.setVendorTag("INITIAL");
-		importCommand.setReleaseTag("INITIAL_0-0");
+		importCommand.setVendorTag("Karma");
+		importCommand.setReleaseTag("MAINLINE_0-0");
 
 		// Create a temporary structure
 		//
@@ -188,6 +196,8 @@ public final class CVSRunner implements Runner {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+    listener.finalizeTransaction(); // Mark the end of the 'transaction'
 
 		return adapter;
 	}
@@ -248,6 +258,8 @@ public final class CVSRunner implements Runner {
 			throw new CVSException(CVSException.INVALID_SYMBOLIC_NAME);
 		}
 
+    listener.finalizeTransaction();
+
 		return adapter;
 	}
 
@@ -285,6 +297,8 @@ public final class CVSRunner implements Runner {
 			throw new CVSException(CVSException.INVALID_SYMBOLIC_NAME);
 		}
 
+    listener.finalizeTransaction();
+
 		return adapter;
 	}
 
@@ -316,7 +330,6 @@ public final class CVSRunner implements Runner {
 		AddCommand addCommand = new AddCommand();
 		addCommand.setMessage("Initial checkin in repository.");
 
-//		String path = basePoint + File.separator + module.getName();
 		File modulePath = new File(basePoint, module.getName());
 		File fileToAdd = new File(modulePath, fileName);
 		if (!fileToAdd.exists()) {
@@ -342,6 +355,8 @@ public final class CVSRunner implements Runner {
 		commitCommand.setMessage("File added automatically by Karma.");
 
 		CVSResponseAdapter adapter = executeOnCVS(commitCommand, new File(basePoint, module.getName()));
+
+    listener.finalizeTransaction();
 
 		if (adapter.hasStatus(CVSResponseAdapter.FILE_EXISTS)) {
 			throw new CVSException(CVSException.FILE_EXISTS_IN_REPOSITORY, new Object[]{module.getName(), module.getLocation().getId()});
@@ -405,6 +420,8 @@ public final class CVSRunner implements Runner {
 		tagCommand.setTag(symbolicName.getSymbolicName());
 
 		CVSResponseAdapter adapter = executeOnCVS(tagCommand, basePoint);
+
+    listener.finalizeTransaction();
 
 		return adapter;
 	}
@@ -537,20 +554,25 @@ public final class CVSRunner implements Runner {
 
 		logger.debug("Running CVS command : '" + command.getCVSCommand() + "' in " + client.getLocalPath());
 
-		CVSResponseAdapter adapter = new CVSResponseAdapter();
+		//CVSResponseAdapter adapter = new CVSResponseAdapter();
+
+    // Reset status info on the listener.
+    //
+    listener.clearStatus();
 
 		try {
 			// A CVSResponseAdapter is registered as a listener for the response from CVS. This one adapts to Karma
 			// specific stuff.
 			//
-			client.getEventManager().addCVSListener(adapter);
+			client.getEventManager().addCVSListener(listener);
+			//client.getEventManager().addCVSListener(adapter);
 			client.executeCommand(command, globalOptions);
 
 			// See the static block in this class and corresponding documentation.
 			//
 			client.getConnection().close();
 
-			return adapter;
+			return listener;
 
 		} catch (IOException e) {
 			throw new CVSException(CVSException.INTERNAL_ERROR);

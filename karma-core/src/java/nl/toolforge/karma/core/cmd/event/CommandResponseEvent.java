@@ -5,4 +5,14 @@ package nl.toolforge.karma.core.cmd.event;
  * the CommandResponseListener interface.
  */
 public class CommandResponseEvent {
+
+  String eventMessage = null;
+
+  public CommandResponseEvent(String eventMessage) {
+    this.eventMessage = eventMessage;
+  }
+
+  public String getEventMessage() {
+    return eventMessage;
+  }
 }

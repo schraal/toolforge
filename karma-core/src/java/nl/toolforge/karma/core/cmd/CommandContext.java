@@ -40,6 +40,7 @@ public final class CommandContext {
 
 	private Manifest currentManifest = null;
 	private LocalEnvironment env = null;
+  private CommandResponseHandler responseHandler = null;
 
 	private boolean initialized = false;
 
@@ -143,6 +144,10 @@ public final class CommandContext {
 		// Store a reference to this context in the command
 		//
 		command.setContext(this);
+
+    // Register the response handler with this context, so commands have a reference to it.
+    //
+    setResponseHandler(responseHandler);
 		command.execute(responseHandler);
 	}
 
@@ -161,8 +166,7 @@ public final class CommandContext {
 		try {
 			if (location instanceof CVSLocationImpl) {
 				logger.debug("Getting new CVSRunner instance.");
-//				return new CVSRunner(location, new File(getCurrent().getLocalPath(), module.getName()));
-				return new CVSRunner(location, getCurrent().getDirectory());
+				return new CVSRunner(location, getCurrent().getDirectory(), responseHandler);
 			}
 		} catch (ManifestException m) {
 			throw new CVSException(VersionControlException.RUNNER_ERROR);
@@ -248,4 +252,7 @@ public final class CommandContext {
 		return new File(getLocalEnvironment().getDevelopmentHome(), getCurrent().getName());
 	}
 
+  private void setResponseHandler(CommandResponseHandler responseHandler) {
+    this.responseHandler = responseHandler;
+  }
 }

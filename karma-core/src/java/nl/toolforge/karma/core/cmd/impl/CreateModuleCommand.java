@@ -12,6 +12,7 @@ import nl.toolforge.karma.core.cmd.CommandResponse;
 import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.SimpleCommandMessage;
 import nl.toolforge.karma.core.cmd.CommandResponseHandler;
+import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.vc.Runner;
 
 /**
@@ -75,7 +76,9 @@ public class CreateModuleCommand extends DefaultCommand {
 
 		// Ensure that only this message is passed back to the client
 		//
-		CommandResponse response = new ActionCommandResponse();
-		response.addMessage(message);
+		CommandResponse response = new ActionCommandResponse(); // todo is this still required ?
+		response.addMessage(message); // todo is this still required ?
+
+    handler.commandResponseChanged(new CommandResponseEvent(message.getMessageText()));
 	}
 }

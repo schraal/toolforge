@@ -4,10 +4,13 @@ import nl.toolforge.core.util.file.MyFileUtils;
 import nl.toolforge.karma.core.Module;
 import nl.toolforge.karma.core.SourceModule;
 import nl.toolforge.karma.core.SourceModuleDescriptor;
+import nl.toolforge.karma.core.cmd.event.CommandResponseListener;
+import nl.toolforge.karma.core.cmd.event.CommandResponseEvent;
 import nl.toolforge.karma.core.vc.Runner;
 import nl.toolforge.karma.core.vc.cvs.CVSException;
 import nl.toolforge.karma.core.vc.cvs.CVSLocationImpl;
 import nl.toolforge.karma.core.vc.cvs.CVSRunner;
+import nl.toolforge.karma.core.vc.cvs.CVSResponseAdapter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -155,6 +158,17 @@ public class LocalCVSInitializer extends BaseTest {
   }
 
   protected final Runner getTestRunner() throws CVSException {
-    return new CVSRunner(getTestLocation(), getDevelopmentHome());
+
+    CommandResponseListener listener = new CommandResponseListener() {
+      public void commandHeartBeat() {}
+      public void commandResponseChanged(CommandResponseEvent event) {
+        System.out.println(event.getEventMessage());
+      }
+      public void commandResponseFinished(CommandResponseEvent event) {
+        System.out.println(event.getEventMessage());
+      }
+    };
+
+    return new CVSRunner(getTestLocation(), getDevelopmentHome(), listener);
   }
 }

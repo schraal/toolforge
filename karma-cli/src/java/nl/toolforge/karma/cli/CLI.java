@@ -20,7 +20,6 @@ import nl.toolforge.karma.core.cmd.CommandFactory;
  * <p>The <code>CLI</code> is the command-line interface for Karma. The class presents a simple-to-use command-line
  * terminal, where developers can type in their commands.
  *
- *
  * @author D.A. Smedes
  *
  * @version $Id$
@@ -84,7 +83,6 @@ public class CLI {
 					continue;
 				}
 
-
 				// Check if the user wants to exit
 				//
 				if (ConsoleConfiguration.getExitCommands().contains(line.trim().toUpperCase())) {
@@ -109,16 +107,15 @@ public class CLI {
 					if (line.trim().toLowerCase().startsWith("help") || line.trim().startsWith("?")) {
 
 						writer.writeln("\n\n" + FRONTEND_MESSAGES.getString("message.VALID_COMMANDS"));
-//						writer.blankLine();
 
 						CommandRenderer renderer = new CommandRenderer();
 						StringBuffer renderedBuffer = renderer.renderedCommands(CommandFactory.getInstance().getCommands());
 
-						writer.writeln(false, renderedBuffer.toString());
+						writer.writeln(renderedBuffer.toString());
 
 					} else {
 
-						ctx.execute(line, new CLICommandResponseHandler());
+						ctx.execute(line, new CLICommandResponseHandler(writer));
 
 //						if (response == null) {
 //							throw new NullPointerException("Command response has not been generated correctly; should not be null");
@@ -144,10 +141,6 @@ public class CLI {
 			}
 			writer.writeln(FRONTEND_MESSAGES.getString("message.EXIT"));
 			logger.info("Exiting Karma ...");
-
-			// Flush the preferences.
-			//
-			//env.flushPreferences();
 
 			System.exit(0);
 		}
