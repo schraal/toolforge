@@ -53,7 +53,7 @@ public class ModuleHistoryEvent {
 
         s += " type=\"" + type + "\"";
         s += " author=\"" + author + "\"";
-        s += " comment=\"" + comment + "\"/>\n";
+        s += " comment=\"" + comment + "\">\n";
         s += "\t\t<version value=\"" + version + "\"/>\n";
         s += "\t\t<datetime time=\"" + datetime.getTime() + "\"/>\n";
         s += "\t</event>\n";

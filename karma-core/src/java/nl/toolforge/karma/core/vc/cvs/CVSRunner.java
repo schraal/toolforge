@@ -1,11 +1,14 @@
 package nl.toolforge.karma.core.vc.cvs;
 
 import nl.toolforge.core.util.file.MyFileUtils;
+import nl.toolforge.karma.core.ErrorCode;
 import nl.toolforge.karma.core.KarmaRuntimeException;
 import nl.toolforge.karma.core.Version;
-import nl.toolforge.karma.core.ErrorCode;
 import nl.toolforge.karma.core.cmd.Command;
 import nl.toolforge.karma.core.cmd.CommandResponse;
+import nl.toolforge.karma.core.history.ModuleHistory;
+import nl.toolforge.karma.core.history.ModuleHistoryEvent;
+import nl.toolforge.karma.core.history.ModuleHistoryFactory;
 import nl.toolforge.karma.core.location.Location;
 import nl.toolforge.karma.core.manifest.Module;
 import nl.toolforge.karma.core.manifest.SourceModule;
@@ -30,14 +33,13 @@ import org.netbeans.lib.cvsclient.command.tag.TagCommand;
 import org.netbeans.lib.cvsclient.command.update.UpdateCommand;
 import org.netbeans.lib.cvsclient.connection.AuthenticationException;
 import org.netbeans.lib.cvsclient.connection.Connection;
-import org.netbeans.lib.cvsclient.event.CVSListener;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Hashtable;
 
 /**
  * <p>Runner class for CVS. Executes stuff on a CVS repository.
@@ -192,6 +194,11 @@ public final class CVSRunner implements Runner {
     // todo create directory structure via template.
     //
     add(module, SourceModule.MODULE_INFO, tmp);
+
+    //module has been created. Now, create the module history.
+    //todo: add author
+    //todo: add comment
+    addModuleHistoryEvent(tmp, module, ModuleHistoryEvent.CREATE_MODULE_EVENT, Version.INITIAL_VERSION, new Date(), "", "");
 
     tag(module, Version.INITIAL_VERSION, new File(tmp, module.getName()));
 
@@ -378,12 +385,23 @@ public final class CVSRunner implements Runner {
   public void branch(Module module, SymbolicName branch) throws CVSException {
   }
 
-  public void tag(Module module, SymbolicName tag) throws CVSException {
-    tag(tag, new File(getBasePoint(), module.getName()));
-  }
+  public void promote(Module module, Version version) throws CVSException {
+//    File tmp;
+//    try {
+//      tmp = MyFileUtils.createTempDirectory();
+//    } catch (IOException e) {
+//      throw new KarmaRuntimeException("Panic! Failed to create temporary directory.");
+//    }
+//
+//    checkout(module, tmp);
 
-  public void tag(Module module, Version version) throws CVSException {
-    tag(module, version, new File(getBasePoint(), module.getName()));
+    //Add an event to the module history.
+    //todo: add author
+    //todo: add comment
+    addModuleHistoryEvent(getBasePoint(), module, ModuleHistoryEvent.PROMOTE_MODULE_EVENT, version, new Date(), "", "");
+
+    File moduleLocation = new File(getBasePoint(), module.getName());
+    tag(module, version, moduleLocation);
   }
 
   private void tag(Module module, Version version, File basePoint) throws CVSException {
@@ -584,4 +602,51 @@ public final class CVSRunner implements Runner {
       }
     }
   }
+
+  /**
+   * Helper method that add a new event to a module's history. When the history does not
+   * exist yet (in case of a new module) it is newly created. When the history does exist
+   * the event is added to the history.
+   *
+   * @param moduleCheckoutLocation  The location on disk where the module has been checked out.
+   * @param module                  The module involved.
+   * @param eventType               The type of {@link ModuleHistoryEvent}.
+   * @param version                 The version that the module is promoted to.
+   * @param datetime                The timestamp.
+   * @param author                  The authentication of the person who has triggered the event.
+   * @param comment                 The (optional) comment the author has given.
+   * @throws CVSException           Thrown in case something goes wrong with CVS
+   */
+  private void addModuleHistoryEvent(
+          File moduleCheckoutLocation,
+          Module module,
+          String eventType,
+          Version version,
+          Date datetime,
+          String author,
+          String comment) throws CVSException
+  {
+    ModuleHistoryFactory factory = ModuleHistoryFactory.getInstance(moduleCheckoutLocation);
+    ModuleHistory history = factory.getModuleHistory(module.getName());
+    if (history != null) {
+      ModuleHistoryEvent event = new ModuleHistoryEvent();
+      event.setType(eventType);
+      event.setVersion(version);
+      event.setDatetime(datetime);
+      event.setAuthor(author);
+      event.setComment(comment);
+      history.addEvent(event);
+      history.save();
+      if (history.getHistoryLocation().exists()) {
+        //history already exists. commit changes.
+        //todo: add comment
+        commit(module, "");
+      } else {
+        //history did not exist yet. add to CVS and commit it.
+        //todo: add comment
+        add(module, history.getHistoryLocation().getName(), moduleCheckoutLocation);
+      }
+    }
+  }
+
 }

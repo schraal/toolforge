@@ -23,7 +23,8 @@ import java.util.regex.PatternSyntaxException;
  * is not a freeze, just a tiny hick-up in the development process, as modules are generally small in nature.
  *
  * @author D.A. Smedes
- * @version $Id:
+ * @author W.H. Schraal
+ * @version $Id$
  */
 public class PromoteCommand extends DefaultCommand {
 
@@ -66,7 +67,8 @@ public class PromoteCommand extends DefaultCommand {
         }
 
         // todo nextVersion MUST be greater than the getNextVersion() that can be called.
-        //
+        // todo rules: if current version is x-y then next version can be (x+1)-y or x-(y+1)
+        // todo rules ctnd: if version is x-y-z then next version can only be x-y-(z+1)
 
       } else {
 
@@ -80,7 +82,7 @@ public class PromoteCommand extends DefaultCommand {
 
       // TODO check whether files exist that have not yet been committed.
 
-      runner.tag(module, nextVersion);
+      runner.promote(module, nextVersion);
 
       this.newVersion = nextVersion;
 

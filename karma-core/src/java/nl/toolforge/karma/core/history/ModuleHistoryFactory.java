@@ -45,7 +45,7 @@ public class ModuleHistoryFactory {
      * can be found.
      *
      * @param moduleName  The name of the module for which to retrieve the module history.
-     * @return ModuleHistory of the given module or null when no module history can be found.
+     * @return ModuleHistory of the given module or null when no module history can be found or created.
      */
     public ModuleHistory getModuleHistory(String moduleName) {
         ModuleHistory moduleHistory = null;
