@@ -182,7 +182,6 @@ public abstract class AbstractBuildCommand extends DefaultCommand {
     }
 
     String moduleName = getCommandLine().getOptionValue("m");
-System.out.println("doing build ('"+this.getClass().getName()+"') for module: "+moduleName);
     try {
       // todo move this bit to aspect-code.
       //
