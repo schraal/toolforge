@@ -13,7 +13,7 @@
       <item name="Overview"               href="index.html"/>
       <item name="Features"               href="features.html"/>
       <item name="Basics"                 href="basics.html"/>
-      <item name="Getting Started"        href="getting-started.html" collapse="false">
+      <item name="Getting Started" href="getting-started.html" collapse="false">
         <item name="Administration Guide" href="administration-guide.html"/>
       </item>
       <item name="News and Status"        href="news.html"/>
@@ -22,8 +22,7 @@
 
     <menu name="Questions and Concerns">
       <item name="Frequently Asked Questions" href="faq.html"/>
-      <item name="Comparison with Ant"        href="ant-is-good.html"/>
-      <item name="Comparison with Maven"      href="maven-is-good.html"/>
+      <item name="Ant?, Maven?" href="ant-or-maven.html"/>
     </menu>
 
     <menu name="Component Reference">

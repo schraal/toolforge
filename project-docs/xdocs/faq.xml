@@ -9,6 +9,15 @@
 <body>
 
   <p>
+    Q: Why another build tool? Isn't Ant or Maven enough?
+  </p>
+
+  <p>
+    A: Please have a look <a href="ant-or-maven.html">here</a>. We'll explain
+    this in detail.
+  </p>
+
+  <p>
   </p>
 
 </body>

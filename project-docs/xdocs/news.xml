@@ -16,9 +16,25 @@
   </p>
 
   <p>
-    The current - most stable - release is <code>karma-1-0-beta4</code>. This
+    The current - most stable - release is <code>karma-1-0-beta6</code>. This
     release is currently being tested heavily by a number of developers on
     different platforms.
+  </p>
+
+  <p>
+    Our <strong>first real-life implementation</strong> is underway. A major software product
+    company in The Netherlands is well underway to be the first in the world
+    to implement Karma. The toolset is implemented for a mere 50 developers,
+    release coordinators and maintenance personnel. We will ask them to post a
+    testimony on this website the moment they've gone life.
+  </p>
+
+  <p>
+    Silently our one year anniversary on SF.net has gone by. Activity has been
+    minimal lately. However, development has been picked up today (18 Jan
+    2005) and R1.0 will be out soon. Strategy meetings are being planned,
+    conference talks will be pursued and our first implementation is going to
+    happen this year. So, keep watching this place!
   </p>
 
   </section> 

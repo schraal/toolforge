@@ -15,15 +15,22 @@
     clarity, they've been structured in a number of categories.
   </p>
 
-  <subsection name="Build Management">
+  <subsection name="Building and Packaging">
 
   <p>
-    Build management features describe Karma's support for builds.
+    Although not Karma's unique selling point, we have implemented a
+    sophisticated build and package system, fully tailored to the way Karma
+    manages software modules.
   </p>
 
   <ul>
+
+    <li>Java code is built and packaged on a per module basis, inherently
+    ensuring that no circular dependencies can exist between two or more
+    modules.</li>
+
     <li>Source code compilation with <code>javac</code> and <code>jikes</code>.</li>
-    <li>Modules determine their dependencies and compile them when necessary.</li>
+
   </ul>
 
   </subsection>
@@ -37,10 +44,11 @@
 
   <ul>
     <li>Four main types of modules, each with a standardized directory
-	    structure.</li>
+    structure.</li>
+
     <li>Working contexts allow for and organized structure of software
-         projects, one for each client ... or project. The amount of working
-	 contexts is unlimited.</li>
+    projects, one for each client ... or project. The amount of working
+    contexts is unlimited.</li>
 
   </ul>
 
@@ -49,8 +57,8 @@
   <subsection name="User Interface Features">
 
   <p>
-    No graphical user interface, but the command-line and the console will do
-    for now.
+    There is fancy no graphical user interface, but the command-line and the
+    console will do just fine.
   </p>
 
   <ul>
@@ -65,8 +73,13 @@
   <subsection name="Developer Features">
 
   <ul>
-    <li>Clearly documented Java API allowing extensions to </li>
-    <li>Easy to create plugins to extend Karma with commands</li>
+
+    <li>Clearly documented Java API allowing developers to extend the
+    system.</li>
+
+    <li>It is easy to create plugins to extend Karma with your own
+    commands.</li>
+
   </ul>
 
   </subsection>
