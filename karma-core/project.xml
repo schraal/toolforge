@@ -92,7 +92,6 @@
 		<resources>
 			<resource>
 				<directory>resources</directory>
-				<targetPath>resources</targetPath>
 				<includes>
 					<include>**/*.xml</include>
 					<include>**/*.dtd</include>
@@ -109,14 +108,9 @@
 				<include>**/Test*.java</include>
 			</includes>
 
-			<excludes>
-				<exclude>**/TestBundle*.java</exclude>
-			</excludes>
-
 			<resources>
 				<resource>
 					<directory>resources/test</directory>
-<!--					<targetPath>/</targetPath>-->
 					<includes>
 						<include>**/*.xml</include>
 						<include>**/*.dtd</include>

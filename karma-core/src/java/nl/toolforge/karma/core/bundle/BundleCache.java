@@ -110,11 +110,7 @@ public class BundleCache {
 	 * Flushes this cache.
 	 */
 	public synchronized final void flush() {
-
-    for (Iterator i = bundles.keySet().iterator(); i.hasNext();) {
-			Object o = i.next();
-			bundles.remove(o);
-		}
+		bundles.keySet().clear();
 	}
 
 }

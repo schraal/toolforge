@@ -33,6 +33,12 @@ import java.util.Random;
  */
 public class LocalCVSInitializer extends BaseTest {
 
+	public LocalCVSInitializer() {
+
+		logger.debug("Arjen");
+
+	}
+
 	private static Log logger = LogFactory.getLog(LocalCVSInitializer.class);
 
 	/** The name of the a test module in the test repository */
@@ -50,20 +56,22 @@ public class LocalCVSInitializer extends BaseTest {
 
 		try {
 			Properties props = new Properties();
-			props.load(getClass().getClassLoader().getResourceAsStream("test/test-cvs.properties"));
+			props.load(getClass().getClassLoader().getResourceAsStream("test-cvs.properties"));
 			localPath = props.getProperty("cvs.local.path");
 
 			logger.debug("cvs.local.path = " + localPath);
 
 			location = new CVSLocationImpl("local");
+      location.setProtocol(CVSLocationImpl.LOCAL);
+			location.setRepository(localPath);
 
-			File localRepository = new File(localPath);
+//			File localRepository = new File(localPath);
 
-			if (localRepository.exists()) {
-				location.configureLocalRepository(new File(localPath));
-			} else {
-				throw new Exception();
-			}
+//			if (localRepository.exists()) {
+//				location.configureLocalRepository(new File(localPath));
+//			} else {
+//				throw new Exception();
+//			}
 
 		} catch (Exception e) {
 			throw new InitializationException(
@@ -134,7 +142,7 @@ public class LocalCVSInitializer extends BaseTest {
 	 * <p>Tests if a checkout can be performed on {@link #DEFAULT_MODULE_1}, which is both a test as well as preparation
 	 * for methods in extension classes.
 	 */
-	public final void testCheckoutDefaultModule1() {
+	public final void testAaaaaaa_CheckoutDefaultModule1() {
 
 		try {
 			Runner runner = new CVSRunner(getTestLocation());
@@ -146,6 +154,7 @@ public class LocalCVSInitializer extends BaseTest {
 			assertEquals(new CVSException(CVSException.INVALID_CVSROOT), response.getException());
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			fail(e.getMessage());
 		}
 	}

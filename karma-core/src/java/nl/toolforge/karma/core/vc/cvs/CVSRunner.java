@@ -11,6 +11,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.netbeans.lib.cvsclient.Client;
 import org.netbeans.lib.cvsclient.connection.AuthenticationException;
+import org.netbeans.lib.cvsclient.connection.Connection;
 import org.netbeans.lib.cvsclient.admin.StandardAdminHandler;
 import org.netbeans.lib.cvsclient.command.GlobalOptions;
 import org.netbeans.lib.cvsclient.command.CommandException;
@@ -24,8 +25,8 @@ import java.io.File;
  *
  * <p>TODO : the CVSRunner could be made multi-threaded, to use bandwidth to a remote repository much better ...
  *
- * @author D.A. Smedes 
- * 
+ * @author D.A. Smedes
+ *
  * @version $Id:
  */
 public final class CVSRunner implements Runner {
@@ -54,9 +55,17 @@ public final class CVSRunner implements Runner {
 
 		logger.debug("Initializing CVS client for location : " + location.toString());
 
+		Connection connection = cvsLocation.getConnection();
+		try {
+			connection.open();
+		} catch (AuthenticationException e) {
+			e.printStackTrace();
+		}
+
+
 		// Initialize a CVS client
 		//
-		client = new Client(cvsLocation.getConnection(), new StandardAdminHandler());
+		client = new Client(connection, new StandardAdminHandler());
 
 		// A CVSResponseAdapter is registered as a listener for the response from CVS. This one adapts to Karma
 		// specific stuff.
@@ -124,8 +133,15 @@ public final class CVSRunner implements Runner {
 		checkoutCommand.setPruneDirectories(true);
 		checkoutCommand.setCheckoutDirectory(checkoutDirectory.getPath());
 
+//		executeOnCVS(checkoutCommand, module.getLocalPath());
+
 		try {
+			client.setLocalPath(checkoutDirectory.getPath());
+
+			logger.debug("CVS command : " + checkoutCommand.getCVSCommand());
+
 			client.executeCommand(checkoutCommand, globalOptions);
+
 		} catch (CommandException e) {
 			e.printStackTrace();
 		} catch (AuthenticationException e) {
@@ -169,10 +185,19 @@ public final class CVSRunner implements Runner {
 		addCommand.setMessage("Testcase message ... ");
 
 		File fileToAdd = new File(module.getLocalPath().getPath() + File.separator + filePath.getPath());
+//		File fileToAdd = new File(module.getLocalPath().getPath() + File.separator + filePath.getPath());
 		addCommand.setFiles(new File[]{fileToAdd});
 
+//		executeOnCVS(addCommand, fileToAdd);
+
+
 		try {
-			client.setLocalPath(fileToAdd.getPath());
+			System.out.println("file to add : " + fileToAdd.getPath());
+
+			client.setLocalPath(fileToAdd.getParent());
+
+			logger.debug("CVS command : " + addCommand.getCVSCommand());
+
 			client.executeCommand(addCommand, globalOptions);
 		} catch (CommandException e) {
 			e.printStackTrace();
@@ -207,5 +232,20 @@ public final class CVSRunner implements Runner {
 		return null;
 	}
 
+//	private void executeOnCVS(org.netbeans.lib.cvsclient.command.Command command, File localPath) {
+//
+//		logger.debug("CVS command " + command.getCVSCommand() + " in " + localPath);
+//
+//		try {
+//
+//			client.setLocalPath(localPath.getParent());
+//			client.executeCommand(command, globalOptions);
+//
+//		} catch (CommandException e) {
+//			e.printStackTrace();
+//		} catch (AuthenticationException e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 }

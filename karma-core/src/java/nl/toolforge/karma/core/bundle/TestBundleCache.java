@@ -1,10 +1,12 @@
 package nl.toolforge.karma.core.bundle;
 
 import nl.toolforge.karma.core.KarmaRuntimeException;
+import nl.toolforge.karma.core.prefs.Preferences;
 import nl.toolforge.karma.core.test.BaseTest;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.MissingResourceException;
 
 /**
  * Test class for {@link BundleCache}.
@@ -18,9 +20,7 @@ public class TestBundleCache extends BaseTest {
 	private BundleCache cache = null;
 
 	public void setUp() {
-
 		super.setUp();
-
 		cache = BundleCache.getInstance();
 	}
 
@@ -29,6 +29,8 @@ public class TestBundleCache extends BaseTest {
 	}
 
 	public void testFlush() {
+
+		cache = BundleCache.getInstance();
 
 		try {
 			cache.flush();
@@ -40,17 +42,15 @@ public class TestBundleCache extends BaseTest {
 		}
 	}
 
-	/**
-	 * Expects <code>error-messages_en.properties</code> on the classpath.
-	 */
 	public void testRegister1() {
 
 		BundleCache cache2 = BundleCache.getInstance();
-		ResourceBundle bundle = ResourceBundle.getBundle("arjen", Locale.ENGLISH);
 
+		ResourceBundle bundle = null;
+		bundle = ResourceBundle.getBundle("error-messages", Locale.ENGLISH);
 		assertNotNull(bundle);
 
-//		cache.flush();
+		cache.flush();
 		cache2.register("BUNDLE", bundle);
 
 		assertEquals(cache2.getBundle("BUNDLE"), bundle);
@@ -59,7 +59,7 @@ public class TestBundleCache extends BaseTest {
 	public void testRegister2() {
 
 		try {
-      //cache.flush();
+      cache.flush();
 			cache.register("BUNDLE", null);
 			fail("A NullPointerException should have been thrown.");
 
@@ -71,7 +71,7 @@ public class TestBundleCache extends BaseTest {
 	public void testRegister3() {
 
 		try {
-			//cache.flush();
+			cache.flush();
 			cache.register("", null);
 			fail("A KarmaRuntimeException should have been thrown. First parameter cannot be empty.");
 		} catch (KarmaRuntimeException n) {
@@ -83,7 +83,7 @@ public class TestBundleCache extends BaseTest {
 	public void testRegister4() {
 
 		try {
-			//cache.flush();
+			cache.flush();
 			cache.register(null, null);
 			fail("A KarmaRuntimeException should have been thrown. First parameter cannot be null.");
 		} catch (KarmaRuntimeException n) {
@@ -94,7 +94,7 @@ public class TestBundleCache extends BaseTest {
 	public void testRegister5() {
 
 		try {
-      //cache.flush();
+      cache.flush();
 			ResourceBundle bundle = ResourceBundle.getBundle("error-messages", Locale.ENGLISH);
 			cache.register("bundle_1", bundle);
 

@@ -29,6 +29,25 @@ public class TestCVSRunner extends LocalCVSInitializer {
 		}
 	}
 
+//	/**
+//	 * <p>Must be done before anything else can be done.
+//	 */
+//	public final void testCheckoutDefaultModule1() {
+//
+//		try {
+//			Runner runner = new CVSRunner(getTestLocation());
+//
+//			FakeModule module = new FakeModule(DEFAULT_MODULE_1, getTestLocation());
+//
+//			CommandResponse response = runner.checkout(module, getDevelopmentHome());
+//
+//			assertEquals(new CVSException(CVSException.INVALID_CVSROOT), response.getException());
+//
+//		} catch (Exception e) {
+//			fail(e.getMessage());
+//		}
+//	}
+
 	public void testAdd1() {
 
 		try {
@@ -39,7 +58,7 @@ public class TestCVSRunner extends LocalCVSInitializer {
 			FakeModule module = new FakeModule(DEFAULT_MODULE_1, getTestLocation());
       module.setLocalPath(getDevelopmentHome());
 
-			File newFile = new File(module.getLocalPath().getPath() + "test-file.txt");
+			File newFile = new File("test-file.txt");
 
 			CommandResponse response = runner.add(module, newFile);
 

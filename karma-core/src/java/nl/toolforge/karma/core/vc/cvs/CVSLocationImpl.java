@@ -43,19 +43,6 @@ public final class CVSLocationImpl extends BaseLocation {
 	}
 
 	/**
-	 * Configures an instance for a local CVS repository. These repositories can be accessed using a CVSROOT such as
-	 * <code>:local:/home/cvsroots/root1/module1</code>.
-	 *
-	 * @param localPath A <code>File</code> reference to the local path.
-	 *
-	 * TODO Depending on other vc implementations, this method might have to be propagated up the class hierarchy.
-	 */
-	public void configureLocalRepository(File localPath) {
-		setProtocol(LOCAL);
-		setRepository(localPath.getPath());
-	}
-
-	/**
 	 * The CVS host, where the repository is maintained.
 	 *
 	 * @param host The CVS username path (<code>:pserver:asmedes@<b>localhost</b>:2401/home/cvsroot</code>
