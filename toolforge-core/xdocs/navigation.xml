@@ -14,18 +14,6 @@
 	    <item name="Karma CLI"      href="../karma-cli/"/>
 	    <item name="Karma launcher" href="../karma-launcher/"/>
     </menu>
-    <menu name="Essentials">
-      <item name="Overview" href="/index.html"/>
-    </menu>
-
-    <menu name="User Documentation">
-      <item name="Setup and Installation" href="javascript:alert('To be implemented.')"/>
-      <item name="Using the launcher" href="javascript:alert('To be implemented.')"/>
-    </menu>
-
-    <menu name="Developer Documentation">
-      <item name="Todo" href="/todo.html"/>
-    </menu>
 
   </body>
 </project>

@@ -7,8 +7,8 @@
 
 	<information>
 		<title>Karma</title>
-		<vendor>Wisdom Information Consultants</vendor>
-		<homepage href="http://www.wisdom.nl/"/>
+		<vendor>Toolforge</vendor>
+		<homepage href="http://toolforge.sf.net/"/>
 		<description>Karma Development Tool</description>
 		<description kind="short">Karma Through Java Webstart</description>
 		<description kind="tooltip">Shiny happy people</description>
@@ -30,7 +30,7 @@
 		<property name="karma.classloaderrepository.config" value="karma.classpath"/>
 	</resources>
 
-	<application-desc main-class="nl/wisdom/core/tools/karma/launcher/KarmaLauncher">
+	<application-desc main-class="nl/toolforge/core/tools/karma/launcher/KarmaLauncher">
 		<argument>nl.toolforge.core.tools.karma.TerminalKarma</argument>
 	</application-desc>
 

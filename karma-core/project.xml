@@ -6,14 +6,15 @@
 	<name>Karma Core Module</name>
 	<groupId>toolforge</groupId>
 	<id>karma-core</id>
-  <inceptionYear>2003</inceptionYear>
+	<inceptionYear>2002</inceptionYear>
 	<currentVersion>1.0</currentVersion>
-	<package>nl.toolforge</package>
-  <url>http://www.sourceforge.net/projects/toolforge</url>
+	<package>nl.toolforge.karma.core</package>
+        <siteAddress>ssh.sf.net</siteAddress>
+        <siteDirectory>/home/groups/t/to/toolforge/htdocs/karma-core</siteDirectory>
 	<organization>
 		<name>Toolforge</name>
-		<url>http://www.sourceforge.net/projects/toolforge</url>
-		<logo>/images/logo.png</logo>
+		<url>http://sourceforge.net/projects/toolforge</url>
+		<logo>http://sourceforge.net/sflogo.php?group_id=98766&amp;type=5</logo>
 	</organization>
 
 	<developers>

@@ -4,13 +4,18 @@
 
 	<pomVersion>3</pomVersion>
 	<name>Karma CLI  Module</name>
+        <groupId>toolforge</groupId>
 	<id>karma-cli</id>
 	<currentVersion>1.0-dev</currentVersion>
+        <inceptionYear>2002</inceptionYear>
+	<package>nl.toolforge.karma.cli</package>
+        <siteAddress>ssh.sf.net</siteAddress>
+        <siteDirectory>/home/groups/t/to/toolforge/htdocs/karma-cli</siteDirectory>
 	<organization>
 		<name>Sourceforge</name>
-		<url>http://toolforge.sourceforge.net/</url>
+		<url>http://sourceforge.net/projects/toolforge</url>
+                <logo>http://sourceforge.net/sflogo.php?group_id=98766&amp;type=5</logo>
 	</organization>
-	<package>nl.toolforge.karma.cli</package>
 
 	<dependencies>
 

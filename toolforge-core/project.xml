@@ -7,7 +7,15 @@
         <groupId>toolforge</groupId>
 	<id>toolforge-core</id>
 	<currentVersion>1.0</currentVersion>
+	<inceptionYear>2002</inceptionYear>
 	<package>nl.toolforge.core</package>
+	<siteAddress>ssh.sf.net</siteAddress>
+	<siteDirectory>/home/groups/t/to/toolforge/htdocs/toolforge-core</siteDirectory>
+	<organization>
+		<name>Toolforge</name>
+		<url>http://sourceforge.net/projects/toolforge</url>
+		<logo>http://sourceforge.net/sflogo.php?group_id=98766&amp;type=5</logo>
+	</organization>
 
 	<dependencies>
 

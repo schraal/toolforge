@@ -2,16 +2,20 @@
 
 <project>
 
-  <pomVersion>3</pomVersion>
-  <name>Karma Launcher Module</name>
-  <id>karma-launcher</id>
-  <currentVersion>1.1</currentVersion>
-  <organization>
-    <name>Toolforge</name>
-    <url>http://toolforge.sourceforge.net/</url>
-  </organization>
-  <inceptionYear>2003</inceptionYear>
-  <package>nl.toolforge.karma.launcher</package>
+	<pomVersion>3</pomVersion>
+	<name>Karma Launcher Module</name>
+        <groupId>toolforge</groupId>
+      	<id>karma-launcher</id>
+	<currentVersion>1.1</currentVersion>
+        <inceptionYear>2002</inceptionYear>
+        <package>nl.toolforge.karma.launcher</package>
+        <siteAddress>ssh.sf.net</siteAddress>
+        <siteDirectory>/home/groups/t/to/toolforge/htdocs/karma-launcher</siteDirectory>
+	<organization>
+		<name>Toolforge</name>
+		<url>http://sourceforge.net/projects/toolforge</url>
+                <logo>http://sourceforge.net/sflogo.php?group_id=98766&amp;type=5</logo>
+	</organization>
 
   <dependencies>
     <dependency>
