@@ -179,7 +179,7 @@ public final class ModuleDependency {
     if (isModuleDependency()) {
       return module.hashCode();
     } else {
-      if (groupId != null) {
+      if (groupId != null || libModule != null) {
         return artifactId.hashCode();
       } else {
         return id.hashCode();
@@ -202,7 +202,7 @@ public final class ModuleDependency {
 
       if (isModuleDependency()) {
         return module.equals(((ModuleDependency) obj).module);
-      } else if (groupId != null){
+      } else if (groupId != null || libModule != null){
         return artifactId.equals(((ModuleDependency) obj).artifactId);
       } else if (id != null) {
         return id.equals(((ModuleDependency) obj).id) &&
