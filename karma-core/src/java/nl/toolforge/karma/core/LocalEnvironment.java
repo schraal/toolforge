@@ -155,8 +155,7 @@ public final class LocalEnvironment {
       configItems[0] = (String) configuration.get(MANIFEST_STORE_HOST);
       configItems[1] = (String) configuration.get(MANIFEST_STORE_REPOSITORY);
       configItems[2] = (String) configuration.get(MANIFEST_STORE_PROTOCOL);
-
-      if (configItems[0] == null || "".equals(configItems[0])) {
+      if ((configItems[0] == null || "".equals(configItems[0])) && !configItems[2].equals(CVSLocationImpl.LOCAL)) {
         logger.error(
             "Configuration of manifest-store is invalid; property " + MANIFEST_STORE_HOST +
             " is missing or has invalid value.");
@@ -179,7 +178,7 @@ public final class LocalEnvironment {
       configItems[1] = (String) configuration.get(LOCATION_STORE_REPOSITORY);
       configItems[2] = (String) configuration.get(LOCATION_STORE_PROTOCOL);
 
-      if (configItems[0] == null || "".equals(configItems[0])) {
+      if ( (configItems[0] == null || "".equals(configItems[0])) && !configItems[2].equals(CVSLocationImpl.LOCAL)) {
         logger.error(
             "Configuration of location-store is invalid; property " + LOCATION_STORE_HOST +
             " is missing or has invalid value.");
