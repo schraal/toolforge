@@ -25,6 +25,9 @@ public class KarmaException extends Exception {
    * Vital configuration is missing
    */
   public static final ErrorCode MISSING_CONFIGURATION = new ErrorCode(EXCEPTION_PREFIX + "00001");
+
+  public static final ErrorCode WORKING_CONTEXT_NOT_FOUND = new ErrorCode(EXCEPTION_PREFIX + "00002");;
+
   /**
    * When the manifest store directory could not be found.
    */

@@ -8,6 +8,15 @@ import nl.toolforge.karma.core.cmd.DefaultCommand;
 import nl.toolforge.karma.core.cmd.QueryCommandResponse;
 import nl.toolforge.karma.core.location.LocationException;
 import nl.toolforge.karma.core.manifest.ManifestException;
+import nl.toolforge.karma.core.LocalEnvironment;
+import nl.toolforge.karma.core.KarmaException;
+import nl.toolforge.karma.cli.cmd.SelectManifestImpl;
+
+import java.util.prefs.Preferences;
+import java.util.prefs.BackingStoreException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * <p>This command activates a manifest, which is a general requirement for most other commands. The newly activated
@@ -19,28 +28,40 @@ import nl.toolforge.karma.core.manifest.ManifestException;
  * @version $Id$
  */
 public class SelectManifest extends DefaultCommand {
+
+  private static Log logger = LogFactory.getLog(SelectManifestImpl.class);
+
   private CommandResponse commandResponse = new ActionCommandResponse();
 
   public SelectManifest(CommandDescriptor descriptor) {
-		super(descriptor);
-	}
+    super(descriptor);
+  }
 
-	/**
-	 * Activates a manifest.
-	 *	 */
-	public void execute() throws CommandException {
+  /**
+   * Activates a manifest.
+   *	 */
+  public void execute() throws CommandException {
 
-		// Select a manifest and store it in the command context
-		//
+    // Select a manifest and store it in the command context
+    //
     try {
-		  getContext().changeCurrentManifest(getCommandLine().getOptionValue("m"));
+      getContext().changeCurrentManifest(getCommandLine().getOptionValue("m"));
     } catch (ManifestException me) {
       throw new CommandException(me.getErrorCode(), me.getMessageArguments());
-    } catch (LocationException e) {
-      throw new CommandException(e.getErrorCode(), e.getMessageArguments());
     }
-		new QueryCommandResponse();
-	}
+
+    // Store this manifest as the last used manifest.
+    //
+    String contextManifest =
+        LocalEnvironment.LAST_USED_MANIFEST_PREFERENCE + "." + LocalEnvironment.getWorkingContextAsString();
+
+    Preferences.userRoot().put(contextManifest, getContext().getCurrentManifest().getName());
+    try {
+      Preferences.userRoot().flush();
+    } catch (BackingStoreException e) {
+      logger.warn("Could not write user preferences due to java.util.prefs.BackingStoreException.");
+    }
+  }
 
   public CommandResponse getCommandResponse() {
     return this.commandResponse;

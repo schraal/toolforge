@@ -26,9 +26,9 @@ public class BaseTest extends TestCase {
 
   private Properties p = null;
 
-  private File f1 = null;
-  private File f2 = null;
-  private File f3 = null;
+  private File workingContext = null;
+//  private File f2 = null;
+//  private File f3 = null;
 
   private File tmp = null;
 
@@ -43,17 +43,17 @@ public class BaseTest extends TestCase {
     System.setProperty("locale", "en");
 
     try {
-      f1 = MyFileUtils.createTempDirectory();
-      f2 = MyFileUtils.createTempDirectory();
-      f3 = MyFileUtils.createTempDirectory();
+      workingContext = MyFileUtils.createTempDirectory();
+//      f2 = MyFileUtils.createTempDirectory();
+//      f3 = MyFileUtils.createTempDirectory();
     } catch (IOException e) {
       e.printStackTrace();
     }
 
     p = new Properties();
-    p.put(LocalEnvironment.DEVELOPMENT_STORE_DIRECTORY, f1.getPath());
-    p.put(LocalEnvironment.MANIFEST_STORE_DIRECTORY, f2.getPath());
-    p.put(LocalEnvironment.LOCATION_STORE_DIRECTORY, f3.getPath());
+    p.put(LocalEnvironment.WORKING_CONTEXT_DIRECTORY, workingContext.getPath());
+//    p.put(LocalEnvironment.MANIFEST_STORE_DIRECTORY, f2.getPath());
+//    p.put(LocalEnvironment.LOCATION_STORE_DIRECTORY, f3.getPath());
 
     try {
       tmp = MyFileUtils.createTempDirectory();
@@ -80,9 +80,9 @@ public class BaseTest extends TestCase {
 
   public void tearDown() {
     try {
-      org.apache.commons.io.FileUtils.deleteDirectory(f1);
-      org.apache.commons.io.FileUtils.deleteDirectory(f2);
-      org.apache.commons.io.FileUtils.deleteDirectory(f3);
+      org.apache.commons.io.FileUtils.deleteDirectory(workingContext);
+//      org.apache.commons.io.FileUtils.deleteDirectory(f2);
+//      org.apache.commons.io.FileUtils.deleteDirectory(f3);
     } catch (IOException e) {
       e.printStackTrace();
     }

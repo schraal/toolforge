@@ -103,14 +103,10 @@ public final class LocalEnvironment {
 
   private static final Log logger = LogFactory.getLog(LocalEnvironment.class);
 
-  /** Property that identifies the user's development home directory. */
-  public static final String DEVELOPMENT_STORE_DIRECTORY = "development-store.local";
-
-  /** Property that identifies the directory where manifest files are stored. */
-  public static final String MANIFEST_STORE_DIRECTORY = "manifest-store.local.checkout-directory";
-
-  /** Property that identifies the directory where location files are stored. */
-  public static final String LOCATION_STORE_DIRECTORY = "location-store.local.checkout-directory";
+  /**
+   * The working context for Karma. Right now, a working context is a directory on a users' local harddisk.
+   */
+  public static final String WORKING_CONTEXT_DIRECTORY = "working-context";
 
   /** Preference property identifying the manifest that was used in the last Karma session. */
   public static final String LAST_USED_MANIFEST_PREFERENCE = "karma.manifest.last";
@@ -178,14 +174,15 @@ public final class LocalEnvironment {
     try {
 
       if (properties == null) {
-        //read the properties from file
+        // Read the properties from file
+        //
         File configFile = new File(getConfigurationDirectory(), "karma.properties");
         if (getConfigurationDirectory().exists()) {
           if (configFile.exists()) {
-            //inlezen
+            // Inlezen
             configuration.load(new FileInputStream(configFile));
           } else {
-            //file aanmaken
+            // File aanmaken
             createDefaultProperties(configFile);
           }
         } else {
@@ -200,27 +197,15 @@ public final class LocalEnvironment {
 
       // Create the directories, if they don't yet exist.
       //
-      String store;
-      store = (String) configuration.get(DEVELOPMENT_STORE_DIRECTORY);
-      if (store == null || store.equals("") || store.equals(PLACEHOLDER)) {
-        logger.error("Development store is missing; property " + DEVELOPMENT_STORE_DIRECTORY + " has invalid value.");
-        throw new KarmaException(KarmaException.MISSING_CONFIGURATION, new Object[]{DEVELOPMENT_STORE_DIRECTORY});
+      String workingContext;
+      workingContext = (String) configuration.get(WORKING_CONTEXT_DIRECTORY);
+      if (workingContext == null || workingContext.equals("") || workingContext.equals(PLACEHOLDER)) {
+        logger.error("Working context is missing; property " + WORKING_CONTEXT_DIRECTORY + " has invalid value.");
+        throw new KarmaException(KarmaException.MISSING_CONFIGURATION, new Object[]{WORKING_CONTEXT_DIRECTORY});
       } else {
-        new File(store).mkdirs();
-      }
-      store = (String) configuration.get(MANIFEST_STORE_DIRECTORY);
-      if (store == null || store.equals("") || store.equals(PLACEHOLDER)) {
-        logger.error("Manifest store is missing; property " + MANIFEST_STORE_DIRECTORY + " has invalid value.");
-        throw new KarmaException(KarmaException.MISSING_CONFIGURATION, new Object[]{MANIFEST_STORE_DIRECTORY});
-      } else {
-        new File(store).mkdirs();
-      }
-      store = (String) configuration.get(LOCATION_STORE_DIRECTORY);
-      if (store == null || store.equals("") || store.equals(PLACEHOLDER)) {
-        logger.error("Location store is missing; property " + LOCATION_STORE_DIRECTORY + " has invalid value.");
-        throw new KarmaException(KarmaException.MISSING_CONFIGURATION, new Object[]{LOCATION_STORE_DIRECTORY});
-      } else {
-        new File(store).mkdirs();
+        if (new File(workingContext).mkdirs()) {
+          logger.info("New working context created at : " + workingContext);
+        }
       }
 
       // Check other 'essential' configuration.
@@ -321,9 +306,10 @@ public final class LocalEnvironment {
 
   private void logConfiguration() {
 
-    logger.info("Development home directory : " + (String) configuration.get(DEVELOPMENT_STORE_DIRECTORY));
-    logger.info("Manifest store directory : " + (String) configuration.get(MANIFEST_STORE_DIRECTORY));
-    logger.info("Location store directory : " + (String) configuration.get(LOCATION_STORE_DIRECTORY));
+    logger.info("Working context home directory : " + (String) configuration.get(WORKING_CONTEXT_DIRECTORY));
+//    logger.info("Development home directory : " + (String) configuration.get(DEVELOPMENT_STORE_DIRECTORY));
+//    logger.info("Manifest store directory : " + (String) configuration.get(MANIFEST_STORE_DIRECTORY));
+//    logger.info("Location store directory : " + (String) configuration.get(LOCATION_STORE_DIRECTORY));
 
     logger.debug("Manifest store host : " + (String) configuration.get(MANIFEST_STORE_HOST));
     logger.debug("Manifest store port : " + (String) configuration.get(MANIFEST_STORE_PORT));
@@ -366,10 +352,12 @@ public final class LocalEnvironment {
 
     String karmaBase = System.getProperty("user.home") + File.separator + "karma" + File.separator;
 
-    configuration.put(DEVELOPMENT_STORE_DIRECTORY, karmaBase + "projects");
-    configuration.put(MANIFEST_STORE_DIRECTORY, karmaBase + "manifests");
-    configuration.put(LOCATION_STORE_DIRECTORY, karmaBase + "locations");
+    configuration.put(WORKING_CONTEXT_DIRECTORY, karmaBase);
 
+//    configuration.put(DEVELOPMENT_STORE_DIRECTORY, karmaBase + "projects");
+//    configuration.put(MANIFEST_STORE_DIRECTORY, karmaBase + "manifests");
+//    configuration.put(LOCATION_STORE_DIRECTORY, karmaBase + "locations");
+//
     configuration.put(MANIFEST_STORE_HOST, PLACEHOLDER);
     configuration.put(MANIFEST_STORE_PORT, PLACEHOLDER);
     configuration.put(MANIFEST_STORE_REPOSITORY, PLACEHOLDER);
@@ -391,6 +379,38 @@ public final class LocalEnvironment {
     configuration.store(new FileOutputStream(configFile), header);
   }
 
+  public File getWorkingContext() throws KarmaException {
+
+    try {
+      File home = null;
+
+      String workingContext = (String) configuration.get(WORKING_CONTEXT_DIRECTORY);
+
+      home = new File(workingContext);
+
+      if (!home.exists()) {
+        throw new KarmaException(KarmaException.WORKING_CONTEXT_NOT_FOUND);
+      }
+
+      return home;
+    } catch (NullPointerException n) {
+      throw new KarmaException(KarmaException.WORKING_CONTEXT_NOT_FOUND);
+    }
+  }
+
+  public static String getWorkingContextAsString() {
+
+    File workingContext = null;
+    try {
+      workingContext = LocalEnvironment.getInstance().getWorkingContext();
+      if (workingContext == null) {
+        throw new KarmaRuntimeException("No working context defined.");
+      }
+    } catch (KarmaException k) {
+      throw new KarmaRuntimeException("No working context defined.");
+    }
+    return workingContext.getAbsolutePath();
+  }
 
   /**
    * Retrieve a valid reference to the manifest store directory. The available manifests
@@ -400,20 +420,7 @@ public final class LocalEnvironment {
    * @throws KarmaException When the manifest store directory does not exist.
    */
   public File getManifestStore() throws KarmaException {
-    try {
-      File home = null;
-
-      String manifestStore = (String) configuration.get(MANIFEST_STORE_DIRECTORY);
-
-      home = new File(manifestStore);
-      if (!home.exists()) {
-        throw new KarmaException(KarmaException.MANIFEST_STORE_NOT_FOUND);
-      }
-
-      return home;
-    } catch (NullPointerException n) {
-      throw new KarmaException(KarmaException.MANIFEST_STORE_NOT_FOUND);
-    }
+    return new File(getWorkingContext(), "manifests");
   }
 
   /**
@@ -507,19 +514,7 @@ public final class LocalEnvironment {
    * @throws KarmaException When then location store directory does not exist.
    */
   public File getLocationStore() throws KarmaException {
-    try {
-      File home = null;
-
-      String locationStore = (String) configuration.get(LOCATION_STORE_DIRECTORY);
-      home = new File(locationStore);
-      if (!home.exists()) {
-        throw new KarmaException(KarmaException.LOCATION_STORE_NOT_FOUND);
-      }
-
-      return home;
-    } catch (NullPointerException n) {
-      throw new KarmaException(KarmaException.LOCATION_STORE_NOT_FOUND);
-    }
+    return new File(getWorkingContext(), "locations");
   }
 
   /**
@@ -530,19 +525,7 @@ public final class LocalEnvironment {
    * @throws KarmaException When the development home does not exists.
    */
   public File getDevelopmentHome() throws KarmaException {
-
-    try {
-      File home = null;
-
-      String developmentHome = (String) configuration.get(DEVELOPMENT_STORE_DIRECTORY);
-      home = new File(developmentHome);
-      if (!home.exists()) {
-        throw new KarmaException(KarmaException.DEVELOPMENT_HOME_NOT_FOUND);
-      }
-      return home;
-    } catch (NullPointerException n) {
-      throw new KarmaException(KarmaException.DEVELOPMENT_HOME_NOT_FOUND);
-    }
+    return new File(getWorkingContext(), "projects");
   }
 
   /**

@@ -82,7 +82,10 @@ public class ManifestCollector {
    */
   public Manifest loadFromHistory() throws LocationException, ManifestException {
 
-    String manifestId = Preferences.userRoot().get(LocalEnvironment.LAST_USED_MANIFEST_PREFERENCE, null);
+    String contextManifest =
+        LocalEnvironment.LAST_USED_MANIFEST_PREFERENCE + "." + LocalEnvironment.getWorkingContextAsString();
+
+    String manifestId = Preferences.userRoot().get(contextManifest, null);
     if (manifestId != null) {
 
       ManifestFactory manifestFactory = ManifestFactory.getInstance(getLocalEnvironment());
@@ -90,10 +93,6 @@ public class ManifestCollector {
       Manifest manifest = null;
       try {
         manifest = manifestFactory.createManifest(manifestId);
-
-//      Manifest manifest = new Manifest(manifestId);
-//      manifest.load(getLocalEnvironment());
-
       } catch (ManifestException m) {
         if (m.getErrorCode().equals(ManifestException.MANIFEST_FILE_NOT_FOUND)) {
           Preferences.userRoot().remove(LocalEnvironment.LAST_USED_MANIFEST_PREFERENCE);

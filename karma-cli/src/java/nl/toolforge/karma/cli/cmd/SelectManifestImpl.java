@@ -41,15 +41,6 @@ public class SelectManifestImpl extends SelectManifest {
 
 		ConsoleConfiguration.setManifest(getContext().getCurrentManifest());
 
-		// Store this manifest as the last used manifest.
-		//
-		Preferences.userRoot().put(LocalEnvironment.LAST_USED_MANIFEST_PREFERENCE, getContext().getCurrentManifest().getName());
-		try {
-			Preferences.userRoot().flush();
-		} catch (BackingStoreException e) {
-			logger.warn("Could not write user preferences due to java.util.prefs.BackingStoreException.");
-		}
-
 		CommandMessage message = new SuccessMessage(getFrontendMessages().getString("message.MANIFEST_ACTIVATED"));
     CommandResponse response = new ActionCommandResponse();
     response.addMessage(message);

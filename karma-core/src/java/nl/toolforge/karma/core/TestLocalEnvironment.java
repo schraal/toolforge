@@ -11,96 +11,81 @@ import java.util.Properties;
  * @version $Id$
  */
 public final class TestLocalEnvironment extends TestCase {
-	private static File f1;
-	private static File f2;
-	private static File f3;
-	private static Properties p;
-	private static LocalEnvironment localEnvironment;
 
-	static {
-		try {
-			f1 = MyFileUtils.createTempDirectory();
-			f2 = MyFileUtils.createTempDirectory();
-			f3 = MyFileUtils.createTempDirectory();
+  private static File workingContext;
+  private static Properties p;
+  private static LocalEnvironment localEnvironment;
 
-			p = new Properties();
-			p.put(LocalEnvironment.DEVELOPMENT_STORE_DIRECTORY, f1.getPath());
-			p.put(LocalEnvironment.MANIFEST_STORE_DIRECTORY, f2.getPath());
-			p.put(LocalEnvironment.LOCATION_STORE_DIRECTORY, f3.getPath());
-			p.put(LocalEnvironment.MANIFEST_STORE_HOST, "one");
-			p.put(LocalEnvironment.MANIFEST_STORE_REPOSITORY, "two");
-			p.put(LocalEnvironment.MANIFEST_STORE_PROTOCOL, "three");
+  static {
+    try {
+      workingContext = MyFileUtils.createTempDirectory();
+//			f2 = MyFileUtils.createTempDirectory();
+//			f3 = MyFileUtils.createTempDirectory();
+
+      p = new Properties();
+      p.put(LocalEnvironment.WORKING_CONTEXT_DIRECTORY, workingContext.getPath());
+//			p.put(LocalEnvironment.MANIFEST_STORE_DIRECTORY, f2.getPath());
+//			p.put(LocalEnvironment.LOCATION_STORE_DIRECTORY, f3.getPath());
+      p.put(LocalEnvironment.MANIFEST_STORE_HOST, "one");
+      p.put(LocalEnvironment.MANIFEST_STORE_REPOSITORY, "two");
+      p.put(LocalEnvironment.MANIFEST_STORE_PROTOCOL, "three");
       p.put(LocalEnvironment.LOCATION_STORE_HOST, "one");
-			p.put(LocalEnvironment.LOCATION_STORE_REPOSITORY, "two");
-			p.put(LocalEnvironment.LOCATION_STORE_PROTOCOL, "three");
+      p.put(LocalEnvironment.LOCATION_STORE_REPOSITORY, "two");
+      p.put(LocalEnvironment.LOCATION_STORE_PROTOCOL, "three");
 
-		} catch (IOException e) {
-			fail(e.getMessage());
-		}
-	}
+      try {
+        localEnvironment = LocalEnvironment.getInstance(p);
+      } catch(KarmaException k) {
+        fail(k.getMessage());
+      }
 
+    } catch (IOException e) {
+      fail(e.getMessage());
+    }
+  }
 
-	public void testConstructor() {
-		try {
-			localEnvironment = LocalEnvironment.getInstance(p);
-			assertNotNull(localEnvironment);
-    } catch (KarmaException ke) {
-      fail(ke.getMessage());
-    } catch (KarmaRuntimeException kre) {
-			fail(kre.getMessage());
-		}
-	}
+  public void testGetWorkingContext() {
+    try {
+      assertEquals(workingContext, localEnvironment.getWorkingContext());
 
-	public void testGetDevelopmentHome() {
-		try {
-			assertEquals(f1, localEnvironment.getDevelopmentHome());
+    } catch (KarmaException e) {
+      fail(e.getMessage());
+    }
+  }
 
-			f1.delete();
-			try {
-				localEnvironment.getDevelopmentHome();
-				fail("The development home should not have been there");
-			} catch (KarmaException ke) {
-				assertTrue(true);
-			}
-		} catch (KarmaException e) {
-			fail(e.getMessage());
-		}
+  public void testGetDevelopmentHome() {
+    try {
+      assertEquals(new File(workingContext, "projects"), localEnvironment.getDevelopmentHome());
+    } catch (KarmaException e) {
+      fail(e.getMessage());
+    }
 
-	}
+  }
 
-	public void testGetManifestStore() {
-		try {
-			assertEquals(f2, localEnvironment.getManifestStore());
+  public void testGetManifestStore() {
+    try {
+      assertEquals(new File(workingContext, "manifests"), localEnvironment.getManifestStore());
 
-			f2.delete();
-			try {
-				localEnvironment.getManifestStore();
-				fail("The manifest store should not have been there");
-			} catch (KarmaException ke) {
-				assertTrue(true);
-			}
-		} catch (KarmaException e) {
-			fail(e.getMessage());
-		}
+    } catch (KarmaException e) {
+      fail(e.getMessage());
+    }
 
-	}
+  }
 
-	public void testGetLocationStore() {
-		try {
-			assertEquals(f3, localEnvironment.getLocationStore());
+  public void testGetLocationStore() {
+    try {
+      assertEquals(new File(workingContext, "locations"), localEnvironment.getLocationStore());
 
-			f3.delete();
-			try {
-				localEnvironment.getLocationStore();
-				fail("The location store should not have been there");
-			} catch (KarmaException ke) {
-				assertTrue(true);
-			}
-		} catch (KarmaException e) {
-			fail(e.getMessage());
-		}
+    } catch (KarmaException e) {
+      fail(e.getMessage());
+    }
+  }
 
-	}
+  /**
+   * Leave as last ...
+   */
 
-
+  public void testZZZZZZZZZZ() {
+    boolean b = workingContext.delete();
+  }
 }

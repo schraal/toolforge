@@ -54,13 +54,12 @@ public final class CommandContext {
 
     // Update the manifest-store.
     //
-    File karmaDirectory = env.getManifestStore().getParentFile();
 
     Module manifestStore = new SourceModule("manifests", env.getManifestStoreLocation());
 
-    if (karmaDirectory.exists()) {
+    if (env.getWorkingContext().exists()) {
       try {
-        Runner runner = RunnerFactory.getRunner(manifestStore.getLocation(), karmaDirectory);
+        Runner runner = RunnerFactory.getRunner(manifestStore.getLocation(), env.getWorkingContext());
         runner.checkout(manifestStore);
       } catch (VersionControlException e) {
         // todo some sort of notification would be nice ...
@@ -78,9 +77,9 @@ public final class CommandContext {
     //
     Module locationStore = new SourceModule("locations", env.getLocationStoreLocation());
 
-    if (karmaDirectory.exists()) {
+    if (env.getWorkingContext().exists()) {
       try {
-        Runner runner = RunnerFactory.getRunner(locationStore.getLocation(), karmaDirectory);
+        Runner runner = RunnerFactory.getRunner(locationStore.getLocation(), env.getWorkingContext());
         runner.checkout(locationStore);
       } catch (VersionControlException e) {
         // todo some sort of notification would be nice ...
@@ -121,7 +120,7 @@ public final class CommandContext {
    * @param manifestName
    * @throws nl.toolforge.karma.core.manifest.ManifestException When the manifest could not be changed. See {@link nl.toolforge.karma.core.manifest.ManifestException#MANIFEST_LOAD_ERROR}.
    */
-  public void changeCurrentManifest(String manifestName) throws LocationException, ManifestException {
+  public void changeCurrentManifest(String manifestName) throws ManifestException {
 
     ManifestFactory manifestFactory = ManifestFactory.getInstance(getLocalEnvironment());
     Manifest newManifest = manifestFactory.createManifest(manifestName);
