@@ -26,6 +26,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 
 import java.util.Set;
+import java.net.URL;
 
 /**
  * @author D.A. Smedes
@@ -38,7 +39,8 @@ public class TestCommandLoader extends BaseTest {
 		CommandLoader cl = CommandLoader.getInstance();
 
     try {
-      Set l = cl.load("test/test-commands.xml");
+      URL url = this.getClass().getClassLoader().getResource("test/test-commands.xml");
+      Set l = cl.load(url);
 
       assertEquals("There should be two commands loaded from the descriptor file", 2, l.size());
 
@@ -75,7 +77,9 @@ public class TestCommandLoader extends BaseTest {
 		CommandLoader cl = CommandLoader.getInstance();
 
 		try {
-			Set l = cl.load("test/test-commands.xml");
+			URL url = this.getClass().getClassLoader().getResource("test/test-commands.xml");
+
+      Set l = cl.load(url);
 
 			CommandDescriptor descriptor = null;
 			if (l.iterator().hasNext()) {

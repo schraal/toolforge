@@ -52,15 +52,27 @@ public final class CommandLoader {
    * Default filename for the command descriptor file
    */
   public static final String DEFAULT_COMMANDS_BASEDIR = "commands";
-  public static final String DEFAULT_COMMAND_FILE = "commands.xml";
+
+  /** File name for core commands. */
+  public static final String CORE_COMMANDS_FILE = "core-commands.xml";
+
+  /** Directory where plugins are located. */
   public static final String COMMAND_PLUGINS_DIR = "plugins";
+
+  /** File name for plugin commands definitions. */
+  public static final String PLUGIN_COMMANDS_FILE = "commands.xml";
 
   private CommandLoader() {
   }
 
   private static CommandLoader instance = null;
 
-  public synchronized static CommandLoader getInstance() {
+  /**
+   * Gets the singleton instance of the <code>CommandLoader</code>.
+   *
+   * @return The singleton instance of the <code>CommandLoader</code>.
+   */
+  public static CommandLoader getInstance() {
     if (instance == null) {
       instance = new CommandLoader();
     }
@@ -68,61 +80,55 @@ public final class CommandLoader {
   }
 
   /**
-   * Loads command xml files from a certain <code>baseDir</code>. All xml files in <code>baseDir</code> are parsed and
-   * their commands are added to the default command set provided by Karma (as located in
+   * Loads command xml files from a predefined base directory. The base directory is determined by
+   * {@link DEFAULT_COMMANDS_BASEDIR}, relative to the runtime classpath. Core commands are considered to be in
+   * <code>core-commands.xml</code>. The rest of the commands are located in plugin directories on the classpath.
    *
-   * @return The default commands plus any
+   * @return The full set of commands for Karma.
+   * @throws CommandLoadException
    */
   Set load() throws CommandLoadException {
 
-    // load the default commands
+    // Load the core commands
     //
-    Set commandSet = loadDefaultCommands();
+    Set commandSet = loadCoreCommands();
 
-    // load the plugin commands
+    // Load the plugin commands
     //
+    Enumeration enum = null;
     try {
-      String commands = DEFAULT_COMMANDS_BASEDIR+"/"+COMMAND_PLUGINS_DIR+"/"+DEFAULT_COMMAND_FILE;
-      Enumeration enum = this.getClass().getClassLoader().getResources(commands);
-      while (enum.hasMoreElements()) {
-        URL url = (URL) enum.nextElement();
-
-        try {
-          commandSet.addAll((Set) getCommandDigester().parse(url.openStream()));
-        } catch (IOException e) {
-          logger.error(e);
-          throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_COMMAND_FILE, new Object[]{url});
-        } catch (SAXException e) {
-          logger.error(e);
-          throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_COMMAND_FILE, new Object[]{url});
-        }
-      }
+      String commands = DEFAULT_COMMANDS_BASEDIR + "/" + COMMAND_PLUGINS_DIR + "/" + PLUGIN_COMMANDS_FILE;
+      enum = this.getClass().getClassLoader().getResources(commands);
     } catch (IOException ioe) {
-      ioe.printStackTrace();
+      throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_PLUGIN_COMMANDS_FILE, new Object[]{PLUGIN_COMMANDS_FILE});
     }
+
+    while (enum.hasMoreElements()) {
+      commandSet.addAll(load((URL) enum.nextElement()));
+    }
+
     return commandSet;
   }
 
   /**
    * <p>Loads the <code>xml</code> file containing command descriptors.
    *
-   * @param resource The resource filename (relative to the classpath) to the <code>xml</code> file. Use
-   *   {@link #load} to use the default settings.
-   * @return A <code>Set</code> of {@link CommandDescriptor} instances.
+   * @param resource         The resource url to a command <code>xml</code> file. Use
+   *                         {@link #load} to use the default settings.
+   * @return                 A <code>Set</code> of {@link CommandDescriptor} instances.
    * 
    * @throws CommandLoadException
    */
-  Set load(String resource) throws CommandLoadException {
+  Set load(URL resource) throws CommandLoadException {
 
     try {
-      return (Set) getCommandDigester().parse(this.getClass().getClassLoader().getResourceAsStream(resource));
+      return (Set) getCommandDigester().parse(resource.openStream());
     } catch (IOException e) {
       logger.error(e);
-      throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_COMMAND_FILE);
+      throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_PLUGIN_COMMANDS_FILE, new Object[]{PLUGIN_COMMANDS_FILE});
     } catch (SAXException e) {
       logger.error(e);
-      e.printStackTrace();
-      throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_COMMAND_FILE);
+      throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_PLUGIN_COMMANDS_FILE, new Object[]{PLUGIN_COMMANDS_FILE});
     }
   }
 
@@ -131,17 +137,17 @@ public final class CommandLoader {
    *
    * @throws CommandLoadException
    */
-  private Set loadDefaultCommands() throws CommandLoadException {
+  private Set loadCoreCommands() throws CommandLoadException {
 
     try {
-      String defaultCommands = DEFAULT_COMMANDS_BASEDIR+ "/" +DEFAULT_COMMAND_FILE;
+      String defaultCommands = DEFAULT_COMMANDS_BASEDIR + "/" + CORE_COMMANDS_FILE;
       return (Set) getCommandDigester().parse(this.getClass().getClassLoader().getResourceAsStream(defaultCommands));
     } catch (IOException e) {
       logger.error(e);
-      throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_DEFAULT_COMMANDS);
+      throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_DEFAULT_COMMANDS, new Object[]{CORE_COMMANDS_FILE});
     } catch (SAXException e) {
       logger.error(e);
-      throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_DEFAULT_COMMANDS);
+      throw new CommandLoadException(CommandLoadException.LOAD_FAILURE_FOR_DEFAULT_COMMANDS, new Object[]{CORE_COMMANDS_FILE});
     }
   }
 
