@@ -18,6 +18,16 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 package nl.toolforge.karma.core.cmd.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import nl.toolforge.karma.core.Version;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
@@ -32,15 +42,6 @@ import nl.toolforge.karma.core.vc.ModuleStatus;
 import nl.toolforge.karma.core.vc.VersionControlException;
 import nl.toolforge.karma.core.vc.cvsimpl.threads.CVSLogThread;
 import nl.toolforge.karma.core.vc.threads.ParallelRunner;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This command gets the active manifest and presents it in the UI. UI implementations are responsible for the rendering
@@ -105,7 +106,9 @@ public class ViewManifest extends DefaultCommand {
           try {
             moduleData[1] = module.getType().getShortType();
           } catch (ModuleTypeException e) {
-            logger.error(e);
+            //this exception occurs when a module has not yet been checked out.
+            //therefore, only a warning.
+            logger.warn(e);
             moduleData[1] = Module.UNKNOWN.getType();
           } 
         }
