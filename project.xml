@@ -59,6 +59,7 @@
       <organization>toolforge</organization>
       <roles>
         <role>Developer</role>
+        <role>Windows testing</role>
       </roles>
     </developer>
     <developer>
