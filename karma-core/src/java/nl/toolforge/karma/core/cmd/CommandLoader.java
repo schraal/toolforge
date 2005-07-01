@@ -92,17 +92,17 @@ public final class CommandLoader {
 
     // Load the plugin commands
     //
-    Enumeration enum = null;
+    Enumeration enumeration = null;
     try {
       String commands = DEFAULT_COMMANDS_BASEDIR + "/" + COMMAND_PLUGINS_DIR + "/" + PLUGIN_COMMANDS_FILE;
-      enum = this.getClass().getClassLoader().getResources(commands);
+      enumeration = this.getClass().getClassLoader().getResources(commands);
     } catch (IOException ioe) {
       throw new CommandLoadException(ioe, CommandLoadException.LOAD_FAILURE_FOR_PLUGIN_COMMANDS_FILE, new Object[]{PLUGIN_COMMANDS_FILE});
     }
 
-    while (enum.hasMoreElements()) {
+    while (enumeration.hasMoreElements()) {
 
-      CommandDescriptorMap map = (CommandDescriptorMap) load((URL) enum.nextElement());
+      CommandDescriptorMap map = (CommandDescriptorMap) load((URL) enumeration.nextElement());
 
 //      for (Iterator i = map.keySet().iterator(); i.hasNext();) {
 //
