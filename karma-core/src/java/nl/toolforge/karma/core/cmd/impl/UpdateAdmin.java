@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 package nl.toolforge.karma.core.cmd.impl;
 
 import nl.toolforge.karma.core.boot.ManifestStore;
+import nl.toolforge.karma.core.boot.LocationStore;
 import nl.toolforge.karma.core.cmd.CommandDescriptor;
 import nl.toolforge.karma.core.cmd.CommandException;
 import nl.toolforge.karma.core.cmd.CommandResponse;
@@ -63,14 +64,14 @@ public class UpdateAdmin extends DefaultCommand {
 
       // todo locations are not yet reloaded automatically.
 
-//      LocationStore lStore = getContext().getWorkingContext().getConfiguration().getLocationStore();
-//
-//      if (!lStore.getLocation().isAvailable()) {
-//        commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Location store location unreachable!")));
-//      } else {
-//        commandResponse.addEvent(new MessageEvent(this, new SimpleMessage(("Updating locations ..."))));
-//        lStore.update();
-//      }
+      LocationStore lStore = getContext().getWorkingContext().getConfiguration().getLocationStore();
+
+      if (!lStore.getLocation().isAvailable()) {
+        commandResponse.addEvent(new MessageEvent(this, new SimpleMessage("Location store location unreachable!")));
+      } else {
+        commandResponse.addEvent(new MessageEvent(this, new SimpleMessage(("Updating locations ..."))));
+        lStore.update();
+      }
 
     } catch (VersionControlException e) {
       logger.warn(new ErrorEvent(this, e.getErrorCode(), e.getMessageArguments()));
