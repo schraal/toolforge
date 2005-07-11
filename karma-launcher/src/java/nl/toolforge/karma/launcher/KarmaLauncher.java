@@ -98,9 +98,7 @@ public class KarmaLauncher {
         String mainMethodClassName = args[0];
 
         String[] applicationArgs = new String[args.length - 1];
-        for (int i = 0; i < args.length - 1; i++) {
-            applicationArgs[i] = args[i + 1];
-        }
+        System.arraycopy(args, 1, applicationArgs, 0, args.length - 1);
 
         String[] classPathEntries = null;
         String karmaClassPath = System.getProperty(KARMA_CLASSPATH);
