@@ -13,6 +13,6 @@ if [ "x$1" = "x" ]; then
   exit 1
 fi
 
-compile karma-installer.xml -b . -o /tmp/karma-$1-INSTALLER
+$IZPACK_HOME/bin/compile karma-installer.xml -b . -o /tmp/karma-$1-INSTALLER
 
 
