@@ -8,22 +8,23 @@
 
 # the following needs to be tweaked.
 #
-export BASE=/home/toolforge
+#export BASE=/home/toolforge
+export BASE=/Users/schraal/projects/toolforge
 
 cd $BASE
-cvs update -dPA
+#cvs update -dPA
 #unpack the CVS repo used for testing
 cd /tmp
 rm -rf test-CVSROOT
 tar xvzf $BASE/karma-core/resources/test-CVSROOT.tgz
 #now, build the modules and deploy the sites.
 cd $BASE/toolforge-core
-maven clean jar:install site:deploy
+mvn clean install site:deploy
 cd $BASE/karma-core
-maven clean jar:install site:deploy
+mvn clean install site:deploy
 cd $BASE/karma-cli
-maven clean jar:install site:deploy
+mvn clean install site:deploy
 cd $BASE/karma-launcher
-maven clean jar:install site:deploy
+mvn clean install site:deploy
 cd $BASE/project-docs
-maven clean site:deploy
+mvn clean site:site site:deploy

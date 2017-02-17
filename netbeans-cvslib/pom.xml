@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>toolforge</groupId>
+  <artifactId>netbeans-cvslib</artifactId>
+  <version>3.6-patch</version>
+  <name>Netbeans CVSlib Patch Fork</name>
+  <description>This module contains the official `cvslib-3.6` sources as provided by
+    Netbeans (see http://javacvs.netbeans.org). Due to some bugs in the
+    library, we have included a copy of this library in the Toolforge project.</description>
+  <inceptionYear>2002</inceptionYear>
+  <organization>
+    <name>Toolforge</name>
+    <url>http://sourceforge.net/projects/toolforge</url>
+  </organization>
+  <distributionManagement>
+    <site>
+      <id>default</id>
+      <name>Default Site</name>
+      <url>scp://ssh.sf.net/home/groups/t/to/toolforge/htdocs/toolforge-core</url>
+    </site>
+  </distributionManagement>
+  <build>
+    <sourceDirectory>src/java/</sourceDirectory>
+    <resources>
+      <resource>
+        <directory>src/java</directory>
+        <includes>
+          <include>**/*.properties</include>
+        </includes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <artifactId>maven-site-plugin</artifactId>
+        <configuration>
+          <moduleExcludes>
+            <xdoc>navigation.xml</xdoc>
+          </moduleExcludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <artifactId>maven-changes-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>changes-report</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+        <configuration>
+          <xmlPath>${basedir}/xdocs/changes.xml</xmlPath>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+</project>
